@@ -294,6 +294,8 @@ struct MemoryAccess {
   bool isShared(gpu::SharedKind kind) const { return sharedKind == kind; }
 };
 
+/// Issued memory accesses, excluding synthetic completion-dependency effects
+/// that only constrain compiler optimization across an acquire.
 llvm::SmallVector<MemoryAccess>
 getMemoryAccesses(Operation *op,
                   std::optional<gpu::SharedKind> kind = std::nullopt,

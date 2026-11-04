@@ -2281,3 +2281,15 @@ tt.func @tma_cache_invalid_store(%desc: !tma_cache_desc, %dst: !tma_cache_dst, %
   tt.return
 }
 }
+
+// -----
+
+#release_shared = #ttg.swizzled_shared<{vec = 1, perPhase = 1, maxPhase = 1, order = [0]}>
+#release_smem = #ttg.shared_memory
+module attributes {"ttg.num-ctas" = 1 : i32, "ttg.num-warps" = 4 : i32, ttg.target = "cuda:100"} {
+tt.func @release_rejects_shared_resource(%bar: !ttg.memdesc<1xi64, #release_shared, #release_smem, mutable>, %shared: !ttg.memdesc<1xi64, #release_shared, #release_smem, mutable>) {
+  // expected-error @below {{release resources must be tensor-memory descriptors}}
+  ttng.arrive_barrier %bar, 1 release %shared : !ttg.memdesc<1xi64, #release_shared, #release_smem, mutable>, !ttg.memdesc<1xi64, #release_shared, #release_smem, mutable>
+  tt.return
+}
+}

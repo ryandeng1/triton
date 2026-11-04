@@ -151,6 +151,9 @@ class CUDAOptions:
     arch: str = None
     instrumentation_mode: str = ""
     fpsan_homomorphic_casts: bool = False
+    # Experimental: only explicit exclusive TMEM release contracts are eligible.
+    enable_tmem_release_scheduling: bool = False
+    enable_tmem_packing: bool = False
 
     def __post_init__(self):
         if self.max_occupancy is not None and (type(self.max_occupancy) is not int or self.max_occupancy <= 0):
@@ -426,6 +429,16 @@ class CUDABackend(BaseBackend):
         # TritonGPU -> LLVM-IR (MLIR)
         pm = ir.pass_manager(mod.context)
         pm.enable_debug()
+
+        # Keep structured control flow for correlated descriptor-view analysis.
+        # Ordinary barrier arrivals without a release contract are unchanged.
+        if options.enable_tmem_release_scheduling:
+            nvidia.passes.ttnvgpuir.add_schedule_tmem_releases(pm)
+
+        # Prove partial buffer lifetimes while warp-specialized regions and
+        # their completion protocols are still explicit.
+        if options.enable_tmem_packing:
+            nvidia.passes.ttnvgpuir.add_pack_tmem(pm)
 
         if is_enabled(options, "gsan") or is_enabled(options, "gsan-profile"):
             # GSan introduces layout conversions, so it must run before shared-memory allocation.

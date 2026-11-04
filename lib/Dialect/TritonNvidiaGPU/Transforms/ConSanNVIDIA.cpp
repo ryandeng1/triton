@@ -159,6 +159,11 @@ public:
 
   std::optional<MemEffectsOpInfo>
   getMemEffectsOpInfo(Operation *op) const override {
+    // Wait dependencies summarize remote accesses completed by this wait;
+    // they are not new memory accesses by the waiting partition. The barrier
+    // wait hook transfers the corresponding completion state separately.
+    if (isa<ttng::WaitBarrierOp>(op))
+      return std::nullopt;
     std::optional<MemEffectsOpInfo> info =
         ConSanTargetHooks::getMemEffectsOpInfo(op);
     if (!info) {

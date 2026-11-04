@@ -168,6 +168,54 @@ def TritonNvidiaGPUOptimizeMBarrierArrivalsPass : Pass<"triton-nvidia-gpu-optimi
   ];
 }
 
+def TritonNvidiaGPUScheduleTMemReleasesPass : Pass<"triton-nvidia-gpu-schedule-tmem-releases", "mlir::ModuleOp"> {
+  let summary = "Schedule explicit exclusive-resource TMEM releases";
+
+  let description = [{
+    Opt-in experimental scheduling of arrive_barrier operations carrying an
+    explicit release-resource contract. Move a release earlier within its
+    block across pure operations, disjoint TMEM accesses, and unrelated output
+    work. Resolve descriptor provenance through structured conditional views,
+    retaining correlated predicates. Unknown effects, other protocol operations,
+    and iteration boundaries stop motion. Run on structured TritonGPU IR before
+    SCF lowering and synchronization insertion. Ordinary arrivals are unchanged.
+  }];
+
+  let dependentDialects = [
+    "mlir::arith::ArithDialect",
+    "mlir::scf::SCFDialect",
+    "mlir::triton::gpu::TritonGPUDialect",
+    "mlir::triton::nvidia_gpu::TritonNvidiaGPUDialect"
+  ];
+}
+
+def TritonNvidiaGPUPackTMemPass : Pass<"triton-nvidia-gpu-pack-tmem", "mlir::ModuleOp"> {
+  let summary = "Reuse consumed tensor-memory columns using checked completion ordering";
+
+  let description = [{
+    Experimental partial-lifetime packing of fresh tensor-memory allocations.
+    Prove access ordering through a closed, straight-line warp-specialized
+    barrier protocol before replacing an allocation with a subslice of another.
+    Preserve all synchronization and require completed accesses, not merely
+    asynchronous instruction issue, to precede conflicting reuse. Unsupported
+    control flow, descriptor escapes, or ambiguous barrier generations prevent
+    packing. Run before physical allocation and synchronization insertion.
+  }];
+
+  let dependentDialects = [
+    "mlir::arith::ArithDialect",
+    "mlir::triton::gpu::TritonGPUDialect",
+    "mlir::triton::nvidia_gpu::TritonNvidiaGPUDialect"
+  ];
+
+  let statistics = [
+    Statistic<"numCandidates", "candidate-pairs", "Number of allocation pairs examined">,
+    Statistic<"numPacked", "packed-allocations", "Number of allocations replaced by checked subslices">,
+    Statistic<"numColumns", "logical-columns-reused", "Number of allocation columns reused">,
+    Statistic<"numWaitEdges", "completion-edges", "Number of checked synchronization edges">
+  ];
+}
+
 def TritonNvidiaGPUTMemBarrierInsertionPass : Pass<"triton-nvidia-gpu-tmem-barrier-insertion", "mlir::ModuleOp"> {
   let summary = "Insert barriers to order tensor-memory reuse";
 

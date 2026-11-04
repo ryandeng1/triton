@@ -362,6 +362,7 @@ def TTNG_BarrierExpectOp : TTNG_Op<"barrier_expect", [
 }
 
 def TTNG_WaitBarrierOp : TTNG_Op<"wait_barrier", [AttrSizedOperandSegments,
+    DeclareOpInterfaceMethods<MemoryEffectsOpInterface>,
     DeclareOpInterfaceMethods<MBarrierOpInterface, ["getBarrier"]>,
     DeclareOpInterfaceMethods<PredicatedOpInterface>]> {
   let summary = "wait until the mbarrier phase completes.";
@@ -376,13 +377,15 @@ def TTNG_WaitBarrierOp : TTNG_Op<"wait_barrier", [AttrSizedOperandSegments,
 
     Accepts an optional list of memory dependencies. If present, it is assumed
     that any of the dependencies may be accessed until the barrier completes.
+    Their conservative read/write effects also prevent reusing a load across
+    completion of a remote write to the same storage.
 
     The barrier behavior is described here:
     https://docs.nvidia.com/cuda/parallel-thread-execution/index.html#data-movement-and-conversion-instructions-asynchronous-copy-completion-mechanisms
   }];
 
   let arguments = (ins
-    Arg<TTG_MemDescType, "", BarrierSharedReadWrite>:$alloc,
+    TTG_MemDescType:$alloc,
     I32:$phase,
     Optional<I1>:$pred,
     Variadic<TTG_MemDescType>:$deps
@@ -409,7 +412,7 @@ def TTNG_WaitBarrierOp : TTNG_Op<"wait_barrier", [AttrSizedOperandSegments,
   }];
 }
 
-def TTNG_ArriveBarrierOp : TTNG_Op<"arrive_barrier", [
+def TTNG_ArriveBarrierOp : TTNG_Op<"arrive_barrier", [AttrSizedOperandSegments,
     DeclareOpInterfaceMethods<MBarrierOpInterface, ["getBarrier", "isPerWarp"]>,
     DeclareOpInterfaceMethods<PredicatedOpInterface>]> {
   let summary = "perform the arrive operation on an mbarrier";
@@ -440,6 +443,17 @@ def TTNG_ArriveBarrierOp : TTNG_Op<"arrive_barrier", [
     per-CTA barrier. A non-identity `fromCTA` cannot be combined with
     multicast.
 
+    An optional `release` list is an experimental, explicit exclusive-resource
+    contract. Its operands identify tensor-memory regions whose completed uses
+    are released for reuse by a peer. Consumers of this notification must not
+    rely on it to order any other memory, output, or control effects. The
+    arrival can consequently be scheduled before unrelated work, while keeping
+    all uses of the listed regions and their required completion before it.
+    This contract is supplied by the producer of the IR; it cannot be inferred
+    from an ordinary mbarrier arrival. The operands also retain descriptor
+    lifetimes and have no additional run-time representation. An absent list
+    preserves the ordinary, unrestricted publication semantics.
+
     Example:
 
     ```mlir
@@ -455,18 +469,26 @@ def TTNG_ArriveBarrierOp : TTNG_Op<"arrive_barrier", [
     Optional<I1>:$pred,
     OptionalAttr<I32Attr>:$fromCTA,
     DefaultValuedOptionalAttr<I32Attr, "0">:$multicastCTA,
-    UnitAttr:$per_warp
+    UnitAttr:$per_warp,
+    Variadic<TTG_MemDescType>:$releaseResources
   );
 
   let assemblyFormat = [{
-    $alloc `,` $count (`,` $pred^)? attr-dict `:` qualified(type($alloc))
+    $alloc `,` $count (`,` $pred^)? (`release` $releaseResources^)?
+    attr-dict `:` qualified(type($alloc)) (`,` type($releaseResources)^)?
   }];
 
   let builders = [
     OpBuilder<(ins "Value":$alloc, "uint32_t":$count,
                    CArg<"Value", "Value()">:$pred), [{
       build($_builder, $_state, alloc, count, pred, /*fromCTA=*/IntegerAttr(),
-            /*multicastCTA=*/0u, /*per_warp=*/false);
+            /*multicastCTA=*/0u, /*per_warp=*/false, /*releaseResources=*/{});
+    }]>,
+    OpBuilder<(ins "Value":$alloc, "uint32_t":$count, "Value":$pred,
+                   "IntegerAttr":$fromCTA, "uint32_t":$multicastCTA,
+                   CArg<"bool", "false">:$per_warp), [{
+      build($_builder, $_state, alloc, count, pred, fromCTA, multicastCTA,
+            per_warp, /*releaseResources=*/{});
     }]>
   ];
 

@@ -1,5 +1,6 @@
 // RUN: triton-opt %s -canonicalize | FileCheck %s --check-prefixes=CHECK,BARRIER,COMMON
 // RUN: triton-opt %s -gluon-canonicalize | FileCheck %s --check-prefixes=BARRIER,COMMON
+// RUN: triton-opt %s --cse | FileCheck %s --check-prefix=WAITCSE
 
 #linear = #ttg.linear<{register = [[0, 1], [0, 2], [32, 0]], lane = [[1, 0], [2, 0], [4, 0], [8, 0], [16, 0]], warp = [[0, 0], [0, 0], [64, 0]], block = []}>
 #tmem_scales = #ttng.tensor_memory_scales_encoding<>
@@ -239,4 +240,51 @@ tt.func @fdiv_constant_no_target(%x: f32) -> f32 {
   %a = arith.divf %x, %three : f32
   tt.return %a : f32
 }
+}
+
+// Completion dependencies describe the effects of remote accesses. A load
+// before a dependency wait cannot supply the value from a later lifetime.
+#waitcse_bar = #ttg.swizzled_shared<{vec = 1, perPhase = 1, maxPhase = 1, order = [0]}>
+#waitcse_smem = #ttg.nvmma_shared<{swizzlingByteWidth = 128, transposed = false, elementBitWidth = 32}>
+#waitcse_linear = #ttg.linear<{register = [[0, 1], [0, 2], [0, 4], [0, 8], [0, 16], [0, 32], [0, 64]], lane = [[1, 0], [2, 0], [4, 0], [8, 0], [16, 0]], warp = [[32, 0], [64, 0]], block = []}>
+module attributes {"ttg.num-warps" = 4 : i32, "ttg.num-ctas" = 1 : i32, "ttg.target" = "cuda:100"} {
+  // WAITCSE-LABEL: @wait_tmem_dependency_preserves_load
+  // WAITCSE: [[BEFORE:%.+]] = ttng.tmem_load
+  // WAITCSE: ttng.wait_barrier {{.*}} deps
+  // WAITCSE: [[AFTER:%.+]] = ttng.tmem_load
+  // WAITCSE: tt.return [[BEFORE]], [[AFTER]]
+  tt.func @wait_tmem_dependency_preserves_load(%mem: !ttg.memdesc<128x128xf32, #tmem, #ttng.tensor_memory, mutable>, %bar: !ttg.memdesc<1xi64, #waitcse_bar, #smem, mutable>) -> (tensor<128x128xf32, #waitcse_linear>, tensor<128x128xf32, #waitcse_linear>) {
+    %phase = arith.constant 0 : i32
+    %before = ttng.tmem_load %mem : !ttg.memdesc<128x128xf32, #tmem, #ttng.tensor_memory, mutable> -> tensor<128x128xf32, #waitcse_linear>
+    ttng.wait_barrier %bar, %phase deps %mem : !ttg.memdesc<1xi64, #waitcse_bar, #smem, mutable>, !ttg.memdesc<128x128xf32, #tmem, #ttng.tensor_memory, mutable>
+    %after = ttng.tmem_load %mem : !ttg.memdesc<128x128xf32, #tmem, #ttng.tensor_memory, mutable> -> tensor<128x128xf32, #waitcse_linear>
+    tt.return %before, %after : tensor<128x128xf32, #waitcse_linear>, tensor<128x128xf32, #waitcse_linear>
+  }
+
+  // WAITCSE-LABEL: @wait_shared_dependency_preserves_load
+  // WAITCSE: [[BEFORE:%.+]] = ttg.local_load
+  // WAITCSE: ttng.wait_barrier {{.*}} deps
+  // WAITCSE: [[AFTER:%.+]] = ttg.local_load
+  // WAITCSE: tt.return [[BEFORE]], [[AFTER]]
+  tt.func @wait_shared_dependency_preserves_load(%mem: !ttg.memdesc<128x128xf32, #waitcse_smem, #smem, mutable>, %bar: !ttg.memdesc<1xi64, #waitcse_bar, #smem, mutable>) -> (tensor<128x128xf32, #waitcse_linear>, tensor<128x128xf32, #waitcse_linear>) {
+    %phase = arith.constant 0 : i32
+    %before = ttg.local_load %mem : !ttg.memdesc<128x128xf32, #waitcse_smem, #smem, mutable> -> tensor<128x128xf32, #waitcse_linear>
+    ttng.wait_barrier %bar, %phase deps %mem : !ttg.memdesc<1xi64, #waitcse_bar, #smem, mutable>, !ttg.memdesc<128x128xf32, #waitcse_smem, #smem, mutable>
+    %after = ttg.local_load %mem : !ttg.memdesc<128x128xf32, #waitcse_smem, #smem, mutable> -> tensor<128x128xf32, #waitcse_linear>
+    tt.return %before, %after : tensor<128x128xf32, #waitcse_linear>, tensor<128x128xf32, #waitcse_linear>
+  }
+
+  // A barrier with no TMEM effects still permits eliminating redundant loads.
+  // WAITCSE-LABEL: @wait_without_dependency_keeps_resource_precision
+  // WAITCSE: [[VALUE:%.+]] = ttng.tmem_load
+  // WAITCSE: ttng.wait_barrier
+  // WAITCSE-NOT: ttng.tmem_load
+  // WAITCSE: tt.return [[VALUE]], [[VALUE]]
+  tt.func @wait_without_dependency_keeps_resource_precision(%mem: !ttg.memdesc<128x128xf32, #tmem, #ttng.tensor_memory, mutable>, %bar: !ttg.memdesc<1xi64, #waitcse_bar, #smem, mutable>) -> (tensor<128x128xf32, #waitcse_linear>, tensor<128x128xf32, #waitcse_linear>) {
+    %phase = arith.constant 0 : i32
+    %before = ttng.tmem_load %mem : !ttg.memdesc<128x128xf32, #tmem, #ttng.tensor_memory, mutable> -> tensor<128x128xf32, #waitcse_linear>
+    ttng.wait_barrier %bar, %phase : !ttg.memdesc<1xi64, #waitcse_bar, #smem, mutable>
+    %after = ttng.tmem_load %mem : !ttg.memdesc<128x128xf32, #tmem, #ttng.tensor_memory, mutable> -> tensor<128x128xf32, #waitcse_linear>
+    tt.return %before, %after : tensor<128x128xf32, #waitcse_linear>, tensor<128x128xf32, #waitcse_linear>
+  }
 }

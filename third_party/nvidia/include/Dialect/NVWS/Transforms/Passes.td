@@ -60,6 +60,39 @@ def NVWSAssignStagePhase : Pass<"nvws-assign-stage-phase", "mlir::ModuleOp"> {
   ];
 }
 
+def NVWSScheduleArefReleases : Pass<"nvws-schedule-aref-releases", "mlir::ModuleOp"> {
+  let summary = "Schedule Aref consumer releases using checked ownership scopes.";
+  let description = [{
+    Locally hoist TMEM consumer exits across pure computations and
+    accesses protected by a separately held Aref ownership scope. The analysis
+    requires fresh, unique channel storage, balanced single-owner generations,
+    confined descriptor/token uses, and matching partition/stage/cluster metadata.
+    It recognizes implicit multi-buffer counters and canonical loop-carried PUT
+    tokens with matching initial acquire, next-token yield, and final drain.
+    TC5 MMA accesses require TC5 completion exits; GET ownership may include
+    accumulator writes. MMA issue is never treated as operand completion.
+    It never interprets an ordinary Aref exit as an exclusive publication
+    contract, never crosses another acquire/release, and preserves async kinds.
+    It never crosses an MMA issue or changes a commit group. Explicit counters,
+    conditional token merges, and unsupported async operations block motion.
+  }];
+  let dependentDialects = [
+    "mlir::triton::nvws::NVWSDialect",
+    "mlir::triton::gpu::TritonGPUDialect",
+    "mlir::triton::nvidia_gpu::TritonNvidiaGPUDialect"
+  ];
+  let statistics = [
+    Statistic<"numExamined", "examined-exits", "Number of consumer exits examined">,
+    Statistic<"numCertified", "certified-exits", "Number of exits with checked ownership scopes">,
+    Statistic<"numChannels", "certified-channels", "Number of checked closed channels">,
+    Statistic<"numMultibuffer", "multibuffer-channels", "Number of checked channels with multiple buffer generations">,
+    Statistic<"numCarried", "loop-carried-channels", "Number of checked canonical loop-carried channels">,
+    Statistic<"numMma", "mma-channels", "Number of checked channels with TC5 MMA completion">,
+    Statistic<"numMoved", "moved-exits", "Number of consumer exits moved">,
+    Statistic<"numMemoryCrossed", "crossed-memory-ops", "Number of separately protected memory operations crossed">
+  ];
+}
+
 def NVWSLowerAref : Pass<"nvws-lower-aref", "mlir::ModuleOp"> {
   let summary = "Convert nvws.aref.* to ttng.*barrier* ops.";
 

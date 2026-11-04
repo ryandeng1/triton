@@ -1,0 +1,248 @@
+{
+  "status": "complete",
+  "timestamp_utc": "2026-11-04T05:22:35.774198+00:00",
+  "objective": "Investigate and implement partial-buffer lifetime analysis enabling automatic tensor-memory storage reuse across warp-specialized producer and consumer partitions.",
+  "native_pass": "triton-nvidia-gpu-pack-tmem",
+  "backend_option": "enable_tmem_packing",
+  "python_binding": "nvidia.passes.ttnvgpuir.add_pack_tmem",
+  "default_enabled": false,
+  "gpu": "NVIDIA B300 SXM6 PC",
+  "python_environment": "/home/ryandeng/tpaa/.venv-triton-ir",
+  "semantic_facts": [
+    "Closed collective barrier protocol establishes happens-before between partitions",
+    "MMA issue and completion are distinct; matched TC5 commits and waits establish completion",
+    "All accesses to the old value in each overlapping region finish before the new allocation begins using that region",
+    "A unique unconditional MMA with use_acc=false completely initializes each logical allocation",
+    "Descriptor confinement and verified physical layout/offsets bound the shared storage footprint",
+    "Completion dependencies preserve remote memory effects through later load CSE without inventing new memory accesses for synchronization insertion or ConSan"
+  ],
+  "implementation": [
+    "Preserve all existing barriers and operation order; replace one independent TMEM allocation with a proven subslice of another",
+    "Support fresh full-row f32 buffers, widths64/128/256, blockN64/128 layouts, aligned static views, one CTA and two straightline warp partitions",
+    "Add inferred dependencies to relevant completion waits and conservative dependency memory effects",
+    "Keep completion dependency effects distinct from physically issued accesses in synchronization and sanitizer analyses"
+  ],
+  "validation": {
+    "native_build": "passed",
+    "focused_lit_files_passed": 10,
+    "packing_lit_cases": {
+      "positive": 4,
+      "negative": 10
+    },
+    "completion_cse_cases": 3,
+    "consan_dependency_regression": 1,
+    "gpu_primary_cases": 24,
+    "gpu_wider_buffer_cases": 4,
+    "gpu_case_definition": "Each shape/seed checks disabled, enabled and independently written manual reference against exact Torch output and guard regions.",
+    "timing_cases": 9,
+    "timing_rounds": 7,
+    "final_build_mode_checks": 9,
+    "final_build_ptx_matches_timing_artifacts": true,
+    "canonicalization_and_cse_retain_all_loads": true,
+    "original_gluon06_regression": {
+      "status": "passed",
+      "source": "/home/ryandeng/tpaa/triton/python/examples/gluon/06-overlapping-accumulator.py",
+      "shape": [
+        1024,
+        1024,
+        512
+      ],
+      "formats": [
+        "nvfp4",
+        "nvfp4"
+      ],
+      "triton_path": "/home/ryandeng/tpaa/triton/python/triton/__init__.py",
+      "gpu": "NVIDIA B300 SXM6 PC",
+      "atol": 0.002,
+      "rtol": 0.001,
+      "cases": [
+        {
+          "overlap": false,
+          "reference_correct": true,
+          "max_absolute_error": 0.25
+        },
+        {
+          "overlap": true,
+          "reference_correct": true,
+          "max_absolute_error": 0.25
+        }
+      ],
+      "single_overlap_bitwise_equal": true,
+      "scope": "Unmodified source regression after wait-dependency effect change; new packing pass remains disabled."
+    },
+    "git_diff_check": "passed"
+  },
+  "performance": {
+    "scope": "Controlled kernel only; same TTGIR for disabled/enabled, independent manual source reference, interleaved CUDA graph timing with synchronized setup and pre/post correctness.",
+    "results": [
+      {
+        "k": 32,
+        "logical_columns_before": 320,
+        "logical_columns_after": 256,
+        "new_buffer_offset": 192,
+        "tmem_reservation_before": 512,
+        "tmem_reservation_after": 256,
+        "registers_per_thread": 112,
+        "spills": 0,
+        "shared_bytes": 28828,
+        "timings": [
+          {
+            "ctas": 148,
+            "disabled_us": 11.205514490428921,
+            "enabled_us": 11.211899047401673,
+            "manual_us": 11.229778658717535,
+            "speedup": 0.9994305552568964
+          },
+          {
+            "ctas": 592,
+            "disabled_us": 41.66432121088064,
+            "enabled_us": 39.739765514984974,
+            "manual_us": 39.712909303862475,
+            "speedup": 1.048428964563718
+          },
+          {
+            "ctas": 2368,
+            "disabled_us": 164.80439788136403,
+            "enabled_us": 155.42629141556588,
+            "manual_us": 155.35033376593339,
+            "speedup": 1.0603379671507682
+          }
+        ]
+      },
+      {
+        "k": 64,
+        "logical_columns_before": 320,
+        "logical_columns_after": 256,
+        "new_buffer_offset": 192,
+        "tmem_reservation_before": 512,
+        "tmem_reservation_after": 256,
+        "registers_per_thread": 112,
+        "spills": 0,
+        "shared_bytes": 57500,
+        "timings": [
+          {
+            "ctas": 148,
+            "disabled_us": 12.35371236338581,
+            "enabled_us": 12.334444334468312,
+            "manual_us": 12.349162138709726,
+            "speedup": 1.0015621318962584
+          },
+          {
+            "ctas": 592,
+            "disabled_us": 48.187265947830575,
+            "enabled_us": 46.036828187679525,
+            "manual_us": 45.955194960633285,
+            "speedup": 1.0467112493368202
+          },
+          {
+            "ctas": 2368,
+            "disabled_us": 190.42699398138586,
+            "enabled_us": 178.46664290830313,
+            "manual_us": 178.47988334244596,
+            "speedup": 1.0670172917368541
+          }
+        ]
+      },
+      {
+        "k": 128,
+        "logical_columns_before": 320,
+        "logical_columns_after": 256,
+        "new_buffer_offset": 192,
+        "tmem_reservation_before": 512,
+        "tmem_reservation_after": 256,
+        "registers_per_thread": 112,
+        "spills": 0,
+        "shared_bytes": 114844,
+        "timings": [
+          {
+            "ctas": 148,
+            "disabled_us": 14.496990447158769,
+            "enabled_us": 14.486763156645479,
+            "manual_us": 14.492792581404608,
+            "speedup": 1.0007059748546105
+          },
+          {
+            "ctas": 592,
+            "disabled_us": 62.27017776875556,
+            "enabled_us": 57.07647907338877,
+            "manual_us": 57.172418385744095,
+            "speedup": 1.0909954289347237
+          },
+          {
+            "ctas": 2368,
+            "disabled_us": 242.92960088761126,
+            "enabled_us": 222.32440145392167,
+            "manual_us": 222.29177133360906,
+            "speedup": 1.09268078222156
+          }
+        ]
+      }
+    ],
+    "single_wave_result": "No material gain at148CTAs",
+    "larger_grid_result": "1.0467x\u20131.0927x over the separate-allocation baseline at592/2368CTAs; timings are close to manual overlap."
+  },
+  "real_kernel_audit": [
+    {
+      "case": "attention",
+      "unchanged": true
+    },
+    {
+      "case": "persistent_attention",
+      "unchanged": true
+    },
+    {
+      "case": "matmul",
+      "unchanged": true
+    },
+    {
+      "case": "gluon06_overlap",
+      "unchanged": true
+    }
+  ],
+  "research_findings": [
+    "Race freedom alone does not prove safe storage reuse: A.write\u2192B.write\u2192A.read is ordered but overlapping storage destroys a live A value.",
+    "Partial value lifetimes plus completion and overwrite facts enable a concrete allocation optimization even while another part of A remains live.",
+    "The corresponding memory-generation change must remain visible to ordinary compiler optimizations; otherwise CSE can incorrectly reuse a stale load."
+  ],
+  "limitations": [
+    "Experimental opt-in recognizer; one placement per two-partition straightline WS region",
+    "No loop generations, dynamic phases, conditional control flow, arbitrary layouts/dtypes, scaled MMA, or multiCTA inference",
+    "Does not synthesize synchronization or automatically recreate the complete looping two-CTA Gluon06 overlap algorithm",
+    "Captured attention, persistent attention, GEMM and original overlap IR are unchanged by the new pass; no unmodified real-kernel speedup established",
+    "Finite models, source audit and sampled GPU runs are not a general hardware correctness proof",
+    "One earlier unsynchronized benchmark run failed in the baseline. A definite missing stream handoff was repaired, but the exact initial failure cause was not reproduced or conclusively established. All reported timings come from synchronized runs validated before and after timing."
+  ],
+  "source_sha256": {
+    "/home/ryandeng/tpaa/triton/lib/Dialect/TritonNvidiaGPU/Transforms/PackTMem.cpp": "c022c2c80ee049e57fd31014d1e2f4e0e615264410b7882714123dafd0aef778",
+    "/home/ryandeng/tpaa/triton/include/triton/Dialect/TritonNvidiaGPU/Transforms/Passes.td": "f2baa25ee15b4f93ce4b40dc4c7ea771776583e2a7e0b8b0384cddbccd134e2f",
+    "/home/ryandeng/tpaa/triton/lib/Dialect/TritonNvidiaGPU/Transforms/CMakeLists.txt": "9f71c57651255cae48786c4a2d0bf1747818becfd9ca63e73f41f1abb219e659",
+    "/home/ryandeng/tpaa/triton/third_party/nvidia/triton_nvidia.cc": "1a3b0e4340d9d4f40e12c91b1844108ceb91cb5f6ae83a29c47ff5827efcff94",
+    "/home/ryandeng/tpaa/triton/third_party/nvidia/backend/compiler.py": "9c6212edab35dc156657421530dafb1962d1f76f8823c7c5587b0e87340b53e3",
+    "/home/ryandeng/tpaa/triton/include/triton/Dialect/TritonNvidiaGPU/IR/TritonNvidiaGPUOps.td": "1c7cba1a324c2deb51cadfa6f1cb790e2f7ec9366c6b66c3d3cd4af38c02c232",
+    "/home/ryandeng/tpaa/triton/lib/Dialect/TritonNvidiaGPU/IR/Ops.cpp": "943a4e7e8e1a5fff4a69e3f3668512ae9c78152a041cbdc46332192a39f8e0ec",
+    "/home/ryandeng/tpaa/triton/include/triton/Analysis/BufferRegion.h": "871629904651dff4e84d1ebff4ec2d71d4fd06ac6b846cb7c0594ea882982dcd",
+    "/home/ryandeng/tpaa/triton/lib/Analysis/BufferRegion.cpp": "28dbbb3eb2e973950fce5683fb23fc0f23d69855a0a5bdb51bca6983a36c233f",
+    "/home/ryandeng/tpaa/triton/lib/Analysis/Membar.cpp": "e806c96500de47dc680279d5857e6c2e5fd7f9fd9efd57443879a715d37dfe9d",
+    "/home/ryandeng/tpaa/triton/lib/Dialect/TritonNvidiaGPU/Transforms/ConSanNVIDIA.cpp": "e2ea770375e7c16cd1f66a864ed87b32d6b073b177bf53a6e77115f5ec49e8cf",
+    "/home/ryandeng/tpaa/triton/test/TritonNvidiaGPU/interleave_tmem.mlir": "71e8d40d64bb8d9ebd13dde23cbcf1742329291716788239f81c6cd55fba898d",
+    "/home/ryandeng/tpaa/triton/test/TritonNvidiaGPU/canonicalize.mlir": "ffe165934206f3a924cbc40256f93a0a30d4c9a8ef8c3f863281b59149136646",
+    "/home/ryandeng/tpaa/triton/test/TritonGPU/consan.mlir": "f5dab0b6e596e0533ab5651e0541d965c2c21bbcbd88cce5e1c777199dbb4550"
+  },
+  "artifacts": {
+    "gpu_results.json": "/home/ryandeng/tpaa/experiments/semantic_optimizations/partial_lifetimes/gpu_results.json",
+    "gpu_results_c128.json": "/home/ryandeng/tpaa/experiments/semantic_optimizations/partial_lifetimes/gpu_results_c128.json",
+    "final_build_check.json": "/home/ryandeng/tpaa/experiments/semantic_optimizations/partial_lifetimes/final_build_check.json",
+    "final_ir_check.json": "/home/ryandeng/tpaa/experiments/semantic_optimizations/partial_lifetimes/final_ir_check.json",
+    "real_kernel_audit.json": "/home/ryandeng/tpaa/experiments/semantic_optimizations/partial_lifetimes/real_kernel_audit.json",
+    "original_example_check.json": "/home/ryandeng/tpaa/experiments/semantic_optimizations/partial_lifetimes/original_example_check.json",
+    "audit_findings.json": "/home/ryandeng/tpaa/experiments/semantic_optimizations/partial_lifetimes/audit_findings.json",
+    "audit_ptx.json": "/home/ryandeng/tpaa/experiments/semantic_optimizations/partial_lifetimes/audit_ptx.json",
+    "audit_event_model.json": "/home/ryandeng/tpaa/experiments/semantic_optimizations/partial_lifetimes/audit_event_model.json",
+    "audit_targets.json": "/home/ryandeng/tpaa/experiments/semantic_optimizations/partial_lifetimes/audit_targets.json",
+    "manual_source_cse_diagnostic.json": "/home/ryandeng/tpaa/experiments/semantic_optimizations/partial_lifetimes/manual_source_cse_diagnostic.json",
+    "large_grid_diagnostic.json": "/home/ryandeng/tpaa/experiments/semantic_optimizations/partial_lifetimes/large_grid_diagnostic.json",
+    "stream_handoff_diagnostic.json": "/home/ryandeng/tpaa/experiments/semantic_optimizations/partial_lifetimes/stream_handoff_diagnostic.json",
+    "make_final.log": "/home/ryandeng/tpaa/experiments/semantic_optimizations/partial_lifetimes/make_final.log",
+    "lit_final.log": "/home/ryandeng/tpaa/experiments/semantic_optimizations/partial_lifetimes/lit_final.log"
+  }
+}

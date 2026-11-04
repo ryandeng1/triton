@@ -163,8 +163,9 @@ struct ThreadSyncInfo {
 };
 
 ThreadSyncInfo getThreadSyncInfo(Operation *op) {
-  // Acquires and proxy fences do not consume payload. Wait deps only keep
-  // allocations live; each thread fences its own completed accesses.
+  // Acquires and proxy fences do not consume payload. Wait deps retain remote
+  // effects for optimization and liveness, but issue no new payload access;
+  // each thread fences its own completed accesses.
   if (isa<ttng::WaitBarrierOp>(op))
     return {ThreadSyncKind::MBarrierWait};
   if (isa<ttng::FenceAsyncSharedOp>(op))

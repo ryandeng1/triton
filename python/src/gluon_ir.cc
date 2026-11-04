@@ -1091,6 +1091,20 @@ void init_gluon_ir(py::module_ &m) {
           py::arg("memDesc"), py::arg("count"), py::arg("pred"),
           (py::arg("from_cta").none() = py::none()),
           py::arg("multicast_cta") = 0)
+      .def("create_tmem_subslice_like",
+           [](GluonOpBuilder &self, Value src, int offset, int size,
+              int dim) -> Value {
+             return self.create<ttng::TMEMSubSliceOp>(src, offset, size, dim)
+                 .getResult();
+           })
+      .def("set_mbarrier_release_resources",
+           [](GluonOpBuilder &, Operation &op,
+              const std::vector<Value> &resources) {
+             auto arrive = dyn_cast<ttng::ArriveBarrierOp>(&op);
+             if (!arrive)
+               throw std::invalid_argument("expected ttng.arrive_barrier");
+             arrive.getReleaseResourcesMutable().assign(resources);
+           })
       .def(
           "create_cluster_barrier",
           [](GluonOpBuilder &self,

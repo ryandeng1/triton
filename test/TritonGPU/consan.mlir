@@ -1,6 +1,43 @@
 // RUN: triton-opt %s -split-input-file -allow-unregistered-dialect -tritoninstrument-prepare-consan-captures="target=nvidia" -tritoninstrument-concurrency-sanitizer | FileCheck %s --implicit-check-not=cluster_waiting --implicit-check-not=always_use_warp_shuffle
 // RUN: env TRITON_CONSAN_INIT_ALLOCATIONS=0 triton-opt %s -split-input-file -allow-unregistered-dialect -tritoninstrument-prepare-consan-captures="target=nvidia" -tritoninstrument-concurrency-sanitizer | FileCheck %s --check-prefix=NO-INIT
 
+// Completion dependencies describe prior remote accesses. They must not become
+// new reads or writes by the partition executing the wait.
+#wait_dep_bar = #ttg.swizzled_shared<{vec = 1, perPhase = 1, maxPhase = 1, order = [0]}>
+#wait_dep_shared = #ttg.nvmma_shared<{swizzlingByteWidth = 128, transposed = false, elementBitWidth = 32}>
+#wait_dep_tmem = #ttng.tensor_memory_encoding<blockM = 128, blockN = 128, colStride = 1>
+module attributes {"ttg.num-ctas" = 1 : i32, "ttg.num-warps" = 1 : i32, ttg.shared = 4104 : i32, ttg.target = "cuda:100", ttg.tensor_memory_size = 128 : i32, "ttg.threads-per-warp" = 32 : i32, "ttg.total-num-warps" = 1 : i32} {
+  // CHECK-LABEL: @wait_completion_dependencies_are_not_accesses
+  tt.func public @wait_completion_dependencies_are_not_accesses() {
+    %zero = arith.constant 0 : i32
+    %shared = ttg.local_alloc {allocation.offset = 0 : i32} : () -> !ttg.memdesc<32x32xf32, #wait_dep_shared, #ttg.shared_memory, mutable>
+    %tensor = ttng.tmem_alloc {tensor_memory_col_offset = 0 : i32, tensor_memory_row_offset = 0 : i32} : () -> !ttg.memdesc<128x128xf32, #wait_dep_tmem, #ttng.tensor_memory, mutable>
+    %bar = ttg.local_alloc {allocation.offset = 4096 : i32} : () -> !ttg.memdesc<1xi64, #wait_dep_bar, #ttg.shared_memory, mutable>
+    ttng.init_barrier %bar, 1 : !ttg.memdesc<1xi64, #wait_dep_bar, #ttg.shared_memory, mutable>
+    // CHECK: ttng.arrive_barrier
+    ttng.arrive_barrier %bar, 1 : !ttg.memdesc<1xi64, #wait_dep_bar, #ttg.shared_memory, mutable>
+    // CHECK-NOT: tt.call @__triton_consan_verify_write_visibility
+    // CHECK-NOT: tt.call @__triton_consan_verify_read_visibility
+    // CHECK-NOT: tt.call @__triton_consan_publish_write_visibility
+    // CHECK-NOT: tt.call @__triton_consan_set_read_visibility
+    // CHECK-NOT: tt.call @__triton_consan_track_barrier_write_for_buffer
+    // CHECK-NOT: tt.call @__triton_consan_track_barrier_read_for_buffer
+    // CHECK: ttng.wait_barrier {{.*}} deps
+    ttng.wait_barrier %bar, %zero deps %shared, %tensor : !ttg.memdesc<1xi64, #wait_dep_bar, #ttg.shared_memory, mutable>, !ttg.memdesc<32x32xf32, #wait_dep_shared, #ttg.shared_memory, mutable>, !ttg.memdesc<128x128xf32, #wait_dep_tmem, #ttng.tensor_memory, mutable>
+    // CHECK: tt.call @__triton_consan_transfer_visible_accesses
+    // CHECK-NOT: tt.call @__triton_consan_verify_write_visibility
+    // CHECK-NOT: tt.call @__triton_consan_verify_read_visibility
+    // CHECK-NOT: tt.call @__triton_consan_publish_write_visibility
+    // CHECK-NOT: tt.call @__triton_consan_set_read_visibility
+    // CHECK-NOT: tt.call @__triton_consan_track_barrier_write_for_buffer
+    // CHECK-NOT: tt.call @__triton_consan_track_barrier_read_for_buffer
+    // CHECK: tt.return
+    tt.return
+  }
+}
+
+// -----
+
 #barrier = #ttg.swizzled_shared<{vec = 1, perPhase = 1, maxPhase = 1, order = [0]}>
 #shared = #ttg.nvmma_shared<{swizzlingByteWidth = 128, transposed = false, elementBitWidth = 16}>
 #smem = #ttg.shared_memory

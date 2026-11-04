@@ -836,11 +836,16 @@ SmallVector<MemoryAccess> getMemoryAccesses(Operation *op,
     Value value = effect.getValue();
     if (!value || !isa<ttg::MemDescType>(value.getType()))
       continue;
-
+    // Completion dependencies prevent compiler motion/CSE across remote
+    // accesses. They do not issue new payload accesses in the waiting thread.
+    // Synchronization insertion and instrumentation model the acquire itself.
     std::optional<ttg::SharedKind> sharedKind;
     if (auto shared = dyn_cast<ttg::SharedMemoryEffect>(&effect))
       sharedKind = shared.getKind();
     else if (!isa<ttng::TensorMemory>(effect.getResource()))
+      continue;
+    if (isa<ttng::WaitBarrierOp>(op) &&
+        sharedKind != ttg::SharedKind::Barrier)
       continue;
     if (kind && sharedKind != kind)
       continue;

@@ -465,6 +465,32 @@ Type BarrierExpectOp::getPredicateOperandTypeLike() {
 }
 
 // -- WaitBarrierOp --
+void WaitBarrierOp::getEffects(
+    SmallVectorImpl<SideEffects::EffectInstance<MemoryEffects::Effect>>
+        &effects) {
+  effects.push_back(
+      makeShared<MemoryEffects::Read>(&getAllocMutable(), SharedKind::Barrier));
+  effects.push_back(
+      makeShared<MemoryEffects::Write>(&getAllocMutable(), SharedKind::Barrier));
+  // A completion dependency can include a remote write. Describing only the
+  // barrier's effects would let CSE replace a post-wait load with a stale load
+  // from an earlier lifetime of the same physical storage.
+  for (OpOperand &dep : getDepsMutable()) {
+    auto type = cast<MemDescType>(dep.get().getType());
+    if (isa<TensorMemorySpaceAttr>(type.getMemorySpace())) {
+      effects.emplace_back(MemoryEffects::Read::get(), &dep,
+                           TensorMemory::get());
+      effects.emplace_back(MemoryEffects::Write::get(), &dep,
+                           TensorMemory::get());
+    } else {
+      effects.push_back(
+          makeShared<MemoryEffects::Read>(&dep, SharedKind::Generic));
+      effects.push_back(
+          makeShared<MemoryEffects::Write>(&dep, SharedKind::Generic));
+    }
+  }
+}
+
 LogicalResult WaitBarrierOp::canonicalize(WaitBarrierOp op,
                                           PatternRewriter &rewriter) {
   // Dependencies keep allocations live even when the wait is predicated off.
@@ -491,6 +517,10 @@ static LogicalResult verifyBarrierCGALayout(Operation *op, Value barrier,
 
 // -- ArriveBarrierOp --
 LogicalResult ArriveBarrierOp::verify() {
+  for (Value resource : getReleaseResources())
+    if (!isa<TensorMemorySpaceAttr>(
+            cast<MemDescType>(resource.getType()).getMemorySpace()))
+      return emitOpError("release resources must be tensor-memory descriptors");
   if (getCount() < 1)
     return emitOpError("count must be greater than or equal to 1");
   if (getPerWarp() && gpu::lookupNumWarps(*this) <= 1)

@@ -191,6 +191,9 @@ void init_triton_nvidia_passes_ttnvgpuir(py::module_ &m) {
                      int32_t);
   ADD_PASS_WRAPPER_0("add_tmem_barrier_insertion",
                      ttng::createTritonNvidiaGPUTMemBarrierInsertionPass);
+  ADD_PASS_WRAPPER_0("add_schedule_tmem_releases",
+                     ttng::createTritonNvidiaGPUScheduleTMemReleasesPass);
+  ADD_PASS_WRAPPER_0("add_pack_tmem", ttng::createTritonNvidiaGPUPackTMemPass);
   ADD_PASS_WRAPPER_0("add_optimize_mbarrier_arrivals",
                      ttng::createTritonNvidiaGPUOptimizeMBarrierArrivalsPass);
   ADD_PASS_WRAPPER_0(
@@ -230,6 +233,8 @@ void init_triton_nvidia_passes_nvws(py::module_ &m) {
   ADD_PASS_WRAPPER_0("add_lower_warp_group",
                      mlir::triton::createNVWSLowerWarpGroup);
   ADD_PASS_WRAPPER_0("add_lower_aref", mlir::triton::createNVWSLowerAref);
+  ADD_PASS_WRAPPER_0("add_schedule_aref_releases",
+                     mlir::triton::createNVWSScheduleArefReleases);
   ADD_PASS_WRAPPER_0("add_assign_stage_phase",
                      mlir::triton::createNVWSAssignStagePhase);
   ADD_PASS_WRAPPER_0("add_insert_tmem_aref",
