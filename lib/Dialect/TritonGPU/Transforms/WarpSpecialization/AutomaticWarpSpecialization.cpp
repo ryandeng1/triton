@@ -114,6 +114,10 @@ void AutomaticWarpSpecialization::runOnOperation() {
   // pm.addPass(arith::createIntRangeOptimizationsPass());
   addPassWithPartitionVerifier(createSCCPPass());
   addPassWithPartitionVerifier(createCSEPass());
+  // The ownership proof needs implicit generations and partition metadata,
+  // which are no longer available after Aref lowering.
+  if (enableArefReleaseScheduling)
+    addPassWithPartitionVerifier(createNVWSScheduleArefReleases());
   addPassWithPartitionVerifier(createNVWSLowerAref({numStages}));
   pm.addPass(createTritonGPUPartitionLoops());
   pm.addPass(createNVWSLowerWarpGroup());

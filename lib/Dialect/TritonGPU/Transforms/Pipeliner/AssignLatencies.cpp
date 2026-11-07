@@ -432,7 +432,28 @@ struct AssignLatencies
     : public impl::TritonGPUAssignLatenciesBase<AssignLatencies> {
   using TritonGPUAssignLatenciesBase::TritonGPUAssignLatenciesBase;
 
-  void runOnOperation() override { assignLatencies(getOperation(), numStages); }
+  void runOnOperation() override {
+    if (forceTmemSingleBuffer) {
+      getOperation().walk([&](scf::ForOp loop) {
+        if (!loop->hasAttr(kWarpSpecializeAttrName))
+          return;
+        // Explicit latencies bypass inference. Do not reduce buffering while
+        // keeping a schedule inferred for a different buffer count. Include
+        // nested loops because Aref allocation reads the enclosing WS policy.
+        WalkResult explicitLatencies = loop.walk([&](scf::ForOp nestedLoop) {
+          return hasLatenciesAssigned(nestedLoop) ? WalkResult::interrupt()
+                                                 : WalkResult::advance();
+        });
+        if (explicitLatencies.wasInterrupted())
+          return;
+        loop->setAttr(kDisallowAccMultiBufferAttrName,
+                      UnitAttr::get(&getContext()));
+      });
+    }
+    // Apply the source-level policy before latency analysis so scheduling and
+    // Aref buffer allocation agree on the allowed accumulator overlap.
+    assignLatencies(getOperation(), numStages);
+  }
 };
 
 } // namespace mlir::triton::gpu

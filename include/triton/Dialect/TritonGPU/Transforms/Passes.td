@@ -43,7 +43,10 @@ def TritonGPUAssignLatencies : Pass<"tritongpu-assign-latencies", "mlir::ModuleO
 
   let options = [
     Option<"numStages", "num-stages", "int32_t", /*default*/"3",
-           "number of pipeline stages">
+           "number of pipeline stages">,
+    Option<"forceTmemSingleBuffer", "force-tmem-single-buffer", "bool",
+           /*default*/"false",
+           "Disallow accumulator multi-buffering on explicitly warp-specialized for loops">
   ];
 }
 
@@ -112,6 +115,9 @@ def TritonGPUAutomaticWarpSpecialization : Pass<"tritongpu-automatic-warp-specia
     the loops in the kernel and attempt to create a partition schedule, which
     if successful lowers the loop by duplicating it into `ttg.warp_specialize`
     partition regions.
+
+    Optional Aref release scheduling uses checked ownership scopes to advance
+    consumer releases before Aref lowering erases the ownership protocol.
   }];
 
   let dependentDialects = [
@@ -124,7 +130,9 @@ def TritonGPUAutomaticWarpSpecialization : Pass<"tritongpu-automatic-warp-specia
 
   let options = [
     Option<"numStages", "num-stages", "int32_t", /*default*/"3",
-           "number of pipeline stages">
+           "number of pipeline stages">,
+    Option<"enableArefReleaseScheduling", "enable-aref-release-scheduling", "bool",
+           /*default*/"false", "experimentally schedule checked Aref releases">
   ];
 }
 

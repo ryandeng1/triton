@@ -75,6 +75,9 @@ def NVWSScheduleArefReleases : Pass<"nvws-schedule-aref-releases", "mlir::Module
     contract, never crosses another acquire/release, and preserves async kinds.
     It never crosses an MMA issue or changes a commit group. Explicit counters,
     conditional token merges, and unsupported async operations block motion.
+    LLVM debug output under nvws-schedule-aref-releases explains rejected
+    ownership protocols and motion boundaries. Stop statistics count the first
+    boundary reached by each certified exit, including exits that moved.
   }];
   let dependentDialects = [
     "mlir::triton::nvws::NVWSDialect",
@@ -89,7 +92,18 @@ def NVWSScheduleArefReleases : Pass<"nvws-schedule-aref-releases", "mlir::Module
     Statistic<"numCarried", "loop-carried-channels", "Number of checked canonical loop-carried channels">,
     Statistic<"numMma", "mma-channels", "Number of checked channels with TC5 MMA completion">,
     Statistic<"numMoved", "moved-exits", "Number of consumer exits moved">,
-    Statistic<"numMemoryCrossed", "crossed-memory-ops", "Number of separately protected memory operations crossed">
+    Statistic<"numMemoryCrossed", "crossed-memory-ops", "Number of separately protected memory operations crossed">,
+    Statistic<"numPureCrossed", "crossed-pure-ops", "Number of pure operations crossed">,
+    Statistic<"numUnsupportedModules", "unsupported-modules", "Number of modules skipped because numCTAs is not one">,
+    Statistic<"numUncertified", "uncertified-exits", "Number of exits without a certified ownership scope">,
+    Statistic<"numUnpartitioned", "serial-exits", "Number of certified exits outside a partition">,
+    Statistic<"numContextStops", "context-stops", "Number of motion searches stopped by partition/stage/cluster context">,
+    Statistic<"numScopeStops", "scope-stops", "Number of motion searches stopped at the ownership segment boundary">,
+    Statistic<"numControlStops", "control-stops", "Number of motion searches stopped by a region, terminator, or call">,
+    Statistic<"numOperandStops", "operand-stops", "Number of motion searches stopped by a release operand definition">,
+    Statistic<"numOwnAccessStops", "own-access-stops", "Number of motion searches stopped by the released buffer's last access">,
+    Statistic<"numProtocolStops", "protocol-stops", "Number of motion searches stopped by an MMA issue group or ownership protocol">,
+    Statistic<"numEffectStops", "effect-stops", "Number of motion searches stopped by effects without another held scope">
   ];
 }
 

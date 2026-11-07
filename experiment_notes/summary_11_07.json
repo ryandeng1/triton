@@ -1,0 +1,3432 @@
+{
+  "date_utc": "2026-11-07T02:47:52.322217+00:00",
+  "status": "experiments_completed",
+  "conclusion": {
+    "fixed_configuration_gain_established": true,
+    "gain_over_best_screened_configuration_established": false,
+    "fixed_configuration_repeat": {
+      "shape": [
+        2,
+        8,
+        4096,
+        128
+      ],
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "median_of_per_seed_medians_us": {
+        "off": 670.8359718322754,
+        "single": 556.5119981765747
+      },
+      "speedup_from_medians": {
+        "single": 1.2054294858516725
+      },
+      "interpretation": null,
+      "all_variants_exact_equal": true
+    },
+    "best_configuration_repeat": {
+      "shape": [
+        2,
+        8,
+        4096,
+        128
+      ],
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "median_of_per_seed_medians_us": {
+        "off": 130.86800277233124,
+        "single": 198.64599406719208
+      },
+      "speedup_from_medians": {
+        "single": 0.6588001101500446
+      },
+      "interpretation": null,
+      "all_variants_exact_equal": true
+    },
+    "summary": "Single buffering helps one fixed attention tile but does not beat the best baseline among the provider configurations on this workload. Keep options disabled by default."
+  },
+  "scope": "Unchanged real Tritonbench source, fixed configurations; bypassed provider autotuning and ordinary JIT argument specialization. The screen covers the exact provider tile/stage/warp grid, not the complete live provider execution path.",
+  "environment": {
+    "torch": "2.14.1+cu130",
+    "torch_cuda": "13.0",
+    "triton": "3.9.0",
+    "triton_path": "/home/ryandeng/tpaa/triton/python/triton/__init__.py",
+    "cuda_available": true,
+    "device": "NVIDIA B300 SXM6 PC",
+    "capability": [
+      10,
+      3
+    ],
+    "target": "GPUTarget(backend='cuda', arch=103, warp_size=32)",
+    "pipeline": "any(tritongpu-automatic-warp-specialization{enable-aref-release-scheduling=true num-stages=2})"
+  },
+  "compiler_options": {
+    "enable_aref_release_scheduling": {
+      "default": false,
+      "effect": "Run existing ownership-checked pass before Aref lowering; diagnostics only modify reporting."
+    },
+    "enable_tmem_single_buffer": {
+      "default": false,
+      "effect": "Apply existing disallow_acc_multi_buffer policy before latency inference on marked Blackwell WS for loops; skip scopes with direct or nested explicit loop latencies."
+    }
+  },
+  "validation": {
+    "latest_lit_log": "real_kernel_results/2026-11-07-build/single-buffer-explicit-latency-lit.log",
+    "focused_lit_files_passed": 5,
+    "required_make_and_triton_opt_build": "passed",
+    "successful_gpu_seed_configuration_cases_including_screen_and_repeats": 81,
+    "checks": [
+      "FP32 reference",
+      "output and LSE guards",
+      "same-config exact equality",
+      "poisoned fresh outputs after timing",
+      "one/two/four-loop iteration controls"
+    ],
+    "repeat_ptx_comparisons": [
+      {
+        "initial": "attention-single-cap80",
+        "repeat": "attention-single-cap80-repeat",
+        "ptx_equal": {
+          "off": true,
+          "single": true
+        }
+      },
+      {
+        "initial": "attention-config-screen/bm128-bn128-s2-w8",
+        "repeat": "attention-screen-best-repeat",
+        "ptx_equal": {
+          "off": true,
+          "single": true
+        }
+      }
+    ]
+  },
+  "screen": {
+    "results": "real_kernel_results/attention-config-screen/sweep.json",
+    "configurations": 24,
+    "measured_pairs": 20,
+    "failed_pairs": 4,
+    "failures": "Four stage-four BN128 configurations exceed shared-memory limits in both variants; no candidate-only failures.",
+    "best_baseline": {
+      "config": {
+        "block_m": 128,
+        "block_n": 128,
+        "num_stages": 2,
+        "num_warps": 8
+      },
+      "command": [
+        "/home/ryandeng/tpaa/triton/../.venv-triton-ir/bin/python",
+        "/home/ryandeng/tpaa/triton/experiment_notes/aref_attention_experiment.py",
+        "--optimization",
+        "single-buffer",
+        "--maxnreg",
+        "80",
+        "--block-m",
+        "128",
+        "--block-n",
+        "128",
+        "--num-stages",
+        "2",
+        "--num-warps",
+        "8",
+        "--sequence",
+        "4096",
+        "--seeds",
+        "0",
+        "--rounds",
+        "5",
+        "--graph-repeats",
+        "16",
+        "--warmup-ms",
+        "200",
+        "--time-identical",
+        "--output",
+        "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/attention-config-screen/bm128-bn128-s2-w8"
+      ],
+      "results": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/attention-config-screen/bm128-bn128-s2-w8/results.json",
+      "returncode": 0,
+      "status": "measured",
+      "error": null,
+      "comparison": {
+        "single": {
+          "ttgir_equal_to_off": false,
+          "ptx_equal_to_off": false
+        }
+      },
+      "median_microseconds": {
+        "off": 131.15200400352478,
+        "single": 198.6140012741089
+      },
+      "median_speedup": {
+        "single": 0.6603361452978371
+      }
+    },
+    "best_single": {
+      "config": {
+        "block_m": 128,
+        "block_n": 128,
+        "num_stages": 2,
+        "num_warps": 8
+      },
+      "command": [
+        "/home/ryandeng/tpaa/triton/../.venv-triton-ir/bin/python",
+        "/home/ryandeng/tpaa/triton/experiment_notes/aref_attention_experiment.py",
+        "--optimization",
+        "single-buffer",
+        "--maxnreg",
+        "80",
+        "--block-m",
+        "128",
+        "--block-n",
+        "128",
+        "--num-stages",
+        "2",
+        "--num-warps",
+        "8",
+        "--sequence",
+        "4096",
+        "--seeds",
+        "0",
+        "--rounds",
+        "5",
+        "--graph-repeats",
+        "16",
+        "--warmup-ms",
+        "200",
+        "--time-identical",
+        "--output",
+        "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/attention-config-screen/bm128-bn128-s2-w8"
+      ],
+      "results": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/attention-config-screen/bm128-bn128-s2-w8/results.json",
+      "returncode": 0,
+      "status": "measured",
+      "error": null,
+      "comparison": {
+        "single": {
+          "ttgir_equal_to_off": false,
+          "ptx_equal_to_off": false
+        }
+      },
+      "median_microseconds": {
+        "off": 131.15200400352478,
+        "single": 198.6140012741089
+      },
+      "median_speedup": {
+        "single": 0.6603361452978371
+      }
+    }
+  },
+  "measurement_notes": [
+    "Timing comparisons use warmed synchronized interleaved CUDA graphs.",
+    "Identical PTX timing differences are noise controls, never compiler gains.",
+    "n_spills reports local memory bytes divided by four in this driver; it is not an executed spill-instruction count.",
+    "Hardware occupancy counters were not measured. Dynamic register redistribution prevents inferring occupancy from maxnreg alone.",
+    "Earlier blocked-environment and failed harness attempts are preserved as historical records."
+  ],
+  "next_step": "Select real kernels whose best configurations are TMEM-limited after checking shared/register/local-memory/grid constraints. Explore partial reuse that preserves double-buffer overlap; attention P/QK reuse requires coupled slot mapping and PV read-completion before overwrite.",
+  "runs": [
+    {
+      "results": "real_kernel_results/attention-bn64/results.json",
+      "status": "failed",
+      "error": "AttributeError: 'bool' object has no attribute 'shape'",
+      "failed_stage": "gpu_validation_and_timing",
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/attention-bn64",
+        "compile_only": false,
+        "arch": 100,
+        "batch": 2,
+        "heads": 8,
+        "sequence": 4096,
+        "head_dim": 128,
+        "block_m": 128,
+        "block_n": 64,
+        "num_warps": 4,
+        "num_stages": 2,
+        "maxnreg": 80,
+        "seeds": "0",
+        "rounds": 5,
+        "graph_repeats": 32,
+        "warmup_ms": 200,
+        "time_identical": false,
+        "atol": 0.01,
+        "rtol": 0.03
+      },
+      "native_library_sha256": "6d3a891180543df1fcf7659fe83596d6143c5318f28418f594ace12f5c057032",
+      "cases": 0,
+      "comparison": {
+        "aref": {
+          "ttgir_equal_to_off": true,
+          "ptx_equal_to_off": true
+        },
+        "packing": {
+          "ttgir_equal_to_off": true,
+          "ptx_equal_to_off": true
+        }
+      },
+      "resources": {
+        "off": {
+          "tmem_size": 512,
+          "shared": 99920,
+          "num_warps": 12,
+          "maxnreg": 80
+        },
+        "aref": {
+          "tmem_size": 512,
+          "shared": 99920,
+          "num_warps": 12,
+          "maxnreg": 80
+        },
+        "packing": {
+          "tmem_size": 512,
+          "shared": 99920,
+          "num_warps": 12,
+          "maxnreg": 80
+        }
+      },
+      "measurements": []
+    },
+    {
+      "results": "real_kernel_results/attention-bn64-fixed/results.json",
+      "status": "validated_identical_ptx",
+      "error": null,
+      "failed_stage": null,
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/attention-bn64-fixed",
+        "compile_only": false,
+        "arch": 100,
+        "batch": 2,
+        "heads": 8,
+        "sequence": 4096,
+        "head_dim": 128,
+        "block_m": 128,
+        "block_n": 64,
+        "num_warps": 4,
+        "num_stages": 2,
+        "maxnreg": 80,
+        "seeds": "0,1,2",
+        "rounds": 9,
+        "graph_repeats": 32,
+        "warmup_ms": 200,
+        "time_identical": false,
+        "atol": 0.01,
+        "rtol": 0.03
+      },
+      "native_library_sha256": "6d3a891180543df1fcf7659fe83596d6143c5318f28418f594ace12f5c057032",
+      "cases": 3,
+      "comparison": {
+        "aref": {
+          "ttgir_equal_to_off": true,
+          "ptx_equal_to_off": true
+        },
+        "packing": {
+          "ttgir_equal_to_off": true,
+          "ptx_equal_to_off": true
+        }
+      },
+      "resources": {
+        "off": {
+          "tmem_size": 512,
+          "shared": 99920,
+          "num_warps": 12,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 152
+        },
+        "aref": {
+          "tmem_size": 512,
+          "shared": 99920,
+          "num_warps": 12,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 152
+        },
+        "packing": {
+          "tmem_size": 512,
+          "shared": 99920,
+          "num_warps": 12,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 152
+        }
+      },
+      "measurements": [
+        {
+          "shape": [
+            2,
+            8,
+            4096,
+            128
+          ],
+          "seeds": [
+            0,
+            1,
+            2
+          ],
+          "median_of_per_seed_medians_us": {},
+          "speedup_from_medians": {},
+          "interpretation": "All generated PTX is identical; no compiler speedup established",
+          "all_variants_exact_equal": true
+        }
+      ]
+    },
+    {
+      "results": "real_kernel_results/attention-config-screen/bm128-bn128-s2-w4/results.json",
+      "status": "measured",
+      "error": null,
+      "failed_stage": null,
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/attention-config-screen/bm128-bn128-s2-w4",
+        "compile_only": false,
+        "optimization": "single-buffer",
+        "arch": 100,
+        "batch": 2,
+        "heads": 8,
+        "sequence": 4096,
+        "head_dim": 128,
+        "block_m": 128,
+        "block_n": 128,
+        "num_warps": 4,
+        "num_stages": 2,
+        "maxnreg": 80,
+        "seeds": "0",
+        "rounds": 5,
+        "graph_repeats": 16,
+        "warmup_ms": 200.0,
+        "time_identical": true,
+        "atol": 0.01,
+        "rtol": 0.03
+      },
+      "native_library_sha256": "ccb5dc2895ba5eb7042c729fbfb3f4f62ccb8ae209872a59db2e65d579a93429",
+      "cases": 1,
+      "comparison": {
+        "single": {
+          "ttgir_equal_to_off": false,
+          "ptx_equal_to_off": false
+        }
+      },
+      "resources": {
+        "off": {
+          "tmem_size": 512,
+          "shared": 165456,
+          "num_warps": 12,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 214
+        },
+        "single": {
+          "tmem_size": 512,
+          "shared": 165456,
+          "num_warps": 12,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 208
+        }
+      },
+      "measurements": [
+        {
+          "shape": [
+            2,
+            8,
+            4096,
+            128
+          ],
+          "seeds": [
+            0
+          ],
+          "median_of_per_seed_medians_us": {
+            "off": 505.36400079727173,
+            "single": 648.1339931488037
+          },
+          "speedup_from_medians": {
+            "single": 0.7797214868210843
+          },
+          "interpretation": null,
+          "all_variants_exact_equal": true
+        }
+      ]
+    },
+    {
+      "results": "real_kernel_results/attention-config-screen/bm128-bn128-s2-w8/results.json",
+      "status": "measured",
+      "error": null,
+      "failed_stage": null,
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/attention-config-screen/bm128-bn128-s2-w8",
+        "compile_only": false,
+        "optimization": "single-buffer",
+        "arch": 100,
+        "batch": 2,
+        "heads": 8,
+        "sequence": 4096,
+        "head_dim": 128,
+        "block_m": 128,
+        "block_n": 128,
+        "num_warps": 8,
+        "num_stages": 2,
+        "maxnreg": 80,
+        "seeds": "0",
+        "rounds": 5,
+        "graph_repeats": 16,
+        "warmup_ms": 200.0,
+        "time_identical": true,
+        "atol": 0.01,
+        "rtol": 0.03
+      },
+      "native_library_sha256": "ccb5dc2895ba5eb7042c729fbfb3f4f62ccb8ae209872a59db2e65d579a93429",
+      "cases": 1,
+      "comparison": {
+        "single": {
+          "ttgir_equal_to_off": false,
+          "ptx_equal_to_off": false
+        }
+      },
+      "resources": {
+        "off": {
+          "tmem_size": 512,
+          "shared": 165608,
+          "num_warps": 20,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 10
+        },
+        "single": {
+          "tmem_size": 512,
+          "shared": 165608,
+          "num_warps": 20,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 12
+        }
+      },
+      "measurements": [
+        {
+          "shape": [
+            2,
+            8,
+            4096,
+            128
+          ],
+          "seeds": [
+            0
+          ],
+          "median_of_per_seed_medians_us": {
+            "off": 131.15200400352478,
+            "single": 198.6140012741089
+          },
+          "speedup_from_medians": {
+            "single": 0.6603361452978371
+          },
+          "interpretation": null,
+          "all_variants_exact_equal": true
+        }
+      ]
+    },
+    {
+      "results": "real_kernel_results/attention-config-screen/bm128-bn128-s3-w4/results.json",
+      "status": "measured",
+      "error": null,
+      "failed_stage": null,
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/attention-config-screen/bm128-bn128-s3-w4",
+        "compile_only": false,
+        "optimization": "single-buffer",
+        "arch": 100,
+        "batch": 2,
+        "heads": 8,
+        "sequence": 4096,
+        "head_dim": 128,
+        "block_m": 128,
+        "block_n": 128,
+        "num_warps": 4,
+        "num_stages": 3,
+        "maxnreg": 80,
+        "seeds": "0",
+        "rounds": 5,
+        "graph_repeats": 16,
+        "warmup_ms": 200.0,
+        "time_identical": true,
+        "atol": 0.01,
+        "rtol": 0.03
+      },
+      "native_library_sha256": "ccb5dc2895ba5eb7042c729fbfb3f4f62ccb8ae209872a59db2e65d579a93429",
+      "cases": 1,
+      "comparison": {
+        "single": {
+          "ttgir_equal_to_off": false,
+          "ptx_equal_to_off": false
+        }
+      },
+      "resources": {
+        "off": {
+          "tmem_size": 512,
+          "shared": 231056,
+          "num_warps": 12,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 214
+        },
+        "single": {
+          "tmem_size": 512,
+          "shared": 231056,
+          "num_warps": 12,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 208
+        }
+      },
+      "measurements": [
+        {
+          "shape": [
+            2,
+            8,
+            4096,
+            128
+          ],
+          "seeds": [
+            0
+          ],
+          "median_of_per_seed_medians_us": {
+            "off": 508.6960196495056,
+            "single": 648.3539938926697
+          },
+          "speedup_from_medians": {
+            "single": 0.7845961071286569
+          },
+          "interpretation": null,
+          "all_variants_exact_equal": true
+        }
+      ]
+    },
+    {
+      "results": "real_kernel_results/attention-config-screen/bm128-bn128-s3-w8/results.json",
+      "status": "measured",
+      "error": null,
+      "failed_stage": null,
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/attention-config-screen/bm128-bn128-s3-w8",
+        "compile_only": false,
+        "optimization": "single-buffer",
+        "arch": 100,
+        "batch": 2,
+        "heads": 8,
+        "sequence": 4096,
+        "head_dim": 128,
+        "block_m": 128,
+        "block_n": 128,
+        "num_warps": 8,
+        "num_stages": 3,
+        "maxnreg": 80,
+        "seeds": "0",
+        "rounds": 5,
+        "graph_repeats": 16,
+        "warmup_ms": 200.0,
+        "time_identical": true,
+        "atol": 0.01,
+        "rtol": 0.03
+      },
+      "native_library_sha256": "ccb5dc2895ba5eb7042c729fbfb3f4f62ccb8ae209872a59db2e65d579a93429",
+      "cases": 1,
+      "comparison": {
+        "single": {
+          "ttgir_equal_to_off": false,
+          "ptx_equal_to_off": false
+        }
+      },
+      "resources": {
+        "off": {
+          "tmem_size": 512,
+          "shared": 231208,
+          "num_warps": 20,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 10
+        },
+        "single": {
+          "tmem_size": 512,
+          "shared": 231208,
+          "num_warps": 20,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 12
+        }
+      },
+      "measurements": [
+        {
+          "shape": [
+            2,
+            8,
+            4096,
+            128
+          ],
+          "seeds": [
+            0
+          ],
+          "median_of_per_seed_medians_us": {
+            "off": 132.62799382209778,
+            "single": 199.12999868392944
+          },
+          "speedup_from_medians": {
+            "single": 0.6660372354675327
+          },
+          "interpretation": null,
+          "all_variants_exact_equal": true
+        }
+      ]
+    },
+    {
+      "results": "real_kernel_results/attention-config-screen/bm128-bn128-s4-w4/results.json",
+      "status": "failed",
+      "error": "OutOfResources: out of resource: shared memory, Required: 296592, Hardware limit: 232448. Reducing block sizes or `num_stages` may help.",
+      "failed_stage": "gpu_validation_and_timing",
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/attention-config-screen/bm128-bn128-s4-w4",
+        "compile_only": false,
+        "optimization": "single-buffer",
+        "arch": 100,
+        "batch": 2,
+        "heads": 8,
+        "sequence": 4096,
+        "head_dim": 128,
+        "block_m": 128,
+        "block_n": 128,
+        "num_warps": 4,
+        "num_stages": 4,
+        "maxnreg": 80,
+        "seeds": "0",
+        "rounds": 5,
+        "graph_repeats": 16,
+        "warmup_ms": 200.0,
+        "time_identical": true,
+        "atol": 0.01,
+        "rtol": 0.03
+      },
+      "native_library_sha256": "ccb5dc2895ba5eb7042c729fbfb3f4f62ccb8ae209872a59db2e65d579a93429",
+      "cases": 0,
+      "comparison": {
+        "single": {
+          "ttgir_equal_to_off": false,
+          "ptx_equal_to_off": false
+        }
+      },
+      "resources": {
+        "off": {
+          "tmem_size": 512,
+          "shared": 296592,
+          "num_warps": 12,
+          "maxnreg": 80
+        },
+        "single": {
+          "tmem_size": 512,
+          "shared": 296592,
+          "num_warps": 12,
+          "maxnreg": 80
+        }
+      },
+      "measurements": []
+    },
+    {
+      "results": "real_kernel_results/attention-config-screen/bm128-bn128-s4-w8/results.json",
+      "status": "failed",
+      "error": "OutOfResources: out of resource: shared memory, Required: 296744, Hardware limit: 232448. Reducing block sizes or `num_stages` may help.",
+      "failed_stage": "gpu_validation_and_timing",
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/attention-config-screen/bm128-bn128-s4-w8",
+        "compile_only": false,
+        "optimization": "single-buffer",
+        "arch": 100,
+        "batch": 2,
+        "heads": 8,
+        "sequence": 4096,
+        "head_dim": 128,
+        "block_m": 128,
+        "block_n": 128,
+        "num_warps": 8,
+        "num_stages": 4,
+        "maxnreg": 80,
+        "seeds": "0",
+        "rounds": 5,
+        "graph_repeats": 16,
+        "warmup_ms": 200.0,
+        "time_identical": true,
+        "atol": 0.01,
+        "rtol": 0.03
+      },
+      "native_library_sha256": "ccb5dc2895ba5eb7042c729fbfb3f4f62ccb8ae209872a59db2e65d579a93429",
+      "cases": 0,
+      "comparison": {
+        "single": {
+          "ttgir_equal_to_off": false,
+          "ptx_equal_to_off": false
+        }
+      },
+      "resources": {
+        "off": {
+          "tmem_size": 512,
+          "shared": 296744,
+          "num_warps": 20,
+          "maxnreg": 80
+        },
+        "single": {
+          "tmem_size": 512,
+          "shared": 296744,
+          "num_warps": 20,
+          "maxnreg": 80
+        }
+      },
+      "measurements": []
+    },
+    {
+      "results": "real_kernel_results/attention-config-screen/bm128-bn64-s2-w4/results.json",
+      "status": "measured",
+      "error": null,
+      "failed_stage": null,
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/attention-config-screen/bm128-bn64-s2-w4",
+        "compile_only": false,
+        "optimization": "single-buffer",
+        "arch": 100,
+        "batch": 2,
+        "heads": 8,
+        "sequence": 4096,
+        "head_dim": 128,
+        "block_m": 128,
+        "block_n": 64,
+        "num_warps": 4,
+        "num_stages": 2,
+        "maxnreg": 80,
+        "seeds": "0",
+        "rounds": 5,
+        "graph_repeats": 16,
+        "warmup_ms": 200.0,
+        "time_identical": true,
+        "atol": 0.01,
+        "rtol": 0.03
+      },
+      "native_library_sha256": "ccb5dc2895ba5eb7042c729fbfb3f4f62ccb8ae209872a59db2e65d579a93429",
+      "cases": 1,
+      "comparison": {
+        "single": {
+          "ttgir_equal_to_off": false,
+          "ptx_equal_to_off": false
+        }
+      },
+      "resources": {
+        "off": {
+          "tmem_size": 512,
+          "shared": 99920,
+          "num_warps": 12,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 152
+        },
+        "single": {
+          "tmem_size": 256,
+          "shared": 99920,
+          "num_warps": 12,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 152
+        }
+      },
+      "measurements": [
+        {
+          "shape": [
+            2,
+            8,
+            4096,
+            128
+          ],
+          "seeds": [
+            0
+          ],
+          "median_of_per_seed_medians_us": {
+            "off": 671.2520122528076,
+            "single": 556.5800070762634
+          },
+          "speedup_from_medians": {
+            "single": 1.2060296879489452
+          },
+          "interpretation": null,
+          "all_variants_exact_equal": true
+        }
+      ]
+    },
+    {
+      "results": "real_kernel_results/attention-config-screen/bm128-bn64-s2-w8/results.json",
+      "status": "measured",
+      "error": null,
+      "failed_stage": null,
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/attention-config-screen/bm128-bn64-s2-w8",
+        "compile_only": false,
+        "optimization": "single-buffer",
+        "arch": 100,
+        "batch": 2,
+        "heads": 8,
+        "sequence": 4096,
+        "head_dim": 128,
+        "block_m": 128,
+        "block_n": 64,
+        "num_warps": 8,
+        "num_stages": 2,
+        "maxnreg": 80,
+        "seeds": "0",
+        "rounds": 5,
+        "graph_repeats": 16,
+        "warmup_ms": 200.0,
+        "time_identical": true,
+        "atol": 0.01,
+        "rtol": 0.03
+      },
+      "native_library_sha256": "ccb5dc2895ba5eb7042c729fbfb3f4f62ccb8ae209872a59db2e65d579a93429",
+      "cases": 1,
+      "comparison": {
+        "single": {
+          "ttgir_equal_to_off": false,
+          "ptx_equal_to_off": false
+        }
+      },
+      "resources": {
+        "off": {
+          "tmem_size": 512,
+          "shared": 100072,
+          "num_warps": 20,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 0
+        },
+        "single": {
+          "tmem_size": 256,
+          "shared": 100072,
+          "num_warps": 20,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 0
+        }
+      },
+      "measurements": [
+        {
+          "shape": [
+            2,
+            8,
+            4096,
+            128
+          ],
+          "seeds": [
+            0
+          ],
+          "median_of_per_seed_medians_us": {
+            "off": 179.02199923992157,
+            "single": 257.92598724365234
+          },
+          "speedup_from_medians": {
+            "single": 0.6940828303229742
+          },
+          "interpretation": null,
+          "all_variants_exact_equal": true
+        }
+      ]
+    },
+    {
+      "results": "real_kernel_results/attention-config-screen/bm128-bn64-s3-w4/results.json",
+      "status": "measured",
+      "error": null,
+      "failed_stage": null,
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/attention-config-screen/bm128-bn64-s3-w4",
+        "compile_only": false,
+        "optimization": "single-buffer",
+        "arch": 100,
+        "batch": 2,
+        "heads": 8,
+        "sequence": 4096,
+        "head_dim": 128,
+        "block_m": 128,
+        "block_n": 64,
+        "num_warps": 4,
+        "num_stages": 3,
+        "maxnreg": 80,
+        "seeds": "0",
+        "rounds": 5,
+        "graph_repeats": 16,
+        "warmup_ms": 200.0,
+        "time_identical": true,
+        "atol": 0.01,
+        "rtol": 0.03
+      },
+      "native_library_sha256": "ccb5dc2895ba5eb7042c729fbfb3f4f62ccb8ae209872a59db2e65d579a93429",
+      "cases": 1,
+      "comparison": {
+        "single": {
+          "ttgir_equal_to_off": false,
+          "ptx_equal_to_off": false
+        }
+      },
+      "resources": {
+        "off": {
+          "tmem_size": 512,
+          "shared": 132752,
+          "num_warps": 12,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 152
+        },
+        "single": {
+          "tmem_size": 256,
+          "shared": 132752,
+          "num_warps": 12,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 152
+        }
+      },
+      "measurements": [
+        {
+          "shape": [
+            2,
+            8,
+            4096,
+            128
+          ],
+          "seeds": [
+            0
+          ],
+          "median_of_per_seed_medians_us": {
+            "off": 673.3880043029785,
+            "single": 738.8619780540466
+          },
+          "speedup_from_medians": {
+            "single": 0.911385379548819
+          },
+          "interpretation": null,
+          "all_variants_exact_equal": true
+        }
+      ]
+    },
+    {
+      "results": "real_kernel_results/attention-config-screen/bm128-bn64-s3-w8/results.json",
+      "status": "measured",
+      "error": null,
+      "failed_stage": null,
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/attention-config-screen/bm128-bn64-s3-w8",
+        "compile_only": false,
+        "optimization": "single-buffer",
+        "arch": 100,
+        "batch": 2,
+        "heads": 8,
+        "sequence": 4096,
+        "head_dim": 128,
+        "block_m": 128,
+        "block_n": 64,
+        "num_warps": 8,
+        "num_stages": 3,
+        "maxnreg": 80,
+        "seeds": "0",
+        "rounds": 5,
+        "graph_repeats": 16,
+        "warmup_ms": 200.0,
+        "time_identical": true,
+        "atol": 0.01,
+        "rtol": 0.03
+      },
+      "native_library_sha256": "ccb5dc2895ba5eb7042c729fbfb3f4f62ccb8ae209872a59db2e65d579a93429",
+      "cases": 1,
+      "comparison": {
+        "single": {
+          "ttgir_equal_to_off": false,
+          "ptx_equal_to_off": false
+        }
+      },
+      "resources": {
+        "off": {
+          "tmem_size": 512,
+          "shared": 132904,
+          "num_warps": 20,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 0
+        },
+        "single": {
+          "tmem_size": 256,
+          "shared": 132904,
+          "num_warps": 20,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 0
+        }
+      },
+      "measurements": [
+        {
+          "shape": [
+            2,
+            8,
+            4096,
+            128
+          ],
+          "seeds": [
+            0
+          ],
+          "median_of_per_seed_medians_us": {
+            "off": 166.41399264335632,
+            "single": 256.8899989128113
+          },
+          "speedup_from_medians": {
+            "single": 0.6478025355118531
+          },
+          "interpretation": null,
+          "all_variants_exact_equal": true
+        }
+      ]
+    },
+    {
+      "results": "real_kernel_results/attention-config-screen/bm128-bn64-s4-w4/results.json",
+      "status": "measured",
+      "error": null,
+      "failed_stage": null,
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/attention-config-screen/bm128-bn64-s4-w4",
+        "compile_only": false,
+        "optimization": "single-buffer",
+        "arch": 100,
+        "batch": 2,
+        "heads": 8,
+        "sequence": 4096,
+        "head_dim": 128,
+        "block_m": 128,
+        "block_n": 64,
+        "num_warps": 4,
+        "num_stages": 4,
+        "maxnreg": 80,
+        "seeds": "0",
+        "rounds": 5,
+        "graph_repeats": 16,
+        "warmup_ms": 200.0,
+        "time_identical": true,
+        "atol": 0.01,
+        "rtol": 0.03
+      },
+      "native_library_sha256": "ccb5dc2895ba5eb7042c729fbfb3f4f62ccb8ae209872a59db2e65d579a93429",
+      "cases": 1,
+      "comparison": {
+        "single": {
+          "ttgir_equal_to_off": false,
+          "ptx_equal_to_off": false
+        }
+      },
+      "resources": {
+        "off": {
+          "tmem_size": 512,
+          "shared": 165520,
+          "num_warps": 12,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 152
+        },
+        "single": {
+          "tmem_size": 256,
+          "shared": 165520,
+          "num_warps": 12,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 152
+        }
+      },
+      "measurements": [
+        {
+          "shape": [
+            2,
+            8,
+            4096,
+            128
+          ],
+          "seeds": [
+            0
+          ],
+          "median_of_per_seed_medians_us": {
+            "off": 678.521990776062,
+            "single": 738.6159896850586
+          },
+          "speedup_from_medians": {
+            "single": 0.9186397265314818
+          },
+          "interpretation": null,
+          "all_variants_exact_equal": true
+        }
+      ]
+    },
+    {
+      "results": "real_kernel_results/attention-config-screen/bm128-bn64-s4-w8/results.json",
+      "status": "measured",
+      "error": null,
+      "failed_stage": null,
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/attention-config-screen/bm128-bn64-s4-w8",
+        "compile_only": false,
+        "optimization": "single-buffer",
+        "arch": 100,
+        "batch": 2,
+        "heads": 8,
+        "sequence": 4096,
+        "head_dim": 128,
+        "block_m": 128,
+        "block_n": 64,
+        "num_warps": 8,
+        "num_stages": 4,
+        "maxnreg": 80,
+        "seeds": "0",
+        "rounds": 5,
+        "graph_repeats": 16,
+        "warmup_ms": 200.0,
+        "time_identical": true,
+        "atol": 0.01,
+        "rtol": 0.03
+      },
+      "native_library_sha256": "ccb5dc2895ba5eb7042c729fbfb3f4f62ccb8ae209872a59db2e65d579a93429",
+      "cases": 1,
+      "comparison": {
+        "single": {
+          "ttgir_equal_to_off": false,
+          "ptx_equal_to_off": false
+        }
+      },
+      "resources": {
+        "off": {
+          "tmem_size": 512,
+          "shared": 165672,
+          "num_warps": 20,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 0
+        },
+        "single": {
+          "tmem_size": 256,
+          "shared": 165672,
+          "num_warps": 20,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 0
+        }
+      },
+      "measurements": [
+        {
+          "shape": [
+            2,
+            8,
+            4096,
+            128
+          ],
+          "seeds": [
+            0
+          ],
+          "median_of_per_seed_medians_us": {
+            "off": 169.93999481201172,
+            "single": 257.4400007724762
+          },
+          "speedup_from_medians": {
+            "single": 0.6601149561143903
+          },
+          "interpretation": null,
+          "all_variants_exact_equal": true
+        }
+      ]
+    },
+    {
+      "results": "real_kernel_results/attention-config-screen/bm64-bn128-s2-w4/results.json",
+      "status": "measured",
+      "error": null,
+      "failed_stage": null,
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/attention-config-screen/bm64-bn128-s2-w4",
+        "compile_only": false,
+        "optimization": "single-buffer",
+        "arch": 100,
+        "batch": 2,
+        "heads": 8,
+        "sequence": 4096,
+        "head_dim": 128,
+        "block_m": 64,
+        "block_n": 128,
+        "num_warps": 4,
+        "num_stages": 2,
+        "maxnreg": 80,
+        "seeds": "0",
+        "rounds": 5,
+        "graph_repeats": 16,
+        "warmup_ms": 200.0,
+        "time_identical": true,
+        "atol": 0.01,
+        "rtol": 0.03
+      },
+      "native_library_sha256": "ccb5dc2895ba5eb7042c729fbfb3f4f62ccb8ae209872a59db2e65d579a93429",
+      "cases": 1,
+      "comparison": {
+        "single": {
+          "ttgir_equal_to_off": false,
+          "ptx_equal_to_off": false
+        }
+      },
+      "resources": {
+        "off": {
+          "tmem_size": 256,
+          "shared": 148560,
+          "num_warps": 12,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 0
+        },
+        "single": {
+          "tmem_size": 256,
+          "shared": 148560,
+          "num_warps": 12,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 0
+        }
+      },
+      "measurements": [
+        {
+          "shape": [
+            2,
+            8,
+            4096,
+            128
+          ],
+          "seeds": [
+            0
+          ],
+          "median_of_per_seed_medians_us": {
+            "off": 183.46400558948517,
+            "single": 279.34399247169495
+          },
+          "speedup_from_medians": {
+            "single": 0.6567673210587301
+          },
+          "interpretation": null,
+          "all_variants_exact_equal": true
+        }
+      ]
+    },
+    {
+      "results": "real_kernel_results/attention-config-screen/bm64-bn128-s2-w8/results.json",
+      "status": "measured",
+      "error": null,
+      "failed_stage": null,
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/attention-config-screen/bm64-bn128-s2-w8",
+        "compile_only": false,
+        "optimization": "single-buffer",
+        "arch": 100,
+        "batch": 2,
+        "heads": 8,
+        "sequence": 4096,
+        "head_dim": 128,
+        "block_m": 64,
+        "block_n": 128,
+        "num_warps": 8,
+        "num_stages": 2,
+        "maxnreg": 80,
+        "seeds": "0",
+        "rounds": 5,
+        "graph_repeats": 16,
+        "warmup_ms": 200.0,
+        "time_identical": true,
+        "atol": 0.01,
+        "rtol": 0.03
+      },
+      "native_library_sha256": "ccb5dc2895ba5eb7042c729fbfb3f4f62ccb8ae209872a59db2e65d579a93429",
+      "cases": 1,
+      "comparison": {
+        "single": {
+          "ttgir_equal_to_off": false,
+          "ptx_equal_to_off": false
+        }
+      },
+      "resources": {
+        "off": {
+          "tmem_size": 256,
+          "shared": 148704,
+          "num_warps": 16,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 162
+        },
+        "single": {
+          "tmem_size": 256,
+          "shared": 148704,
+          "num_warps": 16,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 162
+        }
+      },
+      "measurements": [
+        {
+          "shape": [
+            2,
+            8,
+            4096,
+            128
+          ],
+          "seeds": [
+            0
+          ],
+          "median_of_per_seed_medians_us": {
+            "off": 642.4059867858887,
+            "single": 738.8579845428467
+          },
+          "speedup_from_medians": {
+            "single": 0.869458001707005
+          },
+          "interpretation": null,
+          "all_variants_exact_equal": true
+        }
+      ]
+    },
+    {
+      "results": "real_kernel_results/attention-config-screen/bm64-bn128-s3-w4/results.json",
+      "status": "measured",
+      "error": null,
+      "failed_stage": null,
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/attention-config-screen/bm64-bn128-s3-w4",
+        "compile_only": false,
+        "optimization": "single-buffer",
+        "arch": 100,
+        "batch": 2,
+        "heads": 8,
+        "sequence": 4096,
+        "head_dim": 128,
+        "block_m": 64,
+        "block_n": 128,
+        "num_warps": 4,
+        "num_stages": 3,
+        "maxnreg": 80,
+        "seeds": "0",
+        "rounds": 5,
+        "graph_repeats": 16,
+        "warmup_ms": 200.0,
+        "time_identical": true,
+        "atol": 0.01,
+        "rtol": 0.03
+      },
+      "native_library_sha256": "ccb5dc2895ba5eb7042c729fbfb3f4f62ccb8ae209872a59db2e65d579a93429",
+      "cases": 1,
+      "comparison": {
+        "single": {
+          "ttgir_equal_to_off": false,
+          "ptx_equal_to_off": false
+        }
+      },
+      "resources": {
+        "off": {
+          "tmem_size": 256,
+          "shared": 214160,
+          "num_warps": 12,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 0
+        },
+        "single": {
+          "tmem_size": 256,
+          "shared": 214160,
+          "num_warps": 12,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 0
+        }
+      },
+      "measurements": [
+        {
+          "shape": [
+            2,
+            8,
+            4096,
+            128
+          ],
+          "seeds": [
+            0
+          ],
+          "median_of_per_seed_medians_us": {
+            "off": 184.62400138378143,
+            "single": 279.6260118484497
+          },
+          "speedup_from_medians": {
+            "single": 0.6602533153598136
+          },
+          "interpretation": null,
+          "all_variants_exact_equal": true
+        }
+      ]
+    },
+    {
+      "results": "real_kernel_results/attention-config-screen/bm64-bn128-s3-w8/results.json",
+      "status": "measured",
+      "error": null,
+      "failed_stage": null,
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/attention-config-screen/bm64-bn128-s3-w8",
+        "compile_only": false,
+        "optimization": "single-buffer",
+        "arch": 100,
+        "batch": 2,
+        "heads": 8,
+        "sequence": 4096,
+        "head_dim": 128,
+        "block_m": 64,
+        "block_n": 128,
+        "num_warps": 8,
+        "num_stages": 3,
+        "maxnreg": 80,
+        "seeds": "0",
+        "rounds": 5,
+        "graph_repeats": 16,
+        "warmup_ms": 200.0,
+        "time_identical": true,
+        "atol": 0.01,
+        "rtol": 0.03
+      },
+      "native_library_sha256": "ccb5dc2895ba5eb7042c729fbfb3f4f62ccb8ae209872a59db2e65d579a93429",
+      "cases": 1,
+      "comparison": {
+        "single": {
+          "ttgir_equal_to_off": false,
+          "ptx_equal_to_off": false
+        }
+      },
+      "resources": {
+        "off": {
+          "tmem_size": 256,
+          "shared": 214304,
+          "num_warps": 16,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 162
+        },
+        "single": {
+          "tmem_size": 256,
+          "shared": 214304,
+          "num_warps": 16,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 162
+        }
+      },
+      "measurements": [
+        {
+          "shape": [
+            2,
+            8,
+            4096,
+            128
+          ],
+          "seeds": [
+            0
+          ],
+          "median_of_per_seed_medians_us": {
+            "off": 652.7720093727112,
+            "single": 738.4099960327148
+          },
+          "speedup_from_medians": {
+            "single": 0.8840237982690994
+          },
+          "interpretation": null,
+          "all_variants_exact_equal": true
+        }
+      ]
+    },
+    {
+      "results": "real_kernel_results/attention-config-screen/bm64-bn128-s4-w4/results.json",
+      "status": "failed",
+      "error": "OutOfResources: out of resource: shared memory, Required: 279696, Hardware limit: 232448. Reducing block sizes or `num_stages` may help.",
+      "failed_stage": "gpu_validation_and_timing",
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/attention-config-screen/bm64-bn128-s4-w4",
+        "compile_only": false,
+        "optimization": "single-buffer",
+        "arch": 100,
+        "batch": 2,
+        "heads": 8,
+        "sequence": 4096,
+        "head_dim": 128,
+        "block_m": 64,
+        "block_n": 128,
+        "num_warps": 4,
+        "num_stages": 4,
+        "maxnreg": 80,
+        "seeds": "0",
+        "rounds": 5,
+        "graph_repeats": 16,
+        "warmup_ms": 200.0,
+        "time_identical": true,
+        "atol": 0.01,
+        "rtol": 0.03
+      },
+      "native_library_sha256": "ccb5dc2895ba5eb7042c729fbfb3f4f62ccb8ae209872a59db2e65d579a93429",
+      "cases": 0,
+      "comparison": {
+        "single": {
+          "ttgir_equal_to_off": false,
+          "ptx_equal_to_off": false
+        }
+      },
+      "resources": {
+        "off": {
+          "tmem_size": 256,
+          "shared": 279696,
+          "num_warps": 12,
+          "maxnreg": 80
+        },
+        "single": {
+          "tmem_size": 256,
+          "shared": 279696,
+          "num_warps": 12,
+          "maxnreg": 80
+        }
+      },
+      "measurements": []
+    },
+    {
+      "results": "real_kernel_results/attention-config-screen/bm64-bn128-s4-w8/results.json",
+      "status": "failed",
+      "error": "OutOfResources: out of resource: shared memory, Required: 279840, Hardware limit: 232448. Reducing block sizes or `num_stages` may help.",
+      "failed_stage": "gpu_validation_and_timing",
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/attention-config-screen/bm64-bn128-s4-w8",
+        "compile_only": false,
+        "optimization": "single-buffer",
+        "arch": 100,
+        "batch": 2,
+        "heads": 8,
+        "sequence": 4096,
+        "head_dim": 128,
+        "block_m": 64,
+        "block_n": 128,
+        "num_warps": 8,
+        "num_stages": 4,
+        "maxnreg": 80,
+        "seeds": "0",
+        "rounds": 5,
+        "graph_repeats": 16,
+        "warmup_ms": 200.0,
+        "time_identical": true,
+        "atol": 0.01,
+        "rtol": 0.03
+      },
+      "native_library_sha256": "ccb5dc2895ba5eb7042c729fbfb3f4f62ccb8ae209872a59db2e65d579a93429",
+      "cases": 0,
+      "comparison": {
+        "single": {
+          "ttgir_equal_to_off": false,
+          "ptx_equal_to_off": false
+        }
+      },
+      "resources": {
+        "off": {
+          "tmem_size": 256,
+          "shared": 279840,
+          "num_warps": 16,
+          "maxnreg": 80
+        },
+        "single": {
+          "tmem_size": 256,
+          "shared": 279840,
+          "num_warps": 16,
+          "maxnreg": 80
+        }
+      },
+      "measurements": []
+    },
+    {
+      "results": "real_kernel_results/attention-config-screen/bm64-bn64-s2-w4/results.json",
+      "status": "measured",
+      "error": null,
+      "failed_stage": null,
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/attention-config-screen/bm64-bn64-s2-w4",
+        "compile_only": false,
+        "optimization": "single-buffer",
+        "arch": 100,
+        "batch": 2,
+        "heads": 8,
+        "sequence": 4096,
+        "head_dim": 128,
+        "block_m": 64,
+        "block_n": 64,
+        "num_warps": 4,
+        "num_stages": 2,
+        "maxnreg": 80,
+        "seeds": "0",
+        "rounds": 5,
+        "graph_repeats": 16,
+        "warmup_ms": 200.0,
+        "time_identical": true,
+        "atol": 0.01,
+        "rtol": 0.03
+      },
+      "native_library_sha256": "ccb5dc2895ba5eb7042c729fbfb3f4f62ccb8ae209872a59db2e65d579a93429",
+      "cases": 1,
+      "comparison": {
+        "single": {
+          "ttgir_equal_to_off": false,
+          "ptx_equal_to_off": false
+        }
+      },
+      "resources": {
+        "off": {
+          "tmem_size": 256,
+          "shared": 83024,
+          "num_warps": 12,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 0
+        },
+        "single": {
+          "tmem_size": 256,
+          "shared": 83024,
+          "num_warps": 12,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 0
+        }
+      },
+      "measurements": [
+        {
+          "shape": [
+            2,
+            8,
+            4096,
+            128
+          ],
+          "seeds": [
+            0
+          ],
+          "median_of_per_seed_medians_us": {
+            "off": 175.2219945192337,
+            "single": 223.5579937696457
+          },
+          "speedup_from_medians": {
+            "single": 0.783787649748649
+          },
+          "interpretation": null,
+          "all_variants_exact_equal": true
+        }
+      ]
+    },
+    {
+      "results": "real_kernel_results/attention-config-screen/bm64-bn64-s2-w8/results.json",
+      "status": "measured",
+      "error": null,
+      "failed_stage": null,
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/attention-config-screen/bm64-bn64-s2-w8",
+        "compile_only": false,
+        "optimization": "single-buffer",
+        "arch": 100,
+        "batch": 2,
+        "heads": 8,
+        "sequence": 4096,
+        "head_dim": 128,
+        "block_m": 64,
+        "block_n": 64,
+        "num_warps": 8,
+        "num_stages": 2,
+        "maxnreg": 80,
+        "seeds": "0",
+        "rounds": 5,
+        "graph_repeats": 16,
+        "warmup_ms": 200.0,
+        "time_identical": true,
+        "atol": 0.01,
+        "rtol": 0.03
+      },
+      "native_library_sha256": "ccb5dc2895ba5eb7042c729fbfb3f4f62ccb8ae209872a59db2e65d579a93429",
+      "cases": 1,
+      "comparison": {
+        "single": {
+          "ttgir_equal_to_off": false,
+          "ptx_equal_to_off": false
+        }
+      },
+      "resources": {
+        "off": {
+          "tmem_size": 256,
+          "shared": 83168,
+          "num_warps": 16,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 162
+        },
+        "single": {
+          "tmem_size": 256,
+          "shared": 83168,
+          "num_warps": 16,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 162
+        }
+      },
+      "measurements": [
+        {
+          "shape": [
+            2,
+            8,
+            4096,
+            128
+          ],
+          "seeds": [
+            0
+          ],
+          "median_of_per_seed_medians_us": {
+            "off": 1180.5280447006226,
+            "single": 1284.26194190979
+          },
+          "speedup_from_medians": {
+            "single": 0.9192268385257079
+          },
+          "interpretation": null,
+          "all_variants_exact_equal": true
+        }
+      ]
+    },
+    {
+      "results": "real_kernel_results/attention-config-screen/bm64-bn64-s3-w4/results.json",
+      "status": "measured",
+      "error": null,
+      "failed_stage": null,
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/attention-config-screen/bm64-bn64-s3-w4",
+        "compile_only": false,
+        "optimization": "single-buffer",
+        "arch": 100,
+        "batch": 2,
+        "heads": 8,
+        "sequence": 4096,
+        "head_dim": 128,
+        "block_m": 64,
+        "block_n": 64,
+        "num_warps": 4,
+        "num_stages": 3,
+        "maxnreg": 80,
+        "seeds": "0",
+        "rounds": 5,
+        "graph_repeats": 16,
+        "warmup_ms": 200.0,
+        "time_identical": true,
+        "atol": 0.01,
+        "rtol": 0.03
+      },
+      "native_library_sha256": "ccb5dc2895ba5eb7042c729fbfb3f4f62ccb8ae209872a59db2e65d579a93429",
+      "cases": 1,
+      "comparison": {
+        "single": {
+          "ttgir_equal_to_off": false,
+          "ptx_equal_to_off": false
+        }
+      },
+      "resources": {
+        "off": {
+          "tmem_size": 256,
+          "shared": 115856,
+          "num_warps": 12,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 0
+        },
+        "single": {
+          "tmem_size": 256,
+          "shared": 115856,
+          "num_warps": 12,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 0
+        }
+      },
+      "measurements": [
+        {
+          "shape": [
+            2,
+            8,
+            4096,
+            128
+          ],
+          "seeds": [
+            0
+          ],
+          "median_of_per_seed_medians_us": {
+            "off": 249.9680072069168,
+            "single": 348.49199652671814
+          },
+          "speedup_from_medians": {
+            "single": 0.7172847861593639
+          },
+          "interpretation": null,
+          "all_variants_exact_equal": true
+        }
+      ]
+    },
+    {
+      "results": "real_kernel_results/attention-config-screen/bm64-bn64-s3-w8/results.json",
+      "status": "measured",
+      "error": null,
+      "failed_stage": null,
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/attention-config-screen/bm64-bn64-s3-w8",
+        "compile_only": false,
+        "optimization": "single-buffer",
+        "arch": 100,
+        "batch": 2,
+        "heads": 8,
+        "sequence": 4096,
+        "head_dim": 128,
+        "block_m": 64,
+        "block_n": 64,
+        "num_warps": 8,
+        "num_stages": 3,
+        "maxnreg": 80,
+        "seeds": "0",
+        "rounds": 5,
+        "graph_repeats": 16,
+        "warmup_ms": 200.0,
+        "time_identical": true,
+        "atol": 0.01,
+        "rtol": 0.03
+      },
+      "native_library_sha256": "ccb5dc2895ba5eb7042c729fbfb3f4f62ccb8ae209872a59db2e65d579a93429",
+      "cases": 1,
+      "comparison": {
+        "single": {
+          "ttgir_equal_to_off": false,
+          "ptx_equal_to_off": false
+        }
+      },
+      "resources": {
+        "off": {
+          "tmem_size": 256,
+          "shared": 116000,
+          "num_warps": 16,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 162
+        },
+        "single": {
+          "tmem_size": 256,
+          "shared": 116000,
+          "num_warps": 16,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 162
+        }
+      },
+      "measurements": [
+        {
+          "shape": [
+            2,
+            8,
+            4096,
+            128
+          ],
+          "seeds": [
+            0
+          ],
+          "median_of_per_seed_medians_us": {
+            "off": 1184.3160390853882,
+            "single": 1284.3140363693237
+          },
+          "speedup_from_medians": {
+            "single": 0.9221389827937848
+          },
+          "interpretation": null,
+          "all_variants_exact_equal": true
+        }
+      ]
+    },
+    {
+      "results": "real_kernel_results/attention-config-screen/bm64-bn64-s4-w4/results.json",
+      "status": "measured",
+      "error": null,
+      "failed_stage": null,
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/attention-config-screen/bm64-bn64-s4-w4",
+        "compile_only": false,
+        "optimization": "single-buffer",
+        "arch": 100,
+        "batch": 2,
+        "heads": 8,
+        "sequence": 4096,
+        "head_dim": 128,
+        "block_m": 64,
+        "block_n": 64,
+        "num_warps": 4,
+        "num_stages": 4,
+        "maxnreg": 80,
+        "seeds": "0",
+        "rounds": 5,
+        "graph_repeats": 16,
+        "warmup_ms": 200.0,
+        "time_identical": true,
+        "atol": 0.01,
+        "rtol": 0.03
+      },
+      "native_library_sha256": "ccb5dc2895ba5eb7042c729fbfb3f4f62ccb8ae209872a59db2e65d579a93429",
+      "cases": 1,
+      "comparison": {
+        "single": {
+          "ttgir_equal_to_off": false,
+          "ptx_equal_to_off": false
+        }
+      },
+      "resources": {
+        "off": {
+          "tmem_size": 256,
+          "shared": 148624,
+          "num_warps": 12,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 0
+        },
+        "single": {
+          "tmem_size": 256,
+          "shared": 148624,
+          "num_warps": 12,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 0
+        }
+      },
+      "measurements": [
+        {
+          "shape": [
+            2,
+            8,
+            4096,
+            128
+          ],
+          "seeds": [
+            0
+          ],
+          "median_of_per_seed_medians_us": {
+            "off": 244.22000348567963,
+            "single": 348.4579920768738
+          },
+          "speedup_from_medians": {
+            "single": 0.7008592399619921
+          },
+          "interpretation": null,
+          "all_variants_exact_equal": true
+        }
+      ]
+    },
+    {
+      "results": "real_kernel_results/attention-config-screen/bm64-bn64-s4-w8/results.json",
+      "status": "measured",
+      "error": null,
+      "failed_stage": null,
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/attention-config-screen/bm64-bn64-s4-w8",
+        "compile_only": false,
+        "optimization": "single-buffer",
+        "arch": 100,
+        "batch": 2,
+        "heads": 8,
+        "sequence": 4096,
+        "head_dim": 128,
+        "block_m": 64,
+        "block_n": 64,
+        "num_warps": 8,
+        "num_stages": 4,
+        "maxnreg": 80,
+        "seeds": "0",
+        "rounds": 5,
+        "graph_repeats": 16,
+        "warmup_ms": 200.0,
+        "time_identical": true,
+        "atol": 0.01,
+        "rtol": 0.03
+      },
+      "native_library_sha256": "ccb5dc2895ba5eb7042c729fbfb3f4f62ccb8ae209872a59db2e65d579a93429",
+      "cases": 1,
+      "comparison": {
+        "single": {
+          "ttgir_equal_to_off": false,
+          "ptx_equal_to_off": false
+        }
+      },
+      "resources": {
+        "off": {
+          "tmem_size": 256,
+          "shared": 148768,
+          "num_warps": 16,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 162
+        },
+        "single": {
+          "tmem_size": 256,
+          "shared": 148768,
+          "num_warps": 16,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 162
+        }
+      },
+      "measurements": [
+        {
+          "shape": [
+            2,
+            8,
+            4096,
+            128
+          ],
+          "seeds": [
+            0
+          ],
+          "median_of_per_seed_medians_us": {
+            "off": 1169.8260307312012,
+            "single": 1279.0180444717407
+          },
+          "speedup_from_medians": {
+            "single": 0.9146282460888674
+          },
+          "interpretation": null,
+          "all_variants_exact_equal": true
+        }
+      ]
+    },
+    {
+      "results": "real_kernel_results/attention-screen-best-repeat/results.json",
+      "status": "measured",
+      "error": null,
+      "failed_stage": null,
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/attention-screen-best-repeat",
+        "compile_only": false,
+        "optimization": "single-buffer",
+        "arch": 100,
+        "batch": 2,
+        "heads": 8,
+        "sequence": 4096,
+        "head_dim": 128,
+        "block_m": 128,
+        "block_n": 128,
+        "num_warps": 8,
+        "num_stages": 2,
+        "maxnreg": 80,
+        "seeds": "0,1,2",
+        "rounds": 15,
+        "graph_repeats": 32,
+        "warmup_ms": 200,
+        "time_identical": false,
+        "atol": 0.01,
+        "rtol": 0.03
+      },
+      "native_library_sha256": "8203030690c04f4bb984e03c73794ff9f4f8fd896d8a0a1a05f507fc5b171d02",
+      "cases": 3,
+      "comparison": {
+        "single": {
+          "ttgir_equal_to_off": false,
+          "ptx_equal_to_off": false
+        }
+      },
+      "resources": {
+        "off": {
+          "tmem_size": 512,
+          "shared": 165608,
+          "num_warps": 20,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 10
+        },
+        "single": {
+          "tmem_size": 512,
+          "shared": 165608,
+          "num_warps": 20,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 12
+        }
+      },
+      "measurements": [
+        {
+          "shape": [
+            2,
+            8,
+            4096,
+            128
+          ],
+          "seeds": [
+            0,
+            1,
+            2
+          ],
+          "median_of_per_seed_medians_us": {
+            "off": 130.86800277233124,
+            "single": 198.64599406719208
+          },
+          "speedup_from_medians": {
+            "single": 0.6588001101500446
+          },
+          "interpretation": null,
+          "all_variants_exact_equal": true
+        }
+      ]
+    },
+    {
+      "results": "real_kernel_results/attention-single-bn128/results.json",
+      "status": "measured",
+      "error": null,
+      "failed_stage": null,
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/attention-single-bn128",
+        "compile_only": false,
+        "optimization": "single-buffer",
+        "arch": 100,
+        "batch": 2,
+        "heads": 8,
+        "sequence": 4096,
+        "head_dim": 128,
+        "block_m": 128,
+        "block_n": 128,
+        "num_warps": 4,
+        "num_stages": 2,
+        "maxnreg": 80,
+        "seeds": "0,1,2",
+        "rounds": 15,
+        "graph_repeats": 32,
+        "warmup_ms": 200,
+        "time_identical": false,
+        "atol": 0.01,
+        "rtol": 0.03
+      },
+      "native_library_sha256": "ccb5dc2895ba5eb7042c729fbfb3f4f62ccb8ae209872a59db2e65d579a93429",
+      "cases": 3,
+      "comparison": {
+        "single": {
+          "ttgir_equal_to_off": false,
+          "ptx_equal_to_off": false
+        }
+      },
+      "resources": {
+        "off": {
+          "tmem_size": 512,
+          "shared": 165456,
+          "num_warps": 12,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 214
+        },
+        "single": {
+          "tmem_size": 512,
+          "shared": 165456,
+          "num_warps": 12,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 208
+        }
+      },
+      "measurements": [
+        {
+          "shape": [
+            2,
+            8,
+            4096,
+            128
+          ],
+          "seeds": [
+            0,
+            1,
+            2
+          ],
+          "median_of_per_seed_medians_us": {
+            "off": 505.1259994506836,
+            "single": 648.190975189209
+          },
+          "speedup_from_medians": {
+            "single": 0.7792857642043469
+          },
+          "interpretation": null,
+          "all_variants_exact_equal": true
+        }
+      ]
+    },
+    {
+      "results": "real_kernel_results/attention-single-bn128-loop1/results.json",
+      "status": "measured",
+      "error": null,
+      "failed_stage": null,
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/attention-single-bn128-loop1",
+        "compile_only": false,
+        "optimization": "single-buffer",
+        "arch": 100,
+        "batch": 2,
+        "heads": 8,
+        "sequence": 128,
+        "head_dim": 128,
+        "block_m": 128,
+        "block_n": 128,
+        "num_warps": 4,
+        "num_stages": 2,
+        "maxnreg": 80,
+        "seeds": "0,1,2",
+        "rounds": 3,
+        "graph_repeats": 8,
+        "warmup_ms": 200,
+        "time_identical": false,
+        "atol": 0.01,
+        "rtol": 0.03
+      },
+      "native_library_sha256": "ccb5dc2895ba5eb7042c729fbfb3f4f62ccb8ae209872a59db2e65d579a93429",
+      "cases": 3,
+      "comparison": {
+        "single": {
+          "ttgir_equal_to_off": false,
+          "ptx_equal_to_off": false
+        }
+      },
+      "resources": {
+        "off": {
+          "tmem_size": 512,
+          "shared": 165456,
+          "num_warps": 12,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 214
+        },
+        "single": {
+          "tmem_size": 512,
+          "shared": 165456,
+          "num_warps": 12,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 208
+        }
+      },
+      "measurements": [
+        {
+          "shape": [
+            2,
+            8,
+            128,
+            128
+          ],
+          "seeds": [
+            0,
+            1,
+            2
+          ],
+          "median_of_per_seed_medians_us": {
+            "off": 10.379999876022339,
+            "single": 10.135999880731106
+          },
+          "speedup_from_medians": {
+            "single": 1.0240726122891028
+          },
+          "interpretation": null,
+          "all_variants_exact_equal": true
+        }
+      ]
+    },
+    {
+      "results": "real_kernel_results/attention-single-bn128-loop2/results.json",
+      "status": "measured",
+      "error": null,
+      "failed_stage": null,
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/attention-single-bn128-loop2",
+        "compile_only": false,
+        "optimization": "single-buffer",
+        "arch": 100,
+        "batch": 2,
+        "heads": 8,
+        "sequence": 256,
+        "head_dim": 128,
+        "block_m": 128,
+        "block_n": 128,
+        "num_warps": 4,
+        "num_stages": 2,
+        "maxnreg": 80,
+        "seeds": "0,1,2",
+        "rounds": 3,
+        "graph_repeats": 8,
+        "warmup_ms": 200,
+        "time_identical": false,
+        "atol": 0.01,
+        "rtol": 0.03
+      },
+      "native_library_sha256": "ccb5dc2895ba5eb7042c729fbfb3f4f62ccb8ae209872a59db2e65d579a93429",
+      "cases": 3,
+      "comparison": {
+        "single": {
+          "ttgir_equal_to_off": false,
+          "ptx_equal_to_off": false
+        }
+      },
+      "resources": {
+        "off": {
+          "tmem_size": 512,
+          "shared": 165456,
+          "num_warps": 12,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 214
+        },
+        "single": {
+          "tmem_size": 512,
+          "shared": 165456,
+          "num_warps": 12,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 208
+        }
+      },
+      "measurements": [
+        {
+          "shape": [
+            2,
+            8,
+            256,
+            128
+          ],
+          "seeds": [
+            0,
+            1,
+            2
+          ],
+          "median_of_per_seed_medians_us": {
+            "off": 14.108000323176384,
+            "single": 14.895999804139137
+          },
+          "speedup_from_medians": {
+            "single": 0.9470999267371236
+          },
+          "interpretation": null,
+          "all_variants_exact_equal": true
+        }
+      ]
+    },
+    {
+      "results": "real_kernel_results/attention-single-bn128-loop4/results.json",
+      "status": "measured",
+      "error": null,
+      "failed_stage": null,
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/attention-single-bn128-loop4",
+        "compile_only": false,
+        "optimization": "single-buffer",
+        "arch": 100,
+        "batch": 2,
+        "heads": 8,
+        "sequence": 512,
+        "head_dim": 128,
+        "block_m": 128,
+        "block_n": 128,
+        "num_warps": 4,
+        "num_stages": 2,
+        "maxnreg": 80,
+        "seeds": "0,1,2",
+        "rounds": 3,
+        "graph_repeats": 8,
+        "warmup_ms": 200,
+        "time_identical": false,
+        "atol": 0.01,
+        "rtol": 0.03
+      },
+      "native_library_sha256": "ccb5dc2895ba5eb7042c729fbfb3f4f62ccb8ae209872a59db2e65d579a93429",
+      "cases": 3,
+      "comparison": {
+        "single": {
+          "ttgir_equal_to_off": false,
+          "ptx_equal_to_off": false
+        }
+      },
+      "resources": {
+        "off": {
+          "tmem_size": 512,
+          "shared": 165456,
+          "num_warps": 12,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 214
+        },
+        "single": {
+          "tmem_size": 512,
+          "shared": 165456,
+          "num_warps": 12,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 208
+        }
+      },
+      "measurements": [
+        {
+          "shape": [
+            2,
+            8,
+            512,
+            128
+          ],
+          "seeds": [
+            0,
+            1,
+            2
+          ],
+          "median_of_per_seed_medians_us": {
+            "off": 21.648000925779343,
+            "single": 24.963999167084694
+          },
+          "speedup_from_medians": {
+            "single": 0.867168788978429
+          },
+          "interpretation": null,
+          "all_variants_exact_equal": true
+        }
+      ]
+    },
+    {
+      "results": "real_kernel_results/attention-single-cap48-w8/results.json",
+      "status": "measured",
+      "error": null,
+      "failed_stage": null,
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/attention-single-cap48-w8",
+        "compile_only": false,
+        "optimization": "single-buffer",
+        "arch": 100,
+        "batch": 2,
+        "heads": 8,
+        "sequence": 4096,
+        "head_dim": 128,
+        "block_m": 128,
+        "block_n": 64,
+        "num_warps": 8,
+        "num_stages": 2,
+        "maxnreg": 48,
+        "seeds": "0,1,2",
+        "rounds": 15,
+        "graph_repeats": 32,
+        "warmup_ms": 200,
+        "time_identical": false,
+        "atol": 0.01,
+        "rtol": 0.03
+      },
+      "native_library_sha256": "8203030690c04f4bb984e03c73794ff9f4f8fd896d8a0a1a05f507fc5b171d02",
+      "cases": 3,
+      "comparison": {
+        "single": {
+          "ttgir_equal_to_off": false,
+          "ptx_equal_to_off": false
+        }
+      },
+      "resources": {
+        "off": {
+          "tmem_size": 512,
+          "shared": 100072,
+          "num_warps": 20,
+          "maxnreg": 48,
+          "registers": 48,
+          "spills": 252
+        },
+        "single": {
+          "tmem_size": 256,
+          "shared": 100072,
+          "num_warps": 20,
+          "maxnreg": 48,
+          "registers": 48,
+          "spills": 252
+        }
+      },
+      "measurements": [
+        {
+          "shape": [
+            2,
+            8,
+            4096,
+            128
+          ],
+          "seeds": [
+            0,
+            1,
+            2
+          ],
+          "median_of_per_seed_medians_us": {
+            "off": 1932.3970079421997,
+            "single": 1637.4000310897827
+          },
+          "speedup_from_medians": {
+            "single": 1.1801618243869703
+          },
+          "interpretation": null,
+          "all_variants_exact_equal": true
+        }
+      ]
+    },
+    {
+      "results": "real_kernel_results/attention-single-cap80/results.json",
+      "status": "measured",
+      "error": null,
+      "failed_stage": null,
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/attention-single-cap80",
+        "compile_only": false,
+        "optimization": "single-buffer",
+        "arch": 100,
+        "batch": 2,
+        "heads": 8,
+        "sequence": 4096,
+        "head_dim": 128,
+        "block_m": 128,
+        "block_n": 64,
+        "num_warps": 4,
+        "num_stages": 2,
+        "maxnreg": 80,
+        "seeds": "0,1,2",
+        "rounds": 15,
+        "graph_repeats": 32,
+        "warmup_ms": 200,
+        "time_identical": false,
+        "atol": 0.01,
+        "rtol": 0.03
+      },
+      "native_library_sha256": "ccb5dc2895ba5eb7042c729fbfb3f4f62ccb8ae209872a59db2e65d579a93429",
+      "cases": 3,
+      "comparison": {
+        "single": {
+          "ttgir_equal_to_off": false,
+          "ptx_equal_to_off": false
+        }
+      },
+      "resources": {
+        "off": {
+          "tmem_size": 512,
+          "shared": 99920,
+          "num_warps": 12,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 152
+        },
+        "single": {
+          "tmem_size": 256,
+          "shared": 99920,
+          "num_warps": 12,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 152
+        }
+      },
+      "measurements": [
+        {
+          "shape": [
+            2,
+            8,
+            4096,
+            128
+          ],
+          "seeds": [
+            0,
+            1,
+            2
+          ],
+          "median_of_per_seed_medians_us": {
+            "off": 670.8430051803589,
+            "single": 556.393027305603
+          },
+          "speedup_from_medians": {
+            "single": 1.205699878068194
+          },
+          "interpretation": null,
+          "all_variants_exact_equal": true
+        }
+      ]
+    },
+    {
+      "results": "real_kernel_results/attention-single-cap80-repeat/results.json",
+      "status": "measured",
+      "error": null,
+      "failed_stage": null,
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/attention-single-cap80-repeat",
+        "compile_only": false,
+        "optimization": "single-buffer",
+        "arch": 100,
+        "batch": 2,
+        "heads": 8,
+        "sequence": 4096,
+        "head_dim": 128,
+        "block_m": 128,
+        "block_n": 64,
+        "num_warps": 4,
+        "num_stages": 2,
+        "maxnreg": 80,
+        "seeds": "0,1,2",
+        "rounds": 15,
+        "graph_repeats": 32,
+        "warmup_ms": 200,
+        "time_identical": false,
+        "atol": 0.01,
+        "rtol": 0.03
+      },
+      "native_library_sha256": "8203030690c04f4bb984e03c73794ff9f4f8fd896d8a0a1a05f507fc5b171d02",
+      "cases": 3,
+      "comparison": {
+        "single": {
+          "ttgir_equal_to_off": false,
+          "ptx_equal_to_off": false
+        }
+      },
+      "resources": {
+        "off": {
+          "tmem_size": 512,
+          "shared": 99920,
+          "num_warps": 12,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 152
+        },
+        "single": {
+          "tmem_size": 256,
+          "shared": 99920,
+          "num_warps": 12,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 152
+        }
+      },
+      "measurements": [
+        {
+          "shape": [
+            2,
+            8,
+            4096,
+            128
+          ],
+          "seeds": [
+            0,
+            1,
+            2
+          ],
+          "median_of_per_seed_medians_us": {
+            "off": 670.8359718322754,
+            "single": 556.5119981765747
+          },
+          "speedup_from_medians": {
+            "single": 1.2054294858516725
+          },
+          "interpretation": null,
+          "all_variants_exact_equal": true
+        }
+      ]
+    },
+    {
+      "results": "real_kernel_results/attention-single-cap80-smallgrid/results.json",
+      "status": "measured",
+      "error": null,
+      "failed_stage": null,
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/attention-single-cap80-smallgrid",
+        "compile_only": false,
+        "optimization": "single-buffer",
+        "arch": 100,
+        "batch": 1,
+        "heads": 1,
+        "sequence": 4096,
+        "head_dim": 128,
+        "block_m": 128,
+        "block_n": 64,
+        "num_warps": 4,
+        "num_stages": 2,
+        "maxnreg": 80,
+        "seeds": "0,1,2",
+        "rounds": 15,
+        "graph_repeats": 32,
+        "warmup_ms": 200,
+        "time_identical": false,
+        "atol": 0.01,
+        "rtol": 0.03
+      },
+      "native_library_sha256": "ccb5dc2895ba5eb7042c729fbfb3f4f62ccb8ae209872a59db2e65d579a93429",
+      "cases": 3,
+      "comparison": {
+        "single": {
+          "ttgir_equal_to_off": false,
+          "ptx_equal_to_off": false
+        }
+      },
+      "resources": {
+        "off": {
+          "tmem_size": 512,
+          "shared": 99920,
+          "num_warps": 12,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 152
+        },
+        "single": {
+          "tmem_size": 256,
+          "shared": 99920,
+          "num_warps": 12,
+          "maxnreg": 80,
+          "registers": 80,
+          "spills": 152
+        }
+      },
+      "measurements": [
+        {
+          "shape": [
+            1,
+            1,
+            4096,
+            128
+          ],
+          "seeds": [
+            0,
+            1,
+            2
+          ],
+          "median_of_per_seed_medians_us": {
+            "off": 166.21899604797363,
+            "single": 183.7950050830841
+          },
+          "speedup_from_medians": {
+            "single": 0.9043716719768022
+          },
+          "interpretation": null,
+          "all_variants_exact_equal": true
+        }
+      ]
+    },
+    {
+      "results": "real_kernel_results/attention-single-uncapped/results.json",
+      "status": "measured",
+      "error": null,
+      "failed_stage": null,
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/attention-single-uncapped",
+        "compile_only": false,
+        "optimization": "single-buffer",
+        "arch": 100,
+        "batch": 2,
+        "heads": 8,
+        "sequence": 4096,
+        "head_dim": 128,
+        "block_m": 128,
+        "block_n": 64,
+        "num_warps": 4,
+        "num_stages": 2,
+        "maxnreg": null,
+        "seeds": "0,1,2",
+        "rounds": 15,
+        "graph_repeats": 32,
+        "warmup_ms": 200,
+        "time_identical": false,
+        "atol": 0.01,
+        "rtol": 0.03
+      },
+      "native_library_sha256": "ccb5dc2895ba5eb7042c729fbfb3f4f62ccb8ae209872a59db2e65d579a93429",
+      "cases": 3,
+      "comparison": {
+        "single": {
+          "ttgir_equal_to_off": false,
+          "ptx_equal_to_off": false
+        }
+      },
+      "resources": {
+        "off": {
+          "tmem_size": 512,
+          "shared": 99920,
+          "num_warps": 12,
+          "maxnreg": null,
+          "registers": 168,
+          "spills": 152
+        },
+        "single": {
+          "tmem_size": 256,
+          "shared": 99920,
+          "num_warps": 12,
+          "maxnreg": null,
+          "registers": 168,
+          "spills": 152
+        }
+      },
+      "measurements": [
+        {
+          "shape": [
+            2,
+            8,
+            4096,
+            128
+          ],
+          "seeds": [
+            0,
+            1,
+            2
+          ],
+          "median_of_per_seed_medians_us": {
+            "off": 672.1869707107544,
+            "single": 733.5609793663025
+          },
+          "speedup_from_medians": {
+            "single": 0.9163341421069494
+          },
+          "interpretation": null,
+          "all_variants_exact_equal": true
+        }
+      ]
+    },
+    {
+      "results": "real_kernel_results/fp8-tensorwise/results.json",
+      "status": "failed",
+      "error": "CompilationError: at 50:23:\n        acc,\n        shape=[M, N],\n        strides=[N, 1],\n        block_shape=[BLOCK_SIZE_M, BLOCK_SIZE_N // 2]\n        if EPILOGUE_SUBTILE\n        else [BLOCK_SIZE_M, BLOCK_SIZE_N],\n    )\n\n    tile_id_c = start_pid - NUM_SMS\n    num_pid_in_group = GROUP_SIZE_M * num_pid_n\n\n    if SCALING_MODE == ScalingType.RowWise:\n                       ^\nNameError(\"Cannot access global variable ScalingType from within @jit'ed function. Triton kernels can only access global variables that are instanstiated as constexpr (`x = triton.language.constexpr(42)`). Note that this is different from annotating a variable as constexpr (`x: triton.language.constexpr = 42`), which is not supported.  Alternatively, set the envvar TRITON_ALLOW_NON_CONSTEXPR_GLOBALS=1, but we do not promise to support this forever.\")",
+      "failed_stage": "compile",
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "kernel": "fp8-tensorwise",
+        "optimization": "aref",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/fp8-tensorwise",
+        "preflight": false,
+        "compile_only": false,
+        "arch": 100,
+        "num_sms": 148,
+        "shapes": "512x512x512,4096x4096x512,4096x4096x4096",
+        "seeds": "0,1,2",
+        "num_stages": 4,
+        "epilogue_subtile": 2,
+        "rounds": 9,
+        "graph_repeats": 32,
+        "warmup_ms": 200,
+        "atol": 0.01,
+        "rtol": 0.01
+      },
+      "native_library_sha256": "6d3a891180543df1fcf7659fe83596d6143c5318f28418f594ace12f5c057032",
+      "cases": 0,
+      "comparison": null,
+      "resources": {},
+      "measurements": []
+    },
+    {
+      "results": "real_kernel_results/fp8-tensorwise-compat/results.json",
+      "status": "measured",
+      "error": null,
+      "failed_stage": null,
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "kernel": "fp8-tensorwise",
+        "optimization": "aref",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/fp8-tensorwise-compat",
+        "preflight": false,
+        "compile_only": false,
+        "arch": 100,
+        "num_sms": 148,
+        "shapes": "512x512x512,4096x4096x512,4096x4096x4096",
+        "seeds": "0,1,2",
+        "num_stages": 4,
+        "epilogue_subtile": 2,
+        "rounds": 9,
+        "graph_repeats": 32,
+        "warmup_ms": 200,
+        "atol": 0.01,
+        "rtol": 0.01
+      },
+      "native_library_sha256": "6d3a891180543df1fcf7659fe83596d6143c5318f28418f594ace12f5c057032",
+      "cases": 9,
+      "comparison": {
+        "ttgir_equal": true,
+        "ptx_equal": true,
+        "note": "Inspect compiler logs for pass recognition and rejection reasons; equal output is not a speedup."
+      },
+      "resources": {
+        "off": {
+          "tmem_size": 0,
+          "shared": 9348,
+          "num_warps": 8,
+          "maxnreg": null,
+          "registers": 255,
+          "spills": 0
+        },
+        "on": {
+          "tmem_size": 0,
+          "shared": 9348,
+          "num_warps": 8,
+          "maxnreg": null,
+          "registers": 255,
+          "spills": 0
+        }
+      },
+      "measurements": [
+        {
+          "shape": [
+            512,
+            512,
+            512
+          ],
+          "seeds": [
+            0,
+            1,
+            2
+          ],
+          "median_of_per_seed_medians_us": {
+            "off": 10.325999930500984,
+            "on": 10.282999835908413
+          },
+          "speedup_from_medians": {
+            "on": 1.0041816683145723
+          },
+          "interpretation": "identical_ptx_noise_control_no_speedup_claim",
+          "all_variants_exact_equal": true
+        },
+        {
+          "shape": [
+            4096,
+            4096,
+            512
+          ],
+          "seeds": [
+            0,
+            1,
+            2
+          ],
+          "median_of_per_seed_medians_us": {
+            "off": 312.03898787498474,
+            "on": 312.0709955692291
+          },
+          "speedup_from_medians": {
+            "on": 0.9998974345751485
+          },
+          "interpretation": "identical_ptx_noise_control_no_speedup_claim",
+          "all_variants_exact_equal": true
+        },
+        {
+          "shape": [
+            4096,
+            4096,
+            4096
+          ],
+          "seeds": [
+            0,
+            1,
+            2
+          ],
+          "median_of_per_seed_medians_us": {
+            "off": 2277.9719829559326,
+            "on": 2277.4341106414795
+          },
+          "speedup_from_medians": {
+            "on": 1.0002361746985082
+          },
+          "interpretation": "identical_ptx_noise_control_no_speedup_claim",
+          "all_variants_exact_equal": true
+        }
+      ]
+    },
+    {
+      "results": "real_kernel_results/gemm-smoke-current/results.json",
+      "status": "measured",
+      "error": null,
+      "failed_stage": null,
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "kernel": "fp16",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/gemm-smoke-current",
+        "preflight": false,
+        "compile_only": false,
+        "arch": 100,
+        "num_sms": 148,
+        "shapes": "512x512x512",
+        "seeds": "0",
+        "num_stages": 2,
+        "epilogue_subtile": 2,
+        "rounds": 3,
+        "graph_repeats": 32,
+        "warmup_ms": 200,
+        "atol": 0.01,
+        "rtol": 0.01
+      },
+      "native_library_sha256": "6d3a891180543df1fcf7659fe83596d6143c5318f28418f594ace12f5c057032",
+      "cases": 1,
+      "comparison": {
+        "ttgir_equal": true,
+        "ptx_equal": true,
+        "note": "Inspect compiler logs for pass recognition and rejection reasons; equal output is not a speedup."
+      },
+      "resources": {
+        "off": {
+          "tmem_size": 512,
+          "shared": 131140,
+          "num_warps": 8,
+          "maxnreg": null,
+          "registers": 255,
+          "spills": 0
+        },
+        "on": {
+          "tmem_size": 512,
+          "shared": 131140,
+          "num_warps": 8,
+          "maxnreg": null,
+          "registers": 255,
+          "spills": 0
+        }
+      },
+      "measurements": [
+        {
+          "shape": [
+            512,
+            512,
+            512
+          ],
+          "seeds": [
+            0
+          ],
+          "median_of_per_seed_medians_us": {
+            "off": 7.534999866038561,
+            "on": 7.555999793112278
+          },
+          "speedup_from_medians": {
+            "on": 0.9972207612958301
+          },
+          "interpretation": "identical_ptx_noise_control_no_speedup_claim",
+          "all_variants_exact_equal": true
+        }
+      ]
+    },
+    {
+      "results": "real_kernel_results/gemm-subtile2/results.json",
+      "status": "measured",
+      "error": null,
+      "failed_stage": null,
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "kernel": "fp16",
+        "optimization": "aref",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/gemm-subtile2",
+        "preflight": false,
+        "compile_only": false,
+        "arch": 100,
+        "num_sms": 148,
+        "shapes": "512x512x512,4096x4096x512,4096x4096x4096",
+        "seeds": "0,1,2",
+        "num_stages": 2,
+        "epilogue_subtile": 2,
+        "rounds": 9,
+        "graph_repeats": 32,
+        "warmup_ms": 200,
+        "atol": 0.01,
+        "rtol": 0.01
+      },
+      "native_library_sha256": "6d3a891180543df1fcf7659fe83596d6143c5318f28418f594ace12f5c057032",
+      "cases": 9,
+      "comparison": {
+        "ttgir_equal": true,
+        "ptx_equal": true,
+        "note": "Inspect compiler logs for pass recognition and rejection reasons; equal output is not a speedup."
+      },
+      "resources": {
+        "off": {
+          "tmem_size": 512,
+          "shared": 131140,
+          "num_warps": 8,
+          "maxnreg": null,
+          "registers": 255,
+          "spills": 0
+        },
+        "on": {
+          "tmem_size": 512,
+          "shared": 131140,
+          "num_warps": 8,
+          "maxnreg": null,
+          "registers": 255,
+          "spills": 0
+        }
+      },
+      "measurements": [
+        {
+          "shape": [
+            512,
+            512,
+            512
+          ],
+          "seeds": [
+            0,
+            1,
+            2
+          ],
+          "median_of_per_seed_medians_us": {
+            "off": 7.540999911725521,
+            "on": 7.550000213086605
+          },
+          "speedup_from_medians": {
+            "on": 0.998807907138137
+          },
+          "interpretation": "identical_ptx_noise_control_no_speedup_claim",
+          "all_variants_exact_equal": true
+        },
+        {
+          "shape": [
+            4096,
+            4096,
+            512
+          ],
+          "seeds": [
+            0,
+            1,
+            2
+          ],
+          "median_of_per_seed_medians_us": {
+            "off": 22.484999150037766,
+            "on": 22.50099927186966
+          },
+          "speedup_from_medians": {
+            "on": 0.9992889150549017
+          },
+          "interpretation": "identical_ptx_noise_control_no_speedup_claim",
+          "all_variants_exact_equal": true
+        },
+        {
+          "shape": [
+            4096,
+            4096,
+            4096
+          ],
+          "seeds": [
+            0,
+            1,
+            2
+          ],
+          "median_of_per_seed_medians_us": {
+            "off": 150.5800038576126,
+            "on": 149.76899325847626
+          },
+          "speedup_from_medians": {
+            "on": 1.0054150767892036
+          },
+          "interpretation": "identical_ptx_noise_control_no_speedup_claim",
+          "all_variants_exact_equal": true
+        }
+      ]
+    },
+    {
+      "results": "real_kernel_results/gemm-subtile4/results.json",
+      "status": "measured",
+      "error": null,
+      "failed_stage": null,
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "kernel": "fp16",
+        "optimization": "aref",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/gemm-subtile4",
+        "preflight": false,
+        "compile_only": false,
+        "arch": 100,
+        "num_sms": 148,
+        "shapes": "512x512x512,4096x4096x512,4096x4096x4096",
+        "seeds": "0,1,2",
+        "num_stages": 2,
+        "epilogue_subtile": 4,
+        "rounds": 9,
+        "graph_repeats": 32,
+        "warmup_ms": 200,
+        "atol": 0.01,
+        "rtol": 0.01
+      },
+      "native_library_sha256": "6d3a891180543df1fcf7659fe83596d6143c5318f28418f594ace12f5c057032",
+      "cases": 9,
+      "comparison": {
+        "ttgir_equal": true,
+        "ptx_equal": true,
+        "note": "Inspect compiler logs for pass recognition and rejection reasons; equal output is not a speedup."
+      },
+      "resources": {
+        "off": {
+          "tmem_size": 512,
+          "shared": 114756,
+          "num_warps": 8,
+          "maxnreg": null,
+          "registers": 255,
+          "spills": 2
+        },
+        "on": {
+          "tmem_size": 512,
+          "shared": 114756,
+          "num_warps": 8,
+          "maxnreg": null,
+          "registers": 255,
+          "spills": 2
+        }
+      },
+      "measurements": [
+        {
+          "shape": [
+            512,
+            512,
+            512
+          ],
+          "seeds": [
+            0,
+            1,
+            2
+          ],
+          "median_of_per_seed_medians_us": {
+            "off": 7.788999937474728,
+            "on": 7.782999891787767
+          },
+          "speedup_from_medians": {
+            "on": 1.0007709168405992
+          },
+          "interpretation": "identical_ptx_noise_control_no_speedup_claim",
+          "all_variants_exact_equal": true
+        },
+        {
+          "shape": [
+            4096,
+            4096,
+            512
+          ],
+          "seeds": [
+            0,
+            1,
+            2
+          ],
+          "median_of_per_seed_medians_us": {
+            "off": 22.38300070166588,
+            "on": 22.353999316692352
+          },
+          "speedup_from_medians": {
+            "on": 1.0012973689657345
+          },
+          "interpretation": "identical_ptx_noise_control_no_speedup_claim",
+          "all_variants_exact_equal": true
+        },
+        {
+          "shape": [
+            4096,
+            4096,
+            4096
+          ],
+          "seeds": [
+            0,
+            1,
+            2
+          ],
+          "median_of_per_seed_medians_us": {
+            "off": 150.25000274181366,
+            "on": 149.97099339962006
+          },
+          "speedup_from_medians": {
+            "on": 1.0018604220447493
+          },
+          "interpretation": "identical_ptx_noise_control_no_speedup_claim",
+          "all_variants_exact_equal": true
+        }
+      ]
+    },
+    {
+      "results": "real_kernel_results/preflight_artifacts/results.json",
+      "status": "blocked",
+      "error": "RuntimeError: Missing Python dependencies: torch, numpy",
+      "failed_stage": "preflight",
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/preflight_artifacts",
+        "preflight": true,
+        "compile_only": false,
+        "arch": 100,
+        "num_sms": 148,
+        "shapes": "512x512x512,4096x4096x512,4096x4096x4096",
+        "seeds": "0,1,2",
+        "num_stages": 2,
+        "epilogue_subtile": 2,
+        "rounds": 9,
+        "graph_repeats": 32,
+        "atol": 0.01,
+        "rtol": 0.01
+      },
+      "native_library_sha256": null,
+      "cases": 0,
+      "comparison": null,
+      "resources": {},
+      "measurements": []
+    }
+  ]
+}

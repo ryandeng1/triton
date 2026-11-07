@@ -1,0 +1,475 @@
+{
+  "date": "2026-11-07",
+  "scope": "Matched real attention implementations and semantic ablations; no native compiler implementation added",
+  "main_shape_bhnd": [
+    2,
+    8,
+    4096,
+    128
+  ],
+  "dtype": "bfloat16",
+  "causal": false,
+  "gpu": "NVIDIA B300 SXM6 PC, sm_103",
+  "primary_findings": {
+    "fa4_vs_tritonbench": "1.59x faster in matched main run",
+    "gluon_vs_tritonbench": "1.36x faster in matched main run",
+    "fa4_identity_elision": "1.096x paired gain with exact tested output/LSE equality",
+    "gluon_identity_elision": "1.050x paired gain at threshold8 in repeat; threshold0 skip alone neutral/slower",
+    "tmem_reduction": "D64 512 to256 columns gives no meaningful gain",
+    "numerical_limit": "Scale4 N512 threshold8 policy exceeds existing output tolerances; every identity-elision pair remains bit-exact"
+  },
+  "experiments": {
+    "semantic_attention_comparison": {
+      "results": "real_kernel_results/semantic_attention_comparison/results.json",
+      "sha256": "c62baa783f0ab9e483439887ec3dd60839c9bc497f3d9cebbf8154b50085a0b8",
+      "status": "measured",
+      "error": null,
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "fa4_root": "/home/ryandeng/tpaa/flash-attention-reference",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/semantic_attention_comparison",
+        "variants": [
+          "triton",
+          "triton-ast",
+          "fa4",
+          "gluon-default"
+        ],
+        "batch": 2,
+        "heads": 8,
+        "sequence": 4096,
+        "head_dim": 128,
+        "block_m": 128,
+        "block_n": 128,
+        "num_warps": 8,
+        "num_stages": 2,
+        "maxnreg": 80,
+        "gluon_block_m": 128,
+        "gluon_block_n": 64,
+        "seeds": "0,1,2",
+        "rounds": 15,
+        "graph_repeats": 32,
+        "warmup_ms": 200,
+        "atol": 0.01,
+        "rtol": 0.03,
+        "lse_atol": 0.01,
+        "lse_rtol": 0.001
+      },
+      "median_of_seed_medians_us": {
+        "triton": 143.47100257873535,
+        "triton-ast": 143.65999400615692,
+        "fa4": 90.11299908161163,
+        "gluon-default": 105.28399795293808
+      },
+      "timed_seeds": [
+        0,
+        1,
+        2
+      ]
+    },
+    "semantic_attention_fa4_correction_verified": {
+      "results": "real_kernel_results/semantic_attention_fa4_correction_verified/results.json",
+      "sha256": "1a41c73f02332fc602b0197c3cfbb11fe99a39caccbe69cdd4108aa27f73cdf1",
+      "status": "measured",
+      "error": null,
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "fa4_root": "/home/ryandeng/tpaa/flash-attention-reference",
+        "fa4_ablation_root": "/home/ryandeng/tpaa/fa4-force-correction-ablation",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/semantic_attention_fa4_correction_verified",
+        "variants": [
+          "fa4",
+          "fa4-always-correct"
+        ],
+        "batch": 2,
+        "heads": 8,
+        "sequence": 4096,
+        "head_dim": 128,
+        "input_scale": 1.0,
+        "block_m": 128,
+        "block_n": 128,
+        "num_warps": 8,
+        "num_stages": 2,
+        "maxnreg": 80,
+        "gluon_block_m": 128,
+        "gluon_block_n": 64,
+        "seeds": "0,1,2",
+        "rounds": 15,
+        "graph_repeats": 32,
+        "warmup_ms": 200,
+        "atol": 0.01,
+        "rtol": 0.03,
+        "lse_atol": 0.01,
+        "lse_rtol": 0.001
+      },
+      "median_of_seed_medians_us": {
+        "fa4": 94.22200173139572,
+        "fa4-always-correct": 103.23099792003632
+      },
+      "timed_seeds": [
+        0,
+        1,
+        2
+      ]
+    },
+    "semantic_attention_gluon_correction": {
+      "results": "real_kernel_results/semantic_attention_gluon_correction/results.json",
+      "sha256": "cbf67d0d6c5c05ed76af107fa5543330b72452fa97835904c01e88eb6020d834",
+      "status": "measured",
+      "error": null,
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "fa4_root": "/home/ryandeng/tpaa/flash-attention-reference",
+        "fa4_ablation_root": "/home/ryandeng/tpaa/fa4-force-correction-ablation",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/semantic_attention_gluon_correction",
+        "variants": [
+          "triton",
+          "fa4",
+          "gluon-rescale0",
+          "gluon-rescale8",
+          "gluon-rescale8-skip"
+        ],
+        "batch": 2,
+        "heads": 8,
+        "sequence": 4096,
+        "head_dim": 128,
+        "block_m": 128,
+        "block_n": 128,
+        "num_warps": 8,
+        "num_stages": 2,
+        "maxnreg": 80,
+        "gluon_block_m": 256,
+        "gluon_block_n": 128,
+        "seeds": "0,1,2",
+        "rounds": 15,
+        "graph_repeats": 32,
+        "warmup_ms": 200,
+        "atol": 0.01,
+        "rtol": 0.03,
+        "lse_atol": 0.01,
+        "lse_rtol": 0.001
+      },
+      "median_of_seed_medians_us": {
+        "triton": 150.75400471687317,
+        "fa4": 94.16700154542923,
+        "gluon-rescale0": 112.45399713516235,
+        "gluon-rescale8": 112.74199932813644,
+        "gluon-rescale8-skip": 106.85800015926361
+      },
+      "timed_seeds": [
+        0,
+        1,
+        2
+      ]
+    },
+    "semantic_attention_gluon_correction_repeat": {
+      "results": "real_kernel_results/semantic_attention_gluon_correction_repeat/results.json",
+      "sha256": "700c4d93d57b5780437258a69e8b69e873f792fa7b39f773e041c381d48f837e",
+      "status": "measured",
+      "error": null,
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "fa4_root": "/home/ryandeng/tpaa/flash-attention-reference",
+        "fa4_ablation_root": "/home/ryandeng/tpaa/fa4-force-correction-ablation",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/semantic_attention_gluon_correction_repeat",
+        "variants": [
+          "triton",
+          "fa4",
+          "gluon-default",
+          "gluon-rescale0",
+          "gluon-rescale0-skip",
+          "gluon-rescale8",
+          "gluon-rescale8-skip"
+        ],
+        "batch": 2,
+        "heads": 8,
+        "sequence": 4096,
+        "head_dim": 128,
+        "input_scale": 1.0,
+        "block_m": 128,
+        "block_n": 128,
+        "num_warps": 8,
+        "num_stages": 2,
+        "maxnreg": 80,
+        "gluon_block_m": 256,
+        "gluon_block_n": 128,
+        "seeds": "0,1,2",
+        "rounds": 15,
+        "graph_repeats": 32,
+        "warmup_ms": 200,
+        "atol": 0.01,
+        "rtol": 0.03,
+        "lse_atol": 0.01,
+        "lse_rtol": 0.001
+      },
+      "median_of_seed_medians_us": {
+        "triton": 153.58099341392517,
+        "fa4": 94.20700371265411,
+        "gluon-default": 109.81699824333191,
+        "gluon-rescale0": 113.23300004005432,
+        "gluon-rescale0-skip": 113.85200172662735,
+        "gluon-rescale8": 113.45099657773972,
+        "gluon-rescale8-skip": 108.01900178194046
+      },
+      "timed_seeds": [
+        0,
+        1,
+        2
+      ]
+    },
+    "semantic_attention_storage_d128": {
+      "results": "real_kernel_results/semantic_attention_storage_d128/results.json",
+      "sha256": "e948dc64264d8d2e898c36b569effaf2b5c382c00386bf319d8bcec7a09d7d41",
+      "status": "measured",
+      "error": null,
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "fa4_root": "/home/ryandeng/tpaa/flash-attention-reference",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/semantic_attention_storage_d128",
+        "variants": [
+          "gluon-reuse",
+          "gluon-separate"
+        ],
+        "batch": 2,
+        "heads": 8,
+        "sequence": 4096,
+        "head_dim": 128,
+        "block_m": 128,
+        "block_n": 128,
+        "num_warps": 8,
+        "num_stages": 2,
+        "maxnreg": 80,
+        "gluon_block_m": 256,
+        "gluon_block_n": 64,
+        "seeds": "0,1,2",
+        "rounds": 15,
+        "graph_repeats": 32,
+        "warmup_ms": 200,
+        "atol": 0.01,
+        "rtol": 0.03,
+        "lse_atol": 0.01,
+        "lse_rtol": 0.001
+      },
+      "median_of_seed_medians_us": {
+        "gluon-reuse": 120.10300159454346,
+        "gluon-separate": 121.19299918413162
+      },
+      "timed_seeds": [
+        0,
+        1,
+        2
+      ]
+    },
+    "semantic_attention_storage_d64": {
+      "results": "real_kernel_results/semantic_attention_storage_d64/results.json",
+      "sha256": "da3eac549c2fe85040baadee9c235c69baf2dd37d628726234765be36e179ebf",
+      "status": "measured",
+      "error": null,
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "fa4_root": "/home/ryandeng/tpaa/flash-attention-reference",
+        "fa4_ablation_root": "/home/ryandeng/tpaa/fa4-force-correction-ablation",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/semantic_attention_storage_d64",
+        "variants": [
+          "gluon-reuse",
+          "gluon-separate"
+        ],
+        "batch": 2,
+        "heads": 8,
+        "sequence": 4096,
+        "head_dim": 64,
+        "block_m": 128,
+        "block_n": 128,
+        "num_warps": 8,
+        "num_stages": 2,
+        "maxnreg": 80,
+        "gluon_block_m": 256,
+        "gluon_block_n": 64,
+        "seeds": "0,1,2",
+        "rounds": 15,
+        "graph_repeats": 32,
+        "warmup_ms": 200,
+        "atol": 0.01,
+        "rtol": 0.03,
+        "lse_atol": 0.01,
+        "lse_rtol": 0.001
+      },
+      "median_of_seed_medians_us": {
+        "gluon-reuse": 94.09499913454056,
+        "gluon-separate": 94.1229984164238
+      },
+      "timed_seeds": [
+        0,
+        1,
+        2
+      ]
+    },
+    "semantic_attention_correction_stress_s2_n512": {
+      "results": "real_kernel_results/semantic_attention_correction_stress_s2_n512/results.json",
+      "sha256": "9c72747c5044af35907322cea5f77465dfb815cd69f17f150a4837ee2a58ae21",
+      "status": "measured",
+      "error": null,
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "fa4_root": "/home/ryandeng/tpaa/flash-attention-reference",
+        "fa4_ablation_root": "/home/ryandeng/tpaa/fa4-force-correction-ablation",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/semantic_attention_correction_stress_s2_n512",
+        "variants": [
+          "fa4",
+          "fa4-always-correct",
+          "gluon-rescale0",
+          "gluon-rescale0-skip",
+          "gluon-rescale8",
+          "gluon-rescale8-skip"
+        ],
+        "batch": 2,
+        "heads": 8,
+        "sequence": 512,
+        "head_dim": 128,
+        "input_scale": 2.0,
+        "block_m": 128,
+        "block_n": 128,
+        "num_warps": 8,
+        "num_stages": 2,
+        "maxnreg": 80,
+        "gluon_block_m": 256,
+        "gluon_block_n": 128,
+        "seeds": "0,1,2",
+        "rounds": 1,
+        "graph_repeats": 2,
+        "warmup_ms": 0.0,
+        "atol": 0.01,
+        "rtol": 0.03,
+        "lse_atol": 0.01,
+        "lse_rtol": 0.001
+      },
+      "median_of_seed_medians_us": {
+        "fa4": 14.000000432133675,
+        "fa4-always-correct": 14.352000318467617,
+        "gluon-rescale0": 21.247999742627144,
+        "gluon-rescale0-skip": 15.7919991761446,
+        "gluon-rescale8": 15.936000272631645,
+        "gluon-rescale8-skip": 15.503999777138233
+      },
+      "timed_seeds": [
+        0,
+        1,
+        2
+      ]
+    },
+    "semantic_attention_correction_stress_s2_n4096": {
+      "results": "real_kernel_results/semantic_attention_correction_stress_s2_n4096/results.json",
+      "sha256": "77a16aea4e2b6e3549bdfca0c1a30d49bc5b72b6ad5cce5cd9cc2e0842b0bb8b",
+      "status": "measured",
+      "error": null,
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "fa4_root": "/home/ryandeng/tpaa/flash-attention-reference",
+        "fa4_ablation_root": "/home/ryandeng/tpaa/fa4-force-correction-ablation",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/semantic_attention_correction_stress_s2_n4096",
+        "variants": [
+          "fa4",
+          "fa4-always-correct",
+          "gluon-rescale0",
+          "gluon-rescale0-skip",
+          "gluon-rescale8",
+          "gluon-rescale8-skip"
+        ],
+        "batch": 2,
+        "heads": 8,
+        "sequence": 4096,
+        "head_dim": 128,
+        "input_scale": 2.0,
+        "block_m": 128,
+        "block_n": 128,
+        "num_warps": 8,
+        "num_stages": 2,
+        "maxnreg": 80,
+        "gluon_block_m": 256,
+        "gluon_block_n": 128,
+        "seeds": "0,1,2",
+        "rounds": 1,
+        "graph_repeats": 2,
+        "warmup_ms": 0.0,
+        "atol": 0.01,
+        "rtol": 0.03,
+        "lse_atol": 0.01,
+        "lse_rtol": 0.001
+      },
+      "median_of_seed_medians_us": {
+        "fa4": 92.75200217962265,
+        "fa4-always-correct": 95.77599912881851,
+        "gluon-rescale0": 113.27999830245972,
+        "gluon-rescale0-skip": 105.00799864530563,
+        "gluon-rescale8": 104.5759990811348,
+        "gluon-rescale8-skip": 101.55200213193893
+      },
+      "timed_seeds": [
+        0,
+        1,
+        2
+      ]
+    },
+    "semantic_attention_correction_stress_s4_n512_diagnostic": {
+      "results": "real_kernel_results/semantic_attention_correction_stress_s4_n512_diagnostic/results.json",
+      "sha256": "06b014eec0aa8305048cb61e149481f3c20f853aaf737f5633d42916eeeee29e",
+      "status": "failed",
+      "error": "AssertionError: fa4 output: Tensor-likes are not close!\n\nMismatched elements: 3 / 1048576 (0.0%)\nGreatest absolute difference: 0.01653076708316803 at index (0, 0, 53, 108) (up to 0.01 allowed)\nGreatest relative difference: 0.26080214977264404 at index (1, 3, 279, 113) (up to 0.03 allowed)\n\nfa4-always-correct output: Tensor-likes are not close!\n\nMismatched elements: 3 / 1048576 (0.0%)\nGreatest absolute difference: 0.01653076708316803 at index (0, 0, 53, 108) (up to 0.01 allowed)\nGreatest relative difference: 0.26080214977264404 at index (1, 3, 279, 113) (up to 0.03 allowed)\n\ngluon-rescale8 output: Tensor-likes are not close!\n\nMismatched elements: 18 / 1048576 (0.0%)\nGreatest absolute difference: 0.020677566528320312 at index (1, 0, 194, 100) (up to 0.01 allowed)\nGreatest relative difference: 1.1918327808380127 at index (0, 6, 335, 69) (up to 0.03 allowed)\n\ngluon-rescale8-skip output: Tensor-likes are not close!\n\nMismatched elements: 18 / 1048576 (0.0%)\nGreatest absolute difference: 0.020677566528320312 at index (1, 0, 194, 100) (up to 0.01 allowed)\nGreatest relative difference: 1.1918327808380127 at index (0, 6, 335, 69) (up to 0.03 allowed)",
+      "arguments": {
+        "triton_root": "/home/ryandeng/tpaa/triton",
+        "tritonbench_root": "/home/ryandeng/tpaa/tritonbench",
+        "fa4_root": "/home/ryandeng/tpaa/flash-attention-reference",
+        "fa4_ablation_root": "/home/ryandeng/tpaa/fa4-force-correction-ablation",
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/semantic_attention_correction_stress_s4_n512_diagnostic",
+        "variants": [
+          "fa4",
+          "fa4-always-correct",
+          "gluon-rescale0",
+          "gluon-rescale0-skip",
+          "gluon-rescale8",
+          "gluon-rescale8-skip"
+        ],
+        "batch": 2,
+        "heads": 8,
+        "sequence": 512,
+        "head_dim": 128,
+        "input_scale": 4.0,
+        "block_m": 128,
+        "block_n": 128,
+        "num_warps": 8,
+        "num_stages": 2,
+        "maxnreg": 80,
+        "gluon_block_m": 256,
+        "gluon_block_n": 128,
+        "seeds": "0,1,2",
+        "rounds": 1,
+        "graph_repeats": 2,
+        "warmup_ms": 0.0,
+        "atol": 0.01,
+        "rtol": 0.03,
+        "lse_atol": 0.01,
+        "lse_rtol": 0.001
+      }
+    },
+    "semantic_attention_capacity_bm256_bn128": {
+      "results": "real_kernel_results/semantic_attention_capacity_bm256_bn128/results.json",
+      "sha256": "321628a3c1f7fa977bed3de2a2f22e7c3762af7f0fd9a3b6465be3eb056b174b",
+      "status": "resource_rejected_before_launch",
+      "error": null,
+      "arguments": {
+        "output": "/home/ryandeng/tpaa/triton/experiment_notes/real_kernel_results/semantic_attention_capacity_bm256_bn128",
+        "block_m": 256,
+        "block_n": 128
+      },
+      "resource_error": "out of resource: tensor memory, Required: 640, Hardware limit: 512. Reducing block sizes or `num_stages` may help.",
+      "attention_launches": 0
+    }
+  }
+}

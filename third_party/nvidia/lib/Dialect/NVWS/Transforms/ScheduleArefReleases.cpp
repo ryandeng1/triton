@@ -9,9 +9,12 @@
 #include "triton/Dialect/TritonNvidiaGPU/IR/Dialect.h"
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/DenseSet.h"
+#include "llvm/Support/Debug.h"
 
 #include <memory>
 #include <optional>
+
+#define DEBUG_TYPE "nvws-schedule-aref-releases"
 
 namespace mlir::triton {
 
@@ -22,6 +25,19 @@ namespace {
 using namespace nvws;
 namespace ttg = gpu;
 namespace ttng = nvidia_gpu;
+
+static bool rejectOwnership(Operation *op, StringRef reason) {
+  LLVM_DEBUG(llvm::dbgs() << "[" DEBUG_TYPE "] ownership rejected: " << reason
+                          << " at " << op->getName() << " " << op->getLoc()
+                          << "\n");
+  return false;
+}
+
+static void reportStop(ArefGetExitOp exit, Operation *op, StringRef reason) {
+  LLVM_DEBUG(llvm::dbgs() << "[" DEBUG_TYPE "] motion stopped: " << reason
+                          << " at " << op->getName() << " " << op->getLoc()
+                          << "; release " << exit.getLoc() << "\n");
+}
 
 // Textual order is meaningful only within one partition and one pending
 // pipeline stage/cluster. In particular, scalar uniformity does not identify
@@ -112,8 +128,14 @@ public:
     auto found = channels.find(create);
     if (found != channels.end())
       return found->second.get();
-    if (!attempted.insert(create).second || create.getBuffers().size() != 1)
+    if (!attempted.insert(create).second)
       return nullptr;
+    auto reject = [&](StringRef reason) -> Channel * {
+      rejectOwnership(create, reason);
+      return nullptr;
+    };
+    if (create.getBuffers().size() != 1)
+      return reject("channel must have exactly one buffer");
     Value root = create.getBuffers()[0];
     auto alloc = root.getDefiningOp<ttng::TMEMAllocOp>();
     auto rootType = cast<ttg::MemDescType>(root.getType());
@@ -122,7 +144,7 @@ public:
         rootType.getRank() != 3 || rootType.getShape()[0] < 1 ||
         rootType.getAllocShape() != rootType.getShape() ||
         (alloc.getToken() && !alloc.getToken().use_empty()))
-      return nullptr;
+      return reject("storage is not a fresh, confined rank-three TMEM allocation");
 
     SmallVector<Enter> puts, gets;
     for (Operation *user : create->getUsers()) {
@@ -145,7 +167,7 @@ public:
         continue;
       }
       if (stage || phase || buffers.size() != 1)
-        return nullptr;
+        return reject("acquire has explicit counters or multiple buffers");
       // Enter verifies shape/element type, but not encoding or memory space.
       auto type = cast<ttg::MemDescType>(buffers[0].getType());
       if (type.getEncoding() != rootType.getEncoding() ||
@@ -153,11 +175,12 @@ public:
           type.getElementType() != rootType.getElementType() ||
           type.getShape() != rootType.getShape().drop_front() ||
           !validAllocationShape(type, rootType))
-        return nullptr;
+        return reject(
+            "acquired descriptor does not preserve physical buffer type");
       (isGet ? gets : puts).push_back({user, token, buffers[0], isGet});
     }
     if (puts.empty() || gets.empty() || puts.size() > 2 || gets.size() > 2)
-      return nullptr;
+      return reject("unsupported number of producer or consumer acquisitions");
 
     auto channel = std::make_unique<Channel>();
     channel->create = create;
@@ -165,20 +188,22 @@ public:
     DenseSet<Operation *> recognized;
     if (puts.size() == 1 && gets.size() == 1) {
       auto loop = dyn_cast<scf::ForOp>(puts[0].op->getParentOp());
-      if (!validLoopPair(loop, puts[0], gets[0]) ||
-          !addDirect(*channel, puts[0], recognized) ||
+      if (!validLoopPair(loop, puts[0], gets[0]))
+        return reject(
+            "producer and consumer do not form a partitioned loop pair");
+      if (!addDirect(*channel, puts[0], recognized) ||
           !addDirect(*channel, gets[0], recognized))
-        return nullptr;
+        return reject("direct ownership scope is not closed");
     } else if (puts.size() == 2 && gets.size() == 2) {
       if (!addCarried(*channel, puts, gets, recognized))
-        return nullptr;
+        return reject("loop-carried ownership protocol is unsupported");
       channel->carried = true;
     } else {
-      return nullptr;
+      return reject("producer and consumer acquisition counts differ");
     }
     for (Operation *user : create->getUsers())
       if (!recognized.contains(user))
-        return nullptr;
+        return reject("channel has an unrecognized use");
     Channel *result = channel.get();
     channels[create] = std::move(channel);
     return result;
@@ -327,7 +352,7 @@ private:
     Operation *exit = findExit(enter.token, channel.create, enter.isGet);
     if (!exit || exit->getBlock() != enter.op->getBlock() ||
         !enter.op->isBeforeInBlock(exit))
-      return false;
+      return rejectOwnership(enter.op, "missing matching local completion exit");
     auto scope = std::make_unique<Scope>(Scope{
         enter.op, exit, enter.op, exit, channel.create, enter.token,
         enter.isGet, *completionKind(exit), {}});
@@ -335,11 +360,11 @@ private:
     // serial drains. contains deliberately excludes the endpoint itself.
     if (ttg::hasPartition(enter.op) || ttg::hasPartition(exit)) {
       if (!sameContext(enter.op, exit))
-        return false;
+        return rejectOwnership(exit, "acquire and exit have different contexts");
     } else {
       for (StringRef name : {"ttg.warp_specialize.tag", "loop.stage", "loop.cluster"})
         if (enter.op->getAttr(name) != exit->getAttr(name))
-          return false;
+          return rejectOwnership(exit, "serial acquire and exit metadata differ");
     }
     return addSegment(channel, std::move(scope), {enter.buffer}, exit,
                       recognized, enter.op);
@@ -453,23 +478,25 @@ private:
       if (!buffer || buffer.getAref() != channel.create.getResult() ||
           buffer.getStage() || buffer.getBuffers().size() != 1 ||
           !scope->contains(buffer))
-        return false;
+        return rejectOwnership(user, "token escapes its local ownership segment");
       auto type = cast<ttg::MemDescType>(buffer.getBuffers()[0].getType());
       if (type.getShape() != rootType.getShape().drop_front() ||
           type.getEncoding() != rootType.getEncoding() ||
           type.getMemorySpace() != rootType.getMemorySpace() ||
           type.getElementType() != rootType.getElementType() ||
           !validAllocationShape(type, rootType))
-        return false;
+        return rejectOwnership(
+            user, "borrowed buffer has incompatible physical type");
       // Preserve the exact physical type on an enter->buffer borrow.
       if ((enter && type != buffers[0].getType()) ||
           (borrowedType && type != borrowedType))
-        return false;
+        return rejectOwnership(user, "borrow changes the exact descriptor type");
       buffers.push_back(buffer.getBuffers()[0]);
       recognized.insert(buffer);
     }
     if (endUses != 1)
-      return false;
+      return rejectOwnership(tokenEnd,
+                             "token must have exactly one segment endpoint");
     DenseSet<Value> seen;
     for (Value buffer : buffers)
       if (!checkUses(buffer, *scope, seen))
@@ -491,7 +518,8 @@ private:
       return true;
     for (Operation *user : value.getUsers()) {
       if (!scope.contains(user))
-        return false;
+        return rejectOwnership(
+            user, "descriptor use escapes scope or execution context");
       if (user->hasTrait<OpTrait::MemDescViewTrait>() &&
           user->getNumResults() == 1 &&
           isa<ttg::MemDescType>(user->getResult(0).getType())) {
@@ -509,13 +537,14 @@ private:
         if ((mma.getA() != value && mma.getB() != value && mma.getD() != value) ||
             scope.completion != AsyncOp::TC5MMA || mma.getTwoCtas() ||
             !mma.getBarriers().empty())
-          return false;
+          return rejectOwnership(
+              user, "MMA lacks supported single-CTA TC5 completion");
         // GET is an exclusive handoff too: accumulator ping-pong uses GET for
         // MMA read/write and PUT for correction. Issue is not completion; the
         // unchanged TC5 exit lowers to the commit protecting reuse.
         scope.accesses.insert(user);
       } else {
-        return false;
+        return rejectOwnership(user, "unsupported descriptor use");
       }
     }
     return true;
@@ -537,12 +566,13 @@ private:
         Operation *def = dep.getDefiningOp();
         if (!def || !scope.accesses.contains(def) ||
             accessTokens(def).second != dep || !def->isBeforeInBlock(access))
-          return false;
+          return rejectOwnership(access,
+                                 "access dependency escapes ownership scope");
       }
       if (token)
         for (Operation *user : token.getUsers())
           if (!scope.accesses.contains(user) || accessTokens(user).first != token)
-            return false;
+            return rejectOwnership(user, "access token escapes ownership scope");
     }
     return true;
   }
@@ -554,33 +584,83 @@ private:
 struct ScheduleArefReleases
     : impl::NVWSScheduleArefReleasesBase<ScheduleArefReleases> {
   void runOnOperation() override {
-    if (ttg::TritonGPUDialect::getNumCTAs(getOperation()) != 1)
+    if (ttg::TritonGPUDialect::getNumCTAs(getOperation()) != 1) {
+      ++numUnsupportedModules;
+      LLVM_DEBUG(llvm::dbgs() << "[" DEBUG_TYPE
+                              "] skipped module: only one CTA is supported\n");
       return;
+    }
     Ownership ownership;
     SmallVector<ArefGetExitOp> exits;
     getOperation().walk([&](ArefGetExitOp exit) { exits.push_back(exit); });
     for (ArefGetExitOp exit : exits) {
       ++numExamined;
       Scope *scope = ownership.getScope(exit);
-      if (!scope || !ttg::hasPartition(scope->context))
+      if (!scope) {
+        ++numUncertified;
+        LLVM_DEBUG(llvm::dbgs() << "[" DEBUG_TYPE
+                                "] release rejected: no certified scope at "
+                                << exit.getLoc() << "\n");
         continue;
+      }
+      if (!ttg::hasPartition(scope->context)) {
+        ++numUnpartitioned;
+        LLVM_DEBUG(llvm::dbgs() << "[" DEBUG_TYPE
+                                "] release skipped: serial boundary at "
+                                << exit.getLoc() << "\n");
+        continue;
+      }
       ++numCertified;
       Operation *insertion = exit;
-      unsigned crossedMemory = 0;
+      unsigned crossedMemory = 0, crossedPure = 0;
       while (Operation *previous = insertion->getPrevNode()) {
-        if (!scope->contains(previous) || previous->getNumRegions() ||
-            previous->hasTrait<OpTrait::IsTerminator>() ||
-            isa<CallOpInterface>(previous) ||
-            llvm::any_of(exit->getOperands(), [&](Value value) {
-              return value.getDefiningOp() == previous;
-            }))
+        if (!scope->contains(previous)) {
+          if (!sameContext(scope->context, previous)) {
+            ++numContextStops;
+            reportStop(exit, previous, "different partition, stage, or cluster");
+          } else {
+            ++numScopeStops;
+            reportStop(exit, previous, "ownership segment boundary");
+          }
           break;
+        }
+        if (previous->getNumRegions() ||
+            previous->hasTrait<OpTrait::IsTerminator>() ||
+            isa<CallOpInterface>(previous)) {
+          ++numControlStops;
+          reportStop(exit, previous, "region, terminator, or call boundary");
+          break;
+        }
+        if (llvm::any_of(exit->getOperands(), [&](Value value) {
+              return value.getDefiningOp() == previous;
+            })) {
+          ++numOperandStops;
+          reportStop(exit, previous, "definition of a release operand");
+          break;
+        }
         if (isMemoryEffectFree(previous) && isSpeculatable(previous)) {
+          ++crossedPure;
           insertion = previous;
           continue;
         }
-        if (!ownership.heldElsewhere(previous, exit, *scope))
+        if (!ownership.heldElsewhere(previous, exit, *scope)) {
+          if (scope->accesses.contains(previous)) {
+            ++numOwnAccessStops;
+            reportStop(exit, previous, "last access to the released buffer");
+          } else if (isa<ttng::TCGen5MMAOp, ttng::TCGen5MMAScaledOp,
+                         ttng::TCGen5CommitOp, ttng::TMEMCopyOp,
+                         ArefGetEnterOp, ArefPutEnterOp, ArefGetExitOp,
+                         ArefPutExitOp>(previous)) {
+            ++numProtocolStops;
+            reportStop(exit, previous,
+                       "MMA issue group or ownership protocol boundary");
+          } else {
+            ++numEffectStops;
+            reportStop(exit, previous,
+                       "effect is not protected by another held scope");
+          }
           break;
+        }
         ++crossedMemory;
         insertion = previous;
       }
@@ -588,6 +668,11 @@ struct ScheduleArefReleases
         exit->moveBefore(insertion);
         ++numMoved;
         numMemoryCrossed += crossedMemory;
+        numPureCrossed += crossedPure;
+        LLVM_DEBUG(llvm::dbgs() << "[" DEBUG_TYPE "] moved release at "
+                                << exit.getLoc() << " across " << crossedPure
+                                << " pure and " << crossedMemory
+                                << " separately protected memory operations\n");
       }
     }
     numChannels = ownership.size();

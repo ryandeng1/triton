@@ -1,0 +1,511 @@
+{
+  "date": "2026-11-07",
+  "scope": "LayerNorm backward source ownership experiment, not an implemented native compiler pass",
+  "device": "NVIDIA B300 SXM6 PC, sm_103, 148 SMs",
+  "outputs": [
+    "dx",
+    "dw",
+    "db"
+  ],
+  "timing": {
+    "scope": "Complete backward including required lock/count reset and final reduction; allocation and forward excluded",
+    "statistic": "median of three seed medians",
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "rounds_per_seed": 15,
+    "invocations_per_graph_replay": 32,
+    "minimum_warmup_ms": 200
+  },
+  "accuracy": {
+    "atol": 0.01,
+    "rtol": 0.0,
+    "contract_scope": "Chosen check borrowed from tutorial FP16 test; not a universal BF16 training accuracy contract",
+    "statistics_dtype": "fp32",
+    "bf16_oracle": "fp64 derivative math using unchanged FP32 saved stats, direct nearest-even output rounding",
+    "historical_fp32_fp16_oracle": "fp32 derivative math rounded to output dtype",
+    "checks": [
+      "pre_checks",
+      "fresh_pre_checks",
+      "post_checks",
+      "fresh_post_checks"
+    ],
+    "guard_scope": "Triton allocations and Quack outputs; native functional outputs and Quack internal partials unguarded"
+  },
+  "bf16_precision_policy": "Both original and ownership kernels use FP32 partial DW/DB buffers while inputs, weights, and all output gradients remain BF16; separate allocation/precision policy from ownership",
+  "compiler_flags": {
+    "enable_aref_release_scheduling": false,
+    "enable_tmem_release_scheduling": false,
+    "enable_tmem_packing": false,
+    "enable_tmem_single_buffer": false,
+    "enable_fp_fusion": false
+  },
+  "compiler_note": "FP fusion False matches local checkout default. No native compiler changes in this experiment.",
+  "headline_cases": [
+    {
+      "dtype": "bf16",
+      "shape": [
+        4096,
+        1024
+      ],
+      "scratch_dtype": "fp32",
+      "reference_precision": "fp64",
+      "results": "layernorm_ownership_results/confirm-bf16-f32scratch-fp64ref-m4096-n1024/results.json",
+      "report_status": "measured",
+      "original_configuration": "locked-g256-w8",
+      "same_grid_configuration": "owner-same-grid-g256-w4",
+      "reduced_grid_configuration": "owner-round-g256-w8",
+      "median_microseconds": {
+        "locked-g256-w8": 47.94999957084656,
+        "owner-same-grid-g256-w4": 23.754000663757324,
+        "owner-round-g256-w8": 22.919999435544014,
+        "torch-native": 23.156000301241875,
+        "quack": 30.93699924647808
+      },
+      "per_seed_microseconds": {
+        "locked-g256-w8": [
+          47.96700179576874,
+          47.87600040435791,
+          47.94999957084656
+        ],
+        "owner-same-grid-g256-w4": [
+          24.0860003978014,
+          23.737000301480293,
+          23.754000663757324
+        ],
+        "owner-round-g256-w8": [
+          22.87299931049347,
+          22.92799949645996,
+          22.919999435544014
+        ],
+        "torch-native": [
+          23.202000185847282,
+          23.142000660300255,
+          23.156000301241875
+        ],
+        "quack": [
+          30.93699924647808,
+          30.938999727368355,
+          30.931999906897545
+        ]
+      },
+      "same_grid_speedup_vs_fastest_eligible_original": 2.0186073179667074,
+      "same_grid_latency_reduction_fraction": 0.5046089493982044,
+      "selected_providers_all_recorded_checks_pass": true,
+      "rejected_configurations": []
+    },
+    {
+      "dtype": "bf16",
+      "shape": [
+        4096,
+        4096
+      ],
+      "scratch_dtype": "fp32",
+      "reference_precision": "fp64",
+      "results": "layernorm_ownership_results/repeat-bf16-f32scratch-fp64ref-m4096-n4096/results.json",
+      "report_status": "measured_with_rejections",
+      "original_configuration": "locked-g512-w8",
+      "same_grid_configuration": "owner-same-grid-g256-w8",
+      "reduced_grid_configuration": "owner-round-g256-w8",
+      "median_microseconds": {
+        "locked-g512-w8": 77.18300074338913,
+        "owner-same-grid-g256-w8": 43.44100132584572,
+        "owner-round-g256-w8": 41.832998394966125,
+        "torch-native": 56.522998958826065,
+        "quack": 42.96499863266945
+      },
+      "per_seed_microseconds": {
+        "locked-g512-w8": [
+          77.18300074338913,
+          77.17499881982803,
+          77.31600105762482
+        ],
+        "owner-same-grid-g256-w8": [
+          43.706998229026794,
+          42.80100017786026,
+          43.44100132584572
+        ],
+        "owner-round-g256-w8": [
+          42.58200153708458,
+          41.55400022864342,
+          41.832998394966125
+        ],
+        "torch-native": [
+          56.161001324653625,
+          57.328999042510986,
+          56.522998958826065
+        ],
+        "quack": [
+          42.96499863266945,
+          42.70099848508835,
+          43.05100068449974
+        ]
+      },
+      "same_grid_speedup_vs_fastest_eligible_original": 1.776731621917477,
+      "same_grid_latency_reduction_fraction": 0.4371687948454567,
+      "selected_providers_all_recorded_checks_pass": true,
+      "rejected_configurations": [
+        "locked-g256-w8"
+      ],
+      "exclusion_policy": "locked-g256-w8 excluded after observed seed2 fresh-post DW rejection in first FP64 confirmation; rejected again in repeat. No tolerance change or dropped seed.",
+      "confirmation_history": [
+        "layernorm_ownership_results/confirm-bf16-f32scratch-fp64ref-m4096-n4096/results.json",
+        "layernorm_ownership_results/repeat-bf16-f32scratch-fp64ref-m4096-n4096/results.json"
+      ],
+      "fixed_configuration_control": {
+        "groups": 256,
+        "warps": 4,
+        "locked_us": 78.13899964094162,
+        "same_grid_us": 46.07899859547615,
+        "speedup": 1.6957616706673175
+      }
+    },
+    {
+      "dtype": "fp32",
+      "shape": [
+        4096,
+        1024
+      ],
+      "scratch_dtype": "input",
+      "reference_precision": "fp32",
+      "results": "layernorm_ownership_results/same-grid-f32-m4096-n1024/results.json",
+      "report_status": "measured",
+      "original_configuration": "locked-g256-w4",
+      "same_grid_configuration": "owner-same-grid-g256-w4",
+      "reduced_grid_configuration": "owner-round-g256-w8",
+      "median_microseconds": {
+        "locked-g256-w4": 46.633001416921616,
+        "owner-same-grid-g256-w4": 24.765999987721443,
+        "owner-round-g256-w8": 23.693999275565147,
+        "torch-native": 22.432999685406685,
+        "quack": 29.061000794172287
+      },
+      "per_seed_microseconds": {
+        "locked-g256-w4": [
+          46.60400003194809,
+          46.6420017182827,
+          46.633001416921616
+        ],
+        "owner-same-grid-g256-w4": [
+          24.713000282645226,
+          24.771999567747116,
+          24.765999987721443
+        ],
+        "owner-round-g256-w8": [
+          23.706000298261642,
+          23.68899993598461,
+          23.693999275565147
+        ],
+        "torch-native": [
+          22.332999855279922,
+          22.432999685406685,
+          22.438999265432358
+        ],
+        "quack": [
+          29.035000130534172,
+          29.071999713778496,
+          29.061000794172287
+        ]
+      },
+      "same_grid_speedup_vs_fastest_eligible_original": 1.8829444173480359,
+      "same_grid_latency_reduction_fraction": 0.4689168778500571,
+      "selected_providers_all_recorded_checks_pass": true,
+      "rejected_configurations": []
+    },
+    {
+      "dtype": "fp32",
+      "shape": [
+        4096,
+        4096
+      ],
+      "scratch_dtype": "input",
+      "reference_precision": "fp32",
+      "results": "layernorm_ownership_results/same-grid-f32-m4096-n4096/results.json",
+      "report_status": "measured",
+      "original_configuration": "locked-g256-w4",
+      "same_grid_configuration": "owner-same-grid-g256-w8",
+      "reduced_grid_configuration": "owner-round-g256-w8",
+      "median_microseconds": {
+        "locked-g256-w4": 76.22399926185608,
+        "owner-same-grid-g256-w8": 54.42399904131889,
+        "owner-round-g256-w8": 53.13999950885773,
+        "torch-native": 82.23100006580353,
+        "quack": 48.907000571489334
+      },
+      "per_seed_microseconds": {
+        "locked-g256-w4": [
+          76.3539969921112,
+          76.22399926185608,
+          76.20599865913391
+        ],
+        "owner-same-grid-g256-w8": [
+          54.3380007147789,
+          54.42399904131889,
+          54.4699989259243
+        ],
+        "owner-round-g256-w8": [
+          52.887000143527985,
+          53.17100137472153,
+          53.13999950885773
+        ],
+        "torch-native": [
+          82.54999667406082,
+          82.22799748182297,
+          82.23100006580353
+        ],
+        "quack": [
+          48.59299957752228,
+          48.97100105881691,
+          48.907000571489334
+        ]
+      },
+      "same_grid_speedup_vs_fastest_eligible_original": 1.4005585882064004,
+      "same_grid_latency_reduction_fraction": 0.285999166032296,
+      "selected_providers_all_recorded_checks_pass": true,
+      "rejected_configurations": []
+    },
+    {
+      "dtype": "fp16",
+      "shape": [
+        1151,
+        8192
+      ],
+      "scratch_dtype": "input",
+      "reference_precision": "fp32",
+      "results": "layernorm_ownership_results/confirm-fp16-m1151-n8192/results.json",
+      "report_status": "measured",
+      "original_configuration": "locked-g256-w4",
+      "same_grid_configuration": "owner-same-grid-g128-w8",
+      "reduced_grid_configuration": "owner-round-g128-w8",
+      "median_microseconds": {
+        "locked-g256-w4": 34.981999546289444,
+        "owner-same-grid-g128-w8": 19.07999999821186,
+        "owner-round-g128-w8": 18.74000020325184,
+        "torch-native": 33.61399844288826,
+        "quack": 39.03000056743622
+      },
+      "per_seed_microseconds": {
+        "locked-g256-w4": [
+          34.970998764038086,
+          34.984998404979706,
+          34.981999546289444
+        ],
+        "owner-same-grid-g128-w8": [
+          19.08699981868267,
+          19.076000899076462,
+          19.07999999821186
+        ],
+        "owner-round-g128-w8": [
+          18.737999722361565,
+          18.744999542832375,
+          18.74000020325184
+        ],
+        "torch-native": [
+          33.61399844288826,
+          33.604998141527176,
+          33.63800048828125
+        ],
+        "quack": [
+          38.99199888110161,
+          39.03000056743622,
+          39.044998586177826
+        ]
+      },
+      "same_grid_speedup_vs_fastest_eligible_original": 1.8334381315287152,
+      "same_grid_latency_reduction_fraction": 0.45457663239162427,
+      "selected_providers_all_recorded_checks_pass": true,
+      "rejected_configurations": []
+    }
+  ],
+  "bf16_n1024_earlier_confirmation": {
+    "results": "layernorm_ownership_results/confirm-bf16-f32scratch-m4096-n1024/results.json",
+    "reference_precision": "fp32",
+    "original_us": 46.16500064730644,
+    "same_grid_us": 23.948000743985176,
+    "speedup": 1.9277183569864942,
+    "note": "Historical fully passing three-seed run; no device-kernel change in later oracle correction. Timings vary across runs."
+  },
+  "numerical_findings": {
+    "bf16_scratch_precision": {
+      "results": "layernorm_ownership_results/check-bf16-inputscratch-fp64ref-m4096-n1024/results.json",
+      "seed": 0,
+      "shape": [
+        4096,
+        1024
+      ],
+      "groups": 4096,
+      "one_row_per_partial": true,
+      "dw_mismatches": 292,
+      "dw_max_abs_error": 0.0625,
+      "db_exact": true,
+      "dx_pass": true,
+      "original_and_owner_modes_all_fail_selected_check": true,
+      "meaning": "Partial-product quantization remains even without accumulation-order differences; does not establish unacceptable application accuracy."
+    },
+    "old_oracle_midpoint": {
+      "diagnostic": "layernorm_ownership_results/diagnose-bf16-f32scratch-seed2-m4096-n4096/results.json",
+      "shape": [
+        4096,
+        4096
+      ],
+      "seed": 2,
+      "dw_column": 204,
+      "fp32_raw": 6.203125,
+      "fp32_rounded_bf16": 6.1875,
+      "fp64_raw": 6.203126535480063,
+      "fp64_rounded_bf16": 6.21875,
+      "all_four_implementations_actual": 6.21875,
+      "diagnostic_launches_per_provider": 4
+    },
+    "order_sensitive_original_rejection": {
+      "configuration": "locked-g256-w8",
+      "shape": [
+        4096,
+        4096
+      ],
+      "dtype": "bf16",
+      "scratch_dtype": "fp32",
+      "seed": 2,
+      "dw_mismatches": 1,
+      "max_abs_difference": 0.03125,
+      "observed_in_both_fp64_confirmations": true,
+      "index_not_recorded": true,
+      "interpretation": "Consistent with nondeterministic FP32 reduction order crossing a BF16 boundary; not proof of race or unsuitable training accuracy.",
+      "phases": {
+        "first_fp64_confirmation": "fresh_post_checks",
+        "final_repeat": "post_checks"
+      }
+    },
+    "direct_rounding_cpu_audit": "layernorm_ownership_results/reference_rounding_cpu_audit.json"
+  },
+  "boundaries": [
+    {
+      "results": "layernorm_ownership_results/boundary-bf16-m257-n1000-g256/results.json",
+      "shape": [
+        257,
+        1000
+      ],
+      "dtype": "bf16",
+      "scratch_dtype": "fp32",
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "status": "all provider checks passed",
+      "performance_evidence": false
+    },
+    {
+      "results": "layernorm_ownership_results/boundary-fp16-m257-n1000-g256/results.json",
+      "shape": [
+        257,
+        1000
+      ],
+      "dtype": "fp16",
+      "scratch_dtype": "input",
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "status": "all provider checks passed",
+      "performance_evidence": false
+    },
+    {
+      "results": "layernorm_ownership_results/boundary-fp32-m1-n1-g4/results.json",
+      "shape": [
+        1,
+        1
+      ],
+      "dtype": "fp32",
+      "scratch_dtype": "input",
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "status": "all provider checks passed",
+      "performance_evidence": false
+    },
+    {
+      "results": "layernorm_ownership_results/boundary-fp32-m17-n33-g64/results.json",
+      "shape": [
+        17,
+        33
+      ],
+      "dtype": "fp32",
+      "scratch_dtype": "input",
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "status": "all provider checks passed",
+      "performance_evidence": false
+    },
+    {
+      "results": "layernorm_ownership_results/boundary-fp32-m513-n4097-g128/results.json",
+      "shape": [
+        513,
+        4097
+      ],
+      "dtype": "fp32",
+      "scratch_dtype": "input",
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "status": "all provider checks passed",
+      "performance_evidence": false
+    }
+  ],
+  "profile": {
+    "dtype": "fp32",
+    "shape": [
+      4096,
+      1024
+    ],
+    "warps": 4,
+    "global_atomic_set_accesses": {
+      "locked_g256": 36690,
+      "owned_g256": 0,
+      "locked_g4096": 12288
+    },
+    "required_successful_protocol_atomics_locked_g256": 8448,
+    "original_g256_warp_cycles_between_issued_instructions": 55.7,
+    "original_g256_warp_cycles_waiting_cta_barrier": 32.4,
+    "original_g256_dram_throughput_percent": 8.47,
+    "path": "layernorm_ownership_results/profiles",
+    "notes": [
+      "Access counter is not a direct CAS instruction count",
+      "Profiler durations are not normal timing evidence",
+      "Ownership also changes memory traffic, weight reuse, register lifetime, and scheduling"
+    ]
+  },
+  "next_step": "Opt-in compiler recognition of the private lock/count reduction protocol with launch, nonaliasing, zero-entry state, and no-observer facts; implement same-grid owner loop and reject unsupported effects.",
+  "limitations": [
+    "Source prototype, not automatic compiler pass",
+    "Tested shapes, seeds, distributions, and one B300 only",
+    "BF16 FP32-scratch allocation policy separate from ownership",
+    "Not a training convergence study or a universal BF16 accuracy contract",
+    "Does not beat the fastest library on every shape",
+    "Best tested configurations, not exhaustive tuning"
+  ],
+  "validation_artifacts": {
+    "bf16_n1024": "layernorm_ownership_results/confirm-bf16-f32scratch-fp64ref-m4096-n1024/compiled_same_grid_audit.json",
+    "bf16_n4096_initial": "layernorm_ownership_results/confirm-bf16-f32scratch-fp64ref-m4096-n4096/compiled_same_grid_audit.json",
+    "bf16_n4096_repeat": "layernorm_ownership_results/repeat-bf16-f32scratch-fp64ref-m4096-n4096/compiled_same_grid_audit.json",
+    "boundaries": "layernorm_ownership_results/boundary_validation_audit.json",
+    "reference_rounding": "layernorm_ownership_results/reference_rounding_cpu_audit.json"
+  },
+  "final_cpu_checks": {
+    "python_syntax": "passed for all five new experiment scripts",
+    "git_diff_check": "passed",
+    "documentation_links": "passed",
+    "tritonbench_worktree": "clean",
+    "bf16_n1024_original_vs_updated_oracle_identical_compiled_artifacts": 150
+  }
+}

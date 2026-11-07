@@ -1,3 +1,8 @@
+[Start here](README.md) · [Consolidated findings](findings_overview.md).
+This is a historical report. The consolidated overview includes later real-kernel
+experiments and clarifies that the raw artifact paths in the November 4 JSON
+summary are no longer present in this workspace.
+
 We investigated how ownership, scoped communication, asynchronous completion, and buffer lifetimes could help Triton optimize warp-specialized GPU programs. These properties connect to race freedom while providing more specific information about when work can move and storage can be reused.
 
 Initial experiments also explored immutable metadata, unique writers, and complete overwrite. The subsequent compiler implementation focused on scheduling and Blackwell tensor memory (TMEM).

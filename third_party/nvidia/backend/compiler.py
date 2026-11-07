@@ -154,6 +154,10 @@ class CUDAOptions:
     # Experimental: only explicit exclusive TMEM release contracts are eligible.
     enable_tmem_release_scheduling: bool = False
     enable_tmem_packing: bool = False
+    # Experimental: infer ownership before automatic warp specialization lowers Arefs.
+    enable_aref_release_scheduling: bool = False
+    # Experimental: use the source single-buffer policy on marked Blackwell WS loops.
+    enable_tmem_single_buffer: bool = False
 
     def __post_init__(self):
         if self.max_occupancy is not None and (type(self.max_occupancy) is not int or self.max_occupancy <= 0):
@@ -349,9 +353,9 @@ class CUDABackend(BaseBackend):
             passes.ttgpuir.add_optimize_accumulator_init(pm)
             passes.ttgpuir.add_hoist_tmem_alloc(pm, False)
             nvidia.passes.ttnvgpuir.add_promote_lhs_to_tmem(pm)
-            passes.ttgpuir.add_assign_latencies(pm, opt.num_stages)
+            passes.ttgpuir.add_assign_latencies(pm, opt.num_stages, opt.enable_tmem_single_buffer)
             passes.ttgpuir.add_schedule_loops(pm)
-            passes.ttgpuir.add_warp_specialize(pm, opt.num_stages)
+            passes.ttgpuir.add_warp_specialize(pm, opt.num_stages, opt.enable_aref_release_scheduling)
             passes.ttgpuir.add_pipeline(pm, opt.num_stages, dump_enabled)
             passes.ttgpuir.add_optimize_partition_warps(pm)
             passes.ttgpuir.add_combine_tensor_select_and_if(pm)
