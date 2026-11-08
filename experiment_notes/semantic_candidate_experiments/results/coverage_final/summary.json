@@ -1,0 +1,694 @@
+{
+  "status": "passed",
+  "experiment": "Automatic unique-index direct writes, complete coverage, and real ATen embedding specialization",
+  "proof_chain": [
+    "producer proves global uniqueness",
+    "range plus cardinality proves complete vocabulary coverage",
+    "fresh private output plus complete overwrite removes zero initialization",
+    "single contribution permits direct output cast without FP32 scratch",
+    "ATen adaptation preserves pinned native non-FTZ arithmetic"
+  ],
+  "scope": "Fixed-metadata FX prototype, NVIDIA CUDA; ATen path gated by exact Torch git revision; unknown facts or unsupported cases use original ATen",
+  "torch_revision": "5c4886908584029761b579af026dcfb627c84070",
+  "compiler_sha256": "53634c635d80d8d86363f70f97016e9821ebc7e15ab28d8d47e5cbf8af210522",
+  "source_sha256": {
+    "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/coverage_experiment.py": "db50502fc3f549eb7550f594521835097e0d14d994f477e77da7bbaa812330d2",
+    "/home/ryandeng/tpaa/triton/python/triton/experimental/semantic_contracts/__init__.py": "7debd3b3c0eb3c63da5fb607b259bebccbea64eedcb784de12168a101c2b9f04",
+    "/home/ryandeng/tpaa/triton/python/triton/experimental/semantic_contracts/analysis.py": "45a5f4c3dadef51cb509e5cdabb811b3df3a974ec66ea9eff67869976cecea2e",
+    "/home/ryandeng/tpaa/triton/python/triton/experimental/semantic_contracts/backend.py": "4a8086d6bf181f60907699e9b9c92830f0a13742af793b7a15f4fd1806d94292",
+    "/home/ryandeng/tpaa/triton/python/triton/experimental/semantic_contracts/kernels.py": "3b84e18caca8b329512c2ed85789a78bebfafe38403683eab62840b64ae2d451",
+    "/home/ryandeng/tpaa/triton/python/triton/experimental/semantic_contracts/ops.py": "7edb29822b689ce3b064161880ace3dc1a90ee664f80701d1313b98520c65a80"
+  },
+  "consumer_summary": [
+    {
+      "shape_n_d_v": [
+        256,
+        64,
+        256
+      ],
+      "frequency": true,
+      "config_median_us": {
+        "128": {
+          "atomic": 5.036000162363052,
+          "unique_scratch": 3.1880000606179237,
+          "unique_direct": 1.3859999598935246
+        },
+        "256": {
+          "atomic": 5.026999861001968,
+          "unique_scratch": 3.1820000149309635,
+          "unique_direct": 1.3889999827370048
+        }
+      },
+      "best": {
+        "atomic": {
+          "block_d": 256,
+          "median_us": 5.026999861001968
+        },
+        "unique_scratch": {
+          "block_d": 256,
+          "median_us": 3.1820000149309635
+        },
+        "unique_direct": {
+          "block_d": 128,
+          "median_us": 1.3859999598935246
+        }
+      },
+      "direct_over_atomic_speedup": 3.626984131650446,
+      "direct_over_previous_unique_speedup": 2.295815373021664
+    },
+    {
+      "shape_n_d_v": [
+        4096,
+        128,
+        4096
+      ],
+      "frequency": false,
+      "config_median_us": {
+        "128": {
+          "atomic": 5.557000171393156,
+          "unique_scratch": 5.386000033468008,
+          "unique_direct": 2.9949999880045652
+        },
+        "256": {
+          "atomic": 5.547000095248222,
+          "unique_scratch": 5.413999781012535,
+          "unique_direct": 3.031000029295683
+        }
+      },
+      "best": {
+        "atomic": {
+          "block_d": 256,
+          "median_us": 5.547000095248222
+        },
+        "unique_scratch": {
+          "block_d": 128,
+          "median_us": 5.386000033468008
+        },
+        "unique_direct": {
+          "block_d": 128,
+          "median_us": 2.9949999880045652
+        }
+      },
+      "direct_over_atomic_speedup": 1.8520868505725574,
+      "direct_over_previous_unique_speedup": 1.7983305692954141
+    },
+    {
+      "shape_n_d_v": [
+        4096,
+        128,
+        4096
+      ],
+      "frequency": true,
+      "config_median_us": {
+        "128": {
+          "atomic": 7.7320002019405365,
+          "unique_scratch": 5.3889998234808445,
+          "unique_direct": 3.002000041306019
+        },
+        "256": {
+          "atomic": 7.728000171482563,
+          "unique_scratch": 5.402999930083752,
+          "unique_direct": 3.022999968379736
+        }
+      },
+      "best": {
+        "atomic": {
+          "block_d": 256,
+          "median_us": 7.728000171482563
+        },
+        "unique_scratch": {
+          "block_d": 128,
+          "median_us": 5.3889998234808445
+        },
+        "unique_direct": {
+          "block_d": 128,
+          "median_us": 3.002000041306019
+        }
+      },
+      "direct_over_atomic_speedup": 2.5742838324947193,
+      "direct_over_previous_unique_speedup": 1.7951364921155573
+    },
+    {
+      "shape_n_d_v": [
+        4096,
+        128,
+        8192
+      ],
+      "frequency": true,
+      "config_median_us": {
+        "128": {
+          "atomic": 8.038000203669071,
+          "unique_scratch": 5.754999816417694,
+          "unique_direct": 4.114000126719475
+        },
+        "256": {
+          "atomic": 8.055999875068665,
+          "unique_scratch": 5.756000056862831,
+          "unique_direct": 4.126000218093395
+        }
+      },
+      "best": {
+        "atomic": {
+          "block_d": 128,
+          "median_us": 8.038000203669071
+        },
+        "unique_scratch": {
+          "block_d": 128,
+          "median_us": 5.754999816417694
+        },
+        "unique_direct": {
+          "block_d": 128,
+          "median_us": 4.114000126719475
+        }
+      },
+      "direct_over_atomic_speedup": 1.9538162265635648,
+      "direct_over_previous_unique_speedup": 1.3988817790841346
+    },
+    {
+      "shape_n_d_v": [
+        16384,
+        256,
+        16384
+      ],
+      "frequency": true,
+      "config_median_us": {
+        "128": {
+          "atomic": 26.667000725865364,
+          "unique_scratch": 23.500999435782433,
+          "unique_direct": 17.73099973797798
+        },
+        "256": {
+          "atomic": 18.30100081861019,
+          "unique_scratch": 15.10899979621172,
+          "unique_direct": 9.351000189781189
+        }
+      },
+      "best": {
+        "atomic": {
+          "block_d": 256,
+          "median_us": 18.30100081861019
+        },
+        "unique_scratch": {
+          "block_d": 256,
+          "median_us": 15.10899979621172
+        },
+        "unique_direct": {
+          "block_d": 256,
+          "median_us": 9.351000189781189
+        }
+      },
+      "direct_over_atomic_speedup": 1.9571169337168446,
+      "direct_over_previous_unique_speedup": 1.6157629654122878
+    }
+  ],
+  "framework_summary": [
+    {
+      "shape_n_d_v": [
+        256,
+        64,
+        256
+      ],
+      "producer": "arange",
+      "frequency": false,
+      "median_us": {
+        "device": {
+          "aten_fx": 7.925000041723251,
+          "semantic_fx": 2.176000038161874,
+          "pytorch": 8.24700016528368
+        },
+        "wall": {
+          "aten_fx": 64.0778,
+          "semantic_fx": 93.4158,
+          "pytorch": 23.3154
+        }
+      },
+      "speedup_over_aten_fx": {
+        "device": 3.6420036317727797,
+        "wall": 0.6859417785856353
+      },
+      "speedup_over_pytorch": {
+        "device": 3.7899816271373528,
+        "wall": 0.24958732891009872
+      }
+    },
+    {
+      "shape_n_d_v": [
+        256,
+        64,
+        256
+      ],
+      "producer": "arange",
+      "frequency": true,
+      "median_us": {
+        "device": {
+          "aten_fx": 28.070999309420586,
+          "semantic_fx": 2.1840000990778208,
+          "pytorch": 28.370000422000885
+        },
+        "wall": {
+          "aten_fx": 141.6317,
+          "semantic_fx": 95.8576,
+          "pytorch": 98.03450000000001
+        }
+      },
+      "speedup_over_aten_fx": {
+        "device": 12.853021078741422,
+        "wall": 1.477521865767555
+      },
+      "speedup_over_pytorch": {
+        "device": 12.989926343858649,
+        "wall": 1.0227097277628483
+      }
+    },
+    {
+      "shape_n_d_v": [
+        256,
+        64,
+        256
+      ],
+      "producer": "randperm",
+      "frequency": false,
+      "median_us": {
+        "device": {
+          "aten_fx": 17.024999484419823,
+          "semantic_fx": 11.257000267505646,
+          "pytorch": 18.46200041472912
+        },
+        "wall": {
+          "aten_fx": 90.6353,
+          "semantic_fx": 124.63320000000002,
+          "pytorch": 49.1418
+        }
+      },
+      "speedup_over_aten_fx": {
+        "device": 1.5123922075016762,
+        "wall": 0.7272163436387735
+      },
+      "speedup_over_pytorch": {
+        "device": 1.6400461913482725,
+        "wall": 0.3942914087097178
+      }
+    },
+    {
+      "shape_n_d_v": [
+        256,
+        64,
+        256
+      ],
+      "producer": "randperm",
+      "frequency": true,
+      "median_us": {
+        "device": {
+          "aten_fx": 37.324000149965286,
+          "semantic_fx": 11.156000196933746,
+          "pytorch": 37.39999979734421
+        },
+        "wall": {
+          "aten_fx": 173.18789999999998,
+          "semantic_fx": 129.33679999999998,
+          "pytorch": 124.9721
+        }
+      },
+      "speedup_over_aten_fx": {
+        "device": 3.345643554239438,
+        "wall": 1.3390458090814061
+      },
+      "speedup_over_pytorch": {
+        "device": 3.352456000101514,
+        "wall": 0.966253224140384
+      }
+    },
+    {
+      "shape_n_d_v": [
+        4096,
+        128,
+        4096
+      ],
+      "producer": "arange",
+      "frequency": false,
+      "median_us": {
+        "device": {
+          "aten_fx": 55.44599890708923,
+          "semantic_fx": 3.9049999322742224,
+          "pytorch": 55.97100034356117
+        },
+        "wall": {
+          "aten_fx": 136.9964,
+          "semantic_fx": 96.6473,
+          "pytorch": 94.3225
+        }
+      },
+      "speedup_over_aten_fx": {
+        "device": 14.198719556647518,
+        "wall": 1.4174881243449118
+      },
+      "speedup_over_pytorch": {
+        "device": 14.333162948600712,
+        "wall": 0.9759455256380676
+      }
+    },
+    {
+      "shape_n_d_v": [
+        4096,
+        128,
+        4096
+      ],
+      "producer": "arange",
+      "frequency": true,
+      "median_us": {
+        "device": {
+          "aten_fx": 65.78899919986725,
+          "semantic_fx": 3.900999901816249,
+          "pytorch": 66.51300191879272
+        },
+        "wall": {
+          "aten_fx": 158.06990000000002,
+          "semantic_fx": 96.52759999999999,
+          "pytorch": 112.80050000000001
+        }
+      },
+      "speedup_over_aten_fx": {
+        "device": 16.864650309075078,
+        "wall": 1.6375616921999514
+      },
+      "speedup_over_pytorch": {
+        "device": 17.050244448308046,
+        "wall": 1.1685828716346416
+      }
+    },
+    {
+      "shape_n_d_v": [
+        4096,
+        128,
+        4096
+      ],
+      "producer": "randperm",
+      "frequency": false,
+      "median_us": {
+        "device": {
+          "aten_fx": 104.88700121641159,
+          "semantic_fx": 53.12399938702583,
+          "pytorch": 104.47400063276291
+        },
+        "wall": {
+          "aten_fx": 196.4144,
+          "semantic_fx": 160.5738,
+          "pytorch": 147.88979999999998
+        }
+      },
+      "speedup_over_aten_fx": {
+        "device": 1.9743807399039226,
+        "wall": 1.2232032872112386
+      },
+      "speedup_over_pytorch": {
+        "device": 1.966606464841538,
+        "wall": 0.9210082840413565
+      }
+    },
+    {
+      "shape_n_d_v": [
+        4096,
+        128,
+        4096
+      ],
+      "producer": "randperm",
+      "frequency": true,
+      "median_us": {
+        "device": {
+          "aten_fx": 115.6340017914772,
+          "semantic_fx": 53.19099873304367,
+          "pytorch": 114.9279996752739
+        },
+        "wall": {
+          "aten_fx": 217.1648,
+          "semantic_fx": 160.0854,
+          "pytorch": 167.85060000000001
+        }
+      },
+      "speedup_over_aten_fx": {
+        "device": 2.1739392857017794,
+        "wall": 1.3565559382679497
+      },
+      "speedup_over_pytorch": {
+        "device": 2.160666323489759,
+        "wall": 1.0485066095971276
+      }
+    },
+    {
+      "shape_n_d_v": [
+        4096,
+        128,
+        8192
+      ],
+      "producer": "arange",
+      "frequency": false,
+      "median_us": {
+        "device": {
+          "aten_fx": 55.6269995868206,
+          "semantic_fx": 5.067000165581703,
+          "pytorch": 55.463001132011414
+        },
+        "wall": {
+          "aten_fx": 139.0057,
+          "semantic_fx": 113.9058,
+          "pytorch": 93.5971
+        }
+      },
+      "speedup_over_aten_fx": {
+        "device": 10.978290461617638,
+        "wall": 1.2203566455790662
+      },
+      "speedup_over_pytorch": {
+        "device": 10.94592447593578,
+        "wall": 0.8217061817747647
+      }
+    },
+    {
+      "shape_n_d_v": [
+        4096,
+        128,
+        8192
+      ],
+      "producer": "arange",
+      "frequency": true,
+      "median_us": {
+        "device": {
+          "aten_fx": 67.13099777698517,
+          "semantic_fx": 5.067999940365553,
+          "pytorch": 65.89899957180023
+        },
+        "wall": {
+          "aten_fx": 158.8967,
+          "semantic_fx": 113.2269,
+          "pytorch": 113.1979
+        }
+      },
+      "speedup_over_aten_fx": {
+        "device": 13.246053387313781,
+        "wall": 1.4033476143919865
+      },
+      "speedup_over_pytorch": {
+        "device": 13.002959815948017,
+        "wall": 0.9997438771175401
+      }
+    },
+    {
+      "shape_n_d_v": [
+        4096,
+        128,
+        8192
+      ],
+      "producer": "randperm",
+      "frequency": false,
+      "median_us": {
+        "device": {
+          "aten_fx": 104.9799993634224,
+          "semantic_fx": 58.212000876665115,
+          "pytorch": 103.34199666976929
+        },
+        "wall": {
+          "aten_fx": 196.7931,
+          "semantic_fx": 177.3655,
+          "pytorch": 146.2764
+        }
+      },
+      "speedup_over_aten_fx": {
+        "device": 1.803408193885064,
+        "wall": 1.1095342668106256
+      },
+      "speedup_over_pytorch": {
+        "device": 1.7752696198971405,
+        "wall": 0.82471732101226
+      }
+    },
+    {
+      "shape_n_d_v": [
+        4096,
+        128,
+        8192
+      ],
+      "producer": "randperm",
+      "frequency": true,
+      "median_us": {
+        "device": {
+          "aten_fx": 115.35999923944473,
+          "semantic_fx": 58.18700045347214,
+          "pytorch": 113.86699974536896
+        },
+        "wall": {
+          "aten_fx": 216.4065,
+          "semantic_fx": 179.20909999999998,
+          "pytorch": 165.6824
+        }
+      },
+      "speedup_over_aten_fx": {
+        "device": 1.9825733985323686,
+        "wall": 1.207564236414334
+      },
+      "speedup_over_pytorch": {
+        "device": 1.9569147551508523,
+        "wall": 0.9245200160036517
+      }
+    },
+    {
+      "shape_n_d_v": [
+        16384,
+        256,
+        16384
+      ],
+      "producer": "arange",
+      "frequency": false,
+      "median_us": {
+        "device": {
+          "aten_fx": 88.21900188922882,
+          "semantic_fx": 18.81299912929535,
+          "pytorch": 89.91599828004837
+        },
+        "wall": {
+          "aten_fx": 142.1132,
+          "semantic_fx": 97.1897,
+          "pytorch": 115.9626
+        }
+      },
+      "speedup_over_aten_fx": {
+        "device": 4.689257745824023,
+        "wall": 1.4622249065487392
+      },
+      "speedup_over_pytorch": {
+        "device": 4.779461140782832,
+        "wall": 1.1931572995903885
+      }
+    },
+    {
+      "shape_n_d_v": [
+        16384,
+        256,
+        16384
+      ],
+      "producer": "arange",
+      "frequency": true,
+      "median_us": {
+        "device": {
+          "aten_fx": 104.49700057506561,
+          "semantic_fx": 18.813999369740486,
+          "pytorch": 103.67999970912933
+        },
+        "wall": {
+          "aten_fx": 161.67260000000002,
+          "semantic_fx": 98.5847,
+          "pytorch": 136.73610000000002
+        }
+      },
+      "speedup_over_aten_fx": {
+        "device": 5.554215162945815,
+        "wall": 1.6399360144119728
+      },
+      "speedup_over_pytorch": {
+        "device": 5.510790006503517,
+        "wall": 1.3869910848235074
+      }
+    },
+    {
+      "shape_n_d_v": [
+        16384,
+        256,
+        16384
+      ],
+      "producer": "randperm",
+      "frequency": false,
+      "median_us": {
+        "device": {
+          "aten_fx": 147.25300669670105,
+          "semantic_fx": 73.36299866437912,
+          "pytorch": 145.18000185489655
+        },
+        "wall": {
+          "aten_fx": 199.5357,
+          "semantic_fx": 161.4657,
+          "pytorch": 180.67419999999998
+        }
+      },
+      "speedup_over_aten_fx": {
+        "device": 2.007183585425042,
+        "wall": 1.2357776295522827
+      },
+      "speedup_over_pytorch": {
+        "device": 1.978926768234566,
+        "wall": 1.118963346394931
+      }
+    },
+    {
+      "shape_n_d_v": [
+        16384,
+        256,
+        16384
+      ],
+      "producer": "randperm",
+      "frequency": true,
+      "median_us": {
+        "device": {
+          "aten_fx": 163.87000679969788,
+          "semantic_fx": 73.24200123548508,
+          "pytorch": 159.28399562835693
+        },
+        "wall": {
+          "aten_fx": 220.71999999999997,
+          "semantic_fx": 161.0358,
+          "pytorch": 199.3397
+        }
+      },
+      "speedup_over_aten_fx": {
+        "device": 2.237377516117137,
+        "wall": 1.3706269040797139
+      },
+      "speedup_over_pytorch": {
+        "device": 2.174763017687525,
+        "wall": 1.2378595318556496
+      }
+    }
+  ],
+  "validation": {
+    "runtime_tests": 198,
+    "benchmark_cases": 78,
+    "correctness": "bitwise paired/reference equality for performance cases; floating edge values, branch boundaries, padding, fallbacks and public autograd capture covered in runtime tests",
+    "native_changes_this_phase": false
+  },
+  "limitations": [
+    "Consumer timings include required zero/count/convert launches and share physical output buffers; only blockD128/256 tuned.",
+    "Framework device timings include arange/randperm producers but functional variants use separate allocations; capture order shuffled.",
+    "Ordinary-call wall time includes Python interpreter overhead and regresses for several small/medium cases.",
+    "These are operator/producer graph measurements, not model or training-convergence results.",
+    "Competitive Inductor control is recorded separately; native-ATen gains do not establish a gain over existing compiler optimizations.",
+    "The initial framework graph returns both gradient and generated indices for validation, forcing index materialization. Output-only competitive compiler controls are reported separately."
+  ],
+  "upstream_sources": [
+    "https://github.com/pytorch/pytorch/blob/5c4886908584029761b579af026dcfb627c84070/aten/src/ATen/native/cuda/Embedding.cu#L240",
+    "https://github.com/pytorch/pytorch/blob/5c4886908584029761b579af026dcfb627c84070/aten/src/ATen/native/cuda/EmbeddingBackwardKernel.cu#L286"
+  ],
+  "artifacts": {
+    "raw": "results.json",
+    "representative_ptx": "code/",
+    "validation": "validation/"
+  },
+  "competitive_control": "../coverage_inductor_final/summary.json"
+}

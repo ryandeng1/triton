@@ -1,0 +1,66 @@
+52: #   return %_unsafe_masked_index_put_accumulate
+53: triton_poi_fused_arange_embedding_dense_backward_0 = async_compile.triton('triton_poi_fused_arange_embedding_dense_backward_0', '''
+54: import triton
+76:     tmp0 = tl.full([1], 0, tl.int64)
+77:     tl.store(out_ptr0 + (x0), tmp0, None)
+78: ''', device_str='cuda')
+94: #   return %buf1
+95: triton_poi_fused_arange_embedding_dense_backward_1 = async_compile.triton('triton_poi_fused_arange_embedding_dense_backward_1', '''
+96: import triton
+126:     tmp8 = tl.where(tmp6, tmp7, tmp2)
+127:     tl.store(out_ptr0 + (x0), tmp8, None)
+128: ''', device_str='cuda')
+144: #   return %buf2
+145: triton_poi_fused_arange_embedding_dense_backward_2 = async_compile.triton('triton_poi_fused_arange_embedding_dense_backward_2', '''
+146: import triton
+169:     tmp1 = (tmp0).to(tl.int64)
+170:     tl.store(out_ptr0 + (x0), tmp1, None)
+171: ''', device_str='cuda')
+193: #   return %_unsafe_masked_index_put_accumulate_1
+194: triton_poi_fused_arange_embedding_dense_backward_3 = async_compile.triton('triton_poi_fused_arange_embedding_dense_backward_3', '''
+195: import triton
+217:     tmp0 = tl.full([1], 0.0, tl.float32)
+218:     tl.store(out_ptr0 + (x0), tmp0, None)
+219: ''', device_str='cuda')
+244: #   return %buf5
+245: triton_poi_fused_arange_embedding_dense_backward_4 = async_compile.triton('triton_poi_fused_arange_embedding_dense_backward_4', '''
+246: import triton
+269:     x0 = (xindex % 256)
+270:     tmp9 = tl.load(in_ptr0 + (x2), None).to(tl.float32)
+271:     tmp0 = (x1).to(tl.int64)
+284:     tmp14 = tmp12 & tmp13
+285:     tmp15 = tl.load(in_ptr1 + (x1), tmp14, eviction_policy='evict_last', other=1)
+286:     tmp16 = tmp15.to(tl.float32)
+289:     tmp19 = tl.where(tmp8, tmp17, tmp18)
+290:     tl.atomic_add(out_ptr0 + (x0 + 256*((-16384) * ((-16384) >= (((16383) * ((16383) <= (x1)) + (x1) * ((x1) < (16383))))) + (((16383) * ((16383) <= (x1)) + (x1) * ((x1) < (16383)))) * ((((16383) * ((16383) <= (x1)) + (x1) * ((x1) < (16383)))) > (-16384)))), tmp19, None, sem='relaxed')
+291: ''', device_str='cuda')
+301: #   return %convert_element_type_1
+302: triton_poi_fused_embedding_dense_backward_5 = async_compile.triton('triton_poi_fused_embedding_dense_backward_5', '''
+303: import triton
+324:     x0 = xindex
+325:     tmp0 = tl.load(in_ptr0 + (x0), None)
+326:     tmp1 = tmp0.to(tl.float32)
+327:     tl.store(out_ptr0 + (x0), tmp1, None)
+328: ''', device_str='cuda')
+343: 
+344:     def call(self, args):
+345:         arg0_1, = args
+351:             raw_stream0 = get_raw_stream(0)
+352:             triton_poi_fused_arange_embedding_dense_backward_0.run(buf0, 16384, stream=raw_stream0)
+353:             buf1 = empty_strided_cuda((16384, ), (1, ), torch.int64)
+355:             raw_stream0 = get_raw_stream(0)
+356:             triton_poi_fused_arange_embedding_dense_backward_1.run(buf1, 16384, stream=raw_stream0)
+357:             buf2 = empty_strided_cuda((16384, ), (1, ), torch.int64)
+359:             raw_stream0 = get_raw_stream(0)
+360:             triton_poi_fused_arange_embedding_dense_backward_2.run(buf2, 16384, stream=raw_stream0)
+361:             aten.index_put_(buf0, [buf2], buf1, True)
+362:             del buf1
+366:             raw_stream0 = get_raw_stream(0)
+367:             triton_poi_fused_arange_embedding_dense_backward_3.run(buf4, 4194304, stream=raw_stream0)
+368:             assert_size_stride(arg0_1, (16384, 256), (256, 1), 'input')
+371:             raw_stream0 = get_raw_stream(0)
+372:             triton_poi_fused_arange_embedding_dense_backward_4.run(arg0_1, buf0, buf4, 4194304, stream=raw_stream0)
+373:             del arg0_1
+377:             raw_stream0 = get_raw_stream(0)
+378:             triton_poi_fused_embedding_dense_backward_5.run(buf4, buf6, 4194304, stream=raw_stream0)
+379:             del buf4

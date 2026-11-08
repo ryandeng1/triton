@@ -158,6 +158,8 @@ class CUDAOptions:
     enable_aref_release_scheduling: bool = False
     # Experimental: use the source single-buffer policy on marked Blackwell WS loops.
     enable_tmem_single_buffer: bool = False
+    # Experimental: derive indexed-update injectivity from scoped argument contracts.
+    enable_indexed_update_specialization: bool = False
 
     def __post_init__(self):
         if self.max_occupancy is not None and (type(self.max_occupancy) is not int or self.max_occupancy <= 0):
@@ -307,6 +309,8 @@ class CUDABackend(BaseBackend):
         passes.common.add_cse(pm)
         passes.common.add_symbol_dce(pm)
         passes.ttir.add_loop_unroll(pm)
+        if opt.enable_indexed_update_specialization and opt.num_ctas == 1:
+            passes.ttir.add_specialize_indexed_updates(pm, "cuda")
         pm.run(mod, 'make_ttir')
         return mod
 
@@ -413,6 +417,8 @@ class CUDABackend(BaseBackend):
         passes.gluon.add_canonicalizer(pm)
         passes.ttgpuir.add_combine_tensor_select_and_if(pm)
         passes.common.add_symbol_dce(pm)
+        if options.enable_indexed_update_specialization and options.num_ctas == 1:
+            passes.ttir.add_specialize_indexed_updates(pm, "cuda")
         nvidia.passes.ttnvgpuir.add_check_matmul_two_cta(pm)
 
         if is_enabled(options, "fpsan"):

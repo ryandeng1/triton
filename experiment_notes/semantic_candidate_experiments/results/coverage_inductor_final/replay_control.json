@@ -1,0 +1,454 @@
+{
+  "status": "passed",
+  "torch": "2.14.1+cu130",
+  "torch_revision": "5c4886908584029761b579af026dcfb627c84070",
+  "cuda": "13.0",
+  "gpu": "NVIDIA B300 SXM6 PC",
+  "source_sha256": {
+    "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/results/coverage_inductor_final/replay_control.py": "d0326a3d23ebe3b3898e649d94fde3d4e44c22344a59fdf2e2d595ae3761cd60",
+    "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/coverage_experiment.py": "db50502fc3f549eb7550f594521835097e0d14d994f477e77da7bbaa812330d2"
+  },
+  "mode": "torch.compile(fullgraph=True,dynamic=False,mode='max-autotune')",
+  "scope": "ordinary calls with internal CUDA graph replay; no nested external capture; clocks unlocked",
+  "limitations": "three bounded full-coverage frequency-scaled shapes; row-invariant gradients enable validation independently of replay RNG offsets",
+  "cases": [
+    {
+      "shape_n_d_v": [
+        4096,
+        128,
+        4096
+      ],
+      "producer": "randperm",
+      "frequency": true,
+      "status": "passed",
+      "warmup_all_variants_us": 3167923.116,
+      "warmup_calls_per_variant": 15,
+      "capture_after_warmup": {
+        "manager_exists": true,
+        "recorded_root_graphs": 1,
+        "path_state": "ExecutionState.EXECUTION",
+        "warmed_functions": 1
+      },
+      "capture_after_measurement": {
+        "manager_exists": true,
+        "recorded_root_graphs": 1,
+        "path_state": "ExecutionState.EXECUTION",
+        "warmed_functions": 1
+      },
+      "seeds": [
+        {
+          "seed": 0,
+          "wall": {
+            "samples_us": {
+              "inductor_max_autotune_replay": [
+                170.027,
+                157.6467,
+                151.5443,
+                151.8862,
+                150.8866
+              ],
+              "semantic_fx": [
+                191.60060000000001,
+                190.1702,
+                176.2603,
+                182.1972,
+                183.34629999999999
+              ],
+              "pytorch_eager": [
+                183.9632,
+                184.3395,
+                185.0525,
+                174.1666,
+                168.7893
+              ]
+            },
+            "median_us": {
+              "inductor_max_autotune_replay": 151.8862,
+              "semantic_fx": 183.34629999999999,
+              "pytorch_eager": 183.9632
+            },
+            "rounds": 5,
+            "repetitions": 10,
+            "scope": "ordinary calls; Python interpretation/guards, allocation, dispatch, and GPU completion included"
+          }
+        },
+        {
+          "seed": 1,
+          "wall": {
+            "samples_us": {
+              "inductor_max_autotune_replay": [
+                151.5982,
+                149.29659999999998,
+                146.5719,
+                149.5975,
+                148.4531
+              ],
+              "semantic_fx": [
+                167.7425,
+                180.0117,
+                173.82840000000002,
+                161.01389999999998,
+                177.36700000000002
+              ],
+              "pytorch_eager": [
+                177.5688,
+                185.08440000000002,
+                178.3743,
+                172.7538,
+                181.161
+              ]
+            },
+            "median_us": {
+              "inductor_max_autotune_replay": 149.29659999999998,
+              "semantic_fx": 173.82840000000002,
+              "pytorch_eager": 178.3743
+            },
+            "rounds": 5,
+            "repetitions": 10,
+            "scope": "ordinary calls; Python interpretation/guards, allocation, dispatch, and GPU completion included"
+          }
+        },
+        {
+          "seed": 2,
+          "wall": {
+            "samples_us": {
+              "inductor_max_autotune_replay": [
+                151.83089999999999,
+                151.5691,
+                151.952,
+                146.0138,
+                150.3015
+              ],
+              "semantic_fx": [
+                174.6491,
+                178.486,
+                176.3239,
+                180.3177,
+                156.5217
+              ],
+              "pytorch_eager": [
+                174.1113,
+                175.4434,
+                174.9357,
+                180.5349,
+                183.7852
+              ]
+            },
+            "median_us": {
+              "inductor_max_autotune_replay": 151.5691,
+              "semantic_fx": 176.3239,
+              "pytorch_eager": 175.4434
+            },
+            "rounds": 5,
+            "repetitions": 10,
+            "scope": "ordinary calls; Python interpretation/guards, allocation, dispatch, and GPU completion included"
+          }
+        }
+      ],
+      "wall_median_us": {
+        "inductor_max_autotune_replay": 151.5691,
+        "semantic_fx": 176.3239,
+        "pytorch_eager": 178.3743
+      },
+      "semantic_speedup_vs_inductor_replay": 0.8596060999104488,
+      "validation": "independent full-coverage reference with nontrivial row-invariant BF16 gradients; changed gradients",
+      "allocation": "functional outputs released each call; validation copies occur outside timing",
+      "mark_step_policy": "cudagraph_mark_step_begin before every Inductor invocation; included in wall time",
+      "warnings": [],
+      "logged_messages": "",
+      "cudagraph_skips_delta": 0
+    },
+    {
+      "shape_n_d_v": [
+        16384,
+        256,
+        16384
+      ],
+      "producer": "randperm",
+      "frequency": true,
+      "status": "passed",
+      "warmup_all_variants_us": 1350054.675,
+      "warmup_calls_per_variant": 15,
+      "capture_after_warmup": {
+        "manager_exists": true,
+        "recorded_root_graphs": 1,
+        "path_state": "ExecutionState.EXECUTION",
+        "warmed_functions": 1
+      },
+      "capture_after_measurement": {
+        "manager_exists": true,
+        "recorded_root_graphs": 1,
+        "path_state": "ExecutionState.EXECUTION",
+        "warmed_functions": 1
+      },
+      "seeds": [
+        {
+          "seed": 0,
+          "wall": {
+            "samples_us": {
+              "inductor_max_autotune_replay": [
+                177.13330000000002,
+                178.4237,
+                174.2366,
+                171.3393,
+                173.0154
+              ],
+              "semantic_fx": [
+                202.2866,
+                194.8375,
+                183.9615,
+                185.0821,
+                192.1077
+              ],
+              "pytorch_eager": [
+                223.0513,
+                222.23690000000002,
+                225.3955,
+                221.37689999999998,
+                217.283
+              ]
+            },
+            "median_us": {
+              "inductor_max_autotune_replay": 174.2366,
+              "semantic_fx": 192.1077,
+              "pytorch_eager": 222.23690000000002
+            },
+            "rounds": 5,
+            "repetitions": 10,
+            "scope": "ordinary calls; Python interpretation/guards, allocation, dispatch, and GPU completion included"
+          }
+        },
+        {
+          "seed": 1,
+          "wall": {
+            "samples_us": {
+              "inductor_max_autotune_replay": [
+                174.9693,
+                168.5498,
+                170.5254,
+                172.9408,
+                171.9758
+              ],
+              "semantic_fx": [
+                177.3979,
+                186.7653,
+                183.2295,
+                179.3304,
+                181.5377
+              ],
+              "pytorch_eager": [
+                219.6036,
+                226.5355,
+                226.631,
+                219.7603,
+                229.29340000000002
+              ]
+            },
+            "median_us": {
+              "inductor_max_autotune_replay": 171.9758,
+              "semantic_fx": 181.5377,
+              "pytorch_eager": 226.5355
+            },
+            "rounds": 5,
+            "repetitions": 10,
+            "scope": "ordinary calls; Python interpretation/guards, allocation, dispatch, and GPU completion included"
+          }
+        },
+        {
+          "seed": 2,
+          "wall": {
+            "samples_us": {
+              "inductor_max_autotune_replay": [
+                173.6049,
+                172.6852,
+                173.2579,
+                169.6327,
+                169.8111
+              ],
+              "semantic_fx": [
+                179.7567,
+                186.0866,
+                186.1775,
+                180.94729999999998,
+                163.3293
+              ],
+              "pytorch_eager": [
+                220.9563,
+                222.073,
+                220.28069999999997,
+                226.38049999999998,
+                225.82170000000002
+              ]
+            },
+            "median_us": {
+              "inductor_max_autotune_replay": 172.6852,
+              "semantic_fx": 180.94729999999998,
+              "pytorch_eager": 222.073
+            },
+            "rounds": 5,
+            "repetitions": 10,
+            "scope": "ordinary calls; Python interpretation/guards, allocation, dispatch, and GPU completion included"
+          }
+        }
+      ],
+      "wall_median_us": {
+        "inductor_max_autotune_replay": 172.6852,
+        "semantic_fx": 181.5377,
+        "pytorch_eager": 222.23690000000002
+      },
+      "semantic_speedup_vs_inductor_replay": 0.9512360242528136,
+      "validation": "independent full-coverage reference with nontrivial row-invariant BF16 gradients; changed gradients",
+      "allocation": "functional outputs released each call; validation copies occur outside timing",
+      "mark_step_policy": "cudagraph_mark_step_begin before every Inductor invocation; included in wall time",
+      "warnings": [],
+      "logged_messages": "",
+      "cudagraph_skips_delta": 0
+    },
+    {
+      "shape_n_d_v": [
+        4096,
+        128,
+        4096
+      ],
+      "producer": "arange",
+      "frequency": true,
+      "status": "passed",
+      "warmup_all_variants_us": 1229428.494,
+      "warmup_calls_per_variant": 15,
+      "capture_after_warmup": {
+        "manager_exists": true,
+        "recorded_root_graphs": 1,
+        "path_state": "ExecutionState.EXECUTION",
+        "warmed_functions": 1
+      },
+      "capture_after_measurement": {
+        "manager_exists": true,
+        "recorded_root_graphs": 1,
+        "path_state": "ExecutionState.EXECUTION",
+        "warmed_functions": 1
+      },
+      "seeds": [
+        {
+          "seed": 0,
+          "wall": {
+            "samples_us": {
+              "inductor_max_autotune_replay": [
+                111.55699999999999,
+                108.1923,
+                110.6979,
+                110.14829999999999,
+                108.45509999999999
+              ],
+              "semantic_fx": [
+                120.04670000000002,
+                115.4512,
+                115.49849999999999,
+                130.3057,
+                116.9318
+              ],
+              "pytorch_eager": [
+                131.5932,
+                132.6831,
+                133.4264,
+                130.3742,
+                117.1199
+              ]
+            },
+            "median_us": {
+              "inductor_max_autotune_replay": 110.14829999999999,
+              "semantic_fx": 116.9318,
+              "pytorch_eager": 131.5932
+            },
+            "rounds": 5,
+            "repetitions": 10,
+            "scope": "ordinary calls; Python interpretation/guards, allocation, dispatch, and GPU completion included"
+          }
+        },
+        {
+          "seed": 1,
+          "wall": {
+            "samples_us": {
+              "inductor_max_autotune_replay": [
+                104.5239,
+                103.36949999999999,
+                98.3284,
+                108.92609999999999,
+                102.3682
+              ],
+              "semantic_fx": [
+                107.86410000000001,
+                116.5212,
+                110.9952,
+                103.09849999999999,
+                113.9462
+              ],
+              "pytorch_eager": [
+                122.3029,
+                127.1762,
+                128.2961,
+                121.8733,
+                131.0455
+              ]
+            },
+            "median_us": {
+              "inductor_max_autotune_replay": 103.36949999999999,
+              "semantic_fx": 110.9952,
+              "pytorch_eager": 127.1762
+            },
+            "rounds": 5,
+            "repetitions": 10,
+            "scope": "ordinary calls; Python interpretation/guards, allocation, dispatch, and GPU completion included"
+          }
+        },
+        {
+          "seed": 2,
+          "wall": {
+            "samples_us": {
+              "inductor_max_autotune_replay": [
+                108.64659999999999,
+                104.2729,
+                104.54010000000001,
+                97.55940000000001,
+                102.5195
+              ],
+              "semantic_fx": [
+                105.75460000000001,
+                116.6911,
+                113.8694,
+                118.3692,
+                93.5949
+              ],
+              "pytorch_eager": [
+                125.636,
+                126.2201,
+                126.255,
+                126.83630000000001,
+                128.4252
+              ]
+            },
+            "median_us": {
+              "inductor_max_autotune_replay": 104.2729,
+              "semantic_fx": 113.8694,
+              "pytorch_eager": 126.255
+            },
+            "rounds": 5,
+            "repetitions": 10,
+            "scope": "ordinary calls; Python interpretation/guards, allocation, dispatch, and GPU completion included"
+          }
+        }
+      ],
+      "wall_median_us": {
+        "inductor_max_autotune_replay": 104.2729,
+        "semantic_fx": 113.8694,
+        "pytorch_eager": 127.1762
+      },
+      "semantic_speedup_vs_inductor_replay": 0.91572362724314,
+      "validation": "independent full-coverage reference with nontrivial row-invariant BF16 gradients; changed gradients",
+      "allocation": "functional outputs released each call; validation copies occur outside timing",
+      "mark_step_policy": "cudagraph_mark_step_begin before every Inductor invocation; included in wall time",
+      "warnings": [],
+      "logged_messages": "",
+      "cudagraph_skips_delta": 0
+    }
+  ]
+}

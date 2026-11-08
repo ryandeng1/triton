@@ -1,0 +1,22 @@
+Command: PATH=/home/ryandeng/tpaa/.venv-semantic/bin:$PATH lit -v test/Triton
+Working directory: /home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12
+-- Testing: 14 tests, 14 workers --
+PASS: TRITON :: Triton/vecadd.mlir (1 of 14)
+PASS: TRITON :: Triton/loop_cse.mlir (2 of 14)
+PASS: TRITON :: Triton/reorder-broadcast.mlir (3 of 14)
+PASS: TRITON :: Triton/loop-unroll.mlir (4 of 14)
+PASS: TRITON :: Triton/ops.mlir (5 of 14)
+PASS: TRITON :: Triton/reproducer.mlir (6 of 14)
+PASS: TRITON :: Triton/verify-make-range.mlir (7 of 14)
+PASS: TRITON :: Triton/loop-peeling.mlir (8 of 14)
+PASS: TRITON :: Triton/rewrite-tensor-descriptor-to-pointer.mlir (9 of 14)
+PASS: TRITON :: Triton/canonicalize.mlir (10 of 14)
+PASS: TRITON :: Triton/loop-invariant-code-motion.mlir (11 of 14)
+PASS: TRITON :: Triton/inline-hints.mlir (12 of 14)
+PASS: TRITON :: Triton/invalid.mlir (13 of 14)
+PASS: TRITON :: Triton/combine.mlir (14 of 14)
+
+Testing Time: 0.15s
+Total Discovered Tests: 14
+  Passed: 14 (100.00%)
+Exit code: 0

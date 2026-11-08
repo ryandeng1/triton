@@ -1,0 +1,9 @@
+{"shape": [4096, 128, 4096], "producer": "randperm", "seed": 0, "wall_us": {"inductor_max_autotune_replay": 151.8862, "semantic_fx": 183.34629999999999, "pytorch_eager": 183.9632}}
+{"shape": [4096, 128, 4096], "producer": "randperm", "seed": 1, "wall_us": {"inductor_max_autotune_replay": 149.29659999999998, "semantic_fx": 173.82840000000002, "pytorch_eager": 178.3743}}
+{"shape": [4096, 128, 4096], "producer": "randperm", "seed": 2, "wall_us": {"inductor_max_autotune_replay": 151.5691, "semantic_fx": 176.3239, "pytorch_eager": 175.4434}}
+{"shape": [16384, 256, 16384], "producer": "randperm", "seed": 0, "wall_us": {"inductor_max_autotune_replay": 174.2366, "semantic_fx": 192.1077, "pytorch_eager": 222.23690000000002}}
+{"shape": [16384, 256, 16384], "producer": "randperm", "seed": 1, "wall_us": {"inductor_max_autotune_replay": 171.9758, "semantic_fx": 181.5377, "pytorch_eager": 226.5355}}
+{"shape": [16384, 256, 16384], "producer": "randperm", "seed": 2, "wall_us": {"inductor_max_autotune_replay": 172.6852, "semantic_fx": 180.94729999999998, "pytorch_eager": 222.073}}
+{"shape": [4096, 128, 4096], "producer": "arange", "seed": 0, "wall_us": {"inductor_max_autotune_replay": 110.14829999999999, "semantic_fx": 116.9318, "pytorch_eager": 131.5932}}
+{"shape": [4096, 128, 4096], "producer": "arange", "seed": 1, "wall_us": {"inductor_max_autotune_replay": 103.36949999999999, "semantic_fx": 110.9952, "pytorch_eager": 127.1762}}
+{"shape": [4096, 128, 4096], "producer": "arange", "seed": 2, "wall_us": {"inductor_max_autotune_replay": 104.2729, "semantic_fx": 113.8694, "pytorch_eager": 126.255}}

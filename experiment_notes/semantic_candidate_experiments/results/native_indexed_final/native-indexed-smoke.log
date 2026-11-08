@@ -1,0 +1,2 @@
+{"shape": [31, 137, 67], "frequency": false, "block": 128, "seed": 0, "device_us": {"baseline": 4.588000010699034, "native_rmw": 4.095999989658594, "native_zero": 3.843999933451414, "manual_rmw": 4.188000224530697, "manual_zero": 3.8079998921602964}}
+{"shape": [31, 137, 67], "frequency": true, "block": 128, "seed": 0, "device_us": {"baseline": 6.756000220775604, "native_rmw": 6.175999995321035, "native_zero": 6.039999891072512, "manual_rmw": 5.907999817281961, "manual_zero": 6.047999951988459}}

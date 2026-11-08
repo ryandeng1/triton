@@ -1,0 +1,361 @@
+{
+  "date": "2026-11-08",
+  "status": "passed",
+  "finding": "An opt-in native Triton/Gluon pass can use caller-supplied producer facts to derive destination injectivity and remove indexed f32 atomics from unchanged kernel source.",
+  "gpu": "NVIDIA B300 SXM6 PC",
+  "validation": {
+    "make": "passed",
+    "runtime_tests": 215,
+    "new_native_gpu_cases": 17,
+    "compiler_test_files": 14,
+    "new_native_lit_cases": 32,
+    "smoke_cases": 2,
+    "confirm_cases": 36,
+    "source_and_compiler_hashes_match_final_files": true
+  },
+  "benchmark": {
+    "source": "Unchanged pinned FlagGems plain and frequency-scaled embedding backward update kernels; AST identity checked.",
+    "included": "Scratch zeroing, optional original count reset and count kernel, update, BF16 conversion; shared physical buffers.",
+    "excluded": "Producer generation, allocations, Python wrapper guards, ordinary-call overhead.",
+    "method": {
+      "rounds": 15,
+      "repetitions": 32,
+      "warmup_ms": 200,
+      "order": "randomized interleaving",
+      "clocks": "unlocked",
+      "configurations": "block sizes 128 and 256; report best tested per variant",
+      "seeds": 3
+    },
+    "input_domain": "Producer-established unique randperm subsets and finite ordinary BF16 gradients. Duplicate-index workloads do not qualify; edge-value correctness tested separately for Triton/Gluon.",
+    "results": [
+      {
+        "shape_n_d_v": [
+          4096,
+          128,
+          8192
+        ],
+        "frequency": false,
+        "config_median_us": {
+          "128": {
+            "baseline": 7.348000071942806,
+            "native_rmw": 5.8639999479055405,
+            "native_zero": 5.7310000993311405,
+            "manual_rmw": 5.859999917447567,
+            "manual_zero": 5.723999813199043
+          },
+          "256": {
+            "baseline": 7.306999992579222,
+            "native_rmw": 5.867999978363514,
+            "native_zero": 5.729000084102154,
+            "manual_rmw": 5.867999978363514,
+            "manual_zero": 5.71999978274107
+          }
+        },
+        "best": {
+          "baseline": {
+            "median_us": 7.306999992579222,
+            "block_d": 256
+          },
+          "native_rmw": {
+            "median_us": 5.8639999479055405,
+            "block_d": 128
+          },
+          "native_zero": {
+            "median_us": 5.729000084102154,
+            "block_d": 256
+          },
+          "manual_rmw": {
+            "median_us": 5.859999917447567,
+            "block_d": 128
+          },
+          "manual_zero": {
+            "median_us": 5.71999978274107,
+            "block_d": 256
+          }
+        },
+        "native_rmw_speedup": 1.246077772423767,
+        "native_zero_speedup": 1.27544072007539
+      },
+      {
+        "shape_n_d_v": [
+          4096,
+          128,
+          8192
+        ],
+        "frequency": true,
+        "config_median_us": {
+          "128": {
+            "baseline": 12.791999615728855,
+            "native_rmw": 11.029000394046307,
+            "native_zero": 10.987999849021435,
+            "manual_rmw": 11.013999581336975,
+            "manual_zero": 10.998000390827656
+          },
+          "256": {
+            "baseline": 12.787999585270882,
+            "native_rmw": 11.013999581336975,
+            "native_zero": 11.013000272214413,
+            "manual_rmw": 11.020000092685223,
+            "manual_zero": 11.005000211298466
+          }
+        },
+        "best": {
+          "baseline": {
+            "median_us": 12.787999585270882,
+            "block_d": 256
+          },
+          "native_rmw": {
+            "median_us": 11.013999581336975,
+            "block_d": 256
+          },
+          "native_zero": {
+            "median_us": 10.987999849021435,
+            "block_d": 128
+          },
+          "manual_rmw": {
+            "median_us": 11.013999581336975,
+            "block_d": 128
+          },
+          "manual_zero": {
+            "median_us": 10.998000390827656,
+            "block_d": 128
+          }
+        },
+        "native_rmw_speedup": 1.1610677384571466,
+        "native_zero_speedup": 1.1638150492338923
+      },
+      {
+        "shape_n_d_v": [
+          16384,
+          256,
+          32768
+        ],
+        "frequency": false,
+        "config_median_us": {
+          "128": {
+            "baseline": 31.150000169873238,
+            "native_rmw": 28.026999905705452,
+            "native_zero": 27.89900079369545,
+            "manual_rmw": 27.967000380158424,
+            "manual_zero": 27.7709998190403
+          },
+          "256": {
+            "baseline": 22.477999329566956,
+            "native_rmw": 19.58099938929081,
+            "native_zero": 19.478000700473785,
+            "manual_rmw": 19.648000597953796,
+            "manual_zero": 19.456999376416206
+          }
+        },
+        "best": {
+          "baseline": {
+            "median_us": 22.477999329566956,
+            "block_d": 256
+          },
+          "native_rmw": {
+            "median_us": 19.58099938929081,
+            "block_d": 256
+          },
+          "native_zero": {
+            "median_us": 19.478000700473785,
+            "block_d": 256
+          },
+          "manual_rmw": {
+            "median_us": 19.648000597953796,
+            "block_d": 256
+          },
+          "manual_zero": {
+            "median_us": 19.456999376416206,
+            "block_d": 256
+          }
+        },
+        "native_rmw_speedup": 1.1479495444885497,
+        "native_zero_speedup": 1.1540198439884128
+      },
+      {
+        "shape_n_d_v": [
+          16384,
+          256,
+          32768
+        ],
+        "frequency": true,
+        "config_median_us": {
+          "128": {
+            "baseline": 38.92799839377403,
+            "native_rmw": 33.48800167441368,
+            "native_zero": 33.35899859666824,
+            "manual_rmw": 33.41300040483475,
+            "manual_zero": 33.35300087928772
+          },
+          "256": {
+            "baseline": 28.992999345064163,
+            "native_rmw": 25.004999712109566,
+            "native_zero": 24.983000010252,
+            "manual_rmw": 25.134000927209854,
+            "manual_zero": 25.09400062263012
+          }
+        },
+        "best": {
+          "baseline": {
+            "median_us": 28.992999345064163,
+            "block_d": 256
+          },
+          "native_rmw": {
+            "median_us": 25.004999712109566,
+            "block_d": 256
+          },
+          "native_zero": {
+            "median_us": 24.983000010252,
+            "block_d": 256
+          },
+          "manual_rmw": {
+            "median_us": 25.134000927209854,
+            "block_d": 256
+          },
+          "manual_zero": {
+            "median_us": 25.09400062263012,
+            "block_d": 256
+          }
+        },
+        "native_rmw_speedup": 1.1594880895368804,
+        "native_zero_speedup": 1.160509119527944
+      },
+      {
+        "shape_n_d_v": [
+          8192,
+          1024,
+          16384
+        ],
+        "frequency": false,
+        "config_median_us": {
+          "128": {
+            "baseline": 66.55099987983704,
+            "native_rmw": 55.449001491069794,
+            "native_zero": 55.055998265743256,
+            "manual_rmw": 55.44000118970871,
+            "manual_zero": 55.05400151014328
+          },
+          "256": {
+            "baseline": 45.875001698732376,
+            "native_rmw": 38.85199874639511,
+            "native_zero": 38.238998502492905,
+            "manual_rmw": 38.8449989259243,
+            "manual_zero": 38.25199976563454
+          }
+        },
+        "best": {
+          "baseline": {
+            "median_us": 45.875001698732376,
+            "block_d": 256
+          },
+          "native_rmw": {
+            "median_us": 38.85199874639511,
+            "block_d": 256
+          },
+          "native_zero": {
+            "median_us": 38.238998502492905,
+            "block_d": 256
+          },
+          "manual_rmw": {
+            "median_us": 38.8449989259243,
+            "block_d": 256
+          },
+          "manual_zero": {
+            "median_us": 38.25199976563454,
+            "block_d": 256
+          }
+        },
+        "native_rmw_speedup": 1.1807629769109085,
+        "native_zero_speedup": 1.1996915059305662
+      },
+      {
+        "shape_n_d_v": [
+          8192,
+          1024,
+          16384
+        ],
+        "frequency": true,
+        "config_median_us": {
+          "128": {
+            "baseline": 77.03900337219238,
+            "native_rmw": 61.16199865937233,
+            "native_zero": 61.066001653671265,
+            "manual_rmw": 61.13100051879883,
+            "manual_zero": 61.08099967241287
+          },
+          "256": {
+            "baseline": 54.04600128531456,
+            "native_rmw": 44.45800185203552,
+            "native_zero": 44.34100165963173,
+            "manual_rmw": 44.46899890899658,
+            "manual_zero": 44.36200112104416
+          }
+        },
+        "best": {
+          "baseline": {
+            "median_us": 54.04600128531456,
+            "block_d": 256
+          },
+          "native_rmw": {
+            "median_us": 44.45800185203552,
+            "block_d": 256
+          },
+          "native_zero": {
+            "median_us": 44.34100165963173,
+            "block_d": 256
+          },
+          "manual_rmw": {
+            "median_us": 44.46899890899658,
+            "block_d": 256
+          },
+          "manual_zero": {
+            "median_us": 44.36200112104416,
+            "block_d": 256
+          }
+        },
+        "native_rmw_speedup": 1.215664200680671,
+        "native_zero_speedup": 1.2188719077701466
+      }
+    ],
+    "geometric_mean_speedup": {
+      "native_rmw_speedup": 1.1846626392326638,
+      "native_zero_speedup": 1.194645235854324
+    }
+  },
+  "proof": {
+    "assumptions": [
+      "Initialized immutable globally unique index prefix and value bound",
+      "Private initialized output with no outside accesses or synchronization role until completion",
+      "Disjoint read/output footprints",
+      "Exact grid dimensions and one CTA per program",
+      "All accesses within backing allocations",
+      "Optional physical positive zero at each launch entry"
+    ],
+    "derived": [
+      "Actual address injectivity across logical elements and the entire launch",
+      "Tail-mask implication and lossless bounded integer arithmetic",
+      "Closed effects, only one unused-result GPU-scope f32 atomic write"
+    ],
+    "rewrite": "Masked load + add.rn.ftz.f32 + masked store; initial-zero removes load but preserves explicit addition."
+  },
+  "limits": [
+    "Experimental, disabled by default, NVIDIA CUDA only",
+    "Bounded scalar-index rank-one row update; no loops or arbitrary scatter proof",
+    "Explicit caller contracts; no automatic producer discovery in this low-level interface",
+    "Wrapper cannot detect raw device writes or prove the initial-zero promise",
+    "No count-kernel optimization or host launch removal",
+    "Performance measured for Triton kernels; Gluon correctness validated",
+    "GPU operation timings, not model-level or ordinary-call speedups"
+  ],
+  "interpretation": "Uniqueness/private-output knowledge provides a missing dependence fact in native Triton. Initial-zero adds only 0.09\u20132.36% beyond unique RMW in these cases; larger historical scaled gains also eliminated count work.",
+  "artifacts": {
+    "raw_results": "results.json",
+    "representative_code": "code/",
+    "reproducer": "../../native_indexed_update_experiment.py"
+  },
+  "compiler_sha256": "deff9f6bf2707b7992472fc9ddee3507f882fceda3d9611ebd3424a3e06ab028",
+  "additional_source_sha256": {
+    "test/Triton/combine.mlir": "032ead9f30323178ddc47f8a42e13ca50af19259c2b70cd54f73d5344d4868e9",
+    "lib/Dialect/Triton/Transforms/CMakeLists.txt": "3de90c2e06766f1c9514894256dab3b9aabe018c1ec9a067160749ec42acc219"
+  }
+}

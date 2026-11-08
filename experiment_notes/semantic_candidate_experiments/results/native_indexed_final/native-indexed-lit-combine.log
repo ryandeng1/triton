@@ -1,0 +1,9 @@
+Command: PATH=/home/ryandeng/tpaa/.venv-semantic/bin:$PATH lit -v test/Triton/combine.mlir
+Working directory: /home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12
+-- Testing: 1 tests, 1 workers --
+PASS: TRITON :: Triton/combine.mlir (1 of 1)
+
+Testing Time: 0.14s
+Total Discovered Tests: 1
+  Passed: 1 (100.00%)
+Exit code: 0

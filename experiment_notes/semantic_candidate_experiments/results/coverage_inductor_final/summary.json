@@ -1,0 +1,366 @@
+{
+  "status": "passed",
+  "configurations": 12,
+  "seeds_each": 3,
+  "successful_inductor_builds": 24,
+  "scope": "Output-only producer + embedding-backward graphs, BF16, B300. Both compiler modes use external CUDA-graph device timing; internal Inductor graph trees disabled in this experiment.",
+  "compiler_modes": [
+    "default",
+    "max-autotune-no-cudagraphs"
+  ],
+  "rows": [
+    {
+      "shape_n_d_v": [
+        4096,
+        128,
+        4096
+      ],
+      "producer": "arange",
+      "frequency": false,
+      "device_us": {
+        "pytorch_eager": 56.0000017285347,
+        "semantic_fx": 3.894000081345439,
+        "inductor_default": 4.100000020116568,
+        "inductor_max_tune": 4.100999794900417
+      },
+      "ordinary_wall_us": {
+        "pytorch_eager": 105.0232,
+        "semantic_fx": 107.11679999999998,
+        "inductor_default": 54.868700000000004,
+        "inductor_max_tune": 56.8597
+      },
+      "semantic_vs_best_inductor_device": 1.0529018835305088,
+      "semantic_vs_best_inductor_wall": 0.5122324415964631
+    },
+    {
+      "shape_n_d_v": [
+        4096,
+        128,
+        4096
+      ],
+      "producer": "arange",
+      "frequency": true,
+      "device_us": {
+        "pytorch_eager": 65.76400250196457,
+        "semantic_fx": 3.9369999431073666,
+        "inductor_default": 57.52899870276451,
+        "inductor_max_tune": 58.32900106906891
+      },
+      "ordinary_wall_us": {
+        "pytorch_eager": 124.91279999999999,
+        "semantic_fx": 116.3522,
+        "inductor_default": 178.1605,
+        "inductor_max_tune": 188.5122
+      },
+      "semantic_vs_best_inductor_device": 14.612395106452158,
+      "semantic_vs_best_inductor_wall": 1.5312172868239708
+    },
+    {
+      "shape_n_d_v": [
+        4096,
+        128,
+        4096
+      ],
+      "producer": "randperm",
+      "frequency": false,
+      "device_us": {
+        "pytorch_eager": 104.59300130605698,
+        "semantic_fx": 53.32000181078911,
+        "inductor_default": 54.48399856686592,
+        "inductor_max_tune": 54.23400178551674
+      },
+      "ordinary_wall_us": {
+        "pytorch_eager": 166.6877,
+        "semantic_fx": 179.799,
+        "inductor_default": 144.1166,
+        "inductor_max_tune": 145.2994
+      },
+      "semantic_vs_best_inductor_device": 1.0171417843902377,
+      "semantic_vs_best_inductor_wall": 0.8015428339423467
+    },
+    {
+      "shape_n_d_v": [
+        4096,
+        128,
+        4096
+      ],
+      "producer": "randperm",
+      "frequency": true,
+      "device_us": {
+        "pytorch_eager": 114.92700129747391,
+        "semantic_fx": 53.08400094509125,
+        "inductor_default": 107.28400200605392,
+        "inductor_max_tune": 107.5109988451004
+      },
+      "ordinary_wall_us": {
+        "pytorch_eager": 185.8319,
+        "semantic_fx": 186.22650000000002,
+        "inductor_default": 280.7756,
+        "inductor_max_tune": 283.51930000000004
+      },
+      "semantic_vs_best_inductor_device": 2.02102328566051,
+      "semantic_vs_best_inductor_wall": 1.5077102345799334
+    },
+    {
+      "shape_n_d_v": [
+        4096,
+        128,
+        8192
+      ],
+      "producer": "arange",
+      "frequency": false,
+      "device_us": {
+        "pytorch_eager": 55.71899935603142,
+        "semantic_fx": 5.0650001503527164,
+        "inductor_default": 4.433999769389629,
+        "inductor_max_tune": 4.881000146269798
+      },
+      "ordinary_wall_us": {
+        "pytorch_eager": 105.5454,
+        "semantic_fx": 126.293,
+        "inductor_default": 55.87910000000001,
+        "inductor_max_tune": 58.1673
+      },
+      "semantic_vs_best_inductor_device": 0.8754194743865614,
+      "semantic_vs_best_inductor_wall": 0.44245603477627427
+    },
+    {
+      "shape_n_d_v": [
+        4096,
+        128,
+        8192
+      ],
+      "producer": "arange",
+      "frequency": true,
+      "device_us": {
+        "pytorch_eager": 65.75799733400345,
+        "semantic_fx": 5.090000107884407,
+        "inductor_default": 59.38100069761276,
+        "inductor_max_tune": 57.055000215768814
+      },
+      "ordinary_wall_us": {
+        "pytorch_eager": 127.6008,
+        "semantic_fx": 136.23499999999999,
+        "inductor_default": 195.6746,
+        "inductor_max_tune": 192.674
+      },
+      "semantic_vs_best_inductor_device": 11.20923359655546,
+      "semantic_vs_best_inductor_wall": 1.4142768011157194
+    },
+    {
+      "shape_n_d_v": [
+        4096,
+        128,
+        8192
+      ],
+      "producer": "randperm",
+      "frequency": false,
+      "device_us": {
+        "pytorch_eager": 103.74200344085693,
+        "semantic_fx": 58.118000626564026,
+        "inductor_default": 58.26399847865105,
+        "inductor_max_tune": 60.06399914622307
+      },
+      "ordinary_wall_us": {
+        "pytorch_eager": 165.3493,
+        "semantic_fx": 195.62709999999998,
+        "inductor_default": 143.3154,
+        "inductor_max_tune": 142.9605
+      },
+      "semantic_vs_best_inductor_device": 1.0025120935082596,
+      "semantic_vs_best_inductor_wall": 0.7307806536006515
+    },
+    {
+      "shape_n_d_v": [
+        4096,
+        128,
+        8192
+      ],
+      "producer": "randperm",
+      "frequency": true,
+      "device_us": {
+        "pytorch_eager": 113.50200325250626,
+        "semantic_fx": 58.219000697135925,
+        "inductor_default": 108.61899703741074,
+        "inductor_max_tune": 106.98500275611877
+      },
+      "ordinary_wall_us": {
+        "pytorch_eager": 179.53119999999998,
+        "semantic_fx": 202.46110000000002,
+        "inductor_default": 274.4395,
+        "inductor_max_tune": 282.7398
+      },
+      "semantic_vs_best_inductor_device": 1.8376303522053048,
+      "semantic_vs_best_inductor_wall": 1.3555171833008908
+    },
+    {
+      "shape_n_d_v": [
+        16384,
+        256,
+        16384
+      ],
+      "producer": "arange",
+      "frequency": false,
+      "device_us": {
+        "pytorch_eager": 88.25100213289261,
+        "semantic_fx": 18.775999546051025,
+        "inductor_default": 10.894999839365482,
+        "inductor_max_tune": 10.975999757647514
+      },
+      "ordinary_wall_us": {
+        "pytorch_eager": 119.1615,
+        "semantic_fx": 111.3846,
+        "inductor_default": 54.2981,
+        "inductor_max_tune": 58.9781
+      },
+      "semantic_vs_best_inductor_device": 0.580262042116257,
+      "semantic_vs_best_inductor_wall": 0.4874830093208576
+    },
+    {
+      "shape_n_d_v": [
+        16384,
+        256,
+        16384
+      ],
+      "producer": "arange",
+      "frequency": true,
+      "device_us": {
+        "pytorch_eager": 104.62000221014023,
+        "semantic_fx": 18.80900003015995,
+        "inductor_default": 70.05500048398972,
+        "inductor_max_tune": 70.01300156116486
+      },
+      "ordinary_wall_us": {
+        "pytorch_eager": 142.0591,
+        "semantic_fx": 119.4001,
+        "inductor_default": 196.3921,
+        "inductor_max_tune": 206.0948
+      },
+      "semantic_vs_best_inductor_device": 3.7223138629858075,
+      "semantic_vs_best_inductor_wall": 1.644823580549765
+    },
+    {
+      "shape_n_d_v": [
+        16384,
+        256,
+        16384
+      ],
+      "producer": "randperm",
+      "frequency": false,
+      "device_us": {
+        "pytorch_eager": 147.7220058441162,
+        "semantic_fx": 77.55099982023239,
+        "inductor_default": 71.47999852895737,
+        "inductor_max_tune": 73.14000278711319
+      },
+      "ordinary_wall_us": {
+        "pytorch_eager": 182.9098,
+        "semantic_fx": 175.6132,
+        "inductor_default": 142.2167,
+        "inductor_max_tune": 144.25050000000002
+      },
+      "semantic_vs_best_inductor_device": 0.9217160151984121,
+      "semantic_vs_best_inductor_wall": 0.8098292155714946
+    },
+    {
+      "shape_n_d_v": [
+        16384,
+        256,
+        16384
+      ],
+      "producer": "randperm",
+      "frequency": true,
+      "device_us": {
+        "pytorch_eager": 164.11200165748596,
+        "semantic_fx": 77.77699828147888,
+        "inductor_default": 132.08499550819397,
+        "inductor_max_tune": 131.53299689292908
+      },
+      "ordinary_wall_us": {
+        "pytorch_eager": 205.3146,
+        "semantic_fx": 185.4865,
+        "inductor_default": 280.884,
+        "inductor_max_tune": 282.5937
+      },
+      "semantic_vs_best_inductor_device": 1.6911554804018603,
+      "semantic_vs_best_inductor_wall": 1.5143096667412455
+    }
+  ],
+  "finding": "Uniqueness-driven frequency-count removal remains profitable against these Inductor modes; direct writes/atomic removal alone are not consistently faster.",
+  "code_finding": "Captured generated modules retain floating-point tl.atomic_add; frequency mode also retains the count/index_put machinery. No external embedding fallback. Counts describe source sites, not runtime launches.",
+  "limitations": [
+    "Only three shapes, two producers, both frequency settings; not a global tuning or fastest-provider claim.",
+    "Functional variants allocate separate outputs; capture/timing order randomized across seeds.",
+    "The separate internal CUDA-graph replay control supersedes ordinary-call wins against modes without internal replay."
+  ],
+  "source_sha256": {
+    "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/coverage_inductor_experiment.py": "a7998ffe8af89bdf94922a4acd7a56545b21d92c60da81efbfdc48deb0b6bbb2",
+    "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/coverage_experiment.py": "db50502fc3f549eb7550f594521835097e0d14d994f477e77da7bbaa812330d2",
+    "/home/ryandeng/tpaa/triton/python/triton/experimental/semantic_contracts/__init__.py": "7debd3b3c0eb3c63da5fb607b259bebccbea64eedcb784de12168a101c2b9f04",
+    "/home/ryandeng/tpaa/triton/python/triton/experimental/semantic_contracts/analysis.py": "45a5f4c3dadef51cb509e5cdabb811b3df3a974ec66ea9eff67869976cecea2e",
+    "/home/ryandeng/tpaa/triton/python/triton/experimental/semantic_contracts/backend.py": "4a8086d6bf181f60907699e9b9c92830f0a13742af793b7a15f4fd1806d94292",
+    "/home/ryandeng/tpaa/triton/python/triton/experimental/semantic_contracts/kernels.py": "3b84e18caca8b329512c2ed85789a78bebfafe38403683eab62840b64ae2d451",
+    "/home/ryandeng/tpaa/triton/python/triton/experimental/semantic_contracts/ops.py": "7edb29822b689ce3b064161880ace3dc1a90ee664f80701d1313b98520c65a80",
+    "/home/ryandeng/tpaa/.venv-semantic/lib/python3.12/site-packages/torch/_decomp/decompositions.py": "a99e383f4852a8e46bb1180659c50827dc3e6c9c520220c226678c4ebf78052e",
+    "/home/ryandeng/tpaa/.venv-semantic/lib/python3.12/site-packages/torch/_inductor/decomposition.py": "d0a64356b96ea1c9fa232a23b7bc2720c4b07895ba6977c0297df00415dcd9f6",
+    "/home/ryandeng/tpaa/.venv-semantic/lib/python3.12/site-packages/torch/_inductor/lowering.py": "c2ea8692e9948b82175cf8fc3ad9fa67e98b04c9b9e1fba5ae2ac77902d18e0c"
+  },
+  "compiler_sha256": "53634c635d80d8d86363f70f97016e9821ebc7e15ab28d8d47e5cbf8af210522",
+  "artifacts": {
+    "raw": "results.json",
+    "generated_source_excerpts": "code/",
+    "log": "experiment.log"
+  },
+  "internal_replay_control": {
+    "raw": "replay_control.json",
+    "reproducer": "replay_control.py",
+    "status": "passed",
+    "scope": "ordinary calls with internal CUDA graph replay; no nested external capture; clocks unlocked",
+    "capture_confirmed": true,
+    "rows": [
+      {
+        "shape_n_d_v": [
+          4096,
+          128,
+          4096
+        ],
+        "producer": "randperm",
+        "ordinary_wall_us": {
+          "inductor_max_autotune_replay": 151.5691,
+          "semantic_fx": 176.3239,
+          "pytorch_eager": 178.3743
+        },
+        "semantic_speedup_vs_inductor_replay": 0.8596060999104488
+      },
+      {
+        "shape_n_d_v": [
+          16384,
+          256,
+          16384
+        ],
+        "producer": "randperm",
+        "ordinary_wall_us": {
+          "inductor_max_autotune_replay": 172.6852,
+          "semantic_fx": 181.5377,
+          "pytorch_eager": 222.23690000000002
+        },
+        "semantic_speedup_vs_inductor_replay": 0.9512360242528136
+      },
+      {
+        "shape_n_d_v": [
+          4096,
+          128,
+          4096
+        ],
+        "producer": "arange",
+        "ordinary_wall_us": {
+          "inductor_max_autotune_replay": 104.2729,
+          "semantic_fx": 113.8694,
+          "pytorch_eager": 127.1762
+        },
+        "semantic_speedup_vs_inductor_replay": 0.91572362724314
+      }
+    ],
+    "conclusion": "No ordinary-call speedup established against actual max-autotune internal replay in these three cases. Device-work savings require a lower-overhead execution integration."
+  }
+}

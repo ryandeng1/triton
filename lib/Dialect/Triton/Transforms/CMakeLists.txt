@@ -9,6 +9,7 @@ add_triton_library(TritonTransforms
   LoopPeeling.cpp
   LoopUnroll.cpp
   ReorderBroadcast.cpp
+  SpecializeIndexedUpdates.cpp
   RewriteTensorDescriptorToPointer.cpp
   ArithTypeConversion.cpp
   FunctionTypeConversion.cpp

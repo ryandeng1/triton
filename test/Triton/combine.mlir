@@ -1,4 +1,7 @@
-// RUN: triton-opt %s -canonicalize -triton-combine | FileCheck %s
+// RUN: triton-opt %s -canonicalize -triton-combine --split-input-file | FileCheck %s
+// RUN: triton-opt %s --triton-specialize-indexed-updates="target=cuda" --split-input-file | FileCheck %s --check-prefix=INDEXED
+// RUN: triton-opt %s --triton-specialize-indexed-updates --split-input-file | FileCheck %s --check-prefix=NO-TARGET
+// RUN: triton-opt %s --triton-specialize-indexed-updates="target=hip" --split-input-file | FileCheck %s --check-prefix=OTHER-TARGET
 
 // We don't combine if the dot result is used by more than one op.
 // CHECK-LABEL: @test_combine_dot_add_invalid_pattern
@@ -640,4 +643,1154 @@ tt.func @test_combine_broadcast_mul_reduce_multiple_results(%arg0: tensor<32x16x
         tt.reduce.return %6, %6 : f32, f32
     }) : (tensor<32x16x32xf32>, tensor<32x16x32xf32>) -> (tensor<32x32xf32>, tensor<32x32xf32>)
     tt.return %5#0 : tensor<32x32xf32>
+}
+
+// Native indexed updates: contracts describe producer values and invocation
+// footprints. The pass must derive address injectivity from the actual mapping.
+// Unsupported effects, domains, masks, arithmetic, and launches retain atomics.
+
+// -----
+
+// INDEXED-LABEL: @indexed_update_unique_zero
+// INDEXED-SAME: tt.experimental_indexed_update_specialized = 1 : i32
+// INDEXED: tt.load
+// INDEXED-NOT: tt.load
+// INDEXED-NOT: tt.atomic_rmw
+// INDEXED: add.rn.ftz.f32
+// INDEXED: tt.store
+// INDEXED-NOT: tt.atomic_rmw
+// INDEXED: tt.return
+// NO-TARGET-LABEL: @indexed_update_unique_zero
+// NO-TARGET: tt.atomic_rmw
+// OTHER-TARGET-LABEL: @indexed_update_unique_zero
+// OTHER-TARGET: tt.atomic_rmw
+tt.func public @indexed_update_unique_zero(%indices: !tt.ptr<i32> {tt.experimental_alias_group = 0 : i32, tt.experimental_unique_indices = 16 : i32, tt.experimental_index_bound = 32 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32, tt.experimental_grid_x = 16 : i32, tt.experimental_grid_y = 2 : i32, tt.experimental_grid_z = 1 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_initial_zero = 1 : i32}) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %c8 = arith.constant 8 : i32
+  %cd = arith.constant 13 : i32
+  %true = arith.constant true
+  %values = arith.constant dense<1.0> : tensor<8xf32>
+  %x = tt.get_program_id x : i32
+  %y = tt.get_program_id y : i32
+  %iptr = tt.addptr %indices, %x : !tt.ptr<i32>, i32
+  %loaded = tt.load %iptr : !tt.ptr<i32>
+  %row = arith.muli %loaded, %cd : i32
+  %base = arith.muli %y, %c8 : i32
+  %range = tt.make_range {start = 0 : i32, end = 8 : i32} : tensor<8xi32>
+  %bases = tt.splat %base : i32 -> tensor<8xi32>
+  %cols = arith.addi %bases, %range : tensor<8xi32>
+  %ds = tt.splat %cd : i32 -> tensor<8xi32>
+  %rowptr = tt.addptr %out, %row : !tt.ptr<f32>, i32
+  %rowptrs = tt.splat %rowptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+  %ptrs = tt.addptr %rowptrs, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+  %tail = arith.cmpi slt, %cols, %ds : tensor<8xi32>
+  %valid = arith.cmpi sge, %x, %c0 : i32
+  %valids = tt.splat %valid : i1 -> tensor<8xi1>
+  %mask = arith.andi %tail, %valids : tensor<8xi1>
+  %old = tt.atomic_rmw fadd, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<f32>>, tensor<8xf32>, tensor<8xi1>) -> tensor<8xf32>
+  tt.return
+}
+
+// -----
+
+// INDEXED-LABEL: @indexed_update_unique_nonzero
+// INDEXED-SAME: tt.experimental_indexed_update_specialized = 1 : i32
+// INDEXED: tt.load
+// INDEXED: tt.load
+// INDEXED-NOT: tt.atomic_rmw
+// INDEXED: add.rn.ftz.f32
+// INDEXED: tt.store
+// INDEXED-NOT: tt.atomic_rmw
+// INDEXED: tt.return
+tt.func public @indexed_update_unique_nonzero(%indices: !tt.ptr<i32> {tt.experimental_alias_group = 0 : i32, tt.experimental_unique_indices = 16 : i32, tt.experimental_index_bound = 32 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32, tt.experimental_grid_x = 16 : i32, tt.experimental_grid_y = 2 : i32, tt.experimental_grid_z = 1 : i32, tt.experimental_num_ctas = 1 : i32}) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %c8 = arith.constant 8 : i32
+  %cd = arith.constant 13 : i32
+  %true = arith.constant true
+  %values = arith.constant dense<1.0> : tensor<8xf32>
+  %x = tt.get_program_id x : i32
+  %y = tt.get_program_id y : i32
+  %iptr = tt.addptr %indices, %x : !tt.ptr<i32>, i32
+  %loaded = tt.load %iptr : !tt.ptr<i32>
+  %row = arith.muli %loaded, %cd : i32
+  %base = arith.muli %y, %c8 : i32
+  %range = tt.make_range {start = 0 : i32, end = 8 : i32} : tensor<8xi32>
+  %bases = tt.splat %base : i32 -> tensor<8xi32>
+  %cols = arith.addi %bases, %range : tensor<8xi32>
+  %ds = tt.splat %cd : i32 -> tensor<8xi32>
+  %rowptr = tt.addptr %out, %row : !tt.ptr<f32>, i32
+  %rowptrs = tt.splat %rowptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+  %ptrs = tt.addptr %rowptrs, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+  %tail = arith.cmpi slt, %cols, %ds : tensor<8xi32>
+  %valid = arith.cmpi sge, %x, %c0 : i32
+  %valids = tt.splat %valid : i1 -> tensor<8xi1>
+  %mask = arith.andi %tail, %valids : tensor<8xi1>
+  %old = tt.atomic_rmw fadd, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<f32>>, tensor<8xf32>, tensor<8xi1>) -> tensor<8xf32>
+  tt.return
+}
+
+// -----
+
+// INDEXED-LABEL: @indexed_update_combined_offset
+// INDEXED-SAME: tt.experimental_indexed_update_specialized = 1 : i32
+// INDEXED: tt.load
+// INDEXED-NOT: tt.load
+// INDEXED-NOT: tt.atomic_rmw
+// INDEXED: add.rn.ftz.f32
+// INDEXED: tt.store
+// INDEXED-NOT: tt.atomic_rmw
+// INDEXED: tt.return
+tt.func public @indexed_update_combined_offset(%indices: !tt.ptr<i32> {tt.experimental_alias_group = 0 : i32, tt.experimental_unique_indices = 16 : i32, tt.experimental_index_bound = 32 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32, tt.experimental_grid_x = 16 : i32, tt.experimental_grid_y = 2 : i32, tt.experimental_grid_z = 1 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_initial_zero = 1 : i32}) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %c8 = arith.constant 8 : i32
+  %cd = arith.constant 13 : i32
+  %true = arith.constant true
+  %values = arith.constant dense<1.0> : tensor<8xf32>
+  %x = tt.get_program_id x : i32
+  %y = tt.get_program_id y : i32
+  %iptr = tt.addptr %indices, %x : !tt.ptr<i32>, i32
+  %loaded = tt.load %iptr : !tt.ptr<i32>
+  %row = arith.muli %loaded, %cd : i32
+  %base = arith.muli %y, %c8 : i32
+  %range = tt.make_range {start = 0 : i32, end = 8 : i32} : tensor<8xi32>
+  %bases = tt.splat %base : i32 -> tensor<8xi32>
+  %cols = arith.addi %bases, %range : tensor<8xi32>
+  %ds = tt.splat %cd : i32 -> tensor<8xi32>
+  %rows = tt.splat %row : i32 -> tensor<8xi32>
+  %offsets = arith.addi %rows, %cols : tensor<8xi32>
+  %outs = tt.splat %out : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+  %ptrs = tt.addptr %outs, %offsets : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+  %tail = arith.cmpi slt, %cols, %ds : tensor<8xi32>
+  %valid = arith.cmpi sge, %x, %c0 : i32
+  %valids = tt.splat %valid : i1 -> tensor<8xi1>
+  %mask = arith.andi %tail, %valids : tensor<8xi1>
+  %old = tt.atomic_rmw fadd, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<f32>>, tensor<8xf32>, tensor<8xi1>) -> tensor<8xf32>
+  tt.return
+}
+
+// -----
+
+// INDEXED-LABEL: @indexed_update_lossless_index_truncation
+// INDEXED-SAME: tt.experimental_indexed_update_specialized = 1 : i32
+// INDEXED: tt.load
+// INDEXED-NOT: tt.load
+// INDEXED-NOT: tt.atomic_rmw
+// INDEXED: add.rn.ftz.f32
+// INDEXED: tt.store
+// INDEXED-NOT: tt.atomic_rmw
+// INDEXED: tt.return
+tt.func public @indexed_update_lossless_index_truncation(%indices: !tt.ptr<i64> {tt.experimental_alias_group = 0 : i32, tt.experimental_unique_indices = 16 : i32, tt.experimental_index_bound = 32 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32, tt.experimental_grid_x = 16 : i32, tt.experimental_grid_y = 2 : i32, tt.experimental_grid_z = 1 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_initial_zero = 1 : i32}) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %c8 = arith.constant 8 : i32
+  %cd = arith.constant 13 : i32
+  %true = arith.constant true
+  %values = arith.constant dense<1.0> : tensor<8xf32>
+  %x = tt.get_program_id x : i32
+  %y = tt.get_program_id y : i32
+  %iptr = tt.addptr %indices, %x : !tt.ptr<i64>, i32
+  %loaded = tt.load %iptr : !tt.ptr<i64>
+  %index = arith.trunci %loaded : i64 to i32
+  %row = arith.muli %index, %cd : i32
+  %base = arith.muli %y, %c8 : i32
+  %range = tt.make_range {start = 0 : i32, end = 8 : i32} : tensor<8xi32>
+  %bases = tt.splat %base : i32 -> tensor<8xi32>
+  %cols = arith.addi %bases, %range : tensor<8xi32>
+  %ds = tt.splat %cd : i32 -> tensor<8xi32>
+  %rowptr = tt.addptr %out, %row : !tt.ptr<f32>, i32
+  %rowptrs = tt.splat %rowptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+  %ptrs = tt.addptr %rowptrs, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+  %tail = arith.cmpi slt, %cols, %ds : tensor<8xi32>
+  %valid = arith.cmpi sge, %x, %c0 : i32
+  %valids = tt.splat %valid : i1 -> tensor<8xi1>
+  %mask = arith.andi %tail, %valids : tensor<8xi1>
+  %old = tt.atomic_rmw fadd, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<f32>>, tensor<8xf32>, tensor<8xi1>) -> tensor<8xf32>
+  tt.return
+}
+
+// -----
+
+// INDEXED-LABEL: @indexed_update_wide_index
+// INDEXED-SAME: tt.experimental_indexed_update_specialized = 1 : i32
+// INDEXED: tt.load
+// INDEXED-NOT: tt.load
+// INDEXED-NOT: tt.atomic_rmw
+// INDEXED: add.rn.ftz.f32
+// INDEXED: tt.store
+// INDEXED-NOT: tt.atomic_rmw
+// INDEXED: tt.return
+tt.func public @indexed_update_wide_index(%indices: !tt.ptr<i64> {tt.experimental_alias_group = 0 : i32, tt.experimental_unique_indices = 16 : i32, tt.experimental_index_bound = 32 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32, tt.experimental_grid_x = 16 : i32, tt.experimental_grid_y = 2 : i32, tt.experimental_grid_z = 1 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_initial_zero = 1 : i32}) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %c8 = arith.constant 8 : i32
+  %cd = arith.constant 13 : i32
+  %true = arith.constant true
+  %values = arith.constant dense<1.0> : tensor<8xf32>
+  %x = tt.get_program_id x : i32
+  %y = tt.get_program_id y : i32
+  %iptr = tt.addptr %indices, %x : !tt.ptr<i64>, i32
+  %loaded = tt.load %iptr : !tt.ptr<i64>
+  %cd64 = arith.constant 13 : i64
+  %row = arith.muli %loaded, %cd64 : i64
+  %base = arith.muli %y, %c8 : i32
+  %range = tt.make_range {start = 0 : i32, end = 8 : i32} : tensor<8xi32>
+  %bases = tt.splat %base : i32 -> tensor<8xi32>
+  %cols = arith.addi %bases, %range : tensor<8xi32>
+  %ds = tt.splat %cd : i32 -> tensor<8xi32>
+  %widecols = arith.extsi %cols : tensor<8xi32> to tensor<8xi64>
+  %rowptr = tt.addptr %out, %row : !tt.ptr<f32>, i64
+  %rowptrs = tt.splat %rowptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+  %ptrs = tt.addptr %rowptrs, %widecols : tensor<8x!tt.ptr<f32>>, tensor<8xi64>
+  %tail = arith.cmpi slt, %cols, %ds : tensor<8xi32>
+  %valid = arith.cmpi sge, %x, %c0 : i32
+  %valids = tt.splat %valid : i1 -> tensor<8xi1>
+  %mask = arith.andi %tail, %valids : tensor<8xi1>
+  %old = tt.atomic_rmw fadd, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<f32>>, tensor<8xf32>, tensor<8xi1>) -> tensor<8xf32>
+  tt.return
+}
+
+// -----
+
+// INDEXED-LABEL: @indexed_update_full_tiles
+// INDEXED-SAME: tt.experimental_indexed_update_specialized = 1 : i32
+// INDEXED: tt.load
+// INDEXED-NOT: tt.load
+// INDEXED-NOT: tt.atomic_rmw
+// INDEXED: add.rn.ftz.f32
+// INDEXED: tt.store
+// INDEXED-NOT: tt.atomic_rmw
+// INDEXED: tt.return
+tt.func public @indexed_update_full_tiles(%indices: !tt.ptr<i32> {tt.experimental_alias_group = 0 : i32, tt.experimental_unique_indices = 16 : i32, tt.experimental_index_bound = 32 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32, tt.experimental_grid_x = 16 : i32, tt.experimental_grid_y = 2 : i32, tt.experimental_grid_z = 1 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_initial_zero = 1 : i32}) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %c8 = arith.constant 8 : i32
+  %cd = arith.constant 16 : i32
+  %true = arith.constant true
+  %values = arith.constant dense<1.0> : tensor<8xf32>
+  %x = tt.get_program_id x : i32
+  %y = tt.get_program_id y : i32
+  %iptr = tt.addptr %indices, %x : !tt.ptr<i32>, i32
+  %loaded = tt.load %iptr : !tt.ptr<i32>
+  %row = arith.muli %loaded, %cd : i32
+  %base = arith.muli %y, %c8 : i32
+  %range = tt.make_range {start = 0 : i32, end = 8 : i32} : tensor<8xi32>
+  %bases = tt.splat %base : i32 -> tensor<8xi32>
+  %cols = arith.addi %bases, %range : tensor<8xi32>
+  %ds = tt.splat %cd : i32 -> tensor<8xi32>
+  %rowptr = tt.addptr %out, %row : !tt.ptr<f32>, i32
+  %rowptrs = tt.splat %rowptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+  %ptrs = tt.addptr %rowptrs, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+  %mask = arith.constant dense<true> : tensor<8xi1>
+  %old = tt.atomic_rmw fadd, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<f32>>, tensor<8xf32>, tensor<8xi1>) -> tensor<8xf32>
+  tt.return
+}
+
+// -----
+
+// INDEXED-LABEL: @indexed_update_missing_unique
+// INDEXED-NOT: tt.experimental_indexed_update_specialized
+// INDEXED: tt.atomic_rmw
+// INDEXED: tt.return
+tt.func public @indexed_update_missing_unique(%indices: !tt.ptr<i32> {tt.experimental_alias_group = 0 : i32, tt.experimental_index_bound = 32 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32, tt.experimental_grid_x = 16 : i32, tt.experimental_grid_y = 2 : i32, tt.experimental_grid_z = 1 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_initial_zero = 1 : i32}) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %c8 = arith.constant 8 : i32
+  %cd = arith.constant 13 : i32
+  %true = arith.constant true
+  %values = arith.constant dense<1.0> : tensor<8xf32>
+  %x = tt.get_program_id x : i32
+  %y = tt.get_program_id y : i32
+  %iptr = tt.addptr %indices, %x : !tt.ptr<i32>, i32
+  %loaded = tt.load %iptr : !tt.ptr<i32>
+  %row = arith.muli %loaded, %cd : i32
+  %base = arith.muli %y, %c8 : i32
+  %range = tt.make_range {start = 0 : i32, end = 8 : i32} : tensor<8xi32>
+  %bases = tt.splat %base : i32 -> tensor<8xi32>
+  %cols = arith.addi %bases, %range : tensor<8xi32>
+  %ds = tt.splat %cd : i32 -> tensor<8xi32>
+  %rowptr = tt.addptr %out, %row : !tt.ptr<f32>, i32
+  %rowptrs = tt.splat %rowptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+  %ptrs = tt.addptr %rowptrs, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+  %tail = arith.cmpi slt, %cols, %ds : tensor<8xi32>
+  %valid = arith.cmpi sge, %x, %c0 : i32
+  %valids = tt.splat %valid : i1 -> tensor<8xi1>
+  %mask = arith.andi %tail, %valids : tensor<8xi1>
+  %old = tt.atomic_rmw fadd, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<f32>>, tensor<8xf32>, tensor<8xi1>) -> tensor<8xf32>
+  tt.return
+}
+
+// -----
+
+// INDEXED-LABEL: @indexed_update_missing_private
+// INDEXED-NOT: tt.experimental_indexed_update_specialized
+// INDEXED: tt.atomic_rmw
+// INDEXED: tt.return
+tt.func public @indexed_update_missing_private(%indices: !tt.ptr<i32> {tt.experimental_alias_group = 0 : i32, tt.experimental_unique_indices = 16 : i32, tt.experimental_index_bound = 32 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_grid_x = 16 : i32, tt.experimental_grid_y = 2 : i32, tt.experimental_grid_z = 1 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_initial_zero = 1 : i32}) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %c8 = arith.constant 8 : i32
+  %cd = arith.constant 13 : i32
+  %true = arith.constant true
+  %values = arith.constant dense<1.0> : tensor<8xf32>
+  %x = tt.get_program_id x : i32
+  %y = tt.get_program_id y : i32
+  %iptr = tt.addptr %indices, %x : !tt.ptr<i32>, i32
+  %loaded = tt.load %iptr : !tt.ptr<i32>
+  %row = arith.muli %loaded, %cd : i32
+  %base = arith.muli %y, %c8 : i32
+  %range = tt.make_range {start = 0 : i32, end = 8 : i32} : tensor<8xi32>
+  %bases = tt.splat %base : i32 -> tensor<8xi32>
+  %cols = arith.addi %bases, %range : tensor<8xi32>
+  %ds = tt.splat %cd : i32 -> tensor<8xi32>
+  %rowptr = tt.addptr %out, %row : !tt.ptr<f32>, i32
+  %rowptrs = tt.splat %rowptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+  %ptrs = tt.addptr %rowptrs, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+  %tail = arith.cmpi slt, %cols, %ds : tensor<8xi32>
+  %valid = arith.cmpi sge, %x, %c0 : i32
+  %valids = tt.splat %valid : i1 -> tensor<8xi1>
+  %mask = arith.andi %tail, %valids : tensor<8xi1>
+  %old = tt.atomic_rmw fadd, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<f32>>, tensor<8xf32>, tensor<8xi1>) -> tensor<8xf32>
+  tt.return
+}
+
+// -----
+
+// INDEXED-LABEL: @indexed_update_missing_alias_group
+// INDEXED-NOT: tt.experimental_indexed_update_specialized
+// INDEXED: tt.atomic_rmw
+// INDEXED: tt.return
+tt.func public @indexed_update_missing_alias_group(%indices: !tt.ptr<i32> {tt.experimental_unique_indices = 16 : i32, tt.experimental_index_bound = 32 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32, tt.experimental_grid_x = 16 : i32, tt.experimental_grid_y = 2 : i32, tt.experimental_grid_z = 1 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_initial_zero = 1 : i32}) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %c8 = arith.constant 8 : i32
+  %cd = arith.constant 13 : i32
+  %true = arith.constant true
+  %values = arith.constant dense<1.0> : tensor<8xf32>
+  %x = tt.get_program_id x : i32
+  %y = tt.get_program_id y : i32
+  %iptr = tt.addptr %indices, %x : !tt.ptr<i32>, i32
+  %loaded = tt.load %iptr : !tt.ptr<i32>
+  %row = arith.muli %loaded, %cd : i32
+  %base = arith.muli %y, %c8 : i32
+  %range = tt.make_range {start = 0 : i32, end = 8 : i32} : tensor<8xi32>
+  %bases = tt.splat %base : i32 -> tensor<8xi32>
+  %cols = arith.addi %bases, %range : tensor<8xi32>
+  %ds = tt.splat %cd : i32 -> tensor<8xi32>
+  %rowptr = tt.addptr %out, %row : !tt.ptr<f32>, i32
+  %rowptrs = tt.splat %rowptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+  %ptrs = tt.addptr %rowptrs, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+  %tail = arith.cmpi slt, %cols, %ds : tensor<8xi32>
+  %valid = arith.cmpi sge, %x, %c0 : i32
+  %valids = tt.splat %valid : i1 -> tensor<8xi1>
+  %mask = arith.andi %tail, %valids : tensor<8xi1>
+  %old = tt.atomic_rmw fadd, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<f32>>, tensor<8xf32>, tensor<8xi1>) -> tensor<8xf32>
+  tt.return
+}
+
+// -----
+
+// INDEXED-LABEL: @indexed_update_aliasing_index
+// INDEXED-NOT: tt.experimental_indexed_update_specialized
+// INDEXED: tt.atomic_rmw
+// INDEXED: tt.return
+tt.func public @indexed_update_aliasing_index(%indices: !tt.ptr<i32> {tt.experimental_alias_group = 1 : i32, tt.experimental_unique_indices = 16 : i32, tt.experimental_index_bound = 32 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32, tt.experimental_grid_x = 16 : i32, tt.experimental_grid_y = 2 : i32, tt.experimental_grid_z = 1 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_initial_zero = 1 : i32}) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %c8 = arith.constant 8 : i32
+  %cd = arith.constant 13 : i32
+  %true = arith.constant true
+  %values = arith.constant dense<1.0> : tensor<8xf32>
+  %x = tt.get_program_id x : i32
+  %y = tt.get_program_id y : i32
+  %iptr = tt.addptr %indices, %x : !tt.ptr<i32>, i32
+  %loaded = tt.load %iptr : !tt.ptr<i32>
+  %row = arith.muli %loaded, %cd : i32
+  %base = arith.muli %y, %c8 : i32
+  %range = tt.make_range {start = 0 : i32, end = 8 : i32} : tensor<8xi32>
+  %bases = tt.splat %base : i32 -> tensor<8xi32>
+  %cols = arith.addi %bases, %range : tensor<8xi32>
+  %ds = tt.splat %cd : i32 -> tensor<8xi32>
+  %rowptr = tt.addptr %out, %row : !tt.ptr<f32>, i32
+  %rowptrs = tt.splat %rowptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+  %ptrs = tt.addptr %rowptrs, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+  %tail = arith.cmpi slt, %cols, %ds : tensor<8xi32>
+  %valid = arith.cmpi sge, %x, %c0 : i32
+  %valids = tt.splat %valid : i1 -> tensor<8xi1>
+  %mask = arith.andi %tail, %valids : tensor<8xi1>
+  %old = tt.atomic_rmw fadd, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<f32>>, tensor<8xf32>, tensor<8xi1>) -> tensor<8xf32>
+  tt.return
+}
+
+// -----
+
+// INDEXED-LABEL: @indexed_update_short_unique_prefix
+// INDEXED-NOT: tt.experimental_indexed_update_specialized
+// INDEXED: tt.atomic_rmw
+// INDEXED: tt.return
+tt.func public @indexed_update_short_unique_prefix(%indices: !tt.ptr<i32> {tt.experimental_alias_group = 0 : i32, tt.experimental_unique_indices = 8 : i32, tt.experimental_index_bound = 32 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32, tt.experimental_grid_x = 16 : i32, tt.experimental_grid_y = 2 : i32, tt.experimental_grid_z = 1 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_initial_zero = 1 : i32}) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %c8 = arith.constant 8 : i32
+  %cd = arith.constant 13 : i32
+  %true = arith.constant true
+  %values = arith.constant dense<1.0> : tensor<8xf32>
+  %x = tt.get_program_id x : i32
+  %y = tt.get_program_id y : i32
+  %iptr = tt.addptr %indices, %x : !tt.ptr<i32>, i32
+  %loaded = tt.load %iptr : !tt.ptr<i32>
+  %row = arith.muli %loaded, %cd : i32
+  %base = arith.muli %y, %c8 : i32
+  %range = tt.make_range {start = 0 : i32, end = 8 : i32} : tensor<8xi32>
+  %bases = tt.splat %base : i32 -> tensor<8xi32>
+  %cols = arith.addi %bases, %range : tensor<8xi32>
+  %ds = tt.splat %cd : i32 -> tensor<8xi32>
+  %rowptr = tt.addptr %out, %row : !tt.ptr<f32>, i32
+  %rowptrs = tt.splat %rowptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+  %ptrs = tt.addptr %rowptrs, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+  %tail = arith.cmpi slt, %cols, %ds : tensor<8xi32>
+  %valid = arith.cmpi sge, %x, %c0 : i32
+  %valids = tt.splat %valid : i1 -> tensor<8xi1>
+  %mask = arith.andi %tail, %valids : tensor<8xi1>
+  %old = tt.atomic_rmw fadd, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<f32>>, tensor<8xf32>, tensor<8xi1>) -> tensor<8xf32>
+  tt.return
+}
+
+// -----
+
+// INDEXED-LABEL: @indexed_update_missing_grid_axis
+// INDEXED-NOT: tt.experimental_indexed_update_specialized
+// INDEXED: tt.atomic_rmw
+// INDEXED: tt.return
+tt.func public @indexed_update_missing_grid_axis(%indices: !tt.ptr<i32> {tt.experimental_alias_group = 0 : i32, tt.experimental_unique_indices = 16 : i32, tt.experimental_index_bound = 32 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32, tt.experimental_grid_x = 16 : i32, tt.experimental_grid_y = 2 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_initial_zero = 1 : i32}) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %c8 = arith.constant 8 : i32
+  %cd = arith.constant 13 : i32
+  %true = arith.constant true
+  %values = arith.constant dense<1.0> : tensor<8xf32>
+  %x = tt.get_program_id x : i32
+  %y = tt.get_program_id y : i32
+  %iptr = tt.addptr %indices, %x : !tt.ptr<i32>, i32
+  %loaded = tt.load %iptr : !tt.ptr<i32>
+  %row = arith.muli %loaded, %cd : i32
+  %base = arith.muli %y, %c8 : i32
+  %range = tt.make_range {start = 0 : i32, end = 8 : i32} : tensor<8xi32>
+  %bases = tt.splat %base : i32 -> tensor<8xi32>
+  %cols = arith.addi %bases, %range : tensor<8xi32>
+  %ds = tt.splat %cd : i32 -> tensor<8xi32>
+  %rowptr = tt.addptr %out, %row : !tt.ptr<f32>, i32
+  %rowptrs = tt.splat %rowptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+  %ptrs = tt.addptr %rowptrs, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+  %tail = arith.cmpi slt, %cols, %ds : tensor<8xi32>
+  %valid = arith.cmpi sge, %x, %c0 : i32
+  %valids = tt.splat %valid : i1 -> tensor<8xi1>
+  %mask = arith.andi %tail, %valids : tensor<8xi1>
+  %old = tt.atomic_rmw fadd, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<f32>>, tensor<8xf32>, tensor<8xi1>) -> tensor<8xf32>
+  tt.return
+}
+
+// -----
+
+// INDEXED-LABEL: @indexed_update_duplicated_grid_axis
+// INDEXED-NOT: tt.experimental_indexed_update_specialized
+// INDEXED: tt.atomic_rmw
+// INDEXED: tt.return
+tt.func public @indexed_update_duplicated_grid_axis(%indices: !tt.ptr<i32> {tt.experimental_alias_group = 0 : i32, tt.experimental_unique_indices = 16 : i32, tt.experimental_index_bound = 32 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32, tt.experimental_grid_x = 16 : i32, tt.experimental_grid_y = 2 : i32, tt.experimental_grid_z = 2 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_initial_zero = 1 : i32}) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %c8 = arith.constant 8 : i32
+  %cd = arith.constant 13 : i32
+  %true = arith.constant true
+  %values = arith.constant dense<1.0> : tensor<8xf32>
+  %x = tt.get_program_id x : i32
+  %y = tt.get_program_id y : i32
+  %iptr = tt.addptr %indices, %x : !tt.ptr<i32>, i32
+  %loaded = tt.load %iptr : !tt.ptr<i32>
+  %row = arith.muli %loaded, %cd : i32
+  %base = arith.muli %y, %c8 : i32
+  %range = tt.make_range {start = 0 : i32, end = 8 : i32} : tensor<8xi32>
+  %bases = tt.splat %base : i32 -> tensor<8xi32>
+  %cols = arith.addi %bases, %range : tensor<8xi32>
+  %ds = tt.splat %cd : i32 -> tensor<8xi32>
+  %rowptr = tt.addptr %out, %row : !tt.ptr<f32>, i32
+  %rowptrs = tt.splat %rowptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+  %ptrs = tt.addptr %rowptrs, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+  %tail = arith.cmpi slt, %cols, %ds : tensor<8xi32>
+  %valid = arith.cmpi sge, %x, %c0 : i32
+  %valids = tt.splat %valid : i1 -> tensor<8xi1>
+  %mask = arith.andi %tail, %valids : tensor<8xi1>
+  %old = tt.atomic_rmw fadd, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<f32>>, tensor<8xf32>, tensor<8xi1>) -> tensor<8xf32>
+  tt.return
+}
+
+// -----
+
+// INDEXED-LABEL: @indexed_update_incorrect_tail_mask
+// INDEXED-NOT: tt.experimental_indexed_update_specialized
+// INDEXED: tt.atomic_rmw
+// INDEXED: tt.return
+tt.func public @indexed_update_incorrect_tail_mask(%indices: !tt.ptr<i32> {tt.experimental_alias_group = 0 : i32, tt.experimental_unique_indices = 16 : i32, tt.experimental_index_bound = 32 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32, tt.experimental_grid_x = 16 : i32, tt.experimental_grid_y = 2 : i32, tt.experimental_grid_z = 1 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_initial_zero = 1 : i32}) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %c8 = arith.constant 8 : i32
+  %cd = arith.constant 13 : i32
+  %true = arith.constant true
+  %values = arith.constant dense<1.0> : tensor<8xf32>
+  %x = tt.get_program_id x : i32
+  %y = tt.get_program_id y : i32
+  %iptr = tt.addptr %indices, %x : !tt.ptr<i32>, i32
+  %loaded = tt.load %iptr : !tt.ptr<i32>
+  %row = arith.muli %loaded, %cd : i32
+  %base = arith.muli %y, %c8 : i32
+  %range = tt.make_range {start = 0 : i32, end = 8 : i32} : tensor<8xi32>
+  %bases = tt.splat %base : i32 -> tensor<8xi32>
+  %cols = arith.addi %bases, %range : tensor<8xi32>
+  %ds = tt.splat %cd : i32 -> tensor<8xi32>
+  %rowptr = tt.addptr %out, %row : !tt.ptr<f32>, i32
+  %rowptrs = tt.splat %rowptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+  %ptrs = tt.addptr %rowptrs, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+  %tail = arith.cmpi sle, %cols, %ds : tensor<8xi32>
+  %valid = arith.cmpi sge, %x, %c0 : i32
+  %valids = tt.splat %valid : i1 -> tensor<8xi1>
+  %mask = arith.andi %tail, %valids : tensor<8xi1>
+  %old = tt.atomic_rmw fadd, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<f32>>, tensor<8xf32>, tensor<8xi1>) -> tensor<8xf32>
+  tt.return
+}
+
+// -----
+
+// INDEXED-LABEL: @indexed_update_local_range_mask
+// INDEXED-NOT: tt.experimental_indexed_update_specialized
+// INDEXED: tt.atomic_rmw
+// INDEXED: tt.return
+tt.func public @indexed_update_local_range_mask(%indices: !tt.ptr<i32> {tt.experimental_alias_group = 0 : i32, tt.experimental_unique_indices = 16 : i32, tt.experimental_index_bound = 32 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32, tt.experimental_grid_x = 16 : i32, tt.experimental_grid_y = 2 : i32, tt.experimental_grid_z = 1 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_initial_zero = 1 : i32}) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %c8 = arith.constant 8 : i32
+  %cd = arith.constant 13 : i32
+  %true = arith.constant true
+  %values = arith.constant dense<1.0> : tensor<8xf32>
+  %x = tt.get_program_id x : i32
+  %y = tt.get_program_id y : i32
+  %iptr = tt.addptr %indices, %x : !tt.ptr<i32>, i32
+  %loaded = tt.load %iptr : !tt.ptr<i32>
+  %row = arith.muli %loaded, %cd : i32
+  %base = arith.muli %y, %c8 : i32
+  %range = tt.make_range {start = 0 : i32, end = 8 : i32} : tensor<8xi32>
+  %bases = tt.splat %base : i32 -> tensor<8xi32>
+  %cols = arith.addi %bases, %range : tensor<8xi32>
+  %ds = tt.splat %cd : i32 -> tensor<8xi32>
+  %rowptr = tt.addptr %out, %row : !tt.ptr<f32>, i32
+  %rowptrs = tt.splat %rowptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+  %ptrs = tt.addptr %rowptrs, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+  %tail = arith.cmpi slt, %range, %ds : tensor<8xi32>
+  %valid = arith.cmpi sge, %x, %c0 : i32
+  %valids = tt.splat %valid : i1 -> tensor<8xi1>
+  %mask = arith.andi %tail, %valids : tensor<8xi1>
+  %old = tt.atomic_rmw fadd, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<f32>>, tensor<8xf32>, tensor<8xi1>) -> tensor<8xf32>
+  tt.return
+}
+
+// -----
+
+// INDEXED-LABEL: @indexed_update_or_mask_not_a_guard
+// INDEXED-NOT: tt.experimental_indexed_update_specialized
+// INDEXED: tt.atomic_rmw
+// INDEXED: tt.return
+tt.func public @indexed_update_or_mask_not_a_guard(%indices: !tt.ptr<i32> {tt.experimental_alias_group = 0 : i32, tt.experimental_unique_indices = 16 : i32, tt.experimental_index_bound = 32 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32, tt.experimental_grid_x = 16 : i32, tt.experimental_grid_y = 2 : i32, tt.experimental_grid_z = 1 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_initial_zero = 1 : i32}) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %c8 = arith.constant 8 : i32
+  %cd = arith.constant 13 : i32
+  %true = arith.constant true
+  %values = arith.constant dense<1.0> : tensor<8xf32>
+  %x = tt.get_program_id x : i32
+  %y = tt.get_program_id y : i32
+  %iptr = tt.addptr %indices, %x : !tt.ptr<i32>, i32
+  %loaded = tt.load %iptr : !tt.ptr<i32>
+  %row = arith.muli %loaded, %cd : i32
+  %base = arith.muli %y, %c8 : i32
+  %range = tt.make_range {start = 0 : i32, end = 8 : i32} : tensor<8xi32>
+  %bases = tt.splat %base : i32 -> tensor<8xi32>
+  %cols = arith.addi %bases, %range : tensor<8xi32>
+  %ds = tt.splat %cd : i32 -> tensor<8xi32>
+  %rowptr = tt.addptr %out, %row : !tt.ptr<f32>, i32
+  %rowptrs = tt.splat %rowptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+  %ptrs = tt.addptr %rowptrs, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+  %tail = arith.cmpi slt, %cols, %ds : tensor<8xi32>
+  %all = arith.constant dense<true> : tensor<8xi1>
+  %mask = arith.ori %tail, %all : tensor<8xi1>
+  %old = tt.atomic_rmw fadd, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<f32>>, tensor<8xf32>, tensor<8xi1>) -> tensor<8xf32>
+  tt.return
+}
+
+// -----
+
+// INDEXED-LABEL: @indexed_update_overlapping_column_tiles
+// INDEXED-NOT: tt.experimental_indexed_update_specialized
+// INDEXED: tt.atomic_rmw
+// INDEXED: tt.return
+tt.func public @indexed_update_overlapping_column_tiles(%indices: !tt.ptr<i32> {tt.experimental_alias_group = 0 : i32, tt.experimental_unique_indices = 16 : i32, tt.experimental_index_bound = 32 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32, tt.experimental_grid_x = 16 : i32, tt.experimental_grid_y = 2 : i32, tt.experimental_grid_z = 1 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_initial_zero = 1 : i32}) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %c8 = arith.constant 7 : i32
+  %cd = arith.constant 13 : i32
+  %true = arith.constant true
+  %values = arith.constant dense<1.0> : tensor<8xf32>
+  %x = tt.get_program_id x : i32
+  %y = tt.get_program_id y : i32
+  %iptr = tt.addptr %indices, %x : !tt.ptr<i32>, i32
+  %loaded = tt.load %iptr : !tt.ptr<i32>
+  %row = arith.muli %loaded, %cd : i32
+  %base = arith.muli %y, %c8 : i32
+  %range = tt.make_range {start = 0 : i32, end = 8 : i32} : tensor<8xi32>
+  %bases = tt.splat %base : i32 -> tensor<8xi32>
+  %cols = arith.addi %bases, %range : tensor<8xi32>
+  %ds = tt.splat %cd : i32 -> tensor<8xi32>
+  %rowptr = tt.addptr %out, %row : !tt.ptr<f32>, i32
+  %rowptrs = tt.splat %rowptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+  %ptrs = tt.addptr %rowptrs, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+  %tail = arith.cmpi slt, %cols, %ds : tensor<8xi32>
+  %valid = arith.cmpi sge, %x, %c0 : i32
+  %valids = tt.splat %valid : i1 -> tensor<8xi1>
+  %mask = arith.andi %tail, %valids : tensor<8xi1>
+  %old = tt.atomic_rmw fadd, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<f32>>, tensor<8xf32>, tensor<8xi1>) -> tensor<8xf32>
+  tt.return
+}
+
+// -----
+
+// INDEXED-LABEL: @indexed_update_wrapping_row_product
+// INDEXED-NOT: tt.experimental_indexed_update_specialized
+// INDEXED: tt.atomic_rmw
+// INDEXED: tt.return
+tt.func public @indexed_update_wrapping_row_product(%indices: !tt.ptr<i32> {tt.experimental_alias_group = 0 : i32, tt.experimental_unique_indices = 16 : i32, tt.experimental_index_bound = 2147483647 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32, tt.experimental_grid_x = 16 : i32, tt.experimental_grid_y = 2 : i32, tt.experimental_grid_z = 1 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_initial_zero = 1 : i32}) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %c8 = arith.constant 8 : i32
+  %cd = arith.constant 13 : i32
+  %true = arith.constant true
+  %values = arith.constant dense<1.0> : tensor<8xf32>
+  %x = tt.get_program_id x : i32
+  %y = tt.get_program_id y : i32
+  %iptr = tt.addptr %indices, %x : !tt.ptr<i32>, i32
+  %loaded = tt.load %iptr : !tt.ptr<i32>
+  %row = arith.muli %loaded, %cd : i32
+  %base = arith.muli %y, %c8 : i32
+  %range = tt.make_range {start = 0 : i32, end = 8 : i32} : tensor<8xi32>
+  %bases = tt.splat %base : i32 -> tensor<8xi32>
+  %cols = arith.addi %bases, %range : tensor<8xi32>
+  %ds = tt.splat %cd : i32 -> tensor<8xi32>
+  %rowptr = tt.addptr %out, %row : !tt.ptr<f32>, i32
+  %rowptrs = tt.splat %rowptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+  %ptrs = tt.addptr %rowptrs, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+  %tail = arith.cmpi slt, %cols, %ds : tensor<8xi32>
+  %valid = arith.cmpi sge, %x, %c0 : i32
+  %valids = tt.splat %valid : i1 -> tensor<8xi1>
+  %mask = arith.andi %tail, %valids : tensor<8xi1>
+  %old = tt.atomic_rmw fadd, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<f32>>, tensor<8xf32>, tensor<8xi1>) -> tensor<8xf32>
+  tt.return
+}
+
+// -----
+
+// INDEXED-LABEL: @indexed_update_truncation_loses_uniqueness
+// INDEXED-NOT: tt.experimental_indexed_update_specialized
+// INDEXED: tt.atomic_rmw
+// INDEXED: tt.return
+tt.func public @indexed_update_truncation_loses_uniqueness(%indices: !tt.ptr<i64> {tt.experimental_alias_group = 0 : i32, tt.experimental_unique_indices = 16 : i32, tt.experimental_index_bound = 131072 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32, tt.experimental_grid_x = 16 : i32, tt.experimental_grid_y = 2 : i32, tt.experimental_grid_z = 1 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_initial_zero = 1 : i32}) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %c8 = arith.constant 8 : i32
+  %cd = arith.constant 13 : i32
+  %true = arith.constant true
+  %values = arith.constant dense<1.0> : tensor<8xf32>
+  %x = tt.get_program_id x : i32
+  %y = tt.get_program_id y : i32
+  %iptr = tt.addptr %indices, %x : !tt.ptr<i64>, i32
+  %loaded = tt.load %iptr : !tt.ptr<i64>
+  %index = arith.trunci %loaded : i64 to i16
+  %rowindex = arith.extsi %index : i16 to i32
+  %row = arith.muli %rowindex, %cd : i32
+  %base = arith.muli %y, %c8 : i32
+  %range = tt.make_range {start = 0 : i32, end = 8 : i32} : tensor<8xi32>
+  %bases = tt.splat %base : i32 -> tensor<8xi32>
+  %cols = arith.addi %bases, %range : tensor<8xi32>
+  %ds = tt.splat %cd : i32 -> tensor<8xi32>
+  %rowptr = tt.addptr %out, %row : !tt.ptr<f32>, i32
+  %rowptrs = tt.splat %rowptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+  %ptrs = tt.addptr %rowptrs, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+  %tail = arith.cmpi slt, %cols, %ds : tensor<8xi32>
+  %valid = arith.cmpi sge, %x, %c0 : i32
+  %valids = tt.splat %valid : i1 -> tensor<8xi1>
+  %mask = arith.andi %tail, %valids : tensor<8xi1>
+  %old = tt.atomic_rmw fadd, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<f32>>, tensor<8xf32>, tensor<8xi1>) -> tensor<8xf32>
+  tt.return
+}
+
+// -----
+
+// INDEXED-LABEL: @indexed_update_repeated_index_position
+// INDEXED-NOT: tt.experimental_indexed_update_specialized
+// INDEXED: tt.atomic_rmw
+// INDEXED: tt.return
+tt.func public @indexed_update_repeated_index_position(%indices: !tt.ptr<i32> {tt.experimental_alias_group = 0 : i32, tt.experimental_unique_indices = 16 : i32, tt.experimental_index_bound = 32 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32, tt.experimental_grid_x = 16 : i32, tt.experimental_grid_y = 2 : i32, tt.experimental_grid_z = 1 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_initial_zero = 1 : i32}) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %c8 = arith.constant 8 : i32
+  %cd = arith.constant 13 : i32
+  %true = arith.constant true
+  %values = arith.constant dense<1.0> : tensor<8xf32>
+  %x = tt.get_program_id x : i32
+  %y = tt.get_program_id y : i32
+  %iptr = tt.addptr %indices, %c0 : !tt.ptr<i32>, i32
+  %loaded = tt.load %iptr : !tt.ptr<i32>
+  %row = arith.muli %loaded, %cd : i32
+  %base = arith.muli %y, %c8 : i32
+  %range = tt.make_range {start = 0 : i32, end = 8 : i32} : tensor<8xi32>
+  %bases = tt.splat %base : i32 -> tensor<8xi32>
+  %cols = arith.addi %bases, %range : tensor<8xi32>
+  %ds = tt.splat %cd : i32 -> tensor<8xi32>
+  %rowptr = tt.addptr %out, %row : !tt.ptr<f32>, i32
+  %rowptrs = tt.splat %rowptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+  %ptrs = tt.addptr %rowptrs, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+  %tail = arith.cmpi slt, %cols, %ds : tensor<8xi32>
+  %valid = arith.cmpi sge, %x, %c0 : i32
+  %valids = tt.splat %valid : i1 -> tensor<8xi1>
+  %mask = arith.andi %tail, %valids : tensor<8xi1>
+  %old = tt.atomic_rmw fadd, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<f32>>, tensor<8xf32>, tensor<8xi1>) -> tensor<8xf32>
+  tt.return
+}
+
+// -----
+
+// INDEXED-LABEL: @indexed_update_masked_index_load
+// INDEXED-NOT: tt.experimental_indexed_update_specialized
+// INDEXED: tt.atomic_rmw
+// INDEXED: tt.return
+tt.func public @indexed_update_masked_index_load(%indices: !tt.ptr<i32> {tt.experimental_alias_group = 0 : i32, tt.experimental_unique_indices = 16 : i32, tt.experimental_index_bound = 32 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32, tt.experimental_grid_x = 16 : i32, tt.experimental_grid_y = 2 : i32, tt.experimental_grid_z = 1 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_initial_zero = 1 : i32}) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %c8 = arith.constant 8 : i32
+  %cd = arith.constant 13 : i32
+  %true = arith.constant true
+  %values = arith.constant dense<1.0> : tensor<8xf32>
+  %x = tt.get_program_id x : i32
+  %y = tt.get_program_id y : i32
+  %iptr = tt.addptr %indices, %x : !tt.ptr<i32>, i32
+  %index_active = arith.cmpi slt, %x, %c1 : i32
+  %loaded = tt.load %iptr, %index_active, %c0 : !tt.ptr<i32>
+  %row = arith.muli %loaded, %cd : i32
+  %base = arith.muli %y, %c8 : i32
+  %range = tt.make_range {start = 0 : i32, end = 8 : i32} : tensor<8xi32>
+  %bases = tt.splat %base : i32 -> tensor<8xi32>
+  %cols = arith.addi %bases, %range : tensor<8xi32>
+  %ds = tt.splat %cd : i32 -> tensor<8xi32>
+  %rowptr = tt.addptr %out, %row : !tt.ptr<f32>, i32
+  %rowptrs = tt.splat %rowptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+  %ptrs = tt.addptr %rowptrs, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+  %tail = arith.cmpi slt, %cols, %ds : tensor<8xi32>
+  %valid = arith.cmpi sge, %x, %c0 : i32
+  %valids = tt.splat %valid : i1 -> tensor<8xi1>
+  %mask = arith.andi %tail, %valids : tensor<8xi1>
+  %old = tt.atomic_rmw fadd, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<f32>>, tensor<8xf32>, tensor<8xi1>) -> tensor<8xf32>
+  tt.return
+}
+
+// -----
+
+// INDEXED-LABEL: @indexed_update_volatile_index_load
+// INDEXED-NOT: tt.experimental_indexed_update_specialized
+// INDEXED: tt.atomic_rmw
+// INDEXED: tt.return
+tt.func public @indexed_update_volatile_index_load(%indices: !tt.ptr<i32> {tt.experimental_alias_group = 0 : i32, tt.experimental_unique_indices = 16 : i32, tt.experimental_index_bound = 32 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32, tt.experimental_grid_x = 16 : i32, tt.experimental_grid_y = 2 : i32, tt.experimental_grid_z = 1 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_initial_zero = 1 : i32}) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %c8 = arith.constant 8 : i32
+  %cd = arith.constant 13 : i32
+  %true = arith.constant true
+  %values = arith.constant dense<1.0> : tensor<8xf32>
+  %x = tt.get_program_id x : i32
+  %y = tt.get_program_id y : i32
+  %iptr = tt.addptr %indices, %x : !tt.ptr<i32>, i32
+  %loaded = tt.load %iptr {isVolatile = true} : !tt.ptr<i32>
+  %row = arith.muli %loaded, %cd : i32
+  %base = arith.muli %y, %c8 : i32
+  %range = tt.make_range {start = 0 : i32, end = 8 : i32} : tensor<8xi32>
+  %bases = tt.splat %base : i32 -> tensor<8xi32>
+  %cols = arith.addi %bases, %range : tensor<8xi32>
+  %ds = tt.splat %cd : i32 -> tensor<8xi32>
+  %rowptr = tt.addptr %out, %row : !tt.ptr<f32>, i32
+  %rowptrs = tt.splat %rowptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+  %ptrs = tt.addptr %rowptrs, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+  %tail = arith.cmpi slt, %cols, %ds : tensor<8xi32>
+  %valid = arith.cmpi sge, %x, %c0 : i32
+  %valids = tt.splat %valid : i1 -> tensor<8xi1>
+  %mask = arith.andi %tail, %valids : tensor<8xi1>
+  %old = tt.atomic_rmw fadd, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<f32>>, tensor<8xf32>, tensor<8xi1>) -> tensor<8xf32>
+  tt.return
+}
+
+// -----
+
+// INDEXED-LABEL: @indexed_update_used_atomic_result
+// INDEXED-NOT: tt.experimental_indexed_update_specialized
+// INDEXED: tt.atomic_rmw
+// INDEXED: tt.return
+tt.func public @indexed_update_used_atomic_result(%indices: !tt.ptr<i32> {tt.experimental_alias_group = 0 : i32, tt.experimental_unique_indices = 16 : i32, tt.experimental_index_bound = 32 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32, tt.experimental_grid_x = 16 : i32, tt.experimental_grid_y = 2 : i32, tt.experimental_grid_z = 1 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_initial_zero = 1 : i32}) -> tensor<8xf32> {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %c8 = arith.constant 8 : i32
+  %cd = arith.constant 13 : i32
+  %true = arith.constant true
+  %values = arith.constant dense<1.0> : tensor<8xf32>
+  %x = tt.get_program_id x : i32
+  %y = tt.get_program_id y : i32
+  %iptr = tt.addptr %indices, %x : !tt.ptr<i32>, i32
+  %loaded = tt.load %iptr : !tt.ptr<i32>
+  %row = arith.muli %loaded, %cd : i32
+  %base = arith.muli %y, %c8 : i32
+  %range = tt.make_range {start = 0 : i32, end = 8 : i32} : tensor<8xi32>
+  %bases = tt.splat %base : i32 -> tensor<8xi32>
+  %cols = arith.addi %bases, %range : tensor<8xi32>
+  %ds = tt.splat %cd : i32 -> tensor<8xi32>
+  %rowptr = tt.addptr %out, %row : !tt.ptr<f32>, i32
+  %rowptrs = tt.splat %rowptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+  %ptrs = tt.addptr %rowptrs, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+  %tail = arith.cmpi slt, %cols, %ds : tensor<8xi32>
+  %valid = arith.cmpi sge, %x, %c0 : i32
+  %valids = tt.splat %valid : i1 -> tensor<8xi1>
+  %mask = arith.andi %tail, %valids : tensor<8xi1>
+  %old = tt.atomic_rmw fadd, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<f32>>, tensor<8xf32>, tensor<8xi1>) -> tensor<8xf32>
+  tt.return %old : tensor<8xf32>
+}
+
+// -----
+
+// INDEXED-LABEL: @indexed_update_other_write
+// INDEXED-NOT: tt.experimental_indexed_update_specialized
+// INDEXED: tt.atomic_rmw
+// INDEXED: tt.return
+tt.func public @indexed_update_other_write(%indices: !tt.ptr<i32> {tt.experimental_alias_group = 0 : i32, tt.experimental_unique_indices = 16 : i32, tt.experimental_index_bound = 32 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32, tt.experimental_grid_x = 16 : i32, tt.experimental_grid_y = 2 : i32, tt.experimental_grid_z = 1 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_initial_zero = 1 : i32}) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %c8 = arith.constant 8 : i32
+  %cd = arith.constant 13 : i32
+  %true = arith.constant true
+  %values = arith.constant dense<1.0> : tensor<8xf32>
+  %x = tt.get_program_id x : i32
+  %y = tt.get_program_id y : i32
+  %iptr = tt.addptr %indices, %x : !tt.ptr<i32>, i32
+  %loaded = tt.load %iptr : !tt.ptr<i32>
+  %row = arith.muli %loaded, %cd : i32
+  %base = arith.muli %y, %c8 : i32
+  %range = tt.make_range {start = 0 : i32, end = 8 : i32} : tensor<8xi32>
+  %bases = tt.splat %base : i32 -> tensor<8xi32>
+  %cols = arith.addi %bases, %range : tensor<8xi32>
+  %ds = tt.splat %cd : i32 -> tensor<8xi32>
+  %rowptr = tt.addptr %out, %row : !tt.ptr<f32>, i32
+  %rowptrs = tt.splat %rowptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+  %ptrs = tt.addptr %rowptrs, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+  %tail = arith.cmpi slt, %cols, %ds : tensor<8xi32>
+  %valid = arith.cmpi sge, %x, %c0 : i32
+  %valids = tt.splat %valid : i1 -> tensor<8xi1>
+  %mask = arith.andi %tail, %valids : tensor<8xi1>
+  %old = tt.atomic_rmw fadd, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<f32>>, tensor<8xf32>, tensor<8xi1>) -> tensor<8xf32>
+  tt.store %ptrs, %values, %mask : tensor<8x!tt.ptr<f32>>
+  tt.return
+}
+
+// -----
+
+// INDEXED-LABEL: @indexed_update_read_may_alias_output
+// INDEXED-NOT: tt.experimental_indexed_update_specialized
+// INDEXED: tt.atomic_rmw
+// INDEXED: tt.return
+tt.func public @indexed_update_read_may_alias_output(%indices: !tt.ptr<i32> {tt.experimental_alias_group = 0 : i32, tt.experimental_unique_indices = 16 : i32, tt.experimental_index_bound = 32 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32, tt.experimental_grid_x = 16 : i32, tt.experimental_grid_y = 2 : i32, tt.experimental_grid_z = 1 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_initial_zero = 1 : i32}, %alias: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32}) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %c8 = arith.constant 8 : i32
+  %cd = arith.constant 13 : i32
+  %true = arith.constant true
+  %values = arith.constant dense<1.0> : tensor<8xf32>
+  %x = tt.get_program_id x : i32
+  %y = tt.get_program_id y : i32
+  %iptr = tt.addptr %indices, %x : !tt.ptr<i32>, i32
+  %loaded = tt.load %iptr : !tt.ptr<i32>
+  %row = arith.muli %loaded, %cd : i32
+  %base = arith.muli %y, %c8 : i32
+  %range = tt.make_range {start = 0 : i32, end = 8 : i32} : tensor<8xi32>
+  %bases = tt.splat %base : i32 -> tensor<8xi32>
+  %cols = arith.addi %bases, %range : tensor<8xi32>
+  %ds = tt.splat %cd : i32 -> tensor<8xi32>
+  %rowptr = tt.addptr %out, %row : !tt.ptr<f32>, i32
+  %rowptrs = tt.splat %rowptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+  %ptrs = tt.addptr %rowptrs, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+  %tail = arith.cmpi slt, %cols, %ds : tensor<8xi32>
+  %valid = arith.cmpi sge, %x, %c0 : i32
+  %valids = tt.splat %valid : i1 -> tensor<8xi1>
+  %mask = arith.andi %tail, %valids : tensor<8xi1>
+  %read = tt.load %alias : !tt.ptr<f32>
+  %readvalues = tt.splat %read : f32 -> tensor<8xf32>
+  %old = tt.atomic_rmw fadd, acq_rel, gpu, %ptrs, %readvalues, %mask : (tensor<8x!tt.ptr<f32>>, tensor<8xf32>, tensor<8xi1>) -> tensor<8xf32>
+  tt.return
+}
+
+// -----
+
+// INDEXED-LABEL: @indexed_update_unknown_call
+// INDEXED-NOT: tt.experimental_indexed_update_specialized
+// INDEXED: tt.atomic_rmw
+// INDEXED: tt.return
+tt.func private @indexed_unknown_effect()
+tt.func public @indexed_update_unknown_call(%indices: !tt.ptr<i32> {tt.experimental_alias_group = 0 : i32, tt.experimental_unique_indices = 16 : i32, tt.experimental_index_bound = 32 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32, tt.experimental_grid_x = 16 : i32, tt.experimental_grid_y = 2 : i32, tt.experimental_grid_z = 1 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_initial_zero = 1 : i32}) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %c8 = arith.constant 8 : i32
+  %cd = arith.constant 13 : i32
+  %true = arith.constant true
+  %values = arith.constant dense<1.0> : tensor<8xf32>
+  %x = tt.get_program_id x : i32
+  %y = tt.get_program_id y : i32
+  %iptr = tt.addptr %indices, %x : !tt.ptr<i32>, i32
+  %loaded = tt.load %iptr : !tt.ptr<i32>
+  %row = arith.muli %loaded, %cd : i32
+  %base = arith.muli %y, %c8 : i32
+  %range = tt.make_range {start = 0 : i32, end = 8 : i32} : tensor<8xi32>
+  %bases = tt.splat %base : i32 -> tensor<8xi32>
+  %cols = arith.addi %bases, %range : tensor<8xi32>
+  %ds = tt.splat %cd : i32 -> tensor<8xi32>
+  %rowptr = tt.addptr %out, %row : !tt.ptr<f32>, i32
+  %rowptrs = tt.splat %rowptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+  %ptrs = tt.addptr %rowptrs, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+  %tail = arith.cmpi slt, %cols, %ds : tensor<8xi32>
+  %valid = arith.cmpi sge, %x, %c0 : i32
+  %valids = tt.splat %valid : i1 -> tensor<8xi1>
+  %mask = arith.andi %tail, %valids : tensor<8xi1>
+  tt.call @indexed_unknown_effect() : () -> ()
+  %old = tt.atomic_rmw fadd, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<f32>>, tensor<8xf32>, tensor<8xi1>) -> tensor<8xf32>
+  tt.return
+}
+
+// -----
+
+// INDEXED-LABEL: @indexed_update_loop_repeats_site
+// INDEXED-NOT: tt.experimental_indexed_update_specialized
+// INDEXED: tt.atomic_rmw
+// INDEXED: tt.return
+tt.func public @indexed_update_loop_repeats_site(%indices: !tt.ptr<i32> {tt.experimental_alias_group = 0 : i32, tt.experimental_unique_indices = 16 : i32, tt.experimental_index_bound = 32 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32, tt.experimental_grid_x = 16 : i32, tt.experimental_grid_y = 2 : i32, tt.experimental_grid_z = 1 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_initial_zero = 1 : i32}) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %c8 = arith.constant 8 : i32
+  %cd = arith.constant 13 : i32
+  %true = arith.constant true
+  %values = arith.constant dense<1.0> : tensor<8xf32>
+  %x = tt.get_program_id x : i32
+  %y = tt.get_program_id y : i32
+  %iptr = tt.addptr %indices, %x : !tt.ptr<i32>, i32
+  %loaded = tt.load %iptr : !tt.ptr<i32>
+  %row = arith.muli %loaded, %cd : i32
+  %base = arith.muli %y, %c8 : i32
+  %range = tt.make_range {start = 0 : i32, end = 8 : i32} : tensor<8xi32>
+  %bases = tt.splat %base : i32 -> tensor<8xi32>
+  %cols = arith.addi %bases, %range : tensor<8xi32>
+  %ds = tt.splat %cd : i32 -> tensor<8xi32>
+  %rowptr = tt.addptr %out, %row : !tt.ptr<f32>, i32
+  %rowptrs = tt.splat %rowptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+  %ptrs = tt.addptr %rowptrs, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+  %tail = arith.cmpi slt, %cols, %ds : tensor<8xi32>
+  %valid = arith.cmpi sge, %x, %c0 : i32
+  %valids = tt.splat %valid : i1 -> tensor<8xi1>
+  %mask = arith.andi %tail, %valids : tensor<8xi1>
+  scf.for %i = %c0 to %c8 step %c1 : i32 {
+  %old = tt.atomic_rmw fadd, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<f32>>, tensor<8xf32>, tensor<8xi1>) -> tensor<8xf32>
+  }
+  tt.return
+}
+
+// -----
+
+// INDEXED-LABEL: @indexed_update_system_scope
+// INDEXED-NOT: tt.experimental_indexed_update_specialized
+// INDEXED: tt.atomic_rmw
+// INDEXED: tt.return
+tt.func public @indexed_update_system_scope(%indices: !tt.ptr<i32> {tt.experimental_alias_group = 0 : i32, tt.experimental_unique_indices = 16 : i32, tt.experimental_index_bound = 32 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32, tt.experimental_grid_x = 16 : i32, tt.experimental_grid_y = 2 : i32, tt.experimental_grid_z = 1 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_initial_zero = 1 : i32}) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %c8 = arith.constant 8 : i32
+  %cd = arith.constant 13 : i32
+  %true = arith.constant true
+  %values = arith.constant dense<1.0> : tensor<8xf32>
+  %x = tt.get_program_id x : i32
+  %y = tt.get_program_id y : i32
+  %iptr = tt.addptr %indices, %x : !tt.ptr<i32>, i32
+  %loaded = tt.load %iptr : !tt.ptr<i32>
+  %row = arith.muli %loaded, %cd : i32
+  %base = arith.muli %y, %c8 : i32
+  %range = tt.make_range {start = 0 : i32, end = 8 : i32} : tensor<8xi32>
+  %bases = tt.splat %base : i32 -> tensor<8xi32>
+  %cols = arith.addi %bases, %range : tensor<8xi32>
+  %ds = tt.splat %cd : i32 -> tensor<8xi32>
+  %rowptr = tt.addptr %out, %row : !tt.ptr<f32>, i32
+  %rowptrs = tt.splat %rowptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+  %ptrs = tt.addptr %rowptrs, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+  %tail = arith.cmpi slt, %cols, %ds : tensor<8xi32>
+  %valid = arith.cmpi sge, %x, %c0 : i32
+  %valids = tt.splat %valid : i1 -> tensor<8xi1>
+  %mask = arith.andi %tail, %valids : tensor<8xi1>
+  %old = tt.atomic_rmw fadd, acq_rel, sys, %ptrs, %values, %mask : (tensor<8x!tt.ptr<f32>>, tensor<8xf32>, tensor<8xi1>) -> tensor<8xf32>
+  tt.return
+}
+
+// -----
+
+// INDEXED-LABEL: @indexed_update_missing_cta_contract
+// INDEXED-NOT: tt.experimental_indexed_update_specialized
+// INDEXED: tt.atomic_rmw
+// INDEXED: tt.return
+tt.func public @indexed_update_missing_cta_contract(%indices: !tt.ptr<i32> {tt.experimental_alias_group = 0 : i32, tt.experimental_unique_indices = 16 : i32, tt.experimental_index_bound = 32 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32, tt.experimental_grid_x = 16 : i32, tt.experimental_grid_y = 2 : i32, tt.experimental_grid_z = 1 : i32, tt.experimental_initial_zero = 1 : i32}) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %c8 = arith.constant 8 : i32
+  %cd = arith.constant 13 : i32
+  %true = arith.constant true
+  %values = arith.constant dense<1.0> : tensor<8xf32>
+  %x = tt.get_program_id x : i32
+  %y = tt.get_program_id y : i32
+  %iptr = tt.addptr %indices, %x : !tt.ptr<i32>, i32
+  %loaded = tt.load %iptr : !tt.ptr<i32>
+  %row = arith.muli %loaded, %cd : i32
+  %base = arith.muli %y, %c8 : i32
+  %range = tt.make_range {start = 0 : i32, end = 8 : i32} : tensor<8xi32>
+  %bases = tt.splat %base : i32 -> tensor<8xi32>
+  %cols = arith.addi %bases, %range : tensor<8xi32>
+  %ds = tt.splat %cd : i32 -> tensor<8xi32>
+  %rowptr = tt.addptr %out, %row : !tt.ptr<f32>, i32
+  %rowptrs = tt.splat %rowptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+  %ptrs = tt.addptr %rowptrs, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+  %tail = arith.cmpi slt, %cols, %ds : tensor<8xi32>
+  %valid = arith.cmpi sge, %x, %c0 : i32
+  %valids = tt.splat %valid : i1 -> tensor<8xi1>
+  %mask = arith.andi %tail, %valids : tensor<8xi1>
+  %old = tt.atomic_rmw fadd, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<f32>>, tensor<8xf32>, tensor<8xi1>) -> tensor<8xf32>
+  tt.return
+}
+
+// -----
+
+// INDEXED-LABEL: @indexed_update_multiple_ctas
+// INDEXED-NOT: tt.experimental_indexed_update_specialized
+// INDEXED: tt.atomic_rmw
+// INDEXED: tt.return
+tt.func public @indexed_update_multiple_ctas(%indices: !tt.ptr<i32> {tt.experimental_alias_group = 0 : i32, tt.experimental_unique_indices = 16 : i32, tt.experimental_index_bound = 32 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32, tt.experimental_grid_x = 16 : i32, tt.experimental_grid_y = 2 : i32, tt.experimental_grid_z = 1 : i32, tt.experimental_num_ctas = 2 : i32, tt.experimental_initial_zero = 1 : i32}) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %c8 = arith.constant 8 : i32
+  %cd = arith.constant 13 : i32
+  %true = arith.constant true
+  %values = arith.constant dense<1.0> : tensor<8xf32>
+  %x = tt.get_program_id x : i32
+  %y = tt.get_program_id y : i32
+  %iptr = tt.addptr %indices, %x : !tt.ptr<i32>, i32
+  %loaded = tt.load %iptr : !tt.ptr<i32>
+  %row = arith.muli %loaded, %cd : i32
+  %base = arith.muli %y, %c8 : i32
+  %range = tt.make_range {start = 0 : i32, end = 8 : i32} : tensor<8xi32>
+  %bases = tt.splat %base : i32 -> tensor<8xi32>
+  %cols = arith.addi %bases, %range : tensor<8xi32>
+  %ds = tt.splat %cd : i32 -> tensor<8xi32>
+  %rowptr = tt.addptr %out, %row : !tt.ptr<f32>, i32
+  %rowptrs = tt.splat %rowptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+  %ptrs = tt.addptr %rowptrs, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+  %tail = arith.cmpi slt, %cols, %ds : tensor<8xi32>
+  %valid = arith.cmpi sge, %x, %c0 : i32
+  %valids = tt.splat %valid : i1 -> tensor<8xi1>
+  %mask = arith.andi %tail, %valids : tensor<8xi1>
+  %old = tt.atomic_rmw fadd, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<f32>>, tensor<8xf32>, tensor<8xi1>) -> tensor<8xf32>
+  tt.return
+}
+
+// -----
+
+// INDEXED-LABEL: @indexed_update_module_multiple_ctas
+// INDEXED-NOT: tt.experimental_indexed_update_specialized
+// INDEXED: tt.atomic_rmw
+// INDEXED: tt.return
+module attributes {"ttg.num-ctas" = 2 : i32, "ttg.num-warps" = 4 : i32, "ttg.threads-per-warp" = 32 : i32} {
+tt.func public @indexed_update_module_multiple_ctas(%indices: !tt.ptr<i32> {tt.experimental_alias_group = 0 : i32, tt.experimental_unique_indices = 16 : i32, tt.experimental_index_bound = 32 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32, tt.experimental_grid_x = 16 : i32, tt.experimental_grid_y = 2 : i32, tt.experimental_grid_z = 1 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_initial_zero = 1 : i32}) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %c8 = arith.constant 8 : i32
+  %cd = arith.constant 13 : i32
+  %true = arith.constant true
+  %values = arith.constant dense<1.0> : tensor<8xf32>
+  %x = tt.get_program_id x : i32
+  %y = tt.get_program_id y : i32
+  %iptr = tt.addptr %indices, %x : !tt.ptr<i32>, i32
+  %loaded = tt.load %iptr : !tt.ptr<i32>
+  %row = arith.muli %loaded, %cd : i32
+  %base = arith.muli %y, %c8 : i32
+  %range = tt.make_range {start = 0 : i32, end = 8 : i32} : tensor<8xi32>
+  %bases = tt.splat %base : i32 -> tensor<8xi32>
+  %cols = arith.addi %bases, %range : tensor<8xi32>
+  %ds = tt.splat %cd : i32 -> tensor<8xi32>
+  %rowptr = tt.addptr %out, %row : !tt.ptr<f32>, i32
+  %rowptrs = tt.splat %rowptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+  %ptrs = tt.addptr %rowptrs, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+  %tail = arith.cmpi slt, %cols, %ds : tensor<8xi32>
+  %valid = arith.cmpi sge, %x, %c0 : i32
+  %valids = tt.splat %valid : i1 -> tensor<8xi1>
+  %mask = arith.andi %tail, %valids : tensor<8xi1>
+  %old = tt.atomic_rmw fadd, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<f32>>, tensor<8xf32>, tensor<8xi1>) -> tensor<8xf32>
+  tt.return
+}
+}
+
+// -----
+
+// INDEXED-LABEL: @indexed_update_gluon_layout
+// INDEXED-SAME: tt.experimental_indexed_update_specialized = 1 : i32
+// INDEXED: tt.load
+// INDEXED-NOT: tt.load
+// INDEXED-NOT: tt.atomic_rmw
+// INDEXED: add.rn.ftz.f32
+// INDEXED: tt.store
+// INDEXED-NOT: tt.atomic_rmw
+// INDEXED: tt.return
+// NO-TARGET-LABEL: @indexed_update_gluon_layout
+// NO-TARGET: tt.atomic_rmw
+// OTHER-TARGET-LABEL: @indexed_update_gluon_layout
+// OTHER-TARGET: tt.atomic_rmw
+#indexed_blocked = #ttg.blocked<{sizePerThread = [1], threadsPerWarp = [32], warpsPerCTA = [4], order = [0]}>
+module attributes {"ttg.num-ctas" = 1 : i32, "ttg.num-warps" = 4 : i32, "ttg.threads-per-warp" = 32 : i32} {
+tt.func public @indexed_update_gluon_layout(%indices: !tt.ptr<i32> {tt.experimental_alias_group = 0 : i32, tt.experimental_unique_indices = 16 : i32, tt.experimental_index_bound = 32 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32, tt.experimental_grid_x = 16 : i32, tt.experimental_grid_y = 2 : i32, tt.experimental_grid_z = 1 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_initial_zero = 1 : i32}) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %c8 = arith.constant 8 : i32
+  %cd = arith.constant 13 : i32
+  %true = arith.constant true
+  %values = arith.constant dense<1.0> : tensor<8xf32, #indexed_blocked>
+  %x = tt.get_program_id x : i32
+  %y = tt.get_program_id y : i32
+  %iptr = tt.addptr %indices, %x : !tt.ptr<i32>, i32
+  %loaded = tt.load %iptr : !tt.ptr<i32>
+  %row = arith.muli %loaded, %cd : i32
+  %base = arith.muli %y, %c8 : i32
+  %range = tt.make_range {start = 0 : i32, end = 8 : i32} : tensor<8xi32, #indexed_blocked>
+  %bases = tt.splat %base : i32 -> tensor<8xi32, #indexed_blocked>
+  %cols = arith.addi %bases, %range : tensor<8xi32, #indexed_blocked>
+  %ds = tt.splat %cd : i32 -> tensor<8xi32, #indexed_blocked>
+  %rowptr = tt.addptr %out, %row : !tt.ptr<f32>, i32
+  %rowptrs = tt.splat %rowptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>, #indexed_blocked>
+  %ptrs = tt.addptr %rowptrs, %cols : tensor<8x!tt.ptr<f32>, #indexed_blocked>, tensor<8xi32, #indexed_blocked>
+  %tail = arith.cmpi slt, %cols, %ds : tensor<8xi32, #indexed_blocked>
+  %valid = arith.cmpi sge, %x, %c0 : i32
+  %valids = tt.splat %valid : i1 -> tensor<8xi1, #indexed_blocked>
+  %mask = arith.andi %tail, %valids : tensor<8xi1, #indexed_blocked>
+  %old = tt.atomic_rmw fadd, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<f32>, #indexed_blocked>, tensor<8xf32, #indexed_blocked>, tensor<8xi1, #indexed_blocked>) -> tensor<8xf32, #indexed_blocked>
+  tt.return
+}
 }

@@ -1,0 +1,68 @@
+51: #   return %_unsafe_masked_index_put_accumulate
+52: triton_poi_fused_embedding_dense_backward_0 = async_compile.triton('triton_poi_fused_embedding_dense_backward_0', '''
+53: import triton
+75:     tmp0 = tl.full([1], 0, tl.int64)
+76:     tl.store(out_ptr0 + (x0), tmp0, None)
+77: ''', device_str='cuda')
+92: #   return %buf2,%buf3
+93: triton_poi_fused_embedding_dense_backward_1 = async_compile.triton('triton_poi_fused_embedding_dense_backward_1', '''
+94: import triton
+115:     x0 = xindex
+116:     tmp0 = tl.load(in_ptr0 + (x0), None)
+117:     tmp1 = tl.full([1], 0, tl.int64)
+127:     tmp11 = tl.maximum(tmp10, tmp9, tl.PropagateNan.ALL)
+128:     tl.store(out_ptr0 + (x0), tmp7, None)
+129:     tl.store(out_ptr1 + (x0), tmp11, None)
+130: ''', device_str='cuda')
+150: #   return %_unsafe_masked_index_put_accumulate_1
+151: triton_poi_fused_embedding_dense_backward_2 = async_compile.triton('triton_poi_fused_embedding_dense_backward_2', '''
+152: import triton
+174:     tmp0 = tl.full([1], 0.0, tl.float32)
+175:     tl.store(out_ptr0 + (x0), tmp0, None)
+176: ''', device_str='cuda')
+200: #   return %buf6
+201: triton_poi_fused_embedding_dense_backward_3 = async_compile.triton('triton_poi_fused_embedding_dense_backward_3', '''
+202: import triton
+225:     x0 = (xindex % 256)
+226:     tmp0 = tl.load(in_ptr0 + (x1), None, eviction_policy='evict_last')
+227:     tmp16 = tl.load(in_ptr1 + (x2), None).to(tl.float32)
+228:     tmp1 = tl.full([1], 16383, tl.int64)
+243:     tmp17 = tmp16.to(tl.float32)
+244:     tmp18 = tl.load(in_ptr0 + (x1), tmp13, eviction_policy='evict_last', other=1)
+245:     tmp19 = tl.load(in_ptr2 + (tl.broadcast_to(tmp18, [XBLOCK])), tmp13, eviction_policy='evict_last', other=1)
+246:     tmp20 = tmp19.to(tl.float32)
+249:     tmp23 = tl.where(tmp15, tmp21, tmp22)
+250:     tl.atomic_add(out_ptr0 + (x0 + 256*tmp8), tmp23, None, sem='relaxed')
+251: ''', device_str='cuda')
+261: #   return %convert_element_type_1
+262: triton_poi_fused_embedding_dense_backward_4 = async_compile.triton('triton_poi_fused_embedding_dense_backward_4', '''
+263: import triton
+284:     x0 = xindex
+285:     tmp0 = tl.load(in_ptr0 + (x0), None)
+286:     tmp1 = tmp0.to(tl.float32)
+287:     tl.store(out_ptr0 + (x0), tmp1, None)
+288: ''', device_str='cuda')
+303: 
+304:     def call(self, args):
+305:         arg0_1, = args
+309:             # Topologically Sorted Source Nodes: [randperm], Original ATen: [aten.randperm]
+310:             buf0 = torch.ops.aten.randperm.default(16384, device=device(type='cuda', index=0), pin_memory=False)
+311:             assert_tensor_metadata(buf0, (16384, ), (1, ), torch.int64, 'torch.ops.aten.randperm.default')
+312:             assert_alignment(buf0, 16, 'torch.ops.aten.randperm.default')
+313:             buf1 = empty_strided_cuda((16384, ), (1, ), torch.int64)
+315:             raw_stream0 = get_raw_stream(0)
+316:             triton_poi_fused_embedding_dense_backward_0.run(buf1, 16384, stream=raw_stream0)
+317:             buf2 = empty_strided_cuda((16384, ), (1, ), torch.int64)
+320:             raw_stream0 = get_raw_stream(0)
+321:             triton_poi_fused_embedding_dense_backward_1.run(buf0, buf2, buf3, 16384, stream=raw_stream0)
+322:             aten.index_put_(buf1, [buf3], buf2, True)
+323:             del buf2
+327:             raw_stream0 = get_raw_stream(0)
+328:             triton_poi_fused_embedding_dense_backward_2.run(buf5, 4194304, stream=raw_stream0)
+329:             assert_size_stride(arg0_1, (16384, 256), (256, 1), 'input')
+332:             raw_stream0 = get_raw_stream(0)
+333:             triton_poi_fused_embedding_dense_backward_3.run(buf0, arg0_1, buf1, buf5, 4194304, stream=raw_stream0)
+334:             del arg0_1
+339:             raw_stream0 = get_raw_stream(0)
+340:             triton_poi_fused_embedding_dense_backward_4.run(buf5, buf7, 4194304, stream=raw_stream0)
+341:             del buf5

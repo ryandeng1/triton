@@ -1,0 +1,35 @@
+55: #   return %_unsafe_masked_index_put_accumulate
+56: triton_poi_fused_arange_embedding_dense_backward_0 = async_compile.triton('triton_poi_fused_arange_embedding_dense_backward_0', '''
+57: import triton
+79:     tmp0 = tl.full([1], 0.0, tl.float32)
+80:     tl.store(out_ptr0 + (x0), tmp0, None)
+81: ''', device_str='cuda')
+102: #   return %buf1
+103: triton_poi_fused_arange_embedding_dense_backward_1 = async_compile.triton('triton_poi_fused_arange_embedding_dense_backward_1', '''
+104: import triton
+127:     x0 = (xindex % 256)
+128:     tmp9 = tl.load(in_ptr0 + (x2), None).to(tl.float32)
+129:     tmp0 = (x1).to(tl.int64)
+140:     tmp12 = tl.where(tmp8, tmp10, tmp11)
+141:     tl.atomic_add(out_ptr0 + (x0 + 256*((-16384) * ((-16384) >= (((16383) * ((16383) <= (x1)) + (x1) * ((x1) < (16383))))) + (((16383) * ((16383) <= (x1)) + (x1) * ((x1) < (16383)))) * ((((16383) * ((16383) <= (x1)) + (x1) * ((x1) < (16383)))) > (-16384)))), tmp12, None, sem='relaxed')
+142: ''', device_str='cuda')
+152: #   return %convert_element_type_1
+153: triton_poi_fused_embedding_dense_backward_2 = async_compile.triton('triton_poi_fused_embedding_dense_backward_2', '''
+154: import triton
+175:     x0 = xindex
+176:     tmp0 = tl.load(in_ptr0 + (x0), None)
+177:     tmp1 = tmp0.to(tl.float32)
+178:     tl.store(out_ptr0 + (x0), tmp1, None)
+179: ''', device_str='cuda')
+194: 
+195:     def call(self, args):
+196:         arg0_1, = args
+202:             raw_stream0 = get_raw_stream(0)
+203:             triton_poi_fused_arange_embedding_dense_backward_0.run(buf0, 4194304, stream=raw_stream0)
+204:             assert_size_stride(arg0_1, (16384, 256), (256, 1), 'input')
+207:             raw_stream0 = get_raw_stream(0)
+208:             triton_poi_fused_arange_embedding_dense_backward_1.run(arg0_1, buf0, 4194304, stream=raw_stream0)
+209:             del arg0_1
+212:             raw_stream0 = get_raw_stream(0)
+213:             triton_poi_fused_embedding_dense_backward_2.run(buf0, buf2, 4194304, stream=raw_stream0)
+214:             del buf0

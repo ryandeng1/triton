@@ -1,0 +1,35 @@
+57: #   return %_unsafe_masked_index_put_accumulate
+58: triton_poi_fused_arange_embedding_dense_backward_slice_0 = async_compile.triton('triton_poi_fused_arange_embedding_dense_backward_slice_0', '''
+59: import triton
+81:     tmp0 = tl.full([1], 0.0, tl.float32)
+82:     tl.store(out_ptr0 + (x0), tmp0, None)
+83: ''', device_str='cuda')
+106: #   return %buf1
+107: triton_poi_fused_arange_embedding_dense_backward_slice_1 = async_compile.triton('triton_poi_fused_arange_embedding_dense_backward_slice_1', '''
+108: import triton
+131:     x0 = (xindex % 128)
+132:     tmp9 = tl.load(in_ptr0 + (x2), None).to(tl.float32)
+133:     tmp0 = (x1).to(tl.int64)
+144:     tmp12 = tl.where(tmp8, tmp10, tmp11)
+145:     tl.atomic_add(out_ptr0 + (x0 + 128*((-8192) * ((-8192) >= (((8191) * ((8191) <= (x1)) + (x1) * ((x1) < (8191))))) + (((8191) * ((8191) <= (x1)) + (x1) * ((x1) < (8191)))) * ((((8191) * ((8191) <= (x1)) + (x1) * ((x1) < (8191)))) > (-8192)))), tmp12, None, sem='relaxed')
+146: ''', device_str='cuda')
+156: #   return %convert_element_type_1
+157: triton_poi_fused_embedding_dense_backward_2 = async_compile.triton('triton_poi_fused_embedding_dense_backward_2', '''
+158: import triton
+179:     x0 = xindex
+180:     tmp0 = tl.load(in_ptr0 + (x0), None)
+181:     tmp1 = tmp0.to(tl.float32)
+182:     tl.store(out_ptr0 + (x0), tmp1, None)
+183: ''', device_str='cuda')
+198: 
+199:     def call(self, args):
+200:         arg0_1, = args
+206:             raw_stream0 = get_raw_stream(0)
+207:             triton_poi_fused_arange_embedding_dense_backward_slice_0.run(buf0, 1048576, stream=raw_stream0)
+208:             assert_size_stride(arg0_1, (4096, 128), (128, 1), 'input')
+211:             raw_stream0 = get_raw_stream(0)
+212:             triton_poi_fused_arange_embedding_dense_backward_slice_1.run(arg0_1, buf0, 524288, stream=raw_stream0)
+213:             del arg0_1
+216:             raw_stream0 = get_raw_stream(0)
+217:             triton_poi_fused_embedding_dense_backward_2.run(buf0, buf2, 1048576, stream=raw_stream0)
+218:             del buf0

@@ -1,0 +1,41 @@
+56: #   return %_unsafe_masked_index_put_accumulate
+57: triton_poi_fused_embedding_dense_backward_slice_0 = async_compile.triton('triton_poi_fused_embedding_dense_backward_slice_0', '''
+58: import triton
+80:     tmp0 = tl.full([1], 0.0, tl.float32)
+81:     tl.store(out_ptr0 + (x0), tmp0, None)
+82: ''', device_str='cuda')
+104: #   return %buf2
+105: triton_poi_fused_embedding_dense_backward_slice_1 = async_compile.triton('triton_poi_fused_embedding_dense_backward_slice_1', '''
+106: import triton
+129:     x0 = (xindex % 128)
+130:     tmp0 = tl.load(in_ptr0 + (x1), None, eviction_policy='evict_last')
+131:     tmp16 = tl.load(in_ptr1 + (x2), None).to(tl.float32)
+132:     tmp1 = tl.full([1], 8191, tl.int64)
+149:     tmp19 = tl.where(tmp15, tmp17, tmp18)
+150:     tl.atomic_add(out_ptr0 + (x0 + 128*tmp8), tmp19, None, sem='relaxed')
+151: ''', device_str='cuda')
+161: #   return %convert_element_type_1
+162: triton_poi_fused_embedding_dense_backward_2 = async_compile.triton('triton_poi_fused_embedding_dense_backward_2', '''
+163: import triton
+184:     x0 = xindex
+185:     tmp0 = tl.load(in_ptr0 + (x0), None)
+186:     tmp1 = tmp0.to(tl.float32)
+187:     tl.store(out_ptr0 + (x0), tmp1, None)
+188: ''', device_str='cuda')
+203: 
+204:     def call(self, args):
+205:         arg0_1, = args
+209:             # Topologically Sorted Source Nodes: [randperm], Original ATen: [aten.randperm]
+210:             buf0 = torch.ops.aten.randperm.default(8192, device=device(type='cuda', index=0), pin_memory=False)
+211:             assert_tensor_metadata(buf0, (8192, ), (1, ), torch.int64, 'torch.ops.aten.randperm.default')
+212:             assert_alignment(buf0, 16, 'torch.ops.aten.randperm.default')
+213:             buf1 = empty_strided_cuda((8192, 128), (128, 1), torch.float32)
+215:             raw_stream0 = get_raw_stream(0)
+216:             triton_poi_fused_embedding_dense_backward_slice_0.run(buf1, 1048576, stream=raw_stream0)
+217:             assert_size_stride(arg0_1, (4096, 128), (128, 1), 'input')
+220:             raw_stream0 = get_raw_stream(0)
+221:             triton_poi_fused_embedding_dense_backward_slice_1.run(buf0, arg0_1, buf1, 524288, stream=raw_stream0)
+222:             del arg0_1
+226:             raw_stream0 = get_raw_stream(0)
+227:             triton_poi_fused_embedding_dense_backward_2.run(buf1, buf3, 1048576, stream=raw_stream0)
+228:             del buf1
