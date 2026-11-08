@@ -1,0 +1,21 @@
+{
+  "repository": "NVIDIA/TransformerEngine",
+  "revision": "c1c2d4d2fa008386f247c2fec56a998e27134e0a",
+  "files": [
+    {
+      "file": "transformer_engine_permutation.py",
+      "url": "https://raw.githubusercontent.com/NVIDIA/TransformerEngine/c1c2d4d2fa008386f247c2fec56a998e27134e0a/transformer_engine/common/triton/permutation.py",
+      "sha256": "94465e2ef66d4b1683c42f1528d48961cd907b9dde8923f34ac86eec377a432c"
+    },
+    {
+      "file": "transformer_engine_permutation_wrapper.py",
+      "url": "https://raw.githubusercontent.com/NVIDIA/TransformerEngine/c1c2d4d2fa008386f247c2fec56a998e27134e0a/transformer_engine/pytorch/triton/permutation.py",
+      "sha256": "d0e91d7aac2fedd444999b49c762a601e802e6847962f6736e1dbbc835b752ec"
+    },
+    {
+      "file": "transformer_engine_LICENSE",
+      "url": "https://raw.githubusercontent.com/NVIDIA/TransformerEngine/c1c2d4d2fa008386f247c2fec56a998e27134e0a/LICENSE",
+      "sha256": "bea1b4266f1499fa4bbb16d6e7577e6b5b53d1ef010835a9d460876022cc8722"
+    }
+  ]
+}

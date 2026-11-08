@@ -1,0 +1,24 @@
+--- original
++++ manual_probability_hoist
+@@ -55,6 +55,10 @@
+         if FUSION_UNPAD:
+             pad_off = tl.load(pad_offsets_ptr + expert_idx)
+             dst_row = dst_row + pad_off
++        merging_prob_off = (
++            pid * stride_merging_probs_token + expert_idx * stride_merging_probs_expert
++        )
++        merging_prob = tl.load(merging_probs_ptr + merging_prob_off).to(compute_type)
+         prob_grad_accum = tl.zeros((BLOCK_SIZE,), dtype=compute_type)
+         current_start = 0
+         while current_start < hidden_size:
+@@ -67,10 +71,6 @@
+             )
+             inp = tl.load(fwd_output_grad_ptr + input_off, mask=mask)
+             inp = inp.to(compute_type)
+-            merging_prob_off = (
+-                pid * stride_merging_probs_token + expert_idx * stride_merging_probs_expert
+-            )
+-            merging_prob = tl.load(merging_probs_ptr + merging_prob_off).to(compute_type)
+             output = inp * merging_prob
+             output = output.to(data_type)
+             output_off = (

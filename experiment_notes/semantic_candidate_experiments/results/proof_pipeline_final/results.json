@@ -1,0 +1,760 @@
+{
+  "torch": "2.14.1+cu130",
+  "triton": "3.9.0",
+  "gpu": "NVIDIA B300 SXM6 PC",
+  "argv": [
+    "experiment_notes/semantic_candidate_experiments/proof_pipeline_experiment.py",
+    "--output",
+    "experiment_notes/semantic_candidate_experiments/results/proof_pipeline_final"
+  ],
+  "compiler_sha256": "53634c635d80d8d86363f70f97016e9821ebc7e15ab28d8d47e5cbf8af210522",
+  "source_hashes": {
+    "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/proof_pipeline_experiment.py": "8c8650f4f70b50825d1a96bbaeaacc2065321a5d9193cad13e26382ed6cfd738",
+    "/home/ryandeng/tpaa/triton/python/triton/experimental/semantic_contracts/__init__.py": "7debd3b3c0eb3c63da5fb607b259bebccbea64eedcb784de12168a101c2b9f04",
+    "/home/ryandeng/tpaa/triton/python/triton/experimental/semantic_contracts/analysis.py": "e2d5c66dbd1fda092b86ce0cfa5ca04989942f1c00b1373d6dcdca7032799d81",
+    "/home/ryandeng/tpaa/triton/python/triton/experimental/semantic_contracts/backend.py": "b4c24ac0187c278871e08f6043bee606af2a52e6ff03243814dc8943a26a5550",
+    "/home/ryandeng/tpaa/triton/python/triton/experimental/semantic_contracts/kernels.py": "14ed1bc6a6e21c0503fa4e7fd8fdd0c528b947482bc9a06398008220f77f68e0",
+    "/home/ryandeng/tpaa/triton/python/triton/experimental/semantic_contracts/ops.py": "7edb29822b689ce3b064161880ace3dc1a90ee664f80701d1313b98520c65a80"
+  },
+  "cases": [
+    {
+      "kind": "rms",
+      "shape": [
+        31,
+        137
+      ],
+      "grid_multiplier": 1,
+      "validation": "bitwise baseline equality and independent FP64 reference",
+      "plan": {
+        "name": "rms_norm",
+        "op": "rms_norm",
+        "selected_optimization": "baseline",
+        "kernel_launches": [
+          "rms_norm"
+        ],
+        "native_attrs": {
+          "0": [
+            [
+              "tt.experimental_alias_group",
+              0
+            ]
+          ],
+          "1": [
+            [
+              "tt.experimental_alias_group",
+              1
+            ]
+          ],
+          "2": [
+            [
+              "tt.experimental_alias_group",
+              0
+            ]
+          ],
+          "3": [
+            [
+              "tt.experimental_alias_group",
+              2
+            ]
+          ]
+        },
+        "proofs": [
+          {
+            "inputs_may_alias": true,
+            "output_spans_disjoint": true,
+            "footprints": "complete contiguous logical tensor spans; masked tails",
+            "source": "functional operator output allocation plus runtime span validation"
+          },
+          {
+            "source": "native complete read/write effect analysis",
+            "conclusion": "input loads cannot be clobbered by disjoint output stores"
+          }
+        ],
+        "profitability": {
+          "samples_us": {
+            "baseline": [
+              1.3729999773204327,
+              1.3330000219866633,
+              1.2779999524354935,
+              1.310999970883131,
+              1.310999970883131,
+              1.3460000045597553,
+              1.3330000219866633,
+              1.3139999937266111,
+              1.3429999817162752
+            ],
+            "inferred": [
+              1.5839999541640282,
+              1.4280000468716025,
+              1.4619999565184116,
+              1.446999958716333,
+              1.45800004247576,
+              1.436999998986721,
+              1.4440000522881746,
+              1.4449999434873462,
+              1.4590000500902534
+            ]
+          },
+          "median_us": {
+            "baseline": 1.3330000219866633,
+            "inferred": 1.446999958716333
+          },
+          "shared_output_buffers": true,
+          "selection_margin": 0.02
+        },
+        "resources": {
+          "baseline": {
+            "registers": 30,
+            "spills": 0,
+            "shared_bytes": 512
+          },
+          "inferred": {
+            "registers": 29,
+            "spills": 0,
+            "shared_bytes": 512
+          }
+        }
+      }
+    },
+    {
+      "kind": "rms",
+      "shape": [
+        4096,
+        1024
+      ],
+      "grid_multiplier": 16,
+      "validation": "bitwise baseline equality and independent FP64 reference",
+      "plan": {
+        "name": "rms_norm",
+        "op": "rms_norm",
+        "selected_optimization": "immutable_hoist",
+        "kernel_launches": [
+          "rms_norm"
+        ],
+        "native_attrs": {
+          "0": [
+            [
+              "tt.experimental_alias_group",
+              0
+            ]
+          ],
+          "1": [
+            [
+              "tt.experimental_alias_group",
+              1
+            ]
+          ],
+          "2": [
+            [
+              "tt.experimental_alias_group",
+              0
+            ]
+          ],
+          "3": [
+            [
+              "tt.experimental_alias_group",
+              2
+            ]
+          ]
+        },
+        "proofs": [
+          {
+            "inputs_may_alias": true,
+            "output_spans_disjoint": true,
+            "footprints": "complete contiguous logical tensor spans; masked tails",
+            "source": "functional operator output allocation plus runtime span validation"
+          },
+          {
+            "source": "native complete read/write effect analysis",
+            "conclusion": "input loads cannot be clobbered by disjoint output stores"
+          }
+        ],
+        "profitability": {
+          "samples_us": {
+            "baseline": [
+              4.72299987450242,
+              4.734000191092491,
+              4.71000000834465,
+              4.7599999234080315,
+              4.7160000540316105,
+              4.712000023573637,
+              4.732999950647354,
+              4.7690002247691154,
+              4.70399996265769
+            ],
+            "inferred": [
+              3.5780000034719706,
+              3.5210000351071358,
+              3.5089999437332153,
+              3.478999948129058,
+              3.504999913275242,
+              3.5200000274926424,
+              3.5349999088793993,
+              3.5039999056607485,
+              3.5149999894201756
+            ]
+          },
+          "median_us": {
+            "baseline": 4.72299987450242,
+            "inferred": 3.5149999894201756
+          },
+          "shared_output_buffers": true,
+          "selection_margin": 0.02
+        },
+        "resources": {
+          "baseline": {
+            "registers": 40,
+            "spills": 0,
+            "shared_bytes": 4112
+          },
+          "inferred": {
+            "registers": 40,
+            "spills": 0,
+            "shared_bytes": 2064
+          }
+        }
+      }
+    },
+    {
+      "kind": "rms",
+      "shape": [
+        16384,
+        4096
+      ],
+      "grid_multiplier": 32,
+      "validation": "bitwise baseline equality and independent FP64 reference",
+      "plan": {
+        "name": "rms_norm",
+        "op": "rms_norm",
+        "selected_optimization": "baseline",
+        "kernel_launches": [
+          "rms_norm"
+        ],
+        "native_attrs": {
+          "0": [
+            [
+              "tt.experimental_alias_group",
+              0
+            ]
+          ],
+          "1": [
+            [
+              "tt.experimental_alias_group",
+              1
+            ]
+          ],
+          "2": [
+            [
+              "tt.experimental_alias_group",
+              0
+            ]
+          ],
+          "3": [
+            [
+              "tt.experimental_alias_group",
+              2
+            ]
+          ]
+        },
+        "proofs": [
+          {
+            "inputs_may_alias": true,
+            "output_spans_disjoint": true,
+            "footprints": "complete contiguous logical tensor spans; masked tails",
+            "source": "functional operator output allocation plus runtime span validation"
+          },
+          {
+            "source": "native complete read/write effect analysis",
+            "conclusion": "input loads cannot be clobbered by disjoint output stores"
+          }
+        ],
+        "profitability": {
+          "samples_us": {
+            "baseline": [
+              44.76400092244148,
+              44.77500170469284,
+              44.79999840259552,
+              44.8170006275177,
+              44.80300098657608,
+              44.81099918484688,
+              44.79900002479553,
+              44.78900134563446,
+              44.82400044798851
+            ],
+            "inferred": [
+              49.782998859882355,
+              49.65199902653694,
+              49.71000179648399,
+              49.63599890470505,
+              49.5619997382164,
+              49.73800107836723,
+              49.65899884700775,
+              49.639999866485596,
+              49.688998609781265
+            ]
+          },
+          "median_us": {
+            "baseline": 44.79999840259552,
+            "inferred": 49.65899884700775
+          },
+          "shared_output_buffers": true,
+          "selection_margin": 0.02
+        },
+        "resources": {
+          "baseline": {
+            "registers": 79,
+            "spills": 0,
+            "shared_bytes": 16400
+          },
+          "inferred": {
+            "registers": 110,
+            "spills": 0,
+            "shared_bytes": 8208
+          }
+        }
+      }
+    },
+    {
+      "kind": "embedding",
+      "source": "producer",
+      "scale_by_freq": false,
+      "validation": "baseline/reference checks and repeat execution with changed inputs",
+      "plan": {
+        "name": "embedding_backward",
+        "op": "embedding_backward",
+        "selected_optimization": "unique_scatter",
+        "proofs": [
+          {
+            "source": "producer analysis at consumer",
+            "indices_node": "_to_copy",
+            "global_unique": true,
+            "fact": {
+              "shape": [
+                4096
+              ],
+              "dtype": "torch.int32",
+              "storage_ids": [
+                "_to_copy:0"
+              ],
+              "storage_versions": {
+                "_to_copy:0": 0
+              },
+              "fresh": true,
+              "unique_global": true,
+              "unique_dims": [
+                0
+              ],
+              "integer_range": {
+                "lower": 0,
+                "upper": 8191
+              },
+              "known_zero": false,
+              "initialized": true,
+              "proof": [
+                "randperm: integer randperm(8192) is a permutation",
+                "selection is a subsequence without repeated positions",
+                "aten.clone.default preserves logical elements",
+                "integer conversion proven lossless by range"
+              ],
+              "scope": "_to_copy"
+            }
+          }
+        ],
+        "native_attrs": {},
+        "kernel_launches": [
+          "zero_scratch",
+          "update",
+          "convert"
+        ],
+        "destination_mapping": {
+          "formula": "index[token] * D + feature",
+          "domain": "valid unpadded rows and 0 <= feature < D across the complete grid",
+          "injectivity": true,
+          "storage": "fresh contiguous [V,D], initialized +0, no intermediate observers",
+          "arithmetic": "int64 address offsets within checked bounds; FP32 add.rn.ftz matches global atomic addition"
+        }
+      },
+      "baseline_plan": {
+        "name": "embedding_backward",
+        "op": "embedding_backward",
+        "selected_optimization": "atomic_scatter",
+        "proofs": [
+          {
+            "source": "producer analysis at consumer",
+            "indices_node": "_to_copy",
+            "global_unique": false,
+            "fact": {
+              "shape": [
+                4096
+              ],
+              "dtype": "torch.int32",
+              "storage_ids": [
+                "_to_copy:0"
+              ],
+              "storage_versions": {
+                "_to_copy:0": 0
+              },
+              "fresh": true,
+              "unique_global": true,
+              "unique_dims": [
+                0
+              ],
+              "integer_range": {
+                "lower": 0,
+                "upper": 8191
+              },
+              "known_zero": false,
+              "initialized": true,
+              "proof": [
+                "randperm: integer randperm(8192) is a permutation",
+                "selection is a subsequence without repeated positions",
+                "aten.clone.default preserves logical elements",
+                "integer conversion proven lossless by range"
+              ],
+              "scope": "_to_copy"
+            }
+          }
+        ],
+        "native_attrs": {},
+        "kernel_launches": [
+          "zero_scratch",
+          "update",
+          "convert"
+        ],
+        "destination_mapping": {
+          "formula": "index[token] * D + feature",
+          "domain": "valid unpadded rows and 0 <= feature < D across the complete grid",
+          "injectivity": false,
+          "storage": "fresh contiguous [V,D], initialized +0, no intermediate observers",
+          "arithmetic": "int64 address offsets within checked bounds; FP32 add.rn.ftz matches global atomic addition"
+        }
+      }
+    },
+    {
+      "kind": "embedding",
+      "source": "producer",
+      "scale_by_freq": true,
+      "validation": "baseline/reference checks and repeat execution with changed inputs",
+      "plan": {
+        "name": "embedding_backward",
+        "op": "embedding_backward",
+        "selected_optimization": "unique_scatter",
+        "proofs": [
+          {
+            "source": "producer analysis at consumer",
+            "indices_node": "_to_copy",
+            "global_unique": true,
+            "fact": {
+              "shape": [
+                4096
+              ],
+              "dtype": "torch.int32",
+              "storage_ids": [
+                "_to_copy:0"
+              ],
+              "storage_versions": {
+                "_to_copy:0": 0
+              },
+              "fresh": true,
+              "unique_global": true,
+              "unique_dims": [
+                0
+              ],
+              "integer_range": {
+                "lower": 0,
+                "upper": 8191
+              },
+              "known_zero": false,
+              "initialized": true,
+              "proof": [
+                "randperm: integer randperm(8192) is a permutation",
+                "selection is a subsequence without repeated positions",
+                "aten.clone.default preserves logical elements",
+                "integer conversion proven lossless by range"
+              ],
+              "scope": "_to_copy"
+            }
+          }
+        ],
+        "native_attrs": {},
+        "kernel_launches": [
+          "zero_scratch",
+          "update",
+          "convert"
+        ],
+        "destination_mapping": {
+          "formula": "index[token] * D + feature",
+          "domain": "valid unpadded rows and 0 <= feature < D across the complete grid",
+          "injectivity": true,
+          "storage": "fresh contiguous [V,D], initialized +0, no intermediate observers",
+          "arithmetic": "int64 address offsets within checked bounds; FP32 add.rn.ftz matches global atomic addition"
+        }
+      },
+      "baseline_plan": {
+        "name": "embedding_backward",
+        "op": "embedding_backward",
+        "selected_optimization": "atomic_scatter",
+        "proofs": [
+          {
+            "source": "producer analysis at consumer",
+            "indices_node": "_to_copy",
+            "global_unique": false,
+            "fact": {
+              "shape": [
+                4096
+              ],
+              "dtype": "torch.int32",
+              "storage_ids": [
+                "_to_copy:0"
+              ],
+              "storage_versions": {
+                "_to_copy:0": 0
+              },
+              "fresh": true,
+              "unique_global": true,
+              "unique_dims": [
+                0
+              ],
+              "integer_range": {
+                "lower": 0,
+                "upper": 8191
+              },
+              "known_zero": false,
+              "initialized": true,
+              "proof": [
+                "randperm: integer randperm(8192) is a permutation",
+                "selection is a subsequence without repeated positions",
+                "aten.clone.default preserves logical elements",
+                "integer conversion proven lossless by range"
+              ],
+              "scope": "_to_copy"
+            }
+          }
+        ],
+        "native_attrs": {},
+        "kernel_launches": [
+          "zero_scratch",
+          "zero_counts",
+          "count",
+          "update",
+          "convert"
+        ],
+        "destination_mapping": {
+          "formula": "index[token] * D + feature",
+          "domain": "valid unpadded rows and 0 <= feature < D across the complete grid",
+          "injectivity": false,
+          "storage": "fresh contiguous [V,D], initialized +0, no intermediate observers",
+          "arithmetic": "int64 address offsets within checked bounds; FP32 add.rn.ftz matches global atomic addition"
+        }
+      }
+    },
+    {
+      "kind": "embedding",
+      "source": "placeholder",
+      "scale_by_freq": true,
+      "validation": "baseline/reference checks and repeat execution with changed inputs",
+      "plan": {
+        "name": "embedding_backward",
+        "op": "embedding_backward",
+        "selected_optimization": "atomic_scatter",
+        "proofs": [
+          {
+            "source": "producer analysis at consumer",
+            "indices_node": "indices_input_1",
+            "global_unique": false,
+            "fact": {
+              "shape": [
+                4096
+              ],
+              "dtype": "torch.int64",
+              "storage_ids": [
+                "external"
+              ],
+              "storage_versions": {
+                "external": 0
+              },
+              "fresh": false,
+              "unique_global": false,
+              "unique_dims": [],
+              "integer_range": null,
+              "known_zero": false,
+              "initialized": false,
+              "proof": [
+                "external tensor; values unknown"
+              ],
+              "scope": "indices_input_1"
+            }
+          }
+        ],
+        "native_attrs": {},
+        "kernel_launches": [
+          "zero_scratch",
+          "zero_counts",
+          "count",
+          "update",
+          "convert"
+        ],
+        "destination_mapping": {
+          "formula": "index[token] * D + feature",
+          "domain": "valid unpadded rows and 0 <= feature < D across the complete grid",
+          "injectivity": false,
+          "storage": "fresh contiguous [V,D], initialized +0, no intermediate observers",
+          "arithmetic": "int64 address offsets within checked bounds; FP32 add.rn.ftz matches global atomic addition"
+        }
+      },
+      "baseline_plan": {
+        "name": "embedding_backward",
+        "op": "embedding_backward",
+        "selected_optimization": "atomic_scatter",
+        "proofs": [
+          {
+            "source": "producer analysis at consumer",
+            "indices_node": "indices_input_1",
+            "global_unique": false,
+            "fact": {
+              "shape": [
+                4096
+              ],
+              "dtype": "torch.int64",
+              "storage_ids": [
+                "external"
+              ],
+              "storage_versions": {
+                "external": 0
+              },
+              "fresh": false,
+              "unique_global": false,
+              "unique_dims": [],
+              "integer_range": null,
+              "known_zero": false,
+              "initialized": false,
+              "proof": [
+                "external tensor; values unknown"
+              ],
+              "scope": "indices_input_1"
+            }
+          }
+        ],
+        "native_attrs": {},
+        "kernel_launches": [
+          "zero_scratch",
+          "zero_counts",
+          "count",
+          "update",
+          "convert"
+        ],
+        "destination_mapping": {
+          "formula": "index[token] * D + feature",
+          "domain": "valid unpadded rows and 0 <= feature < D across the complete grid",
+          "injectivity": false,
+          "storage": "fresh contiguous [V,D], initialized +0, no intermediate observers",
+          "arithmetic": "int64 address offsets within checked bounds; FP32 add.rn.ftz matches global atomic addition"
+        }
+      }
+    },
+    {
+      "kind": "embedding",
+      "source": "mutated",
+      "scale_by_freq": true,
+      "validation": "baseline/reference checks and repeat execution with changed inputs",
+      "plan": {
+        "name": "embedding_backward",
+        "op": "embedding_backward",
+        "selected_optimization": "atomic_scatter",
+        "proofs": [
+          {
+            "source": "producer analysis at consumer",
+            "indices_node": "arange",
+            "global_unique": false,
+            "fact": {
+              "shape": null,
+              "dtype": null,
+              "storage_ids": [
+                "arange:0"
+              ],
+              "storage_versions": {
+                "arange:0": 1
+              },
+              "fresh": true,
+              "unique_global": false,
+              "unique_dims": [],
+              "integer_range": null,
+              "known_zero": false,
+              "initialized": false,
+              "proof": [
+                "arange: nonoverflowing positive-step integer arange",
+                "invalidated at fill_: mutable operator aten.fill_.Scalar"
+              ],
+              "scope": "fill_"
+            }
+          }
+        ],
+        "native_attrs": {},
+        "kernel_launches": [
+          "zero_scratch",
+          "zero_counts",
+          "count",
+          "update",
+          "convert"
+        ],
+        "destination_mapping": {
+          "formula": "index[token] * D + feature",
+          "domain": "valid unpadded rows and 0 <= feature < D across the complete grid",
+          "injectivity": false,
+          "storage": "fresh contiguous [V,D], initialized +0, no intermediate observers",
+          "arithmetic": "int64 address offsets within checked bounds; FP32 add.rn.ftz matches global atomic addition"
+        }
+      },
+      "baseline_plan": {
+        "name": "embedding_backward",
+        "op": "embedding_backward",
+        "selected_optimization": "atomic_scatter",
+        "proofs": [
+          {
+            "source": "producer analysis at consumer",
+            "indices_node": "arange",
+            "global_unique": false,
+            "fact": {
+              "shape": null,
+              "dtype": null,
+              "storage_ids": [
+                "arange:0"
+              ],
+              "storage_versions": {
+                "arange:0": 1
+              },
+              "fresh": true,
+              "unique_global": false,
+              "unique_dims": [],
+              "integer_range": null,
+              "known_zero": false,
+              "initialized": false,
+              "proof": [
+                "arange: nonoverflowing positive-step integer arange",
+                "invalidated at fill_: mutable operator aten.fill_.Scalar"
+              ],
+              "scope": "fill_"
+            }
+          }
+        ],
+        "native_attrs": {},
+        "kernel_launches": [
+          "zero_scratch",
+          "zero_counts",
+          "count",
+          "update",
+          "convert"
+        ],
+        "destination_mapping": {
+          "formula": "index[token] * D + feature",
+          "domain": "valid unpadded rows and 0 <= feature < D across the complete grid",
+          "injectivity": false,
+          "storage": "fresh contiguous [V,D], initialized +0, no intermediate observers",
+          "arithmetic": "int64 address offsets within checked bounds; FP32 add.rn.ftz matches global atomic addition"
+        }
+      }
+    }
+  ],
+  "git_diff": " include/triton/Dialect/Triton/Transforms/Passes.td |  36 +-\n .../Triton/Transforms/LoopInvariantCodeMotion.cpp  | 216 ++++++++-\n python/test/unit/runtime/test_specialize.py        | 448 ++++++++++++++++++\n test/Triton/loop-invariant-code-motion.mlir        | 526 +++++++++++++++++++++\n 4 files changed, 1216 insertions(+), 10 deletions(-)\n",
+  "status": "passed"
+}

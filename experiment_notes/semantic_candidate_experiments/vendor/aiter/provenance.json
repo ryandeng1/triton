@@ -1,0 +1,48 @@
+{
+  "repository": "https://github.com/ROCm/aiter",
+  "revision": "ef0a5a26b8cb38ea1308f827985e36cde964a6ab",
+  "source_path": "aiter/ops/triton/_triton_kernels/normalization/rmsnorm.py",
+  "source_sha256": "acfe1840a6ae0e0ff38d5f50fde8aeec6e63ad2b04d8e0e962207903c79194db",
+  "scope": "Direct persistent kernel calls, USE_BLOCKED=False; not full stock AITER provider dispatch.",
+  "extraction_changes": [
+    "Replace repr-dependent decorator with ordinary @triton.jit.",
+    "Rename entry points for isolated comparisons; original function bodies remain unchanged."
+  ],
+  "hoisting_changes": [
+    "In nonblocked branch only, move gamma load and FP32 conversion outside persistent row loop.",
+    "Conjoin the hoisted load mask with row_start < n_rows to preserve zero-trip memory access behavior."
+  ],
+  "functions": {
+    "_rms_norm_kernel": {
+      "upstream_start_line": 55,
+      "upstream_end_line": 169,
+      "unmodified_function_sha256": "383fc20900f07347153c4e7a81bd8e986257099971ad9d8aac0c05f3306b02eb"
+    },
+    "_rmsnorm_bwd_triton": {
+      "upstream_start_line": 826,
+      "upstream_end_line": 964,
+      "unmodified_function_sha256": "9ec10881b6954292f8b15a00c1ccb954914f629ae83a8b3abfc1ebea8b75c333"
+    },
+    "_rmsnorm_bwd_dg_reduce_triton": {
+      "upstream_start_line": 977,
+      "upstream_end_line": 1003,
+      "unmodified_function_sha256": "28925325b0f1ca184939ab05a19cd970aecc9bccc58351ea02d4bd300d31d5b0"
+    }
+  },
+  "vendored_files": {
+    "rmsnorm_upstream.py": {
+      "source_url": "https://github.com/ROCm/aiter/blob/ef0a5a26b8cb38ea1308f827985e36cde964a6ab/aiter/ops/triton/_triton_kernels/normalization/rmsnorm.py",
+      "sha256": "acfe1840a6ae0e0ff38d5f50fde8aeec6e63ad2b04d8e0e962207903c79194db"
+    },
+    "rmsnorm_wrapper_upstream.py": {
+      "source_url": "https://github.com/ROCm/aiter/blob/ef0a5a26b8cb38ea1308f827985e36cde964a6ab/aiter/ops/triton/normalization/rmsnorm.py",
+      "sha256": "0559be2f13473b192e90eecf86612a4db3639c924b7130498a1205770c9497b8"
+    },
+    "LICENSE": {
+      "source_url": "https://github.com/ROCm/aiter/blob/ef0a5a26b8cb38ea1308f827985e36cde964a6ab/LICENSE",
+      "sha256": "0baca809927cad448401b252ce3bae12687c2987597ad7088cf3423f872d5bcd"
+    }
+  },
+  "baseline_bodies_ast_identical": true,
+  "extracted_kernels_sha256": "e9fc5a0763010110497dbadf7901f8e50a8cd72c3dd0ac09b28286515b3c15a7"
+}

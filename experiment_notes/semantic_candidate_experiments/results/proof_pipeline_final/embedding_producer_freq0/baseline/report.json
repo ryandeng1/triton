@@ -1,0 +1,978 @@
+{
+  "enabled": false,
+  "nodes": [
+    {
+      "name": "embedding_backward",
+      "op": "embedding_backward",
+      "selected_optimization": "atomic_scatter",
+      "proofs": [
+        {
+          "source": "producer analysis at consumer",
+          "indices_node": "_to_copy",
+          "global_unique": false,
+          "fact": {
+            "shape": [
+              4096
+            ],
+            "dtype": "torch.int32",
+            "storage_ids": [
+              "_to_copy:0"
+            ],
+            "storage_versions": {
+              "_to_copy:0": 0
+            },
+            "fresh": true,
+            "unique_global": true,
+            "unique_dims": [
+              0
+            ],
+            "integer_range": {
+              "lower": 0,
+              "upper": 8191
+            },
+            "known_zero": false,
+            "initialized": true,
+            "proof": [
+              "randperm: integer randperm(8192) is a permutation",
+              "selection is a subsequence without repeated positions",
+              "aten.clone.default preserves logical elements",
+              "integer conversion proven lossless by range"
+            ],
+            "scope": "_to_copy"
+          }
+        }
+      ],
+      "native_attrs": {},
+      "kernel_launches": [
+        "zero_scratch",
+        "update",
+        "convert"
+      ],
+      "destination_mapping": {
+        "formula": "index[token] * D + feature",
+        "domain": "valid unpadded rows and 0 <= feature < D across the complete grid",
+        "injectivity": false,
+        "storage": "fresh contiguous [V,D], initialized +0, no intermediate observers",
+        "arithmetic": "int64 address offsets within checked bounds; FP32 add.rn.ftz matches global atomic addition"
+      }
+    }
+  ],
+  "analysis": {
+    "scope": "Facts valid at the selected FX program point; no payload inspection",
+    "produced": {
+      "gradient_1": {
+        "shape": [
+          4096,
+          128
+        ],
+        "dtype": "torch.bfloat16",
+        "storage_ids": [
+          "external"
+        ],
+        "storage_versions": {
+          "external": 0
+        },
+        "fresh": false,
+        "unique_global": false,
+        "unique_dims": [],
+        "integer_range": null,
+        "known_zero": false,
+        "initialized": false,
+        "proof": [
+          "external tensor; values unknown"
+        ],
+        "scope": "gradient_1"
+      },
+      "indices_input_1": {
+        "shape": [
+          4096
+        ],
+        "dtype": "torch.int64",
+        "storage_ids": [
+          "external"
+        ],
+        "storage_versions": {
+          "external": 0
+        },
+        "fresh": false,
+        "unique_global": false,
+        "unique_dims": [],
+        "integer_range": null,
+        "known_zero": false,
+        "initialized": false,
+        "proof": [
+          "external tensor; values unknown"
+        ],
+        "scope": "indices_input_1"
+      },
+      "randperm": {
+        "shape": [
+          8192
+        ],
+        "dtype": "torch.int64",
+        "storage_ids": [
+          "randperm:0"
+        ],
+        "storage_versions": {
+          "randperm:0": 0
+        },
+        "fresh": true,
+        "unique_global": true,
+        "unique_dims": [
+          0
+        ],
+        "integer_range": {
+          "lower": 0,
+          "upper": 8191
+        },
+        "known_zero": false,
+        "initialized": true,
+        "proof": [
+          "randperm: integer randperm(8192) is a permutation"
+        ],
+        "scope": "randperm"
+      },
+      "slice_1": {
+        "shape": [
+          4096
+        ],
+        "dtype": "torch.int64",
+        "storage_ids": [
+          "randperm:0"
+        ],
+        "storage_versions": {
+          "randperm:0": 0
+        },
+        "fresh": true,
+        "unique_global": true,
+        "unique_dims": [
+          0
+        ],
+        "integer_range": {
+          "lower": 0,
+          "upper": 8191
+        },
+        "known_zero": false,
+        "initialized": true,
+        "proof": [
+          "randperm: integer randperm(8192) is a permutation",
+          "selection is a subsequence without repeated positions"
+        ],
+        "scope": "slice_1"
+      },
+      "clone": {
+        "shape": [
+          4096
+        ],
+        "dtype": "torch.int64",
+        "storage_ids": [
+          "clone:0"
+        ],
+        "storage_versions": {
+          "clone:0": 0
+        },
+        "fresh": true,
+        "unique_global": true,
+        "unique_dims": [
+          0
+        ],
+        "integer_range": {
+          "lower": 0,
+          "upper": 8191
+        },
+        "known_zero": false,
+        "initialized": true,
+        "proof": [
+          "randperm: integer randperm(8192) is a permutation",
+          "selection is a subsequence without repeated positions",
+          "aten.clone.default preserves logical elements"
+        ],
+        "scope": "clone"
+      },
+      "_to_copy": {
+        "shape": [
+          4096
+        ],
+        "dtype": "torch.int32",
+        "storage_ids": [
+          "_to_copy:0"
+        ],
+        "storage_versions": {
+          "_to_copy:0": 0
+        },
+        "fresh": true,
+        "unique_global": true,
+        "unique_dims": [
+          0
+        ],
+        "integer_range": {
+          "lower": 0,
+          "upper": 8191
+        },
+        "known_zero": false,
+        "initialized": true,
+        "proof": [
+          "randperm: integer randperm(8192) is a permutation",
+          "selection is a subsequence without repeated positions",
+          "aten.clone.default preserves logical elements",
+          "integer conversion proven lossless by range"
+        ],
+        "scope": "_to_copy"
+      },
+      "embedding_backward": {
+        "shape": [
+          8192,
+          128
+        ],
+        "dtype": "torch.bfloat16",
+        "storage_ids": [
+          "embedding_backward:0"
+        ],
+        "storage_versions": {
+          "embedding_backward:0": 0
+        },
+        "fresh": true,
+        "unique_global": false,
+        "unique_dims": [],
+        "integer_range": null,
+        "known_zero": false,
+        "initialized": true,
+        "proof": [
+          "external tensor; values unknown",
+          "triton_semantics.embedding_backward.default: no supported value-preservation proof; properties dropped"
+        ],
+        "scope": "embedding_backward"
+      }
+    },
+    "before": {
+      "gradient_1": {},
+      "indices_input_1": {
+        "gradient_1": {
+          "shape": [
+            4096,
+            128
+          ],
+          "dtype": "torch.bfloat16",
+          "storage_ids": [
+            "external"
+          ],
+          "storage_versions": {
+            "external": 0
+          },
+          "fresh": false,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": null,
+          "known_zero": false,
+          "initialized": false,
+          "proof": [
+            "external tensor; values unknown"
+          ],
+          "scope": "gradient_1"
+        }
+      },
+      "randperm": {
+        "gradient_1": {
+          "shape": [
+            4096,
+            128
+          ],
+          "dtype": "torch.bfloat16",
+          "storage_ids": [
+            "external"
+          ],
+          "storage_versions": {
+            "external": 0
+          },
+          "fresh": false,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": null,
+          "known_zero": false,
+          "initialized": false,
+          "proof": [
+            "external tensor; values unknown"
+          ],
+          "scope": "gradient_1"
+        },
+        "indices_input_1": {
+          "shape": [
+            4096
+          ],
+          "dtype": "torch.int64",
+          "storage_ids": [
+            "external"
+          ],
+          "storage_versions": {
+            "external": 0
+          },
+          "fresh": false,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": null,
+          "known_zero": false,
+          "initialized": false,
+          "proof": [
+            "external tensor; values unknown"
+          ],
+          "scope": "indices_input_1"
+        }
+      },
+      "slice_1": {
+        "gradient_1": {
+          "shape": [
+            4096,
+            128
+          ],
+          "dtype": "torch.bfloat16",
+          "storage_ids": [
+            "external"
+          ],
+          "storage_versions": {
+            "external": 0
+          },
+          "fresh": false,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": null,
+          "known_zero": false,
+          "initialized": false,
+          "proof": [
+            "external tensor; values unknown"
+          ],
+          "scope": "gradient_1"
+        },
+        "indices_input_1": {
+          "shape": [
+            4096
+          ],
+          "dtype": "torch.int64",
+          "storage_ids": [
+            "external"
+          ],
+          "storage_versions": {
+            "external": 0
+          },
+          "fresh": false,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": null,
+          "known_zero": false,
+          "initialized": false,
+          "proof": [
+            "external tensor; values unknown"
+          ],
+          "scope": "indices_input_1"
+        },
+        "randperm": {
+          "shape": [
+            8192
+          ],
+          "dtype": "torch.int64",
+          "storage_ids": [
+            "randperm:0"
+          ],
+          "storage_versions": {
+            "randperm:0": 0
+          },
+          "fresh": true,
+          "unique_global": true,
+          "unique_dims": [
+            0
+          ],
+          "integer_range": {
+            "lower": 0,
+            "upper": 8191
+          },
+          "known_zero": false,
+          "initialized": true,
+          "proof": [
+            "randperm: integer randperm(8192) is a permutation"
+          ],
+          "scope": "randperm"
+        }
+      },
+      "clone": {
+        "gradient_1": {
+          "shape": [
+            4096,
+            128
+          ],
+          "dtype": "torch.bfloat16",
+          "storage_ids": [
+            "external"
+          ],
+          "storage_versions": {
+            "external": 0
+          },
+          "fresh": false,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": null,
+          "known_zero": false,
+          "initialized": false,
+          "proof": [
+            "external tensor; values unknown"
+          ],
+          "scope": "gradient_1"
+        },
+        "indices_input_1": {
+          "shape": [
+            4096
+          ],
+          "dtype": "torch.int64",
+          "storage_ids": [
+            "external"
+          ],
+          "storage_versions": {
+            "external": 0
+          },
+          "fresh": false,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": null,
+          "known_zero": false,
+          "initialized": false,
+          "proof": [
+            "external tensor; values unknown"
+          ],
+          "scope": "indices_input_1"
+        },
+        "randperm": {
+          "shape": [
+            8192
+          ],
+          "dtype": "torch.int64",
+          "storage_ids": [
+            "randperm:0"
+          ],
+          "storage_versions": {
+            "randperm:0": 0
+          },
+          "fresh": true,
+          "unique_global": true,
+          "unique_dims": [
+            0
+          ],
+          "integer_range": {
+            "lower": 0,
+            "upper": 8191
+          },
+          "known_zero": false,
+          "initialized": true,
+          "proof": [
+            "randperm: integer randperm(8192) is a permutation"
+          ],
+          "scope": "randperm"
+        },
+        "slice_1": {
+          "shape": [
+            4096
+          ],
+          "dtype": "torch.int64",
+          "storage_ids": [
+            "randperm:0"
+          ],
+          "storage_versions": {
+            "randperm:0": 0
+          },
+          "fresh": true,
+          "unique_global": true,
+          "unique_dims": [
+            0
+          ],
+          "integer_range": {
+            "lower": 0,
+            "upper": 8191
+          },
+          "known_zero": false,
+          "initialized": true,
+          "proof": [
+            "randperm: integer randperm(8192) is a permutation",
+            "selection is a subsequence without repeated positions"
+          ],
+          "scope": "slice_1"
+        }
+      },
+      "_to_copy": {
+        "gradient_1": {
+          "shape": [
+            4096,
+            128
+          ],
+          "dtype": "torch.bfloat16",
+          "storage_ids": [
+            "external"
+          ],
+          "storage_versions": {
+            "external": 0
+          },
+          "fresh": false,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": null,
+          "known_zero": false,
+          "initialized": false,
+          "proof": [
+            "external tensor; values unknown"
+          ],
+          "scope": "gradient_1"
+        },
+        "indices_input_1": {
+          "shape": [
+            4096
+          ],
+          "dtype": "torch.int64",
+          "storage_ids": [
+            "external"
+          ],
+          "storage_versions": {
+            "external": 0
+          },
+          "fresh": false,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": null,
+          "known_zero": false,
+          "initialized": false,
+          "proof": [
+            "external tensor; values unknown"
+          ],
+          "scope": "indices_input_1"
+        },
+        "randperm": {
+          "shape": [
+            8192
+          ],
+          "dtype": "torch.int64",
+          "storage_ids": [
+            "randperm:0"
+          ],
+          "storage_versions": {
+            "randperm:0": 0
+          },
+          "fresh": true,
+          "unique_global": true,
+          "unique_dims": [
+            0
+          ],
+          "integer_range": {
+            "lower": 0,
+            "upper": 8191
+          },
+          "known_zero": false,
+          "initialized": true,
+          "proof": [
+            "randperm: integer randperm(8192) is a permutation"
+          ],
+          "scope": "randperm"
+        },
+        "slice_1": {
+          "shape": [
+            4096
+          ],
+          "dtype": "torch.int64",
+          "storage_ids": [
+            "randperm:0"
+          ],
+          "storage_versions": {
+            "randperm:0": 0
+          },
+          "fresh": true,
+          "unique_global": true,
+          "unique_dims": [
+            0
+          ],
+          "integer_range": {
+            "lower": 0,
+            "upper": 8191
+          },
+          "known_zero": false,
+          "initialized": true,
+          "proof": [
+            "randperm: integer randperm(8192) is a permutation",
+            "selection is a subsequence without repeated positions"
+          ],
+          "scope": "slice_1"
+        },
+        "clone": {
+          "shape": [
+            4096
+          ],
+          "dtype": "torch.int64",
+          "storage_ids": [
+            "clone:0"
+          ],
+          "storage_versions": {
+            "clone:0": 0
+          },
+          "fresh": true,
+          "unique_global": true,
+          "unique_dims": [
+            0
+          ],
+          "integer_range": {
+            "lower": 0,
+            "upper": 8191
+          },
+          "known_zero": false,
+          "initialized": true,
+          "proof": [
+            "randperm: integer randperm(8192) is a permutation",
+            "selection is a subsequence without repeated positions",
+            "aten.clone.default preserves logical elements"
+          ],
+          "scope": "clone"
+        }
+      },
+      "embedding_backward": {
+        "gradient_1": {
+          "shape": [
+            4096,
+            128
+          ],
+          "dtype": "torch.bfloat16",
+          "storage_ids": [
+            "external"
+          ],
+          "storage_versions": {
+            "external": 0
+          },
+          "fresh": false,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": null,
+          "known_zero": false,
+          "initialized": false,
+          "proof": [
+            "external tensor; values unknown"
+          ],
+          "scope": "gradient_1"
+        },
+        "indices_input_1": {
+          "shape": [
+            4096
+          ],
+          "dtype": "torch.int64",
+          "storage_ids": [
+            "external"
+          ],
+          "storage_versions": {
+            "external": 0
+          },
+          "fresh": false,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": null,
+          "known_zero": false,
+          "initialized": false,
+          "proof": [
+            "external tensor; values unknown"
+          ],
+          "scope": "indices_input_1"
+        },
+        "randperm": {
+          "shape": [
+            8192
+          ],
+          "dtype": "torch.int64",
+          "storage_ids": [
+            "randperm:0"
+          ],
+          "storage_versions": {
+            "randperm:0": 0
+          },
+          "fresh": true,
+          "unique_global": true,
+          "unique_dims": [
+            0
+          ],
+          "integer_range": {
+            "lower": 0,
+            "upper": 8191
+          },
+          "known_zero": false,
+          "initialized": true,
+          "proof": [
+            "randperm: integer randperm(8192) is a permutation"
+          ],
+          "scope": "randperm"
+        },
+        "slice_1": {
+          "shape": [
+            4096
+          ],
+          "dtype": "torch.int64",
+          "storage_ids": [
+            "randperm:0"
+          ],
+          "storage_versions": {
+            "randperm:0": 0
+          },
+          "fresh": true,
+          "unique_global": true,
+          "unique_dims": [
+            0
+          ],
+          "integer_range": {
+            "lower": 0,
+            "upper": 8191
+          },
+          "known_zero": false,
+          "initialized": true,
+          "proof": [
+            "randperm: integer randperm(8192) is a permutation",
+            "selection is a subsequence without repeated positions"
+          ],
+          "scope": "slice_1"
+        },
+        "clone": {
+          "shape": [
+            4096
+          ],
+          "dtype": "torch.int64",
+          "storage_ids": [
+            "clone:0"
+          ],
+          "storage_versions": {
+            "clone:0": 0
+          },
+          "fresh": true,
+          "unique_global": true,
+          "unique_dims": [
+            0
+          ],
+          "integer_range": {
+            "lower": 0,
+            "upper": 8191
+          },
+          "known_zero": false,
+          "initialized": true,
+          "proof": [
+            "randperm: integer randperm(8192) is a permutation",
+            "selection is a subsequence without repeated positions",
+            "aten.clone.default preserves logical elements"
+          ],
+          "scope": "clone"
+        },
+        "_to_copy": {
+          "shape": [
+            4096
+          ],
+          "dtype": "torch.int32",
+          "storage_ids": [
+            "_to_copy:0"
+          ],
+          "storage_versions": {
+            "_to_copy:0": 0
+          },
+          "fresh": true,
+          "unique_global": true,
+          "unique_dims": [
+            0
+          ],
+          "integer_range": {
+            "lower": 0,
+            "upper": 8191
+          },
+          "known_zero": false,
+          "initialized": true,
+          "proof": [
+            "randperm: integer randperm(8192) is a permutation",
+            "selection is a subsequence without repeated positions",
+            "aten.clone.default preserves logical elements",
+            "integer conversion proven lossless by range"
+          ],
+          "scope": "_to_copy"
+        }
+      },
+      "output": {
+        "gradient_1": {
+          "shape": [
+            4096,
+            128
+          ],
+          "dtype": "torch.bfloat16",
+          "storage_ids": [
+            "external"
+          ],
+          "storage_versions": {
+            "external": 0
+          },
+          "fresh": false,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": null,
+          "known_zero": false,
+          "initialized": false,
+          "proof": [
+            "external tensor; values unknown"
+          ],
+          "scope": "gradient_1"
+        },
+        "indices_input_1": {
+          "shape": [
+            4096
+          ],
+          "dtype": "torch.int64",
+          "storage_ids": [
+            "external"
+          ],
+          "storage_versions": {
+            "external": 0
+          },
+          "fresh": false,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": null,
+          "known_zero": false,
+          "initialized": false,
+          "proof": [
+            "external tensor; values unknown"
+          ],
+          "scope": "indices_input_1"
+        },
+        "randperm": {
+          "shape": [
+            8192
+          ],
+          "dtype": "torch.int64",
+          "storage_ids": [
+            "randperm:0"
+          ],
+          "storage_versions": {
+            "randperm:0": 0
+          },
+          "fresh": true,
+          "unique_global": true,
+          "unique_dims": [
+            0
+          ],
+          "integer_range": {
+            "lower": 0,
+            "upper": 8191
+          },
+          "known_zero": false,
+          "initialized": true,
+          "proof": [
+            "randperm: integer randperm(8192) is a permutation"
+          ],
+          "scope": "randperm"
+        },
+        "slice_1": {
+          "shape": [
+            4096
+          ],
+          "dtype": "torch.int64",
+          "storage_ids": [
+            "randperm:0"
+          ],
+          "storage_versions": {
+            "randperm:0": 0
+          },
+          "fresh": true,
+          "unique_global": true,
+          "unique_dims": [
+            0
+          ],
+          "integer_range": {
+            "lower": 0,
+            "upper": 8191
+          },
+          "known_zero": false,
+          "initialized": true,
+          "proof": [
+            "randperm: integer randperm(8192) is a permutation",
+            "selection is a subsequence without repeated positions"
+          ],
+          "scope": "slice_1"
+        },
+        "clone": {
+          "shape": [
+            4096
+          ],
+          "dtype": "torch.int64",
+          "storage_ids": [
+            "clone:0"
+          ],
+          "storage_versions": {
+            "clone:0": 0
+          },
+          "fresh": true,
+          "unique_global": true,
+          "unique_dims": [
+            0
+          ],
+          "integer_range": {
+            "lower": 0,
+            "upper": 8191
+          },
+          "known_zero": false,
+          "initialized": true,
+          "proof": [
+            "randperm: integer randperm(8192) is a permutation",
+            "selection is a subsequence without repeated positions",
+            "aten.clone.default preserves logical elements"
+          ],
+          "scope": "clone"
+        },
+        "_to_copy": {
+          "shape": [
+            4096
+          ],
+          "dtype": "torch.int32",
+          "storage_ids": [
+            "_to_copy:0"
+          ],
+          "storage_versions": {
+            "_to_copy:0": 0
+          },
+          "fresh": true,
+          "unique_global": true,
+          "unique_dims": [
+            0
+          ],
+          "integer_range": {
+            "lower": 0,
+            "upper": 8191
+          },
+          "known_zero": false,
+          "initialized": true,
+          "proof": [
+            "randperm: integer randperm(8192) is a permutation",
+            "selection is a subsequence without repeated positions",
+            "aten.clone.default preserves logical elements",
+            "integer conversion proven lossless by range"
+          ],
+          "scope": "_to_copy"
+        },
+        "embedding_backward": {
+          "shape": [
+            8192,
+            128
+          ],
+          "dtype": "torch.bfloat16",
+          "storage_ids": [
+            "embedding_backward:0"
+          ],
+          "storage_versions": {
+            "embedding_backward:0": 0
+          },
+          "fresh": true,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": null,
+          "known_zero": false,
+          "initialized": true,
+          "proof": [
+            "external tensor; values unknown",
+            "triton_semantics.embedding_backward.default: no supported value-preservation proof; properties dropped"
+          ],
+          "scope": "embedding_backward"
+        }
+      }
+    },
+    "events": []
+  },
+  "scope": "static-shape ATen FX graph with explicit functional Triton integration ops"
+}

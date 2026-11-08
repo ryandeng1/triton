@@ -1,0 +1,18 @@
+{
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "executable": "/home/ryandeng/tpaa/.venv-semantic/bin/python",
+  "platform": "Linux-6.11.0-1016-nvidia-x86_64-with-glibc2.39",
+  "torch": "2.14.1+cu130",
+  "torch_cuda": "13.0",
+  "triton": "3.9.0",
+  "triton_path": "/home/ryandeng/tpaa/triton/python/triton/__init__.py",
+  "compiler_library": "/home/ryandeng/tpaa/triton/python/triton/_C/libtriton.so",
+  "compiler_sha256": "22e635c23bb6a209e5dc411b5b848474bbfd0b22645b13aefed1771c64a9a8a9",
+  "git_revision": "18368cb1f5747acd35f269193dfe25d71aedeb9f",
+  "patch_sha256": "472d366e15d38ae623606e140186a5c9c0f65af6809eb24317c9c51501a74070",
+  "gpu": "name, driver_version, compute_cap, memory.total [MiB], power.limit [W]\nNVIDIA B300 SXM6 PC, 580.173.02, 10.3, 275040 MiB, 1100.00 W\n",
+  "clock_control": "unlocked; no clock or power changes made",
+  "timing_policy": "one suite at a time; randomized interleaved CUDA graph replays; sample medians retained",
+  "scope": "Extracted pinned kernels, direct launches; not complete framework or model end-to-end benchmarks. PyTorch used for tensor allocation, references and timing; no torch.compile. Torch pip metadata requests Triton3.8; deliberately replaced with experimental3.9 source build. Use explicit PYTHONPATH=triton/python or repo cwd to avoid parent-directory namespace shadow.",
+  "final_timing_buffer_policy": "Common physical output/scratch buffers across variants; distinct correctness buffers retained. Separate-allocation preliminary timings superseded."
+}

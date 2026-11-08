@@ -1,0 +1,16 @@
+{
+  "rms_norm": {
+    "baseline": {
+      "atomic_instruction_sites": 0,
+      "registers": 79,
+      "spills": 0,
+      "shared": 16400
+    },
+    "inferred": {
+      "atomic_instruction_sites": 0,
+      "registers": 110,
+      "spills": 0,
+      "shared": 8208
+    }
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "status": "passed",
+  "scope": "Experimental fixed-metadata ATen FX frontend, explicit functional integration operators, NVIDIA CUDA; not a torch.compile or torch-mlir backend",
+  "entry_point": "triton.experimental.semantic_contracts.compile",
+  "proofs": {
+    "index_uniqueness": "Producer and transform semantics; per-consumer facts; invalidated by alias writes and unknown effects; no tensor-payload inspection",
+    "read_invariance": "Fresh disjoint output allocation plus checked tensor spans provide alias groups; native complete memory-effect reasoning derives no-clobber facts"
+  },
+  "observations": {
+    "unique_embedding_frequency_scaled_launches": 3,
+    "unknown_or_mutated_embedding_frequency_scaled_launches": 5,
+    "proven_unique_update_atomic_instructions": 0,
+    "rms_selected_hoist": [
+      [
+        4096,
+        1024
+      ]
+    ],
+    "rms_retained_baseline": [
+      [
+        31,
+        137
+      ],
+      [
+        16384,
+        4096
+      ]
+    ],
+    "timing_scope": "First-use same-output-buffer variant calibration; not end-to-end model speedups"
+  },
+  "validation": {
+    "native_make": "passed",
+    "triton_lit": {
+      "passed": 14
+    },
+    "test_specialize_pytest": {
+      "passed": 149
+    },
+    "integration_examples": {
+      "passed": 7
+    },
+    "ruff": "passed",
+    "git_diff_check": "passed"
+  },
+  "source_hashes": {
+    "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/proof_pipeline_experiment.py": "8c8650f4f70b50825d1a96bbaeaacc2065321a5d9193cad13e26382ed6cfd738",
+    "/home/ryandeng/tpaa/triton/python/triton/experimental/semantic_contracts/__init__.py": "7debd3b3c0eb3c63da5fb607b259bebccbea64eedcb784de12168a101c2b9f04",
+    "/home/ryandeng/tpaa/triton/python/triton/experimental/semantic_contracts/analysis.py": "e2d5c66dbd1fda092b86ce0cfa5ca04989942f1c00b1373d6dcdca7032799d81",
+    "/home/ryandeng/tpaa/triton/python/triton/experimental/semantic_contracts/backend.py": "b4c24ac0187c278871e08f6043bee606af2a52e6ff03243814dc8943a26a5550",
+    "/home/ryandeng/tpaa/triton/python/triton/experimental/semantic_contracts/kernels.py": "14ed1bc6a6e21c0503fa4e7fd8fdd0c528b947482bc9a06398008220f77f68e0",
+    "/home/ryandeng/tpaa/triton/python/triton/experimental/semantic_contracts/ops.py": "7edb29822b689ce3b064161880ace3dc1a90ee664f80701d1313b98520c65a80",
+    "include/triton/Dialect/Triton/Transforms/Passes.td": "38a923f89cc5bc643024befb969140f864a0cb6cbbb247975e9e0b82d2e830b2",
+    "lib/Dialect/Triton/Transforms/LoopInvariantCodeMotion.cpp": "1884127b12167fc8cd713d5302105dbc21972115cf2074b2896538ff3d40b923",
+    "python/test/unit/runtime/test_specialize.py": "10a2c88f73490599bd87ad1974d1eb36d46df4f85a58f2650c508de7a0d4855d",
+    "test/Triton/loop-invariant-code-motion.mlir": "e69091f74e6d855f4162e22d2b94bbd6ab7cddd8cf2ee79d2840ae3dcc52af08"
+  },
+  "compiler_sha256": "53634c635d80d8d86363f70f97016e9821ebc7e15ab28d8d47e5cbf8af210522",
+  "artifacts": {
+    "results": "results.json",
+    "logs": "validation/",
+    "source_snapshots": "sources/",
+    "tracked_patch": "validation/tracked_changes.patch",
+    "generated_code": "per-case TTIR, TTGIR, LLVM IR, PTX, and cubin files"
+  },
+  "historical_results": "Earlier numerical records remain with their own source/compiler hashes. Redundant historical raw artifacts were pruned during the 2026-11-08 cleanup; see ../../../README.md and ../../../cleanup.json. This final proof-pipeline directory is retained."
+}

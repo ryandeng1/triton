@@ -1,0 +1,7 @@
+{"case": "rms_31x137", "selected": "baseline"}
+{"case": "rms_4096x1024", "selected": "immutable_hoist"}
+{"case": "rms_16384x4096", "selected": "baseline"}
+{"case": "embedding_producer_freq0", "selected": "unique_scatter", "launches": ["zero_scratch", "update", "convert"]}
+{"case": "embedding_producer_freq1", "selected": "unique_scatter", "launches": ["zero_scratch", "update", "convert"]}
+{"case": "embedding_placeholder_freq1", "selected": "atomic_scatter", "launches": ["zero_scratch", "zero_counts", "count", "update", "convert"]}
+{"case": "embedding_mutated_freq1", "selected": "atomic_scatter", "launches": ["zero_scratch", "zero_counts", "count", "update", "convert"]}

@@ -1,0 +1,682 @@
+{
+  "enabled": true,
+  "nodes": [
+    {
+      "name": "rms_norm",
+      "op": "rms_norm",
+      "selected_optimization": "immutable_hoist",
+      "kernel_launches": [
+        "rms_norm"
+      ],
+      "native_attrs": {
+        "0": [
+          [
+            "tt.experimental_alias_group",
+            0
+          ]
+        ],
+        "1": [
+          [
+            "tt.experimental_alias_group",
+            1
+          ]
+        ],
+        "2": [
+          [
+            "tt.experimental_alias_group",
+            0
+          ]
+        ],
+        "3": [
+          [
+            "tt.experimental_alias_group",
+            2
+          ]
+        ]
+      },
+      "proofs": [
+        {
+          "inputs_may_alias": true,
+          "output_spans_disjoint": true,
+          "footprints": "complete contiguous logical tensor spans; masked tails",
+          "source": "functional operator output allocation plus runtime span validation"
+        },
+        {
+          "source": "native complete read/write effect analysis",
+          "conclusion": "input loads cannot be clobbered by disjoint output stores"
+        }
+      ],
+      "profitability": {
+        "samples_us": {
+          "baseline": [
+            4.72299987450242,
+            4.734000191092491,
+            4.71000000834465,
+            4.7599999234080315,
+            4.7160000540316105,
+            4.712000023573637,
+            4.732999950647354,
+            4.7690002247691154,
+            4.70399996265769
+          ],
+          "inferred": [
+            3.5780000034719706,
+            3.5210000351071358,
+            3.5089999437332153,
+            3.478999948129058,
+            3.504999913275242,
+            3.5200000274926424,
+            3.5349999088793993,
+            3.5039999056607485,
+            3.5149999894201756
+          ]
+        },
+        "median_us": {
+          "baseline": 4.72299987450242,
+          "inferred": 3.5149999894201756
+        },
+        "shared_output_buffers": true,
+        "selection_margin": 0.02
+      },
+      "resources": {
+        "baseline": {
+          "registers": 40,
+          "spills": 0,
+          "shared_bytes": 4112
+        },
+        "inferred": {
+          "registers": 40,
+          "spills": 0,
+          "shared_bytes": 2064
+        }
+      }
+    }
+  ],
+  "analysis": {
+    "scope": "Facts valid at the selected FX program point; no payload inspection",
+    "produced": {
+      "value_1": {
+        "shape": [
+          4096,
+          1024
+        ],
+        "dtype": "torch.bfloat16",
+        "storage_ids": [
+          "external"
+        ],
+        "storage_versions": {
+          "external": 0
+        },
+        "fresh": false,
+        "unique_global": false,
+        "unique_dims": [],
+        "integer_range": null,
+        "known_zero": false,
+        "initialized": false,
+        "proof": [
+          "external tensor; values unknown"
+        ],
+        "scope": "value_1"
+      },
+      "weights_1": {
+        "shape": [
+          1024
+        ],
+        "dtype": "torch.bfloat16",
+        "storage_ids": [
+          "external"
+        ],
+        "storage_versions": {
+          "external": 0
+        },
+        "fresh": false,
+        "unique_global": false,
+        "unique_dims": [],
+        "integer_range": null,
+        "known_zero": false,
+        "initialized": false,
+        "proof": [
+          "external tensor; values unknown"
+        ],
+        "scope": "weights_1"
+      },
+      "rms_norm": [
+        {
+          "shape": [
+            4096,
+            1024
+          ],
+          "dtype": "torch.bfloat16",
+          "storage_ids": [
+            "rms_norm:0"
+          ],
+          "storage_versions": {
+            "rms_norm:0": 0
+          },
+          "fresh": true,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": null,
+          "known_zero": false,
+          "initialized": true,
+          "proof": [
+            "triton_semantics.rms_norm.default: storage provenance only; value properties unknown",
+            "owned functional operator defines every logical output element"
+          ],
+          "scope": "rms_norm"
+        },
+        {
+          "shape": [
+            4096
+          ],
+          "dtype": "torch.float32",
+          "storage_ids": [
+            "rms_norm:1"
+          ],
+          "storage_versions": {
+            "rms_norm:1": 0
+          },
+          "fresh": true,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": null,
+          "known_zero": false,
+          "initialized": true,
+          "proof": [
+            "triton_semantics.rms_norm.default: storage provenance only; value properties unknown",
+            "owned functional operator defines every logical output element"
+          ],
+          "scope": "rms_norm"
+        }
+      ],
+      "getitem": {
+        "shape": [
+          4096,
+          1024
+        ],
+        "dtype": "torch.bfloat16",
+        "storage_ids": [
+          "rms_norm:0"
+        ],
+        "storage_versions": {
+          "rms_norm:0": 0
+        },
+        "fresh": true,
+        "unique_global": false,
+        "unique_dims": [],
+        "integer_range": null,
+        "known_zero": false,
+        "initialized": true,
+        "proof": [
+          "triton_semantics.rms_norm.default: storage provenance only; value properties unknown",
+          "owned functional operator defines every logical output element",
+          "tuple result selection"
+        ],
+        "scope": "getitem"
+      },
+      "getitem_1": {
+        "shape": [
+          4096
+        ],
+        "dtype": "torch.float32",
+        "storage_ids": [
+          "rms_norm:1"
+        ],
+        "storage_versions": {
+          "rms_norm:1": 0
+        },
+        "fresh": true,
+        "unique_global": false,
+        "unique_dims": [],
+        "integer_range": null,
+        "known_zero": false,
+        "initialized": true,
+        "proof": [
+          "triton_semantics.rms_norm.default: storage provenance only; value properties unknown",
+          "owned functional operator defines every logical output element",
+          "tuple result selection"
+        ],
+        "scope": "getitem_1"
+      }
+    },
+    "before": {
+      "value_1": {},
+      "weights_1": {
+        "value_1": {
+          "shape": [
+            4096,
+            1024
+          ],
+          "dtype": "torch.bfloat16",
+          "storage_ids": [
+            "external"
+          ],
+          "storage_versions": {
+            "external": 0
+          },
+          "fresh": false,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": null,
+          "known_zero": false,
+          "initialized": false,
+          "proof": [
+            "external tensor; values unknown"
+          ],
+          "scope": "value_1"
+        }
+      },
+      "rms_norm": {
+        "value_1": {
+          "shape": [
+            4096,
+            1024
+          ],
+          "dtype": "torch.bfloat16",
+          "storage_ids": [
+            "external"
+          ],
+          "storage_versions": {
+            "external": 0
+          },
+          "fresh": false,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": null,
+          "known_zero": false,
+          "initialized": false,
+          "proof": [
+            "external tensor; values unknown"
+          ],
+          "scope": "value_1"
+        },
+        "weights_1": {
+          "shape": [
+            1024
+          ],
+          "dtype": "torch.bfloat16",
+          "storage_ids": [
+            "external"
+          ],
+          "storage_versions": {
+            "external": 0
+          },
+          "fresh": false,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": null,
+          "known_zero": false,
+          "initialized": false,
+          "proof": [
+            "external tensor; values unknown"
+          ],
+          "scope": "weights_1"
+        }
+      },
+      "getitem": {
+        "value_1": {
+          "shape": [
+            4096,
+            1024
+          ],
+          "dtype": "torch.bfloat16",
+          "storage_ids": [
+            "external"
+          ],
+          "storage_versions": {
+            "external": 0
+          },
+          "fresh": false,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": null,
+          "known_zero": false,
+          "initialized": false,
+          "proof": [
+            "external tensor; values unknown"
+          ],
+          "scope": "value_1"
+        },
+        "weights_1": {
+          "shape": [
+            1024
+          ],
+          "dtype": "torch.bfloat16",
+          "storage_ids": [
+            "external"
+          ],
+          "storage_versions": {
+            "external": 0
+          },
+          "fresh": false,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": null,
+          "known_zero": false,
+          "initialized": false,
+          "proof": [
+            "external tensor; values unknown"
+          ],
+          "scope": "weights_1"
+        },
+        "rms_norm": [
+          {
+            "shape": [
+              4096,
+              1024
+            ],
+            "dtype": "torch.bfloat16",
+            "storage_ids": [
+              "rms_norm:0"
+            ],
+            "storage_versions": {
+              "rms_norm:0": 0
+            },
+            "fresh": true,
+            "unique_global": false,
+            "unique_dims": [],
+            "integer_range": null,
+            "known_zero": false,
+            "initialized": true,
+            "proof": [
+              "triton_semantics.rms_norm.default: storage provenance only; value properties unknown",
+              "owned functional operator defines every logical output element"
+            ],
+            "scope": "rms_norm"
+          },
+          {
+            "shape": [
+              4096
+            ],
+            "dtype": "torch.float32",
+            "storage_ids": [
+              "rms_norm:1"
+            ],
+            "storage_versions": {
+              "rms_norm:1": 0
+            },
+            "fresh": true,
+            "unique_global": false,
+            "unique_dims": [],
+            "integer_range": null,
+            "known_zero": false,
+            "initialized": true,
+            "proof": [
+              "triton_semantics.rms_norm.default: storage provenance only; value properties unknown",
+              "owned functional operator defines every logical output element"
+            ],
+            "scope": "rms_norm"
+          }
+        ]
+      },
+      "getitem_1": {
+        "value_1": {
+          "shape": [
+            4096,
+            1024
+          ],
+          "dtype": "torch.bfloat16",
+          "storage_ids": [
+            "external"
+          ],
+          "storage_versions": {
+            "external": 0
+          },
+          "fresh": false,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": null,
+          "known_zero": false,
+          "initialized": false,
+          "proof": [
+            "external tensor; values unknown"
+          ],
+          "scope": "value_1"
+        },
+        "weights_1": {
+          "shape": [
+            1024
+          ],
+          "dtype": "torch.bfloat16",
+          "storage_ids": [
+            "external"
+          ],
+          "storage_versions": {
+            "external": 0
+          },
+          "fresh": false,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": null,
+          "known_zero": false,
+          "initialized": false,
+          "proof": [
+            "external tensor; values unknown"
+          ],
+          "scope": "weights_1"
+        },
+        "rms_norm": [
+          {
+            "shape": [
+              4096,
+              1024
+            ],
+            "dtype": "torch.bfloat16",
+            "storage_ids": [
+              "rms_norm:0"
+            ],
+            "storage_versions": {
+              "rms_norm:0": 0
+            },
+            "fresh": true,
+            "unique_global": false,
+            "unique_dims": [],
+            "integer_range": null,
+            "known_zero": false,
+            "initialized": true,
+            "proof": [
+              "triton_semantics.rms_norm.default: storage provenance only; value properties unknown",
+              "owned functional operator defines every logical output element"
+            ],
+            "scope": "rms_norm"
+          },
+          {
+            "shape": [
+              4096
+            ],
+            "dtype": "torch.float32",
+            "storage_ids": [
+              "rms_norm:1"
+            ],
+            "storage_versions": {
+              "rms_norm:1": 0
+            },
+            "fresh": true,
+            "unique_global": false,
+            "unique_dims": [],
+            "integer_range": null,
+            "known_zero": false,
+            "initialized": true,
+            "proof": [
+              "triton_semantics.rms_norm.default: storage provenance only; value properties unknown",
+              "owned functional operator defines every logical output element"
+            ],
+            "scope": "rms_norm"
+          }
+        ],
+        "getitem": {
+          "shape": [
+            4096,
+            1024
+          ],
+          "dtype": "torch.bfloat16",
+          "storage_ids": [
+            "rms_norm:0"
+          ],
+          "storage_versions": {
+            "rms_norm:0": 0
+          },
+          "fresh": true,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": null,
+          "known_zero": false,
+          "initialized": true,
+          "proof": [
+            "triton_semantics.rms_norm.default: storage provenance only; value properties unknown",
+            "owned functional operator defines every logical output element",
+            "tuple result selection"
+          ],
+          "scope": "getitem"
+        }
+      },
+      "output": {
+        "value_1": {
+          "shape": [
+            4096,
+            1024
+          ],
+          "dtype": "torch.bfloat16",
+          "storage_ids": [
+            "external"
+          ],
+          "storage_versions": {
+            "external": 0
+          },
+          "fresh": false,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": null,
+          "known_zero": false,
+          "initialized": false,
+          "proof": [
+            "external tensor; values unknown"
+          ],
+          "scope": "value_1"
+        },
+        "weights_1": {
+          "shape": [
+            1024
+          ],
+          "dtype": "torch.bfloat16",
+          "storage_ids": [
+            "external"
+          ],
+          "storage_versions": {
+            "external": 0
+          },
+          "fresh": false,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": null,
+          "known_zero": false,
+          "initialized": false,
+          "proof": [
+            "external tensor; values unknown"
+          ],
+          "scope": "weights_1"
+        },
+        "rms_norm": [
+          {
+            "shape": [
+              4096,
+              1024
+            ],
+            "dtype": "torch.bfloat16",
+            "storage_ids": [
+              "rms_norm:0"
+            ],
+            "storage_versions": {
+              "rms_norm:0": 0
+            },
+            "fresh": true,
+            "unique_global": false,
+            "unique_dims": [],
+            "integer_range": null,
+            "known_zero": false,
+            "initialized": true,
+            "proof": [
+              "triton_semantics.rms_norm.default: storage provenance only; value properties unknown",
+              "owned functional operator defines every logical output element"
+            ],
+            "scope": "rms_norm"
+          },
+          {
+            "shape": [
+              4096
+            ],
+            "dtype": "torch.float32",
+            "storage_ids": [
+              "rms_norm:1"
+            ],
+            "storage_versions": {
+              "rms_norm:1": 0
+            },
+            "fresh": true,
+            "unique_global": false,
+            "unique_dims": [],
+            "integer_range": null,
+            "known_zero": false,
+            "initialized": true,
+            "proof": [
+              "triton_semantics.rms_norm.default: storage provenance only; value properties unknown",
+              "owned functional operator defines every logical output element"
+            ],
+            "scope": "rms_norm"
+          }
+        ],
+        "getitem": {
+          "shape": [
+            4096,
+            1024
+          ],
+          "dtype": "torch.bfloat16",
+          "storage_ids": [
+            "rms_norm:0"
+          ],
+          "storage_versions": {
+            "rms_norm:0": 0
+          },
+          "fresh": true,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": null,
+          "known_zero": false,
+          "initialized": true,
+          "proof": [
+            "triton_semantics.rms_norm.default: storage provenance only; value properties unknown",
+            "owned functional operator defines every logical output element",
+            "tuple result selection"
+          ],
+          "scope": "getitem"
+        },
+        "getitem_1": {
+          "shape": [
+            4096
+          ],
+          "dtype": "torch.float32",
+          "storage_ids": [
+            "rms_norm:1"
+          ],
+          "storage_versions": {
+            "rms_norm:1": 0
+          },
+          "fresh": true,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": null,
+          "known_zero": false,
+          "initialized": true,
+          "proof": [
+            "triton_semantics.rms_norm.default: storage provenance only; value properties unknown",
+            "owned functional operator defines every logical output element",
+            "tuple result selection"
+          ],
+          "scope": "getitem_1"
+        }
+      }
+    },
+    "events": []
+  },
+  "scope": "static-shape ATen FX graph with explicit functional Triton integration ops"
+}

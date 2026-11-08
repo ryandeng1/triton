@@ -1,0 +1,298 @@
+; ModuleID = 'LLVMDialectModule'
+source_filename = "LLVMDialectModule"
+target datalayout = "e-p3:32:32-p4:32:32-p5:32:32-p6:32:32-p7:32:32-p101:32:32-i64:64-i128:128-i256:256-v16:16-v32:32-n16:32:64"
+
+@global_smem = external addrspace(3) global [0 x i8], align 16
+@.str = private unnamed_addr constant [11 x i8] c"__CUDA_FTZ\00", align 1
+
+; Function Attrs: nounwind
+define ptx_kernel void @rmsnorm_persistent(ptr addrspace(1) align 16 %0, ptr addrspace(1) align 16 %1, ptr addrspace(1) align 16 %2, ptr addrspace(1) align 16 %3, i32 %4, i32 %5, float %6, ptr addrspace(1) nofree readnone captures(none) %7, ptr addrspace(1) nofree readnone captures(none) %8) local_unnamed_addr #0 !dbg !13 {
+  %10 = tail call i32 @llvm.nvvm.read.ptx.sreg.ctaid.x(), !dbg !14
+  %11 = tail call i32 @llvm.nvvm.read.ptx.sreg.nctaid.x(), !dbg !15
+  %12 = tail call i32 @llvm.nvvm.read.ptx.sreg.tid.x(), !dbg !16
+  %13 = and i32 %12, 127, !dbg !16
+  %14 = shl nuw nsw i32 %13, 3, !dbg !16
+  %15 = icmp slt i32 %14, %5, !dbg !17
+  %16 = sext i32 %5 to i64, !dbg !18
+  %17 = zext nneg i32 %14 to i64, !dbg !18
+  %18 = getelementptr [2 x i8], ptr addrspace(1) %2, i64 %17, !dbg !19
+  %19 = icmp slt i32 %10, %4, !dbg !20
+  %20 = and i1 %19, %15, !dbg !20
+  %21 = tail call { <2 x bfloat>, <2 x bfloat>, <2 x bfloat>, <2 x bfloat> } asm sideeffect "@$9 ld.global.v4.b32 { $0, $1, $2, $3 }, [ $8 + 0 ];", "=r,=r,=r,=r,0,1,2,3,l,b"(<2 x bfloat> zeroinitializer, <2 x bfloat> zeroinitializer, <2 x bfloat> zeroinitializer, <2 x bfloat> zeroinitializer, ptr addrspace(1) %18, i1 %20) #2, !dbg !21
+  %22 = extractvalue { <2 x bfloat>, <2 x bfloat>, <2 x bfloat>, <2 x bfloat> } %21, 0, !dbg !21
+  %23 = extractelement <2 x bfloat> %22, i64 0, !dbg !21
+  %24 = extractelement <2 x bfloat> %22, i64 1, !dbg !21
+  %25 = extractvalue { <2 x bfloat>, <2 x bfloat>, <2 x bfloat>, <2 x bfloat> } %21, 1, !dbg !21
+  %26 = extractelement <2 x bfloat> %25, i64 0, !dbg !21
+  %27 = extractelement <2 x bfloat> %25, i64 1, !dbg !21
+  %28 = extractvalue { <2 x bfloat>, <2 x bfloat>, <2 x bfloat>, <2 x bfloat> } %21, 2, !dbg !21
+  %29 = extractelement <2 x bfloat> %28, i64 0, !dbg !21
+  %30 = extractelement <2 x bfloat> %28, i64 1, !dbg !21
+  %31 = extractvalue { <2 x bfloat>, <2 x bfloat>, <2 x bfloat>, <2 x bfloat> } %21, 3, !dbg !21
+  %32 = extractelement <2 x bfloat> %31, i64 0, !dbg !21
+  %33 = extractelement <2 x bfloat> %31, i64 1, !dbg !21
+  %34 = fpext bfloat %23 to float, !dbg !21
+  %35 = fpext bfloat %24 to float, !dbg !21
+  %36 = fpext bfloat %26 to float, !dbg !21
+  %37 = fpext bfloat %27 to float, !dbg !21
+  %38 = fpext bfloat %29 to float, !dbg !21
+  %39 = fpext bfloat %30 to float, !dbg !21
+  %40 = fpext bfloat %32 to float, !dbg !21
+  %41 = fpext bfloat %33 to float, !dbg !21
+  %42 = sitofp i32 %5 to float, !dbg !22
+  %43 = zext nneg i32 %10 to i64, !dbg !18
+  %44 = mul nsw i64 %16, %43, !dbg !18
+  %45 = add nsw i64 %44, %17, !dbg !18
+  %46 = getelementptr [2 x i8], ptr addrspace(1) %0, i64 %45, !dbg !23
+  %47 = shl nuw nsw i32 %13, 4, !dbg !24
+  %48 = getelementptr i8, ptr addrspace(3) @global_smem, i32 %47, !dbg !24
+  %49 = xor i1 %20, true, !dbg !24
+  tail call void asm sideeffect "cp.async.cg.shared.global [ $0 + 0 ], [ $1 + 0 ], 0x10, $2;", "r,l,b"(ptr addrspace(3) %48, ptr addrspace(1) %46, i1 %49) #2, !dbg !24
+  tail call void @llvm.nvvm.cp.async.commit.group(), !dbg !24
+  br i1 %19, label %.lr.ph, label %._crit_edge, !dbg !20
+
+.lr.ph:                                           ; preds = %9
+  %50 = sub nsw i32 %4, %11
+  %51 = lshr i32 %12, 3
+  %52 = and i32 %51, 12
+  %53 = getelementptr inbounds nuw i8, ptr addrspace(3) getelementptr (i8, ptr addrspace(3) @global_smem, i32 2048), i32 %52
+  %54 = shl nuw nsw i32 %12, 2
+  %55 = and i32 %54, 12
+  %56 = getelementptr inbounds nuw i8, ptr addrspace(3) getelementptr (i8, ptr addrspace(3) @global_smem, i32 2048), i32 %55
+  %57 = icmp eq i32 %13, 0
+  %58 = getelementptr inbounds nuw i8, ptr addrspace(3) %48, i32 2
+  %59 = getelementptr inbounds nuw i8, ptr addrspace(3) %48, i32 4
+  %60 = getelementptr inbounds nuw i8, ptr addrspace(3) %48, i32 6
+  %61 = getelementptr inbounds nuw i8, ptr addrspace(3) %48, i32 8
+  %62 = getelementptr inbounds nuw i8, ptr addrspace(3) %48, i32 10
+  %63 = getelementptr inbounds nuw i8, ptr addrspace(3) %48, i32 12
+  %64 = getelementptr inbounds nuw i8, ptr addrspace(3) %48, i32 14
+  %nvptx.pack60 = insertelement <2 x float> poison, float %34, i64 0
+  %nvptx.pack61 = insertelement <2 x float> %nvptx.pack60, float %35, i64 1
+  %nvptx.pack63 = insertelement <2 x float> poison, float %36, i64 0
+  %nvptx.pack64 = insertelement <2 x float> %nvptx.pack63, float %37, i64 1
+  %nvptx.pack67 = insertelement <2 x float> poison, float %38, i64 0
+  %nvptx.pack68 = insertelement <2 x float> %nvptx.pack67, float %39, i64 1
+  %nvptx.pack71 = insertelement <2 x float> poison, float %40, i64 0
+  %nvptx.pack72 = insertelement <2 x float> %nvptx.pack71, float %41, i64 1
+  br label %65, !dbg !20
+
+65:                                               ; preds = %.lr.ph, %130
+  %.pn1634 = phi i64 [ %45, %.lr.ph ], [ %139, %130 ]
+  %66 = phi i32 [ %10, %.lr.ph ], [ %136, %130 ]
+  %67 = icmp slt i32 %66, %50, !dbg !20
+  tail call void @llvm.nvvm.cp.async.wait.group(i32 0), !dbg !24
+  tail call void @llvm.nvvm.barrier.cta.sync.aligned.all(i32 0), !dbg !24
+  %68 = load bfloat, ptr addrspace(3) %48, align 16, !dbg !24
+  %69 = load bfloat, ptr addrspace(3) %58, align 2, !dbg !24
+  %70 = load bfloat, ptr addrspace(3) %59, align 4, !dbg !24
+  %71 = load bfloat, ptr addrspace(3) %60, align 2, !dbg !24
+  %72 = load bfloat, ptr addrspace(3) %61, align 8, !dbg !24
+  %73 = load bfloat, ptr addrspace(3) %62, align 2, !dbg !24
+  %74 = load bfloat, ptr addrspace(3) %63, align 4, !dbg !24
+  %75 = load bfloat, ptr addrspace(3) %64, align 2, !dbg !24
+  %76 = fpext bfloat %68 to float, !dbg !24
+  %77 = fpext bfloat %69 to float, !dbg !24
+  %78 = fpext bfloat %70 to float, !dbg !24
+  %79 = fpext bfloat %71 to float, !dbg !24
+  %80 = fpext bfloat %72 to float, !dbg !24
+  %81 = fpext bfloat %73 to float, !dbg !24
+  %82 = fpext bfloat %74 to float, !dbg !24
+  %83 = fpext bfloat %75 to float, !dbg !24
+  %nvptx.pack = insertelement <2 x float> poison, float %76, i64 0, !dbg !26
+  %nvptx.pack37 = insertelement <2 x float> %nvptx.pack, float %77, i64 1, !dbg !26
+  %nvptx.packed = fmul <2 x float> %nvptx.pack37, %nvptx.pack37, !dbg !26
+  %nvptx.pack38 = insertelement <2 x float> poison, float %78, i64 0, !dbg !26
+  %nvptx.pack39 = insertelement <2 x float> %nvptx.pack38, float %79, i64 1, !dbg !26
+  %nvptx.packed40 = fmul <2 x float> %nvptx.pack39, %nvptx.pack39, !dbg !26
+  %nvptx.pack41 = insertelement <2 x float> poison, float %80, i64 0, !dbg !26
+  %nvptx.pack42 = insertelement <2 x float> %nvptx.pack41, float %81, i64 1, !dbg !26
+  %nvptx.packed43 = fmul <2 x float> %nvptx.pack42, %nvptx.pack42, !dbg !26
+  %nvptx.pack44 = insertelement <2 x float> poison, float %82, i64 0, !dbg !26
+  %nvptx.pack45 = insertelement <2 x float> %nvptx.pack44, float %83, i64 1, !dbg !26
+  %nvptx.packed46 = fmul <2 x float> %nvptx.pack45, %nvptx.pack45, !dbg !26
+  %84 = fadd <2 x float> %nvptx.packed, %nvptx.packed40, !dbg !31
+  %85 = fadd <2 x float> %nvptx.packed43, %nvptx.packed46, !dbg !31
+  %86 = fadd <2 x float> %84, %85, !dbg !31
+  %87 = extractelement <2 x float> %86, i64 0, !dbg !31
+  %88 = extractelement <2 x float> %86, i64 1, !dbg !31
+  %89 = fadd float %87, %88, !dbg !32
+  %90 = bitcast float %89 to i32, !dbg !31
+  %91 = tail call i32 @llvm.nvvm.shfl.sync.bfly.i32(i32 -1, i32 %90, i32 16, i32 31), !dbg !31
+  %92 = bitcast i32 %91 to float, !dbg !31
+  %93 = fadd float %89, %92, !dbg !32
+  %94 = bitcast float %93 to i32, !dbg !31
+  %95 = tail call i32 @llvm.nvvm.shfl.sync.bfly.i32(i32 -1, i32 %94, i32 8, i32 31), !dbg !31
+  %96 = bitcast i32 %95 to float, !dbg !31
+  %97 = fadd float %93, %96, !dbg !32
+  %98 = bitcast float %97 to i32, !dbg !31
+  %99 = tail call i32 @llvm.nvvm.shfl.sync.bfly.i32(i32 -1, i32 %98, i32 4, i32 31), !dbg !31
+  %100 = bitcast i32 %99 to float, !dbg !31
+  %101 = fadd float %97, %100, !dbg !32
+  %102 = bitcast float %101 to i32, !dbg !31
+  %103 = tail call i32 @llvm.nvvm.shfl.sync.bfly.i32(i32 -1, i32 %102, i32 2, i32 31), !dbg !31
+  %104 = bitcast i32 %103 to float, !dbg !31
+  %105 = fadd float %101, %104, !dbg !32
+  %106 = bitcast float %105 to i32, !dbg !31
+  %107 = tail call i32 @llvm.nvvm.shfl.sync.bfly.i32(i32 -1, i32 %106, i32 1, i32 31), !dbg !31
+  %108 = bitcast i32 %107 to float, !dbg !31
+  %109 = fadd float %105, %108, !dbg !32
+  store float %109, ptr addrspace(3) %53, align 4, !dbg !31
+  tail call void @llvm.nvvm.barrier.cta.sync.aligned.all(i32 0), !dbg !31
+  %110 = load i32, ptr addrspace(3) %56, align 4, !dbg !31
+  %111 = bitcast i32 %110 to float, !dbg !31
+  %112 = tail call i32 @llvm.nvvm.shfl.sync.bfly.i32(i32 -1, i32 %110, i32 2, i32 31), !dbg !31
+  %113 = bitcast i32 %112 to float, !dbg !31
+  %114 = fadd float %111, %113, !dbg !32
+  %115 = bitcast float %114 to i32, !dbg !31
+  %116 = tail call i32 @llvm.nvvm.shfl.sync.bfly.i32(i32 -1, i32 %115, i32 1, i32 31), !dbg !31
+  %117 = bitcast i32 %116 to float, !dbg !31
+  %118 = fadd float %114, %117, !dbg !32
+  %119 = tail call float @llvm.nvvm.div.full(float %118, float %42), !dbg !22
+  %120 = fadd float %6, %119, !dbg !22
+  %121 = tail call i32 @__nvvm_reflect(ptr nonnull @.str) #2, !dbg !33
+  %.not.i = icmp eq i32 %121, 0, !dbg !33
+  br i1 %.not.i, label %124, label %122, !dbg !33
+
+122:                                              ; preds = %65
+  %123 = tail call float @llvm.nvvm.rsqrt.approx.ftz.f(float %120), !dbg !33
+  br label %__nv_rsqrtf.exit, !dbg !33
+
+124:                                              ; preds = %65
+  %125 = tail call float @llvm.nvvm.rsqrt.approx.f(float %120), !dbg !33
+  br label %__nv_rsqrtf.exit, !dbg !33
+
+__nv_rsqrtf.exit:                                 ; preds = %122, %124
+  %.0.i = phi float [ %123, %122 ], [ %125, %124 ], !dbg !33
+  br i1 %57, label %126, label %130, !dbg !35
+
+126:                                              ; preds = %__nv_rsqrtf.exit
+  %127 = sext i32 %66 to i64, !dbg !34
+  %128 = getelementptr [4 x i8], ptr addrspace(1) %3, i64 %127, !dbg !34
+  %129 = bitcast float %.0.i to i32, !dbg !35
+  tail call void asm sideeffect "@$2 st.global.b32 [ $1 + 0 ], { $0 };", "r,l,b"(i32 %129, ptr addrspace(1) %128, i1 true) #2, !dbg !35
+  br label %130, !dbg !35
+
+130:                                              ; preds = %126, %__nv_rsqrtf.exit
+  %nvptx.pack47 = insertelement <2 x float> poison, float %.0.i, i64 0, !dbg !36
+  %nvptx.pack48 = shufflevector <2 x float> %nvptx.pack47, <2 x float> poison, <2 x i32> zeroinitializer, !dbg !36
+  %nvptx.packed49 = fmul <2 x float> %nvptx.pack48, %nvptx.pack37, !dbg !36
+  %nvptx.packed51 = fmul <2 x float> %nvptx.pack48, %nvptx.pack39, !dbg !36
+  %nvptx.packed54 = fmul <2 x float> %nvptx.pack48, %nvptx.pack42, !dbg !36
+  %nvptx.packed57 = fmul <2 x float> %nvptx.pack48, %nvptx.pack45, !dbg !36
+  %nvptx.packed62 = fmul <2 x float> %nvptx.packed49, %nvptx.pack61, !dbg !36
+  %nvptx.packed65 = fmul <2 x float> %nvptx.packed51, %nvptx.pack64, !dbg !36
+  %nvptx.packed69 = fmul <2 x float> %nvptx.packed54, %nvptx.pack68, !dbg !36
+  %nvptx.packed73 = fmul <2 x float> %nvptx.packed57, %nvptx.pack72, !dbg !37
+  %131 = getelementptr [2 x i8], ptr addrspace(1) %1, i64 %.pn1634, !dbg !37
+  %nvptx.narrow = fptrunc <2 x float> %nvptx.packed62 to <2 x bfloat>, !dbg !38
+  %nvptx.narrow66 = fptrunc <2 x float> %nvptx.packed65 to <2 x bfloat>, !dbg !38
+  %nvptx.narrow70 = fptrunc <2 x float> %nvptx.packed69 to <2 x bfloat>, !dbg !38
+  %nvptx.narrow74 = fptrunc <2 x float> %nvptx.packed73 to <2 x bfloat>, !dbg !38
+  %132 = bitcast <2 x bfloat> %nvptx.narrow to i32, !dbg !38
+  %133 = bitcast <2 x bfloat> %nvptx.narrow66 to i32, !dbg !38
+  %134 = bitcast <2 x bfloat> %nvptx.narrow70 to i32, !dbg !38
+  %135 = bitcast <2 x bfloat> %nvptx.narrow74 to i32, !dbg !38
+  tail call void asm sideeffect "@$5 st.global.v4.b32 [ $4 + 0 ], { $0, $1, $2, $3 };", "r,r,r,r,l,b"(i32 %132, i32 %133, i32 %134, i32 %135, ptr addrspace(1) %131, i1 %15) #2, !dbg !38
+  %136 = add i32 %66, %11, !dbg !20
+  %137 = sext i32 %136 to i64, !dbg !18
+  %138 = mul nsw i64 %137, %16, !dbg !18
+  %139 = add nsw i64 %138, %17, !dbg !18
+  %140 = getelementptr [2 x i8], ptr addrspace(1) %0, i64 %139, !dbg !23
+  %141 = and i1 %15, %67, !dbg !20
+  %142 = xor i1 %141, true, !dbg !24
+  tail call void asm sideeffect "cp.async.cg.shared.global [ $0 + 0 ], [ $1 + 0 ], 0x10, $2;", "r,l,b"(ptr addrspace(3) %48, ptr addrspace(1) %140, i1 %142) #2, !dbg !24
+  tail call void @llvm.nvvm.cp.async.commit.group(), !dbg !24
+  %143 = icmp slt i32 %136, %4, !dbg !20
+  br i1 %143, label %65, label %._crit_edge, !dbg !20
+
+._crit_edge:                                      ; preds = %130, %9
+  tail call void @llvm.nvvm.cp.async.wait.group(i32 0), !dbg !20
+  tail call void @llvm.nvvm.barrier.cta.sync.aligned.all(i32 0), !dbg !25
+  ret void, !dbg !25
+}
+
+; Function Attrs: mustprogress nocallback nofree nosync nounwind speculatable willreturn memory(none)
+declare noundef range(i32 0, 2147483647) i32 @llvm.nvvm.read.ptx.sreg.ctaid.x() #1
+
+; Function Attrs: mustprogress nocallback nofree nosync nounwind speculatable willreturn memory(none)
+declare noundef range(i32 1, -2147483648) i32 @llvm.nvvm.read.ptx.sreg.nctaid.x() #1
+
+; Function Attrs: mustprogress nocallback nofree nosync nounwind speculatable willreturn memory(none)
+declare noundef range(i32 0, 1024) i32 @llvm.nvvm.read.ptx.sreg.tid.x() #1
+
+; Function Attrs: nounwind
+declare void @llvm.nvvm.cp.async.commit.group() #2
+
+; Function Attrs: nounwind
+declare void @llvm.nvvm.cp.async.wait.group(i32 immarg) #2
+
+; Function Attrs: convergent nocallback nounwind
+declare void @llvm.nvvm.barrier.cta.sync.aligned.all(i32) #3
+
+; Function Attrs: convergent nocallback nounwind memory(inaccessiblemem: readwrite)
+declare i32 @llvm.nvvm.shfl.sync.bfly.i32(i32, i32, i32, i32) #4
+
+; Function Attrs: mustprogress nocallback nocreateundeforpoison nofree nosync nounwind willreturn memory(none)
+declare float @llvm.nvvm.div.full(float, float) #5
+
+declare i32 @__nvvm_reflect(ptr) local_unnamed_addr #6
+
+; Function Attrs: mustprogress nocallback nocreateundeforpoison nofree nosync nounwind willreturn memory(none)
+declare float @llvm.nvvm.rsqrt.approx.ftz.f(float) #5
+
+; Function Attrs: mustprogress nocallback nocreateundeforpoison nofree nosync nounwind willreturn memory(none)
+declare float @llvm.nvvm.rsqrt.approx.f(float) #5
+
+attributes #0 = { nounwind "nvvm.reqntid"="128" }
+attributes #1 = { mustprogress nocallback nofree nosync nounwind speculatable willreturn memory(none) }
+attributes #2 = { nounwind }
+attributes #3 = { convergent nocallback nounwind }
+attributes #4 = { convergent nocallback nounwind memory(inaccessiblemem: readwrite) }
+attributes #5 = { mustprogress nocallback nocreateundeforpoison nofree nosync nounwind willreturn memory(none) }
+attributes #6 = { "disable-tail-calls"="false" "frame-pointer"="all" "less-precise-fpmad"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "unsafe-fp-math"="false" "use-soft-float"="false" }
+
+!llvm.dbg.cu = !{!12}
+!llvm.module.flags = !{!39, !40}
+!llvm.ident = !{!41}
+!nvvmir.version = !{!42}
+
+!0 = !DIFile(filename: "kernels.py", directory: "/home/ryandeng/tpaa/triton/python/triton/experimental/semantic_contracts")
+!1 = !DIBasicType(name: "float", size: 32, encoding: DW_ATE_float)
+!6 = !DIBasicType(name: "unknown_type", encoding: DW_ATE_signed)
+!7 = !DIDerivedType(tag: DW_TAG_pointer_type, name: "pointer", baseType: !6, size: 64, dwarfAddressSpace: 1)
+!8 = !DIDerivedType(tag: DW_TAG_pointer_type, name: "pointer", baseType: !1, size: 64, dwarfAddressSpace: 1)
+!9 = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
+!10 = !{null, !7, !7, !7, !8, !9, !9, !1, !7, !7}
+!11 = !DISubroutineType(cc: DW_CC_normal, types: !10)
+!12 = distinct !DICompileUnit(language: DW_LANG_C, file: !0, producer: "triton", isOptimized: true, runtimeVersion: 0, emissionKind: LineTablesOnly)
+!13 = distinct !DISubprogram(name: "rmsnorm_persistent", linkageName: "rmsnorm_persistent", scope: !0, file: !0, line: 121, type: !11, scopeLine: 121, spFlags: DISPFlagDefinition | DISPFlagOptimized, unit: !12)
+!14 = !DILocation(line: 128, column: 17, scope: !13)
+!15 = !DILocation(line: 129, column: 12, scope: !13)
+!16 = !DILocation(line: 130, column: 15, scope: !13)
+!17 = !DILocation(line: 131, column: 20, scope: !13)
+!18 = !DILocation(line: 133, column: 22, scope: !13)
+!19 = !DILocation(line: 135, column: 27, scope: !13)
+!20 = !DILocation(line: 132, column: 5, scope: !13)
+!21 = !DILocation(line: 135, column: 19, scope: !13)
+!22 = !DILocation(line: 136, column: 32, scope: !13)
+!23 = !DILocation(line: 134, column: 26, scope: !13)
+!24 = !DILocation(line: 134, column: 18, scope: !13)
+!25 = !DILocation(line: 121, column: 1, scope: !13)
+!26 = !DILocation(line: 136, column: 39, scope: !13)
+!27 = distinct !DILexicalBlockFile(scope: !13, file: !0, discriminator: 0)
+!28 = !DILocation(line: 136, column: 32, scope: !27)
+!29 = !DIFile(filename: "standard.py", directory: "/home/ryandeng/tpaa/triton/python/triton/language")
+!30 = distinct !DILexicalBlockFile(scope: !13, file: !29, discriminator: 0)
+!31 = !DILocation(line: 358, column: 12, scope: !30, inlinedAt: !28)
+!32 = !DILocation(line: 331, column: 12, scope: !30, inlinedAt: !31)
+!33 = !DILocation(line: 136, column: 23, scope: !13)
+!34 = !DILocation(line: 137, column: 18, scope: !13)
+!35 = !DILocation(line: 137, column: 9, scope: !13)
+!36 = !DILocation(line: 138, column: 22, scope: !13)
+!37 = !DILocation(line: 139, column: 18, scope: !13)
+!38 = !DILocation(line: 139, column: 9, scope: !13)
+!39 = !{i32 2, !"Debug Info Version", i32 3}
+!40 = !{i32 4, !"nvvm-reflect-ftz", i32 1}
+!41 = !{!"clang version 3.8.0 (tags/RELEASE_380/final)"}
+!42 = !{i32 2, i32 0}

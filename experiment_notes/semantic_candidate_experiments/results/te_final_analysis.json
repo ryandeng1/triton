@@ -1,0 +1,3048 @@
+{
+  "screen_count": 41,
+  "confirm_count": 27,
+  "screen_all_passed": true,
+  "confirm_all_passed": true,
+  "all_paired_outputs_byte_equal": true,
+  "all_timing_outputs_shared": true,
+  "all_shared_bindings_validated": true,
+  "max_probability_reference_absolute_error": 0.0001068115234375,
+  "all_manual_contract_machine_code_equal": true,
+  "all_manual_contract_metadata_equal": true,
+  "comparisons": {
+    "m1024-h8192-k2-e16": {
+      "best": {
+        "original": {
+          "config": [
+            4096,
+            8
+          ],
+          "median_us": 12.140999548137188
+        },
+        "hoisted": {
+          "config": [
+            1024,
+            8
+          ],
+          "median_us": 10.219000279903412
+        },
+        "contract": {
+          "config": [
+            1024,
+            8
+          ],
+          "median_us": 10.18999982625246
+        }
+      },
+      "best_to_best_speedups": {
+        "original": 1.0,
+        "hoisted": 1.1880809487806319,
+        "contract": 1.1914621938322683
+      },
+      "best_by_config_family": {
+        "published": {
+          "original": {
+            "config": [
+              1024,
+              4
+            ],
+            "median_us": 12.272000312805176
+          },
+          "hoisted": {
+            "config": [
+              2048,
+              4
+            ],
+            "median_us": 11.901999823749065
+          },
+          "contract": {
+            "config": [
+              2048,
+              4
+            ],
+            "median_us": 11.955000460147858
+          }
+        },
+        "expanded": {
+          "original": {
+            "config": [
+              4096,
+              8
+            ],
+            "median_us": 12.140999548137188
+          },
+          "hoisted": {
+            "config": [
+              1024,
+              8
+            ],
+            "median_us": 10.219000279903412
+          },
+          "contract": {
+            "config": [
+              1024,
+              8
+            ],
+            "median_us": 10.18999982625246
+          }
+        }
+      },
+      "best_to_best_ratios_by_seed": {
+        "hoisted": {
+          "0": 1.2068587740073615,
+          "1": 1.1858302450255946,
+          "2": 1.1889486392671107
+        },
+        "contract": {
+          "0": 1.2075790614521,
+          "1": 1.184671007497288,
+          "2": 1.1930323726452916
+        }
+      },
+      "published_best_to_best_speedups": {
+        "original": 1.0,
+        "hoisted": 1.0310872537838403,
+        "contract": 1.026516088703973
+      }
+    },
+    "m512-h16384-k4-e16": {
+      "best": {
+        "original": {
+          "config": [
+            8192,
+            8
+          ],
+          "median_us": 34.74700078368187
+        },
+        "hoisted": {
+          "config": [
+            4096,
+            4
+          ],
+          "median_us": 31.440000981092453
+        },
+        "contract": {
+          "config": [
+            4096,
+            4
+          ],
+          "median_us": 31.42699971795082
+        }
+      },
+      "best_to_best_speedups": {
+        "original": 1.0,
+        "hoisted": 1.105184468810233,
+        "contract": 1.1056416805780762
+      },
+      "best_by_config_family": {
+        "published": {
+          "original": {
+            "config": [
+              4096,
+              4
+            ],
+            "median_us": 34.90699827671051
+          },
+          "hoisted": {
+            "config": [
+              4096,
+              4
+            ],
+            "median_us": 31.440000981092453
+          },
+          "contract": {
+            "config": [
+              4096,
+              4
+            ],
+            "median_us": 31.42699971795082
+          }
+        },
+        "expanded": {
+          "original": {
+            "config": [
+              8192,
+              8
+            ],
+            "median_us": 34.74700078368187
+          },
+          "hoisted": {
+            "config": [
+              4096,
+              8
+            ],
+            "median_us": 36.40500083565712
+          },
+          "contract": {
+            "config": [
+              4096,
+              8
+            ],
+            "median_us": 36.40399873256683
+          }
+        }
+      },
+      "best_to_best_ratios_by_seed": {
+        "hoisted": {
+          "0": 1.105117312701004,
+          "1": 1.10569337852183,
+          "2": 1.0995190789401559
+        },
+        "contract": {
+          "0": 1.10360519959351,
+          "1": 1.106291642476918,
+          "2": 1.1019250228156758
+        }
+      },
+      "published_best_to_best_speedups": {
+        "original": 1.0,
+        "hoisted": 1.1102734474373286,
+        "contract": 1.1107327645015996
+      }
+    },
+    "m256-h32768-k8-e16": {
+      "best": {
+        "original": {
+          "config": [
+            16384,
+            4
+          ],
+          "median_us": 68.65599751472473
+        },
+        "hoisted": {
+          "config": [
+            16384,
+            4
+          ],
+          "median_us": 69.03199851512909
+        },
+        "contract": {
+          "config": [
+            16384,
+            4
+          ],
+          "median_us": 68.9850002527237
+        }
+      },
+      "best_to_best_speedups": {
+        "original": 1.0,
+        "hoisted": 0.9945532360573053,
+        "contract": 0.9952308076133409
+      },
+      "best_by_config_family": {
+        "published": {
+          "original": {
+            "config": [
+              4096,
+              4
+            ],
+            "median_us": 106.66599869728088
+          },
+          "hoisted": {
+            "config": [
+              4096,
+              4
+            ],
+            "median_us": 87.8399983048439
+          },
+          "contract": {
+            "config": [
+              4096,
+              4
+            ],
+            "median_us": 87.87800371646881
+          }
+        },
+        "expanded": {
+          "original": {
+            "config": [
+              16384,
+              4
+            ],
+            "median_us": 68.65599751472473
+          },
+          "hoisted": {
+            "config": [
+              16384,
+              4
+            ],
+            "median_us": 69.03199851512909
+          },
+          "contract": {
+            "config": [
+              16384,
+              4
+            ],
+            "median_us": 68.9850002527237
+          }
+        }
+      },
+      "best_to_best_ratios_by_seed": {
+        "hoisted": {
+          "0": 0.9945532360573053,
+          "1": 0.9974978300436419,
+          "2": 0.9952322999728526
+        },
+        "contract": {
+          "0": 0.9952308076133409,
+          "1": 0.9965699584453308,
+          "2": 0.994298581162304
+        }
+      },
+      "published_best_to_best_speedups": {
+        "original": 1.0,
+        "hoisted": 1.214321502228431,
+        "contract": 1.2137963333968078
+      }
+    }
+  },
+  "code_audits": [
+    {
+      "shape": [
+        1024,
+        8192,
+        2,
+        16
+      ],
+      "config": [
+        64,
+        4
+      ],
+      "code": {
+        "original": {
+          "bytes": 2688,
+          "sha256": "9e6b6ad600e6c5b7756408718eed2a11257a125aac106c39782fe53c26b51b4e"
+        },
+        "hoisted": {
+          "bytes": 2688,
+          "sha256": "af2d1741a3630783a74e9667f5b365380a723623a16fc4c6a3df4ec3609bd6a0"
+        },
+        "contract": {
+          "bytes": 2688,
+          "sha256": "af2d1741a3630783a74e9667f5b365380a723623a16fc4c6a3df4ec3609bd6a0"
+        }
+      },
+      "metadata": {
+        "original": {
+          "n_regs": 30,
+          "n_spills": 0,
+          "shared": 8,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "hoisted": {
+          "n_regs": 30,
+          "n_spills": 0,
+          "shared": 8,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "contract": {
+          "n_regs": 30,
+          "n_spills": 0,
+          "shared": 8,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        }
+      },
+      "manual_contract_machine_code_equal": true,
+      "manual_contract_metadata_equal": true,
+      "original_contract_machine_code_equal": false
+    },
+    {
+      "shape": [
+        1024,
+        8192,
+        2,
+        16
+      ],
+      "config": [
+        128,
+        4
+      ],
+      "code": {
+        "original": {
+          "bytes": 13184,
+          "sha256": "11054b42503967ced93abe39f3ac826c2457b1e0438da60576c969396888b5aa"
+        },
+        "hoisted": {
+          "bytes": 12416,
+          "sha256": "617f0c2462e581cdfa7903507e5cbd517db61ad0c470ff1c0b1f0f89bc6587cb"
+        },
+        "contract": {
+          "bytes": 12416,
+          "sha256": "617f0c2462e581cdfa7903507e5cbd517db61ad0c470ff1c0b1f0f89bc6587cb"
+        }
+      },
+      "metadata": {
+        "original": {
+          "n_regs": 32,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "hoisted": {
+          "n_regs": 32,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "contract": {
+          "n_regs": 32,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        }
+      },
+      "manual_contract_machine_code_equal": true,
+      "manual_contract_metadata_equal": true,
+      "original_contract_machine_code_equal": false
+    },
+    {
+      "shape": [
+        1024,
+        8192,
+        2,
+        16
+      ],
+      "config": [
+        256,
+        4
+      ],
+      "code": {
+        "original": {
+          "bytes": 5248,
+          "sha256": "3df71566283b61b87a295c612110e409959898bbb8ba7224f3b9050a2c12bf81"
+        },
+        "hoisted": {
+          "bytes": 8832,
+          "sha256": "f5ae7cca405c18febfbfcdd5a7a8651b5a270e6518fa4d7625b44793569eba0c"
+        },
+        "contract": {
+          "bytes": 8832,
+          "sha256": "f5ae7cca405c18febfbfcdd5a7a8651b5a270e6518fa4d7625b44793569eba0c"
+        }
+      },
+      "metadata": {
+        "original": {
+          "n_regs": 30,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "hoisted": {
+          "n_regs": 30,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "contract": {
+          "n_regs": 30,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        }
+      },
+      "manual_contract_machine_code_equal": true,
+      "manual_contract_metadata_equal": true,
+      "original_contract_machine_code_equal": false
+    },
+    {
+      "shape": [
+        1024,
+        8192,
+        2,
+        16
+      ],
+      "config": [
+        512,
+        4
+      ],
+      "code": {
+        "original": {
+          "bytes": 4992,
+          "sha256": "c53daf7f916aeadbf9711f9b7c160e410f1fe04dcdbe7976c9065fe5901c4fc5"
+        },
+        "hoisted": {
+          "bytes": 4736,
+          "sha256": "0ff920d92d2a309da397740f4dbfe162fe8eb78777868f1c2837c504026712c0"
+        },
+        "contract": {
+          "bytes": 4736,
+          "sha256": "0ff920d92d2a309da397740f4dbfe162fe8eb78777868f1c2837c504026712c0"
+        }
+      },
+      "metadata": {
+        "original": {
+          "n_regs": 32,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "hoisted": {
+          "n_regs": 40,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "contract": {
+          "n_regs": 40,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        }
+      },
+      "manual_contract_machine_code_equal": true,
+      "manual_contract_metadata_equal": true,
+      "original_contract_machine_code_equal": false
+    },
+    {
+      "shape": [
+        1024,
+        8192,
+        2,
+        16
+      ],
+      "config": [
+        1024,
+        4
+      ],
+      "code": {
+        "original": {
+          "bytes": 3200,
+          "sha256": "eec2a63fd520a48769b12c56fc56e0c9cccf00bd82b7b1477c5021f7f92eb519"
+        },
+        "hoisted": {
+          "bytes": 3200,
+          "sha256": "ff575c199b1828b0e62417e1c96024f83241f98a891d4be9d089fd24a2a679c4"
+        },
+        "contract": {
+          "bytes": 3200,
+          "sha256": "ff575c199b1828b0e62417e1c96024f83241f98a891d4be9d089fd24a2a679c4"
+        }
+      },
+      "metadata": {
+        "original": {
+          "n_regs": 48,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "hoisted": {
+          "n_regs": 47,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "contract": {
+          "n_regs": 47,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        }
+      },
+      "manual_contract_machine_code_equal": true,
+      "manual_contract_metadata_equal": true,
+      "original_contract_machine_code_equal": false
+    },
+    {
+      "shape": [
+        1024,
+        8192,
+        2,
+        16
+      ],
+      "config": [
+        2048,
+        4
+      ],
+      "code": {
+        "original": {
+          "bytes": 7808,
+          "sha256": "693667c3e2104b92590fbad6cc294e8748df779db1d44066761d2eba1bb3141e"
+        },
+        "hoisted": {
+          "bytes": 7808,
+          "sha256": "f7984b6eeb95d848705df4cc32906a646d821662db2a320a516217d83bbe21fe"
+        },
+        "contract": {
+          "bytes": 7808,
+          "sha256": "f7984b6eeb95d848705df4cc32906a646d821662db2a320a516217d83bbe21fe"
+        }
+      },
+      "metadata": {
+        "original": {
+          "n_regs": 78,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "hoisted": {
+          "n_regs": 80,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "contract": {
+          "n_regs": 80,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        }
+      },
+      "manual_contract_machine_code_equal": true,
+      "manual_contract_metadata_equal": true,
+      "original_contract_machine_code_equal": false
+    },
+    {
+      "shape": [
+        1024,
+        8192,
+        2,
+        16
+      ],
+      "config": [
+        4096,
+        4
+      ],
+      "code": {
+        "original": {
+          "bytes": 5760,
+          "sha256": "22934093b71e04e33ef1b9a4a60acf9ac78eba61a2269c039039e4facddd1d8f"
+        },
+        "hoisted": {
+          "bytes": 5760,
+          "sha256": "779e539c9d0ba22155479bed67073e3ad2a1e140dcf0ad093d3176e7457b3e33"
+        },
+        "contract": {
+          "bytes": 5760,
+          "sha256": "779e539c9d0ba22155479bed67073e3ad2a1e140dcf0ad093d3176e7457b3e33"
+        }
+      },
+      "metadata": {
+        "original": {
+          "n_regs": 104,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "hoisted": {
+          "n_regs": 104,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "contract": {
+          "n_regs": 104,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        }
+      },
+      "manual_contract_machine_code_equal": true,
+      "manual_contract_metadata_equal": true,
+      "original_contract_machine_code_equal": false
+    },
+    {
+      "shape": [
+        1024,
+        8192,
+        2,
+        16
+      ],
+      "config": [
+        1024,
+        8
+      ],
+      "code": {
+        "original": {
+          "bytes": 5248,
+          "sha256": "617d3e760d7a390977951cfc28d95dd31e2e8d6146ab04d1bdf57fb8b5eebb90"
+        },
+        "hoisted": {
+          "bytes": 5376,
+          "sha256": "b41f85b73a60453325f5306431e44bfce72dd0224d5716147e11eb4fbf109119"
+        },
+        "contract": {
+          "bytes": 5376,
+          "sha256": "b41f85b73a60453325f5306431e44bfce72dd0224d5716147e11eb4fbf109119"
+        }
+      },
+      "metadata": {
+        "original": {
+          "n_regs": 40,
+          "n_spills": 0,
+          "shared": 32,
+          "num_warps": 8,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "hoisted": {
+          "n_regs": 32,
+          "n_spills": 0,
+          "shared": 32,
+          "num_warps": 8,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "contract": {
+          "n_regs": 32,
+          "n_spills": 0,
+          "shared": 32,
+          "num_warps": 8,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        }
+      },
+      "manual_contract_machine_code_equal": true,
+      "manual_contract_metadata_equal": true,
+      "original_contract_machine_code_equal": false
+    },
+    {
+      "shape": [
+        1024,
+        8192,
+        2,
+        16
+      ],
+      "config": [
+        4096,
+        8
+      ],
+      "code": {
+        "original": {
+          "bytes": 4096,
+          "sha256": "b08fa6a2a9c5f4965cce995adb6d6f3d2966019b7af1dfebe808cb100170c380"
+        },
+        "hoisted": {
+          "bytes": 4096,
+          "sha256": "0e62b224afa3401d1ed46e804e161571f09d568b6dd2be64f059ec4f5a1d5161"
+        },
+        "contract": {
+          "bytes": 4096,
+          "sha256": "0e62b224afa3401d1ed46e804e161571f09d568b6dd2be64f059ec4f5a1d5161"
+        }
+      },
+      "metadata": {
+        "original": {
+          "n_regs": 64,
+          "n_spills": 0,
+          "shared": 32,
+          "num_warps": 8,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "hoisted": {
+          "n_regs": 64,
+          "n_spills": 0,
+          "shared": 32,
+          "num_warps": 8,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "contract": {
+          "n_regs": 64,
+          "n_spills": 0,
+          "shared": 32,
+          "num_warps": 8,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        }
+      },
+      "manual_contract_machine_code_equal": true,
+      "manual_contract_metadata_equal": true,
+      "original_contract_machine_code_equal": false
+    },
+    {
+      "shape": [
+        512,
+        16384,
+        4,
+        16
+      ],
+      "config": [
+        64,
+        4
+      ],
+      "code": {
+        "original": {
+          "bytes": 2688,
+          "sha256": "396d3a04cd23f183091a08ef4cb3527cf2f30c992eb2cbc51ddccaaa554d6385"
+        },
+        "hoisted": {
+          "bytes": 2688,
+          "sha256": "0bebbe73b6e8a0ef7695e81dc8b4f6408e1199bfc47d2143a0fc29fa979c792c"
+        },
+        "contract": {
+          "bytes": 2688,
+          "sha256": "0bebbe73b6e8a0ef7695e81dc8b4f6408e1199bfc47d2143a0fc29fa979c792c"
+        }
+      },
+      "metadata": {
+        "original": {
+          "n_regs": 30,
+          "n_spills": 0,
+          "shared": 8,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "hoisted": {
+          "n_regs": 30,
+          "n_spills": 0,
+          "shared": 8,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "contract": {
+          "n_regs": 30,
+          "n_spills": 0,
+          "shared": 8,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        }
+      },
+      "manual_contract_machine_code_equal": true,
+      "manual_contract_metadata_equal": true,
+      "original_contract_machine_code_equal": false
+    },
+    {
+      "shape": [
+        512,
+        16384,
+        4,
+        16
+      ],
+      "config": [
+        128,
+        4
+      ],
+      "code": {
+        "original": {
+          "bytes": 6656,
+          "sha256": "07457e0264137773037c5ade970510607365e1fb2af1fba7331054da7c9ab44e"
+        },
+        "hoisted": {
+          "bytes": 6272,
+          "sha256": "62ffc36ab2a5ba2cfc0e9ee8c2d3cf1b452f238bb9989967459d982527204eec"
+        },
+        "contract": {
+          "bytes": 6272,
+          "sha256": "62ffc36ab2a5ba2cfc0e9ee8c2d3cf1b452f238bb9989967459d982527204eec"
+        }
+      },
+      "metadata": {
+        "original": {
+          "n_regs": 32,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "hoisted": {
+          "n_regs": 32,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "contract": {
+          "n_regs": 32,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        }
+      },
+      "manual_contract_machine_code_equal": true,
+      "manual_contract_metadata_equal": true,
+      "original_contract_machine_code_equal": false
+    },
+    {
+      "shape": [
+        512,
+        16384,
+        4,
+        16
+      ],
+      "config": [
+        256,
+        4
+      ],
+      "code": {
+        "original": {
+          "bytes": 4864,
+          "sha256": "c60fd0fb161937a72f2e39a71fb29e3ebb07807057c41193cd6e280e741e36b8"
+        },
+        "hoisted": {
+          "bytes": 5504,
+          "sha256": "6ffcaa26a8ee24a4d5b7673b51da884c6b74f9980b54c0a79ebf226047d04e30"
+        },
+        "contract": {
+          "bytes": 5504,
+          "sha256": "6ffcaa26a8ee24a4d5b7673b51da884c6b74f9980b54c0a79ebf226047d04e30"
+        }
+      },
+      "metadata": {
+        "original": {
+          "n_regs": 30,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "hoisted": {
+          "n_regs": 32,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "contract": {
+          "n_regs": 32,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        }
+      },
+      "manual_contract_machine_code_equal": true,
+      "manual_contract_metadata_equal": true,
+      "original_contract_machine_code_equal": false
+    },
+    {
+      "shape": [
+        512,
+        16384,
+        4,
+        16
+      ],
+      "config": [
+        512,
+        4
+      ],
+      "code": {
+        "original": {
+          "bytes": 5376,
+          "sha256": "a3976599e0fc140a48b252d539aafb9ae1befd435826f05f244bcc587353e43b"
+        },
+        "hoisted": {
+          "bytes": 5632,
+          "sha256": "a70c67759e92af1da5ed927b777390bf06bb838f0a89bc49c969687034d40d88"
+        },
+        "contract": {
+          "bytes": 5632,
+          "sha256": "a70c67759e92af1da5ed927b777390bf06bb838f0a89bc49c969687034d40d88"
+        }
+      },
+      "metadata": {
+        "original": {
+          "n_regs": 32,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "hoisted": {
+          "n_regs": 32,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "contract": {
+          "n_regs": 32,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        }
+      },
+      "manual_contract_machine_code_equal": true,
+      "manual_contract_metadata_equal": true,
+      "original_contract_machine_code_equal": false
+    },
+    {
+      "shape": [
+        512,
+        16384,
+        4,
+        16
+      ],
+      "config": [
+        1024,
+        4
+      ],
+      "code": {
+        "original": {
+          "bytes": 3200,
+          "sha256": "df77a0959a58b1284c32aa500f75877b4902fafd133fef036cc1c7ade8c97174"
+        },
+        "hoisted": {
+          "bytes": 3200,
+          "sha256": "8074fd191fc5b774503ced2505ea9deba10c86149828d2a30fd48557fe6aea38"
+        },
+        "contract": {
+          "bytes": 3200,
+          "sha256": "8074fd191fc5b774503ced2505ea9deba10c86149828d2a30fd48557fe6aea38"
+        }
+      },
+      "metadata": {
+        "original": {
+          "n_regs": 48,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "hoisted": {
+          "n_regs": 47,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "contract": {
+          "n_regs": 47,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        }
+      },
+      "manual_contract_machine_code_equal": true,
+      "manual_contract_metadata_equal": true,
+      "original_contract_machine_code_equal": false
+    },
+    {
+      "shape": [
+        512,
+        16384,
+        4,
+        16
+      ],
+      "config": [
+        2048,
+        4
+      ],
+      "code": {
+        "original": {
+          "bytes": 4224,
+          "sha256": "733789d82f2647105099f57cbaa71d22f49cfddeb557efc8914113a822367932"
+        },
+        "hoisted": {
+          "bytes": 4224,
+          "sha256": "ad94f12a2a4f9c2ebe76305897d4ea8990ae3c5f22855f65c99042a13d8cd412"
+        },
+        "contract": {
+          "bytes": 4224,
+          "sha256": "ad94f12a2a4f9c2ebe76305897d4ea8990ae3c5f22855f65c99042a13d8cd412"
+        }
+      },
+      "metadata": {
+        "original": {
+          "n_regs": 56,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "hoisted": {
+          "n_regs": 56,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "contract": {
+          "n_regs": 56,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        }
+      },
+      "manual_contract_machine_code_equal": true,
+      "manual_contract_metadata_equal": true,
+      "original_contract_machine_code_equal": false
+    },
+    {
+      "shape": [
+        512,
+        16384,
+        4,
+        16
+      ],
+      "config": [
+        4096,
+        4
+      ],
+      "code": {
+        "original": {
+          "bytes": 5760,
+          "sha256": "749268e6383b65b6711c4520fad5d5de1527e25cac122621316b1846a8bd6040"
+        },
+        "hoisted": {
+          "bytes": 5760,
+          "sha256": "e66d1c779473630932268aae71a15f13095506e0e04ff701cdc74157a526413a"
+        },
+        "contract": {
+          "bytes": 5760,
+          "sha256": "e66d1c779473630932268aae71a15f13095506e0e04ff701cdc74157a526413a"
+        }
+      },
+      "metadata": {
+        "original": {
+          "n_regs": 104,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "hoisted": {
+          "n_regs": 104,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "contract": {
+          "n_regs": 104,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        }
+      },
+      "manual_contract_machine_code_equal": true,
+      "manual_contract_metadata_equal": true,
+      "original_contract_machine_code_equal": false
+    },
+    {
+      "shape": [
+        512,
+        16384,
+        4,
+        16
+      ],
+      "config": [
+        1024,
+        8
+      ],
+      "code": {
+        "original": {
+          "bytes": 4992,
+          "sha256": "4ab8339a8fef8cc96a0ec504d455909cfbc435c8da9e313d7b13621c1d11ed8d"
+        },
+        "hoisted": {
+          "bytes": 4864,
+          "sha256": "8c644891c7abdb4d5ed0bacd6189b16e93f58f4a0fe364d33eb85a36574e0d57"
+        },
+        "contract": {
+          "bytes": 4864,
+          "sha256": "8c644891c7abdb4d5ed0bacd6189b16e93f58f4a0fe364d33eb85a36574e0d57"
+        }
+      },
+      "metadata": {
+        "original": {
+          "n_regs": 32,
+          "n_spills": 0,
+          "shared": 32,
+          "num_warps": 8,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "hoisted": {
+          "n_regs": 40,
+          "n_spills": 0,
+          "shared": 32,
+          "num_warps": 8,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "contract": {
+          "n_regs": 40,
+          "n_spills": 0,
+          "shared": 32,
+          "num_warps": 8,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        }
+      },
+      "manual_contract_machine_code_equal": true,
+      "manual_contract_metadata_equal": true,
+      "original_contract_machine_code_equal": false
+    },
+    {
+      "shape": [
+        512,
+        16384,
+        4,
+        16
+      ],
+      "config": [
+        4096,
+        8
+      ],
+      "code": {
+        "original": {
+          "bytes": 7808,
+          "sha256": "5c8f8ba8640d66888f71e21fbfd0bc754cc10c2bb95040a09ec9cb4e7bdbe2b7"
+        },
+        "hoisted": {
+          "bytes": 7936,
+          "sha256": "4ef21aba679250493bd929d2e642aa310c83b1b92e173c483e7c0846ede4da29"
+        },
+        "contract": {
+          "bytes": 7936,
+          "sha256": "4ef21aba679250493bd929d2e642aa310c83b1b92e173c483e7c0846ede4da29"
+        }
+      },
+      "metadata": {
+        "original": {
+          "n_regs": 72,
+          "n_spills": 0,
+          "shared": 32,
+          "num_warps": 8,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "hoisted": {
+          "n_regs": 80,
+          "n_spills": 2,
+          "shared": 32,
+          "num_warps": 8,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "contract": {
+          "n_regs": 80,
+          "n_spills": 2,
+          "shared": 32,
+          "num_warps": 8,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        }
+      },
+      "manual_contract_machine_code_equal": true,
+      "manual_contract_metadata_equal": true,
+      "original_contract_machine_code_equal": false
+    },
+    {
+      "shape": [
+        256,
+        32768,
+        8,
+        16
+      ],
+      "config": [
+        64,
+        4
+      ],
+      "code": {
+        "original": {
+          "bytes": 2688,
+          "sha256": "a00b9bb27d1d62c4280d236f7717172073acd99b1c48b0cc7e05955cd5e835da"
+        },
+        "hoisted": {
+          "bytes": 2688,
+          "sha256": "0f9b5204e237f048724fbd46b009cf5ef0dcb0915af62939a7f367d8fb3d188e"
+        },
+        "contract": {
+          "bytes": 2688,
+          "sha256": "0f9b5204e237f048724fbd46b009cf5ef0dcb0915af62939a7f367d8fb3d188e"
+        }
+      },
+      "metadata": {
+        "original": {
+          "n_regs": 30,
+          "n_spills": 0,
+          "shared": 8,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "hoisted": {
+          "n_regs": 30,
+          "n_spills": 0,
+          "shared": 8,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "contract": {
+          "n_regs": 30,
+          "n_spills": 0,
+          "shared": 8,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        }
+      },
+      "manual_contract_machine_code_equal": true,
+      "manual_contract_metadata_equal": true,
+      "original_contract_machine_code_equal": false
+    },
+    {
+      "shape": [
+        256,
+        32768,
+        8,
+        16
+      ],
+      "config": [
+        128,
+        4
+      ],
+      "code": {
+        "original": {
+          "bytes": 6912,
+          "sha256": "1e2ec020536f37f85d60459e41b4c0d2eebcbe0eb661d746c77b972ce661bbb7"
+        },
+        "hoisted": {
+          "bytes": 6784,
+          "sha256": "a84eb7ee7804c42c7a4a19a95f2ed7155e0102ea01811fe91b01de06f8afcad6"
+        },
+        "contract": {
+          "bytes": 6784,
+          "sha256": "a84eb7ee7804c42c7a4a19a95f2ed7155e0102ea01811fe91b01de06f8afcad6"
+        }
+      },
+      "metadata": {
+        "original": {
+          "n_regs": 32,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "hoisted": {
+          "n_regs": 32,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "contract": {
+          "n_regs": 32,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        }
+      },
+      "manual_contract_machine_code_equal": true,
+      "manual_contract_metadata_equal": true,
+      "original_contract_machine_code_equal": false
+    },
+    {
+      "shape": [
+        256,
+        32768,
+        8,
+        16
+      ],
+      "config": [
+        256,
+        4
+      ],
+      "code": {
+        "original": {
+          "bytes": 5120,
+          "sha256": "c69e59e6d08dce33ab8f27ed6f4519c8045811d2e1d559bfe74c3f40bf88eb53"
+        },
+        "hoisted": {
+          "bytes": 4864,
+          "sha256": "7f8bf3fde6d411dedcd4c78ad67d43cf689a07fa76c7127c3e6e560cbbefd0e1"
+        },
+        "contract": {
+          "bytes": 4864,
+          "sha256": "7f8bf3fde6d411dedcd4c78ad67d43cf689a07fa76c7127c3e6e560cbbefd0e1"
+        }
+      },
+      "metadata": {
+        "original": {
+          "n_regs": 30,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "hoisted": {
+          "n_regs": 32,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "contract": {
+          "n_regs": 32,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        }
+      },
+      "manual_contract_machine_code_equal": true,
+      "manual_contract_metadata_equal": true,
+      "original_contract_machine_code_equal": false
+    },
+    {
+      "shape": [
+        256,
+        32768,
+        8,
+        16
+      ],
+      "config": [
+        512,
+        4
+      ],
+      "code": {
+        "original": {
+          "bytes": 4224,
+          "sha256": "8462405f878e47e645f35cf52602a950ebbbbea60069b92c0e7716fb615fb4fc"
+        },
+        "hoisted": {
+          "bytes": 5632,
+          "sha256": "bb726b62d535746ad55989a2c0b707ac4ab05a2560fb743c2af393335969175f"
+        },
+        "contract": {
+          "bytes": 5632,
+          "sha256": "bb726b62d535746ad55989a2c0b707ac4ab05a2560fb743c2af393335969175f"
+        }
+      },
+      "metadata": {
+        "original": {
+          "n_regs": 32,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "hoisted": {
+          "n_regs": 32,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "contract": {
+          "n_regs": 32,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        }
+      },
+      "manual_contract_machine_code_equal": true,
+      "manual_contract_metadata_equal": true,
+      "original_contract_machine_code_equal": false
+    },
+    {
+      "shape": [
+        256,
+        32768,
+        8,
+        16
+      ],
+      "config": [
+        1024,
+        4
+      ],
+      "code": {
+        "original": {
+          "bytes": 3200,
+          "sha256": "585320ca563a3d50ec647c91dfb327b10d1512f003bea0bf4c3c1a90f7e0d6f1"
+        },
+        "hoisted": {
+          "bytes": 3200,
+          "sha256": "d107eb9789ba6d2f1e3bdd8d0452aabbf5fe0ffd44966be07cdc6802ee0e807e"
+        },
+        "contract": {
+          "bytes": 3200,
+          "sha256": "d107eb9789ba6d2f1e3bdd8d0452aabbf5fe0ffd44966be07cdc6802ee0e807e"
+        }
+      },
+      "metadata": {
+        "original": {
+          "n_regs": 48,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "hoisted": {
+          "n_regs": 47,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "contract": {
+          "n_regs": 47,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        }
+      },
+      "manual_contract_machine_code_equal": true,
+      "manual_contract_metadata_equal": true,
+      "original_contract_machine_code_equal": false
+    },
+    {
+      "shape": [
+        256,
+        32768,
+        8,
+        16
+      ],
+      "config": [
+        2048,
+        4
+      ],
+      "code": {
+        "original": {
+          "bytes": 4224,
+          "sha256": "afe79a8a7e9ba45072fdd72bcca3686ea6e31772124739853ea094fcd072186a"
+        },
+        "hoisted": {
+          "bytes": 4224,
+          "sha256": "778098aabefc7f0c94ab94b1985dfebd8636ac0676445542ebabf7f24b436ab2"
+        },
+        "contract": {
+          "bytes": 4224,
+          "sha256": "778098aabefc7f0c94ab94b1985dfebd8636ac0676445542ebabf7f24b436ab2"
+        }
+      },
+      "metadata": {
+        "original": {
+          "n_regs": 56,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "hoisted": {
+          "n_regs": 56,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "contract": {
+          "n_regs": 56,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        }
+      },
+      "manual_contract_machine_code_equal": true,
+      "manual_contract_metadata_equal": true,
+      "original_contract_machine_code_equal": false
+    },
+    {
+      "shape": [
+        256,
+        32768,
+        8,
+        16
+      ],
+      "config": [
+        4096,
+        4
+      ],
+      "code": {
+        "original": {
+          "bytes": 5760,
+          "sha256": "9871473e4027a8a0b5cc5f5b131d434c3b54e9b28ae46134a1ad46f97b03f747"
+        },
+        "hoisted": {
+          "bytes": 5760,
+          "sha256": "d389f079b1584268f7099e74af34e575ac55a69fa9c8d38b14bfeb600730bfe4"
+        },
+        "contract": {
+          "bytes": 5760,
+          "sha256": "d389f079b1584268f7099e74af34e575ac55a69fa9c8d38b14bfeb600730bfe4"
+        }
+      },
+      "metadata": {
+        "original": {
+          "n_regs": 104,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "hoisted": {
+          "n_regs": 104,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "contract": {
+          "n_regs": 104,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        }
+      },
+      "manual_contract_machine_code_equal": true,
+      "manual_contract_metadata_equal": true,
+      "original_contract_machine_code_equal": false
+    },
+    {
+      "shape": [
+        256,
+        32768,
+        8,
+        16
+      ],
+      "config": [
+        1024,
+        8
+      ],
+      "code": {
+        "original": {
+          "bytes": 5376,
+          "sha256": "b37e86a66362de482a6446bd0b0d96ef1da026df4e6e5a538df3984d4afe9fbe"
+        },
+        "hoisted": {
+          "bytes": 5760,
+          "sha256": "7922da8562b52fb01217869716940b7df03dd67ceb41f3803390a83d5dbece0e"
+        },
+        "contract": {
+          "bytes": 5760,
+          "sha256": "7922da8562b52fb01217869716940b7df03dd67ceb41f3803390a83d5dbece0e"
+        }
+      },
+      "metadata": {
+        "original": {
+          "n_regs": 32,
+          "n_spills": 0,
+          "shared": 32,
+          "num_warps": 8,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "hoisted": {
+          "n_regs": 32,
+          "n_spills": 0,
+          "shared": 32,
+          "num_warps": 8,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "contract": {
+          "n_regs": 32,
+          "n_spills": 0,
+          "shared": 32,
+          "num_warps": 8,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        }
+      },
+      "manual_contract_machine_code_equal": true,
+      "manual_contract_metadata_equal": true,
+      "original_contract_machine_code_equal": false
+    },
+    {
+      "shape": [
+        256,
+        32768,
+        8,
+        16
+      ],
+      "config": [
+        4096,
+        8
+      ],
+      "code": {
+        "original": {
+          "bytes": 4224,
+          "sha256": "f107b0844755f112582bfebbf92f13bd102bb5c5070923bbc6bde2d8d8fc7a30"
+        },
+        "hoisted": {
+          "bytes": 4224,
+          "sha256": "b76f33e174f54446e2985f99186f25554ea503f82ee317f0f8811d6a31861efb"
+        },
+        "contract": {
+          "bytes": 4224,
+          "sha256": "b76f33e174f54446e2985f99186f25554ea503f82ee317f0f8811d6a31861efb"
+        }
+      },
+      "metadata": {
+        "original": {
+          "n_regs": 64,
+          "n_spills": 0,
+          "shared": 32,
+          "num_warps": 8,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "hoisted": {
+          "n_regs": 64,
+          "n_spills": 0,
+          "shared": 32,
+          "num_warps": 8,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "contract": {
+          "n_regs": 64,
+          "n_spills": 0,
+          "shared": 32,
+          "num_warps": 8,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        }
+      },
+      "manual_contract_machine_code_equal": true,
+      "manual_contract_metadata_equal": true,
+      "original_contract_machine_code_equal": false
+    },
+    {
+      "shape": [
+        1024,
+        8192,
+        2,
+        16
+      ],
+      "config": [
+        8192,
+        4
+      ],
+      "code": {
+        "original": {
+          "bytes": 8448,
+          "sha256": "037d65207577e6d829dc24cafe3cdb7352166403a2c0f4849be74778cef4afb5"
+        },
+        "hoisted": {
+          "bytes": 8448,
+          "sha256": "037d65207577e6d829dc24cafe3cdb7352166403a2c0f4849be74778cef4afb5"
+        },
+        "contract": {
+          "bytes": 8448,
+          "sha256": "037d65207577e6d829dc24cafe3cdb7352166403a2c0f4849be74778cef4afb5"
+        }
+      },
+      "metadata": {
+        "original": {
+          "n_regs": 102,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "hoisted": {
+          "n_regs": 102,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "contract": {
+          "n_regs": 102,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        }
+      },
+      "manual_contract_machine_code_equal": true,
+      "manual_contract_metadata_equal": true,
+      "original_contract_machine_code_equal": true
+    },
+    {
+      "shape": [
+        1024,
+        8192,
+        2,
+        16
+      ],
+      "config": [
+        8192,
+        8
+      ],
+      "code": {
+        "original": {
+          "bytes": 5504,
+          "sha256": "6cd9497a23911312b1a02b586c00299d489423abe9f9ad030f129a972967980c"
+        },
+        "hoisted": {
+          "bytes": 5504,
+          "sha256": "6cd9497a23911312b1a02b586c00299d489423abe9f9ad030f129a972967980c"
+        },
+        "contract": {
+          "bytes": 5504,
+          "sha256": "6cd9497a23911312b1a02b586c00299d489423abe9f9ad030f129a972967980c"
+        }
+      },
+      "metadata": {
+        "original": {
+          "n_regs": 72,
+          "n_spills": 0,
+          "shared": 32,
+          "num_warps": 8,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "hoisted": {
+          "n_regs": 72,
+          "n_spills": 0,
+          "shared": 32,
+          "num_warps": 8,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "contract": {
+          "n_regs": 72,
+          "n_spills": 0,
+          "shared": 32,
+          "num_warps": 8,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        }
+      },
+      "manual_contract_machine_code_equal": true,
+      "manual_contract_metadata_equal": true,
+      "original_contract_machine_code_equal": true
+    },
+    {
+      "shape": [
+        1024,
+        8192,
+        2,
+        16
+      ],
+      "config": [
+        16384,
+        4
+      ],
+      "code": {
+        "original": {
+          "bytes": 8576,
+          "sha256": "7537012d2cb5f0dc315e2a8d22eee9118e382ccfea25d87eca8e704e8e930ec2"
+        },
+        "hoisted": {
+          "bytes": 8576,
+          "sha256": "7537012d2cb5f0dc315e2a8d22eee9118e382ccfea25d87eca8e704e8e930ec2"
+        },
+        "contract": {
+          "bytes": 8576,
+          "sha256": "7537012d2cb5f0dc315e2a8d22eee9118e382ccfea25d87eca8e704e8e930ec2"
+        }
+      },
+      "metadata": {
+        "original": {
+          "n_regs": 102,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "hoisted": {
+          "n_regs": 102,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "contract": {
+          "n_regs": 102,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        }
+      },
+      "manual_contract_machine_code_equal": true,
+      "manual_contract_metadata_equal": true,
+      "original_contract_machine_code_equal": true
+    },
+    {
+      "shape": [
+        1024,
+        8192,
+        2,
+        16
+      ],
+      "config": [
+        16384,
+        8
+      ],
+      "code": {
+        "original": {
+          "bytes": 5632,
+          "sha256": "d16051e060c045af432a92a0d1279482bc7639cdaf0ddaaf3bb985006932e881"
+        },
+        "hoisted": {
+          "bytes": 5632,
+          "sha256": "d16051e060c045af432a92a0d1279482bc7639cdaf0ddaaf3bb985006932e881"
+        },
+        "contract": {
+          "bytes": 5632,
+          "sha256": "d16051e060c045af432a92a0d1279482bc7639cdaf0ddaaf3bb985006932e881"
+        }
+      },
+      "metadata": {
+        "original": {
+          "n_regs": 72,
+          "n_spills": 0,
+          "shared": 32,
+          "num_warps": 8,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "hoisted": {
+          "n_regs": 72,
+          "n_spills": 0,
+          "shared": 32,
+          "num_warps": 8,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "contract": {
+          "n_regs": 72,
+          "n_spills": 0,
+          "shared": 32,
+          "num_warps": 8,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        }
+      },
+      "manual_contract_machine_code_equal": true,
+      "manual_contract_metadata_equal": true,
+      "original_contract_machine_code_equal": true
+    },
+    {
+      "shape": [
+        512,
+        16384,
+        4,
+        16
+      ],
+      "config": [
+        8192,
+        4
+      ],
+      "code": {
+        "original": {
+          "bytes": 9216,
+          "sha256": "395906b25dd07faada022f3000909a7e2931df67fae8d27dc1e991c4e873f899"
+        },
+        "hoisted": {
+          "bytes": 9344,
+          "sha256": "4806f6c9eb175561294fe4a2d31533558b7770ba4d623a75a7b100c268fec2ce"
+        },
+        "contract": {
+          "bytes": 9344,
+          "sha256": "4806f6c9eb175561294fe4a2d31533558b7770ba4d623a75a7b100c268fec2ce"
+        }
+      },
+      "metadata": {
+        "original": {
+          "n_regs": 167,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "hoisted": {
+          "n_regs": 168,
+          "n_spills": 8,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "contract": {
+          "n_regs": 168,
+          "n_spills": 8,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        }
+      },
+      "manual_contract_machine_code_equal": true,
+      "manual_contract_metadata_equal": true,
+      "original_contract_machine_code_equal": false
+    },
+    {
+      "shape": [
+        512,
+        16384,
+        4,
+        16
+      ],
+      "config": [
+        8192,
+        8
+      ],
+      "code": {
+        "original": {
+          "bytes": 5888,
+          "sha256": "9ecc4e5c223190c27f5b4dc58ec9420dfd46938a28e3304ac8c210c0cdb3a477"
+        },
+        "hoisted": {
+          "bytes": 5760,
+          "sha256": "cf9d4cf6325b8ae4f57c3a87772d7620473fc315dc54cf4d24e5bbce17cc68fb"
+        },
+        "contract": {
+          "bytes": 5760,
+          "sha256": "cf9d4cf6325b8ae4f57c3a87772d7620473fc315dc54cf4d24e5bbce17cc68fb"
+        }
+      },
+      "metadata": {
+        "original": {
+          "n_regs": 106,
+          "n_spills": 0,
+          "shared": 32,
+          "num_warps": 8,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "hoisted": {
+          "n_regs": 102,
+          "n_spills": 0,
+          "shared": 32,
+          "num_warps": 8,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "contract": {
+          "n_regs": 102,
+          "n_spills": 0,
+          "shared": 32,
+          "num_warps": 8,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        }
+      },
+      "manual_contract_machine_code_equal": true,
+      "manual_contract_metadata_equal": true,
+      "original_contract_machine_code_equal": false
+    },
+    {
+      "shape": [
+        512,
+        16384,
+        4,
+        16
+      ],
+      "config": [
+        16384,
+        4
+      ],
+      "code": {
+        "original": {
+          "bytes": 14592,
+          "sha256": "297a165fd2230c155611e0e19a228fecbfb8679c86e656d94f8520a3a7006f37"
+        },
+        "hoisted": {
+          "bytes": 14592,
+          "sha256": "297a165fd2230c155611e0e19a228fecbfb8679c86e656d94f8520a3a7006f37"
+        },
+        "contract": {
+          "bytes": 14592,
+          "sha256": "297a165fd2230c155611e0e19a228fecbfb8679c86e656d94f8520a3a7006f37"
+        }
+      },
+      "metadata": {
+        "original": {
+          "n_regs": 172,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "hoisted": {
+          "n_regs": 172,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "contract": {
+          "n_regs": 172,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        }
+      },
+      "manual_contract_machine_code_equal": true,
+      "manual_contract_metadata_equal": true,
+      "original_contract_machine_code_equal": true
+    },
+    {
+      "shape": [
+        512,
+        16384,
+        4,
+        16
+      ],
+      "config": [
+        16384,
+        8
+      ],
+      "code": {
+        "original": {
+          "bytes": 8576,
+          "sha256": "bba2a748f367c0cd616eff4833d7417aa852d84e848d9878a3c888df8ce77c6b"
+        },
+        "hoisted": {
+          "bytes": 8576,
+          "sha256": "bba2a748f367c0cd616eff4833d7417aa852d84e848d9878a3c888df8ce77c6b"
+        },
+        "contract": {
+          "bytes": 8576,
+          "sha256": "bba2a748f367c0cd616eff4833d7417aa852d84e848d9878a3c888df8ce77c6b"
+        }
+      },
+      "metadata": {
+        "original": {
+          "n_regs": 104,
+          "n_spills": 0,
+          "shared": 32,
+          "num_warps": 8,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "hoisted": {
+          "n_regs": 104,
+          "n_spills": 0,
+          "shared": 32,
+          "num_warps": 8,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "contract": {
+          "n_regs": 104,
+          "n_spills": 0,
+          "shared": 32,
+          "num_warps": 8,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        }
+      },
+      "manual_contract_machine_code_equal": true,
+      "manual_contract_metadata_equal": true,
+      "original_contract_machine_code_equal": true
+    },
+    {
+      "shape": [
+        256,
+        32768,
+        8,
+        16
+      ],
+      "config": [
+        8192,
+        4
+      ],
+      "code": {
+        "original": {
+          "bytes": 9344,
+          "sha256": "098020a9e07bbd65910232a596bed2938aabb450521a99aae2bdedf063fb2561"
+        },
+        "hoisted": {
+          "bytes": 9344,
+          "sha256": "744c26c29e7774bfa2bc4cdadbd0ff39fc164f49931de016960ec3e008a5c393"
+        },
+        "contract": {
+          "bytes": 9344,
+          "sha256": "744c26c29e7774bfa2bc4cdadbd0ff39fc164f49931de016960ec3e008a5c393"
+        }
+      },
+      "metadata": {
+        "original": {
+          "n_regs": 168,
+          "n_spills": 0,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "hoisted": {
+          "n_regs": 168,
+          "n_spills": 2,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "contract": {
+          "n_regs": 168,
+          "n_spills": 2,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        }
+      },
+      "manual_contract_machine_code_equal": true,
+      "manual_contract_metadata_equal": true,
+      "original_contract_machine_code_equal": false
+    },
+    {
+      "shape": [
+        256,
+        32768,
+        8,
+        16
+      ],
+      "config": [
+        8192,
+        8
+      ],
+      "code": {
+        "original": {
+          "bytes": 6272,
+          "sha256": "5c41df76486a7f097330f486f878a48baf4505d97f0160f2ace00e496d980b2b"
+        },
+        "hoisted": {
+          "bytes": 6272,
+          "sha256": "431576363799ad468d550dee4887c202763db31fd1374d7adb9b675ff624a0d4"
+        },
+        "contract": {
+          "bytes": 6272,
+          "sha256": "431576363799ad468d550dee4887c202763db31fd1374d7adb9b675ff624a0d4"
+        }
+      },
+      "metadata": {
+        "original": {
+          "n_regs": 86,
+          "n_spills": 0,
+          "shared": 32,
+          "num_warps": 8,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "hoisted": {
+          "n_regs": 80,
+          "n_spills": 0,
+          "shared": 32,
+          "num_warps": 8,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "contract": {
+          "n_regs": 80,
+          "n_spills": 0,
+          "shared": 32,
+          "num_warps": 8,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        }
+      },
+      "manual_contract_machine_code_equal": true,
+      "manual_contract_metadata_equal": true,
+      "original_contract_machine_code_equal": false
+    },
+    {
+      "shape": [
+        256,
+        32768,
+        8,
+        16
+      ],
+      "config": [
+        16384,
+        4
+      ],
+      "code": {
+        "original": {
+          "bytes": 17152,
+          "sha256": "08c7847e7ca518e28dec473f1f7ee518dd0c563805478fb1f0d5f011daccc2cb"
+        },
+        "hoisted": {
+          "bytes": 17152,
+          "sha256": "cf13d7b95b7678ba9707573b8777da44a2e239dd82cb0d2850e966df8d3d8002"
+        },
+        "contract": {
+          "bytes": 17152,
+          "sha256": "cf13d7b95b7678ba9707573b8777da44a2e239dd82cb0d2850e966df8d3d8002"
+        }
+      },
+      "metadata": {
+        "original": {
+          "n_regs": 255,
+          "n_spills": 34,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "hoisted": {
+          "n_regs": 255,
+          "n_spills": 34,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "contract": {
+          "n_regs": 255,
+          "n_spills": 34,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        }
+      },
+      "manual_contract_machine_code_equal": true,
+      "manual_contract_metadata_equal": true,
+      "original_contract_machine_code_equal": false
+    },
+    {
+      "shape": [
+        256,
+        32768,
+        8,
+        16
+      ],
+      "config": [
+        16384,
+        8
+      ],
+      "code": {
+        "original": {
+          "bytes": 9216,
+          "sha256": "5663413c88320affa2d9d14c68d9283b6a33dc428ed891f4d1d4f78be7ce03af"
+        },
+        "hoisted": {
+          "bytes": 9216,
+          "sha256": "905e13a96208793d902582aebe7c50daacc740e0c07fe39d496dbee01d1798b6"
+        },
+        "contract": {
+          "bytes": 9216,
+          "sha256": "905e13a96208793d902582aebe7c50daacc740e0c07fe39d496dbee01d1798b6"
+        }
+      },
+      "metadata": {
+        "original": {
+          "n_regs": 180,
+          "n_spills": 0,
+          "shared": 32,
+          "num_warps": 8,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "hoisted": {
+          "n_regs": 178,
+          "n_spills": 0,
+          "shared": 32,
+          "num_warps": 8,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "contract": {
+          "n_regs": 178,
+          "n_spills": 0,
+          "shared": 32,
+          "num_warps": 8,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        }
+      },
+      "manual_contract_machine_code_equal": true,
+      "manual_contract_metadata_equal": true,
+      "original_contract_machine_code_equal": false
+    },
+    {
+      "shape": [
+        256,
+        32768,
+        8,
+        16
+      ],
+      "config": [
+        32768,
+        4
+      ],
+      "code": {
+        "original": {
+          "bytes": 29184,
+          "sha256": "5bd300830dec1d371f09ded5f7ee53f4cc378a3439dbbd04048d1fc941d119c5"
+        },
+        "hoisted": {
+          "bytes": 29184,
+          "sha256": "5bd300830dec1d371f09ded5f7ee53f4cc378a3439dbbd04048d1fc941d119c5"
+        },
+        "contract": {
+          "bytes": 29184,
+          "sha256": "5bd300830dec1d371f09ded5f7ee53f4cc378a3439dbbd04048d1fc941d119c5"
+        }
+      },
+      "metadata": {
+        "original": {
+          "n_regs": 255,
+          "n_spills": 50,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "hoisted": {
+          "n_regs": 255,
+          "n_spills": 50,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "contract": {
+          "n_regs": 255,
+          "n_spills": 50,
+          "shared": 16,
+          "num_warps": 4,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        }
+      },
+      "manual_contract_machine_code_equal": true,
+      "manual_contract_metadata_equal": true,
+      "original_contract_machine_code_equal": true
+    },
+    {
+      "shape": [
+        256,
+        32768,
+        8,
+        16
+      ],
+      "config": [
+        32768,
+        8
+      ],
+      "code": {
+        "original": {
+          "bytes": 14848,
+          "sha256": "7b057a029c36e140f576199fbd0d98b655eb6545be1a763420a2d5434bb69ce7"
+        },
+        "hoisted": {
+          "bytes": 14848,
+          "sha256": "7b057a029c36e140f576199fbd0d98b655eb6545be1a763420a2d5434bb69ce7"
+        },
+        "contract": {
+          "bytes": 14848,
+          "sha256": "7b057a029c36e140f576199fbd0d98b655eb6545be1a763420a2d5434bb69ce7"
+        }
+      },
+      "metadata": {
+        "original": {
+          "n_regs": 170,
+          "n_spills": 0,
+          "shared": 32,
+          "num_warps": 8,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "hoisted": {
+          "n_regs": 170,
+          "n_spills": 0,
+          "shared": 32,
+          "num_warps": 8,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        },
+        "contract": {
+          "n_regs": 170,
+          "n_spills": 0,
+          "shared": 32,
+          "num_warps": 8,
+          "num_ctas": 1,
+          "num_stages": 3,
+          "global_scratch_size": 0,
+          "profile_scratch_size": 0,
+          "launch_cooperative_grid": false,
+          "launch_pdl": false
+        }
+      },
+      "manual_contract_machine_code_equal": true,
+      "manual_contract_metadata_equal": true,
+      "original_contract_machine_code_equal": true
+    }
+  ]
+}

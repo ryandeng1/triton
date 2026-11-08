@@ -1,0 +1,733 @@
+{
+  "enabled": true,
+  "nodes": [
+    {
+      "name": "embedding_backward",
+      "op": "embedding_backward",
+      "selected_optimization": "atomic_scatter",
+      "proofs": [
+        {
+          "source": "producer analysis at consumer",
+          "indices_node": "arange",
+          "global_unique": false,
+          "fact": {
+            "shape": null,
+            "dtype": null,
+            "storage_ids": [
+              "arange:0"
+            ],
+            "storage_versions": {
+              "arange:0": 1
+            },
+            "fresh": true,
+            "unique_global": false,
+            "unique_dims": [],
+            "integer_range": null,
+            "known_zero": false,
+            "initialized": false,
+            "proof": [
+              "arange: nonoverflowing positive-step integer arange",
+              "invalidated at fill_: mutable operator aten.fill_.Scalar"
+            ],
+            "scope": "fill_"
+          }
+        }
+      ],
+      "native_attrs": {},
+      "kernel_launches": [
+        "zero_scratch",
+        "zero_counts",
+        "count",
+        "update",
+        "convert"
+      ],
+      "destination_mapping": {
+        "formula": "index[token] * D + feature",
+        "domain": "valid unpadded rows and 0 <= feature < D across the complete grid",
+        "injectivity": false,
+        "storage": "fresh contiguous [V,D], initialized +0, no intermediate observers",
+        "arithmetic": "int64 address offsets within checked bounds; FP32 add.rn.ftz matches global atomic addition"
+      }
+    }
+  ],
+  "analysis": {
+    "scope": "Facts valid at the selected FX program point; no payload inspection",
+    "produced": {
+      "gradient_1": {
+        "shape": [
+          4096,
+          128
+        ],
+        "dtype": "torch.bfloat16",
+        "storage_ids": [
+          "external"
+        ],
+        "storage_versions": {
+          "external": 0
+        },
+        "fresh": false,
+        "unique_global": false,
+        "unique_dims": [],
+        "integer_range": null,
+        "known_zero": false,
+        "initialized": false,
+        "proof": [
+          "external tensor; values unknown"
+        ],
+        "scope": "gradient_1"
+      },
+      "indices_input_1": {
+        "shape": [
+          4096
+        ],
+        "dtype": "torch.int64",
+        "storage_ids": [
+          "external"
+        ],
+        "storage_versions": {
+          "external": 0
+        },
+        "fresh": false,
+        "unique_global": false,
+        "unique_dims": [],
+        "integer_range": null,
+        "known_zero": false,
+        "initialized": false,
+        "proof": [
+          "external tensor; values unknown"
+        ],
+        "scope": "indices_input_1"
+      },
+      "arange": {
+        "shape": [
+          4096
+        ],
+        "dtype": "torch.int64",
+        "storage_ids": [
+          "arange:0"
+        ],
+        "storage_versions": {
+          "arange:0": 0
+        },
+        "fresh": true,
+        "unique_global": true,
+        "unique_dims": [
+          0
+        ],
+        "integer_range": {
+          "lower": 0,
+          "upper": 4095
+        },
+        "known_zero": false,
+        "initialized": true,
+        "proof": [
+          "arange: nonoverflowing positive-step integer arange"
+        ],
+        "scope": "arange"
+      },
+      "slice_1": {
+        "shape": [
+          2048
+        ],
+        "dtype": "torch.int64",
+        "storage_ids": [
+          "arange:0"
+        ],
+        "storage_versions": {
+          "arange:0": 0
+        },
+        "fresh": true,
+        "unique_global": true,
+        "unique_dims": [
+          0
+        ],
+        "integer_range": {
+          "lower": 0,
+          "upper": 4095
+        },
+        "known_zero": false,
+        "initialized": true,
+        "proof": [
+          "arange: nonoverflowing positive-step integer arange",
+          "selection is a subsequence without repeated positions"
+        ],
+        "scope": "slice_1"
+      },
+      "fill_": {
+        "shape": [
+          2048
+        ],
+        "dtype": "torch.int64",
+        "storage_ids": [
+          "arange:0"
+        ],
+        "storage_versions": {
+          "arange:0": 1
+        },
+        "fresh": true,
+        "unique_global": false,
+        "unique_dims": [],
+        "integer_range": {
+          "lower": 0,
+          "upper": 0
+        },
+        "known_zero": true,
+        "initialized": true,
+        "proof": [
+          "aten.fill_.Scalar: storage provenance only; value properties unknown",
+          "entire logical tensor initialized to zero"
+        ],
+        "scope": "fill_"
+      },
+      "embedding_backward": {
+        "shape": [
+          8192,
+          128
+        ],
+        "dtype": "torch.bfloat16",
+        "storage_ids": [
+          "embedding_backward:0"
+        ],
+        "storage_versions": {
+          "embedding_backward:0": 0
+        },
+        "fresh": true,
+        "unique_global": false,
+        "unique_dims": [],
+        "integer_range": null,
+        "known_zero": false,
+        "initialized": true,
+        "proof": [
+          "external tensor; values unknown",
+          "triton_semantics.embedding_backward.default: no supported value-preservation proof; properties dropped"
+        ],
+        "scope": "embedding_backward"
+      }
+    },
+    "before": {
+      "gradient_1": {},
+      "indices_input_1": {
+        "gradient_1": {
+          "shape": [
+            4096,
+            128
+          ],
+          "dtype": "torch.bfloat16",
+          "storage_ids": [
+            "external"
+          ],
+          "storage_versions": {
+            "external": 0
+          },
+          "fresh": false,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": null,
+          "known_zero": false,
+          "initialized": false,
+          "proof": [
+            "external tensor; values unknown"
+          ],
+          "scope": "gradient_1"
+        }
+      },
+      "arange": {
+        "gradient_1": {
+          "shape": [
+            4096,
+            128
+          ],
+          "dtype": "torch.bfloat16",
+          "storage_ids": [
+            "external"
+          ],
+          "storage_versions": {
+            "external": 0
+          },
+          "fresh": false,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": null,
+          "known_zero": false,
+          "initialized": false,
+          "proof": [
+            "external tensor; values unknown"
+          ],
+          "scope": "gradient_1"
+        },
+        "indices_input_1": {
+          "shape": [
+            4096
+          ],
+          "dtype": "torch.int64",
+          "storage_ids": [
+            "external"
+          ],
+          "storage_versions": {
+            "external": 0
+          },
+          "fresh": false,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": null,
+          "known_zero": false,
+          "initialized": false,
+          "proof": [
+            "external tensor; values unknown"
+          ],
+          "scope": "indices_input_1"
+        }
+      },
+      "slice_1": {
+        "gradient_1": {
+          "shape": [
+            4096,
+            128
+          ],
+          "dtype": "torch.bfloat16",
+          "storage_ids": [
+            "external"
+          ],
+          "storage_versions": {
+            "external": 0
+          },
+          "fresh": false,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": null,
+          "known_zero": false,
+          "initialized": false,
+          "proof": [
+            "external tensor; values unknown"
+          ],
+          "scope": "gradient_1"
+        },
+        "indices_input_1": {
+          "shape": [
+            4096
+          ],
+          "dtype": "torch.int64",
+          "storage_ids": [
+            "external"
+          ],
+          "storage_versions": {
+            "external": 0
+          },
+          "fresh": false,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": null,
+          "known_zero": false,
+          "initialized": false,
+          "proof": [
+            "external tensor; values unknown"
+          ],
+          "scope": "indices_input_1"
+        },
+        "arange": {
+          "shape": [
+            4096
+          ],
+          "dtype": "torch.int64",
+          "storage_ids": [
+            "arange:0"
+          ],
+          "storage_versions": {
+            "arange:0": 0
+          },
+          "fresh": true,
+          "unique_global": true,
+          "unique_dims": [
+            0
+          ],
+          "integer_range": {
+            "lower": 0,
+            "upper": 4095
+          },
+          "known_zero": false,
+          "initialized": true,
+          "proof": [
+            "arange: nonoverflowing positive-step integer arange"
+          ],
+          "scope": "arange"
+        }
+      },
+      "fill_": {
+        "gradient_1": {
+          "shape": [
+            4096,
+            128
+          ],
+          "dtype": "torch.bfloat16",
+          "storage_ids": [
+            "external"
+          ],
+          "storage_versions": {
+            "external": 0
+          },
+          "fresh": false,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": null,
+          "known_zero": false,
+          "initialized": false,
+          "proof": [
+            "external tensor; values unknown"
+          ],
+          "scope": "gradient_1"
+        },
+        "indices_input_1": {
+          "shape": [
+            4096
+          ],
+          "dtype": "torch.int64",
+          "storage_ids": [
+            "external"
+          ],
+          "storage_versions": {
+            "external": 0
+          },
+          "fresh": false,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": null,
+          "known_zero": false,
+          "initialized": false,
+          "proof": [
+            "external tensor; values unknown"
+          ],
+          "scope": "indices_input_1"
+        },
+        "arange": {
+          "shape": [
+            4096
+          ],
+          "dtype": "torch.int64",
+          "storage_ids": [
+            "arange:0"
+          ],
+          "storage_versions": {
+            "arange:0": 0
+          },
+          "fresh": true,
+          "unique_global": true,
+          "unique_dims": [
+            0
+          ],
+          "integer_range": {
+            "lower": 0,
+            "upper": 4095
+          },
+          "known_zero": false,
+          "initialized": true,
+          "proof": [
+            "arange: nonoverflowing positive-step integer arange"
+          ],
+          "scope": "arange"
+        },
+        "slice_1": {
+          "shape": [
+            2048
+          ],
+          "dtype": "torch.int64",
+          "storage_ids": [
+            "arange:0"
+          ],
+          "storage_versions": {
+            "arange:0": 0
+          },
+          "fresh": true,
+          "unique_global": true,
+          "unique_dims": [
+            0
+          ],
+          "integer_range": {
+            "lower": 0,
+            "upper": 4095
+          },
+          "known_zero": false,
+          "initialized": true,
+          "proof": [
+            "arange: nonoverflowing positive-step integer arange",
+            "selection is a subsequence without repeated positions"
+          ],
+          "scope": "slice_1"
+        }
+      },
+      "embedding_backward": {
+        "gradient_1": {
+          "shape": [
+            4096,
+            128
+          ],
+          "dtype": "torch.bfloat16",
+          "storage_ids": [
+            "external"
+          ],
+          "storage_versions": {
+            "external": 0
+          },
+          "fresh": false,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": null,
+          "known_zero": false,
+          "initialized": false,
+          "proof": [
+            "external tensor; values unknown"
+          ],
+          "scope": "gradient_1"
+        },
+        "indices_input_1": {
+          "shape": [
+            4096
+          ],
+          "dtype": "torch.int64",
+          "storage_ids": [
+            "external"
+          ],
+          "storage_versions": {
+            "external": 0
+          },
+          "fresh": false,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": null,
+          "known_zero": false,
+          "initialized": false,
+          "proof": [
+            "external tensor; values unknown"
+          ],
+          "scope": "indices_input_1"
+        },
+        "arange": {
+          "shape": null,
+          "dtype": null,
+          "storage_ids": [
+            "arange:0"
+          ],
+          "storage_versions": {
+            "arange:0": 1
+          },
+          "fresh": true,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": null,
+          "known_zero": false,
+          "initialized": false,
+          "proof": [
+            "arange: nonoverflowing positive-step integer arange",
+            "invalidated at fill_: mutable operator aten.fill_.Scalar"
+          ],
+          "scope": "fill_"
+        },
+        "slice_1": {
+          "shape": [
+            2048
+          ],
+          "dtype": "torch.int64",
+          "storage_ids": [
+            "arange:0"
+          ],
+          "storage_versions": {
+            "arange:0": 1
+          },
+          "fresh": true,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": {
+            "lower": 0,
+            "upper": 0
+          },
+          "known_zero": true,
+          "initialized": true,
+          "proof": [
+            "aten.fill_.Scalar: storage provenance only; value properties unknown",
+            "entire logical tensor initialized to zero"
+          ],
+          "scope": "fill_"
+        },
+        "fill_": {
+          "shape": [
+            2048
+          ],
+          "dtype": "torch.int64",
+          "storage_ids": [
+            "arange:0"
+          ],
+          "storage_versions": {
+            "arange:0": 1
+          },
+          "fresh": true,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": {
+            "lower": 0,
+            "upper": 0
+          },
+          "known_zero": true,
+          "initialized": true,
+          "proof": [
+            "aten.fill_.Scalar: storage provenance only; value properties unknown",
+            "entire logical tensor initialized to zero"
+          ],
+          "scope": "fill_"
+        }
+      },
+      "output": {
+        "gradient_1": {
+          "shape": [
+            4096,
+            128
+          ],
+          "dtype": "torch.bfloat16",
+          "storage_ids": [
+            "external"
+          ],
+          "storage_versions": {
+            "external": 0
+          },
+          "fresh": false,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": null,
+          "known_zero": false,
+          "initialized": false,
+          "proof": [
+            "external tensor; values unknown"
+          ],
+          "scope": "gradient_1"
+        },
+        "indices_input_1": {
+          "shape": [
+            4096
+          ],
+          "dtype": "torch.int64",
+          "storage_ids": [
+            "external"
+          ],
+          "storage_versions": {
+            "external": 0
+          },
+          "fresh": false,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": null,
+          "known_zero": false,
+          "initialized": false,
+          "proof": [
+            "external tensor; values unknown"
+          ],
+          "scope": "indices_input_1"
+        },
+        "arange": {
+          "shape": null,
+          "dtype": null,
+          "storage_ids": [
+            "arange:0"
+          ],
+          "storage_versions": {
+            "arange:0": 1
+          },
+          "fresh": true,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": null,
+          "known_zero": false,
+          "initialized": false,
+          "proof": [
+            "arange: nonoverflowing positive-step integer arange",
+            "invalidated at fill_: mutable operator aten.fill_.Scalar"
+          ],
+          "scope": "fill_"
+        },
+        "slice_1": {
+          "shape": [
+            2048
+          ],
+          "dtype": "torch.int64",
+          "storage_ids": [
+            "arange:0"
+          ],
+          "storage_versions": {
+            "arange:0": 1
+          },
+          "fresh": true,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": {
+            "lower": 0,
+            "upper": 0
+          },
+          "known_zero": true,
+          "initialized": true,
+          "proof": [
+            "aten.fill_.Scalar: storage provenance only; value properties unknown",
+            "entire logical tensor initialized to zero"
+          ],
+          "scope": "fill_"
+        },
+        "fill_": {
+          "shape": [
+            2048
+          ],
+          "dtype": "torch.int64",
+          "storage_ids": [
+            "arange:0"
+          ],
+          "storage_versions": {
+            "arange:0": 1
+          },
+          "fresh": true,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": {
+            "lower": 0,
+            "upper": 0
+          },
+          "known_zero": true,
+          "initialized": true,
+          "proof": [
+            "aten.fill_.Scalar: storage provenance only; value properties unknown",
+            "entire logical tensor initialized to zero"
+          ],
+          "scope": "fill_"
+        },
+        "embedding_backward": {
+          "shape": [
+            8192,
+            128
+          ],
+          "dtype": "torch.bfloat16",
+          "storage_ids": [
+            "embedding_backward:0"
+          ],
+          "storage_versions": {
+            "embedding_backward:0": 0
+          },
+          "fresh": true,
+          "unique_global": false,
+          "unique_dims": [],
+          "integer_range": null,
+          "known_zero": false,
+          "initialized": true,
+          "proof": [
+            "external tensor; values unknown",
+            "triton_semantics.embedding_backward.default: no supported value-preservation proof; properties dropped"
+          ],
+          "scope": "embedding_backward"
+        }
+      }
+    },
+    "events": [
+      {
+        "node": "fill_",
+        "invalidated_storage": [
+          "arange:0"
+        ],
+        "reason": "mutable operator aten.fill_.Scalar"
+      }
+    ]
+  },
+  "scope": "static-shape ATen FX graph with explicit functional Triton integration ops"
+}

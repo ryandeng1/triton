@@ -1,0 +1,19 @@
+ninja -C /home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12
+ninja: Entering directory `/home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12'
+[1/17] Building CXX object lib/Dialect/Triton/Transforms/CMakeFiles/TritonTransforms.dir/LoopInvariantCodeMotion.cpp.o
+[2/17] Linking CXX static library test/lib/Dialect/libTritonTestDialect.a
+[3/17] Linking CXX executable unittest/Dialect/TritonGPU/TestPaddedSharedLayout
+[4/17] Linking CXX executable unittest/Dialect/TritonGPU/Dialect
+[5/17] Linking CXX executable unittest/Dialect/TritonNvidiaGPU/NvmmaSmemAttrsTest
+[6/17] Linking CXX executable unittest/Dialect/TritonGPU/DumpLayoutTest
+[7/17] Linking CXX executable unittest/Analysis/TestTritonAnalysis
+[8/17] Linking CXX executable unittest/Dialect/TritonGPU/TestSwizzling
+[9/17] Linking CXX executable unittest/Dialect/TritonGPU/LinearLayoutConversions
+[10/17] Linking CXX static library test/lib/Analysis/libTritonTestAnalysis.a
+[11/17] Linking CXX executable third_party/nvidia/unittest/Conversion/TritonGPUToLLVM/TestPtxAsmFormat
+[12/17] Linking CXX executable bin/triton-llvm-opt
+[13/17] Linking CXX shared library /home/ryandeng/tpaa/triton/python/triton/_C/libtriton.so
+[14/17] Linking CXX executable bin/triton-tensor-layout
+[15/17] Linking CXX executable bin/triton-opt
+[16/17] Linking CXX executable bin/triton-lsp
+[17/17] Linking CXX executable bin/triton-reduce

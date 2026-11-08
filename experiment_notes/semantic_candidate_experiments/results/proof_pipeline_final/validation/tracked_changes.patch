@@ -1,0 +1,1302 @@
+diff --git a/include/triton/Dialect/Triton/Transforms/Passes.td b/include/triton/Dialect/Triton/Transforms/Passes.td
+index bc163b10f..786c00dad 100644
+--- a/include/triton/Dialect/Triton/Transforms/Passes.td
++++ b/include/triton/Dialect/Triton/Transforms/Passes.td
+@@ -60,9 +60,39 @@ def TritonLoopInvariantCodeMotion : Pass</*cli-arg*/"triton-licm", /*Op*/"mlir::
+   let summary = "MLIR's LICM plus hoist load ops out of loops with masks.";
+   let description = [{
+     This pass uses MLIR's LICM pass as base. Additionally, it hoists load ops
+-    out of loops that consists of pure/read-only ops. For scf.for loops, it
+-    generates a trip-count check. For scf.while loops, it clones the condition
+-    from the before body.
++    out of loops that consist of pure/read-only ops. For scf.for loops, it
++    generates a trip-count check.
++
++    Experimental opt-in: a pointer argument with `tt.experimental_immutable =
++    1 : i32` promises that the memory reached through that argument is
++    initialized at call entry and remains unchanged through every alias for
++    the entire call. This is stronger than a readonly pointer argument and
++    must be established by the caller. It allows invariant ordinary loads
++    across ordinary stores, retaining their masks and loop-entry guards.
++    Constant initial integer comparisons are supported for after-region loads
++    in scf.while when the before region contains only straight-line,
++    speculatable, effect-free entry-test computation. Contract-based hoisting
++    also requires a straight-line prefix before the load in the loop body;
++    entering a loop does not imply reaching a load after a nested region.
++    Unknown initial conditions remain unsupported. Volatile
++    accesses and loops with assertions, calls, or other unknown effects are
++    not eligible for this extension.
++
++    A second opt-in derives read invariance from weaker caller facts. Argument
++    attribute `tt.experimental_alias_group = N : i32`, with nonnegative N,
++    identifies a may-alias group local to a function. Distinct groups promise
++    disjoint actual access regions for the invocation, including every derived
++    pointer access. Equal groups and missing/negative attributes may alias.
++    This is a footprint contract, not merely distinct base addresses. Inputs
++    may share a group when they alias; they need not be disjoint from each other.
++    The pass summarizes ordinary loads/stores in the function and proves that
++    no write may alias an annotated input. This is a no-clobber query, not an
++    assertion that input memory is initialized at entry, and it does not add an
++    immutable argument attribute. Original masks and loop-entry guards remain
++    necessary. Unknown pointer provenance, volatile accesses, calls, atomics,
++    async operations and other unknown effects conservatively prevent this
++    inference. Callers must establish the region disjointness facts; this pass
++    does not inspect runtime storage addresses.
+   }];
+ 
+   let dependentDialects = ["mlir::triton::TritonDialect"];
+diff --git a/lib/Dialect/Triton/Transforms/LoopInvariantCodeMotion.cpp b/lib/Dialect/Triton/Transforms/LoopInvariantCodeMotion.cpp
+index eba8d1119..2ca8a41d3 100644
+--- a/lib/Dialect/Triton/Transforms/LoopInvariantCodeMotion.cpp
++++ b/lib/Dialect/Triton/Transforms/LoopInvariantCodeMotion.cpp
+@@ -1,4 +1,6 @@
++#include "mlir/Dialect/Arith/IR/Arith.h"
+ #include "mlir/Dialect/LLVMIR/LLVMAttrs.h"
++#include "mlir/IR/Matchers.h"
+ #include "mlir/Transforms/LoopInvariantCodeMotionUtils.h"
+ #include "triton/Dialect/Triton/IR/Dialect.h"
+ #include "triton/Dialect/Triton/IR/Utility.h"
+@@ -14,11 +16,185 @@ namespace mlir::triton {
+ #define DBGS() (llvm::dbgs() << "[" DEBUG_TYPE "]: ")
+ #define LDBG(X) LLVM_DEBUG(DBGS() << X << "\n")
+ 
++namespace {
++
++// Keep pointer provenance deliberately small. Unknown casts, selections and
++// loop-carried pointers must not inherit a caller's region contract.
++BlockArgument getEntryArgument(Value ptr) {
++  while (Operation *def = ptr.getDefiningOp()) {
++    if (!isa<AddPtrOp, SplatOp, BroadcastOp, ExpandDimsOp, ReshapeOp>(def))
++      return {};
++    ptr = def->getOperand(0);
++  }
++  auto arg = dyn_cast<BlockArgument>(ptr);
++  if (!arg)
++    return {};
++  auto func = dyn_cast<FuncOp>(arg.getOwner()->getParentOp());
++  if (!func || arg.getOwner() != &func.getBody().front())
++    return {};
++  return arg;
++}
++
++bool hasArgumentFlag(BlockArgument arg, StringRef name) {
++  auto func = cast<FuncOp>(arg.getOwner()->getParentOp());
++  auto attr = func.getArgAttrOfType<IntegerAttr>(arg.getArgNumber(), name);
++  return attr && attr.getType().isInteger(32) && attr.getInt() == 1;
++}
++
++std::optional<int64_t> getAliasGroup(BlockArgument arg) {
++  auto func = cast<FuncOp>(arg.getOwner()->getParentOp());
++  auto attr = func.getArgAttrOfType<IntegerAttr>(arg.getArgNumber(),
++                                                 "tt.experimental_alias_group");
++  if (!attr || !attr.getType().isInteger(32) || attr.getInt() < 0)
++    return std::nullopt;
++  return attr.getInt();
++}
++
++// A conservative argument-region effect summary. Group identities are local to
++// this function: different nonnegative groups promise disjoint actual access
++// regions; matching or missing groups may alias. The caller must establish the
++// entire derived-access footprint, not merely compare base pointer addresses.
++// This summary does not assert immutability. Clients ask whether the function
++// may modify a region, then combine that answer with their own legality checks.
++class ArgumentMemoryEffects {
++public:
++  explicit ArgumentMemoryEffects(FuncOp func) : func(func) {
++    hasUnknownEffects =
++        func->walk([&](Operation *op) {
++              if (op == func.getOperation())
++                return WalkResult::advance();
++              if (auto load = dyn_cast<LoadOp>(op)) {
++                if (load.getIsVolatile() || !getEntryArgument(load.getPtr()))
++                  return WalkResult::interrupt();
++                return WalkResult::advance();
++              }
++              if (auto store = dyn_cast<StoreOp>(op)) {
++                auto arg = getEntryArgument(store.getPtr());
++                if (!arg)
++                  return WalkResult::interrupt();
++                writtenArguments.push_back(arg);
++                return WalkResult::advance();
++              }
++              if (isMemoryEffectFree(op) ||
++                  op->hasTrait<OpTrait::HasRecursiveMemoryEffects>())
++                return WalkResult::advance();
++              // Calls, atomics, async memory operations, assertions and unknown
++              // effects require richer modeling before this analysis can reason
++              // about them.
++              return WalkResult::interrupt();
++            })
++            .wasInterrupted();
++  }
++
++  bool mayModify(Value ptr) {
++    auto arg = getEntryArgument(ptr);
++    if (hasUnknownEffects || !arg || arg.getOwner() != &func.getBody().front())
++      return true;
++    return llvm::any_of(writtenArguments, [&](BlockArgument written) {
++      auto readGroup = getAliasGroup(arg);
++      auto writeGroup = getAliasGroup(written);
++      return !readGroup || !writeGroup || *readGroup == *writeGroup;
++    });
++  }
++
++private:
++  FuncOp func;
++  SmallVector<BlockArgument> writtenArguments;
++  bool hasUnknownEffects = false;
++};
++
++} // namespace
++
+ class LoopInvariantCodeMotionPass
+     : public impl::TritonLoopInvariantCodeMotionBase<
+           LoopInvariantCodeMotionPass> {
+ 
+   DenseMap<LoopLikeOpInterface, bool> isLoopMemoryEffectFreeOrOnlyRead;
++  DenseMap<Operation *, ArgumentMemoryEffects> argumentMemoryEffects;
++
++  bool hasOnlyOrdinaryMemoryEffects(LoopLikeOpInterface loop) {
++    return !loop->walk([](Operation *op) {
++                  if (auto load = dyn_cast<LoadOp>(op))
++                    return load.getIsVolatile() ? WalkResult::interrupt()
++                                                : WalkResult::advance();
++                  if (isa<StoreOp>(op) || isMemoryEffectFree(op) ||
++                      op->hasTrait<OpTrait::HasRecursiveMemoryEffects>())
++                    return WalkResult::advance();
++                  // In particular, do not move reads ahead of assertions or
++                  // unknown calls.
++                  return WalkResult::interrupt();
++                })
++                .wasInterrupted();
++  }
++
++  // Accept either an explicit invariant-content contract or derive a no-clobber
++  // result from region relationships and visible effects. Neither proof alone
++  // permits accessing an address outside the original masks and entry guards.
++  bool hasInvariantContents(Value ptr) {
++    auto arg = getEntryArgument(ptr);
++    if (!arg)
++      return false;
++    // This explicit caller promise is stronger than readonly: memory reached
++    // through the argument is initialized at entry and unchanged through all
++    // aliases for the call. It is not inferred from race freedom.
++    if (hasArgumentFlag(arg, "tt.experimental_immutable"))
++      return true;
++    // The weaker region contract supplies disjointness, not immutability or
++    // initialization. Derive the absence of clobbers from visible effects.
++    // Guards below preserve the original read's execution conditions. Requiring
++    // an explicit group here leaves unannotated while-loop behavior unchanged.
++    if (!getAliasGroup(arg))
++      return false;
++    auto func = cast<FuncOp>(arg.getOwner()->getParentOp());
++    auto summary =
++        argumentMemoryEffects.try_emplace(func.getOperation(), func).first;
++    return !summary->second.mayModify(ptr);
++  }
++
++  // Entering a loop does not imply reaching every operation in its body. A
++  // preceding region may diverge, so keep the new memory-contract path bounded
++  // to loads with a straight-line prefix. This is deliberately conservative.
++  bool hasStraightLinePrefix(LoadOp load) {
++    for (Operation &op : *load->getBlock()) {
++      if (&op == load.getOperation())
++        return true;
++      if (op.getNumRegions() != 0)
++        return false;
++    }
++    return false;
++  }
++
++  // A bounded while-loop extension for constant initial conditions, such as
++  // `offset = 0; while offset < HIDDEN_SIZE`. Do not speculate an ordinary load
++  // out of a while loop whose first execution cannot be established.
++  std::optional<bool> initialWhileCondition(scf::WhileOp loop) {
++    // A constant condition does not establish that the before region reaches
++    // its terminator: it could contain a nonterminating nested loop. Restrict
++    // entry-test computation to operations safe to speculate themselves.
++    for (Operation &op : loop.getBefore().front())
++      if (!isa<scf::ConditionOp>(op) &&
++          (op.getNumRegions() != 0 || !isSpeculatable(&op) ||
++           !isMemoryEffectFree(&op)))
++        return std::nullopt;
++    auto condition = loop.getConditionOp().getCondition();
++    auto resolveInitial = [&](Value value) {
++      if (auto arg = dyn_cast<BlockArgument>(value))
++        if (arg.getOwner() == &loop.getBefore().front())
++          return loop.getInits()[arg.getArgNumber()];
++      return value;
++    };
++    APInt constant;
++    if (matchPattern(resolveInitial(condition), m_ConstantInt(&constant)))
++      return !constant.isZero();
++    auto cmp = condition.getDefiningOp<arith::CmpIOp>();
++    if (!cmp || !cmp.getType().isInteger(1))
++      return std::nullopt;
++    APInt lhs, rhs;
++    if (!matchPattern(resolveInitial(cmp.getLhs()), m_ConstantInt(&lhs)) ||
++        !matchPattern(resolveInitial(cmp.getRhs()), m_ConstantInt(&rhs)))
++      return std::nullopt;
++    return arith::applyCmpPredicate(cmp.getPredicate(), lhs, rhs);
++  }
+ 
+   bool isLICMDisabled(LoopLikeOpInterface loopLike) {
+     auto loopMD = loopLike->getAttrOfType<LLVM::LoopAnnotationAttr>(
+@@ -46,6 +222,8 @@ class LoopInvariantCodeMotionPass
+   }
+ 
+   void runOnOperation() override {
++    argumentMemoryEffects.clear();
++    isLoopMemoryEffectFreeOrOnlyRead.clear();
+     // Walk through all loops in a function in innermost-loop-first order.
+     // This way, we first LICM from the inner loop, and place the ops in the
+     // outer loop, which in turn can be further LICM'ed.
+@@ -60,13 +238,32 @@ class LoopInvariantCodeMotionPass
+           },
+           // shouldMoveOutOfRegion
+           [&](Operation *op, Region *region) {
+-            if (!isa<LoadOp>(op))
++            auto load = dyn_cast<LoadOp>(op);
++            if (!load)
+               return isSpeculatable(op) && isMemoryEffectFree(op);
++            if (load.getIsVolatile())
++              return false;
++            bool readInvariant = hasInvariantContents(load.getPtr()) &&
++                                 hasOnlyOrdinaryMemoryEffects(loopLike);
++            if (readInvariant && (load->getParentRegion() != region ||
++                                  !hasStraightLinePrefix(load)))
++              return false;
++            if (auto whileOp =
++                    dyn_cast<scf::WhileOp>(loopLike.getOperation())) {
++              // Only after-region loads are conditional on the entry test.
++              // Existing unannotated while behavior remains unchanged.
++              if (!readInvariant || region != &whileOp.getAfter() ||
++                  !initialWhileCondition(whileOp).has_value())
++                return false;
++            } else if (!isa<scf::ForOp>(loopLike.getOperation())) {
++              return false;
++            }
+             if (!isLoopMemoryEffectFreeOrOnlyRead.contains(loopLike))
+               isLoopMemoryEffectFreeOrOnlyRead[loopLike] =
+                   isMemoryEffectFreeOrOnlyRead(loopLike);
+             return isMemoryEffectFreeOrOnlyRead(op) &&
+-                   isLoopMemoryEffectFreeOrOnlyRead[loopLike];
++                   (readInvariant ||
++                    isLoopMemoryEffectFreeOrOnlyRead[loopLike]);
+           },
+           // moveOutOfRegion
+           [&](Operation *op, Region *) {
+@@ -76,13 +273,18 @@ class LoopInvariantCodeMotionPass
+               Location loc = loopLike->getLoc();
+               Value cond;
+               if (auto forOp = dyn_cast<scf::ForOp>(loopLike.getOperation())) {
+-                cond = arith::CmpIOp::create(
+-                    rewriter, loc, arith::CmpIPredicate::slt,
+-                    forOp.getLowerBound(), forOp.getUpperBound());
++                auto predicate = forOp.getUnsignedCmp()
++                                     ? arith::CmpIPredicate::ult
++                                     : arith::CmpIPredicate::slt;
++                cond = arith::CmpIOp::create(rewriter, loc, predicate,
++                                             forOp.getLowerBound(),
++                                             forOp.getUpperBound());
+               } else if (auto whileOp =
+                              dyn_cast<scf::WhileOp>(loopLike.getOperation())) {
+-                // TODO: Support Load Op hoisting for while loop.
+-                return;
++                auto entry = initialWhileCondition(whileOp);
++                if (!entry)
++                  return;
++                cond = arith::ConstantIntOp::create(rewriter, loc, *entry, 1);
+               } else {
+                 return;
+               }
+diff --git a/python/test/unit/runtime/test_specialize.py b/python/test/unit/runtime/test_specialize.py
+index 45e89cdae..9d5034929 100644
+--- a/python/test/unit/runtime/test_specialize.py
++++ b/python/test/unit/runtime/test_specialize.py
+@@ -239,3 +239,451 @@ def test_native_dtype_torch_contract(torch_name, dtype, canonical):
+         for value, name in ((storage, "u8"), (native, canonical), (storage, "u8"), (native, canonical)):
+             signature, _ = native_specialize_impl(backend, value, False, True, True)
+             assert signature == "*" + name
++
++
++def _semantic_fact_outputs(fn, *args):
++    from torch.fx.experimental.proxy_tensor import make_fx
++    from triton.experimental.semantic_contracts.analysis import FactsAnalyzer
++
++    graph = make_fx(fn, tracing_mode="fake")(*args)
++    analysis = FactsAnalyzer(graph).analyze()
++    output = next(node for node in graph.graph.nodes if node.op == "output")
++    values = output.args[0]
++    if not isinstance(values, (list, tuple)):
++        values = (values, )
++    return graph, analysis, output, [analysis.at(output, value) for value in values]
++
++
++def test_semantic_facts_permutation_preserved_by_subsequence_and_reordering():
++
++    def graph(x):
++        indices = torch.randperm(32, dtype=torch.int64, device=x.device)
++        return indices[1::2].clone().reshape(4, 4).transpose(0, 1).reshape(-1)
++
++    _, _, _, facts = _semantic_fact_outputs(graph, torch.empty(1))
++    assert facts[0].unique_global
++    assert facts[0].integer_range.lower == 0
++    assert facts[0].integer_range.upper == 31
++
++
++def test_semantic_facts_range_proves_lossless_cast():
++
++    def graph(x):
++        small = torch.arange(16, device=x.device, dtype=torch.int64).to(torch.int32)
++        # Narrowing loses distinct values after wraparound: these endpoints are
++        # separated by 2**32, so both become zero in int32.
++        large = torch.arange(0, 2**32 + 1, 2**32, device=x.device, dtype=torch.int64).to(torch.int32)
++        return small, large
++
++    _, _, _, facts = _semantic_fact_outputs(graph, torch.empty(1))
++    assert facts[0].unique_global
++    assert not facts[1].unique_global
++
++
++@pytest.mark.parametrize("operation", ["remainder", "clamp", "cat", "gather", "repeat", "expand"])
++def test_semantic_facts_noninjective_operation_drops_uniqueness(operation):
++
++    def graph(x):
++        indices = torch.arange(8, device=x.device, dtype=torch.int64)
++        if operation == "remainder":
++            return indices.remainder(3)
++        if operation == "clamp":
++            return indices.clamp(max=3)
++        if operation == "cat":
++            return torch.cat((indices, indices))
++        if operation == "gather":
++            return indices.gather(0, torch.zeros(8, dtype=torch.int64, device=x.device))
++        if operation == "repeat":
++            return indices.repeat(2)
++        return indices[:1].expand(8)
++
++    _, _, _, facts = _semantic_fact_outputs(graph, torch.empty(1))
++    assert facts[0] is None or not facts[0].unique_global
++
++
++def test_semantic_facts_mutation_invalidates_alias_but_preserves_clone():
++
++    def graph(x):
++        indices = torch.randperm(16, device=x.device)
++        saved = indices.clone()
++        indices[::2].fill_(0)
++        return indices, saved
++
++    _, _, _, facts = _semantic_fact_outputs(graph, torch.empty(1))
++    assert not facts[0].unique_global
++    assert facts[1].unique_global
++
++
++def test_semantic_facts_unsafe_view_mutation_invalidates_base():
++
++    def graph(x):
++        indices = torch.arange(16, device=x.device)
++        view = torch.ops.aten._unsafe_view.default(indices, [4, 4])
++        view[0].fill_(0)
++        return indices
++
++    _, _, _, facts = _semantic_fact_outputs(graph, torch.empty(1))
++    assert not facts[0].unique_global
++
++
++def _semantic_unknown_effect(value):
++    return value
++
++
++def test_semantic_facts_unknown_call_invalidates_proof():
++    from torch.fx.experimental.proxy_tensor import make_fx
++    from triton.experimental.semantic_contracts.analysis import FactsAnalyzer
++
++    graph = make_fx(lambda x: torch.arange(8, device=x.device), tracing_mode="fake")(torch.empty(1))
++    output = next(node for node in graph.graph.nodes if node.op == "output")
++    value = output.args[0]
++    with graph.graph.inserting_before(output):
++        graph.graph.call_function(_semantic_unknown_effect, (value, ))
++    analysis = FactsAnalyzer(graph).analyze()
++    assert not analysis.at(output, value).unique_global
++
++
++def test_semantic_facts_unmodeled_custom_schema_invalidates_proof():
++    from torch.fx.experimental.proxy_tensor import make_fx
++    from triton.experimental.semantic_contracts.analysis import FactsAnalyzer
++
++    # A custom schema saying that its argument is not mutated is insufficient
++    # authority for the analysis: unmodeled effects can access captured aliases.
++    library = torch.library.Library("triton_semantics_test_effects", "FRAGMENT")
++    library.define("unknown(Tensor value) -> Tensor")
++    target = torch.ops.triton_semantics_test_effects.unknown.default
++    graph = make_fx(lambda x: torch.arange(8, device=x.device), tracing_mode="fake")(torch.empty(1))
++    output = next(node for node in graph.graph.nodes if node.op == "output")
++    value = output.args[0]
++    with graph.graph.inserting_before(output):
++        unknown = graph.graph.call_function(target, (value, ))
++        unknown.meta["val"] = torch.empty(8, dtype=torch.int64)
++    analysis = FactsAnalyzer(graph).analyze()
++    assert not analysis.at(output, value).unique_global
++
++
++@pytest.mark.parametrize("operation", ["resize", "set_storage"])
++def test_semantic_facts_storage_mutation_erases_freshness(operation):
++    from torch.fx.experimental.proxy_tensor import make_fx
++    from triton.experimental.semantic_contracts.analysis import FactsAnalyzer
++
++    graph = make_fx(lambda x: torch.arange(8, device=x.device), tracing_mode="fake")(torch.empty(16, dtype=torch.int64))
++    output = next(node for node in graph.graph.nodes if node.op == "output")
++    value = output.args[0]
++    external = next(node for node in graph.graph.nodes if node.op == "placeholder")
++    with graph.graph.inserting_before(output):
++        if operation == "resize":
++            mutation = graph.graph.call_function(torch.ops.aten.resize_.default, (value, [16]))
++        else:
++            mutation = graph.graph.call_function(torch.ops.aten.set_.source_Tensor, (value, external))
++        mutation.meta["val"] = torch.empty(16, dtype=torch.int64)
++    facts = FactsAnalyzer(graph).analyze().at(output, value)
++    assert not facts.unique_global
++    assert not facts.fresh
++
++
++def test_semantic_facts_placeholder_metadata_cannot_assert_uniqueness():
++    from torch.fx.experimental.proxy_tensor import make_fx
++    from triton.experimental.semantic_contracts.analysis import FactsAnalyzer
++
++    graph = make_fx(lambda x: x, tracing_mode="fake")(torch.arange(8))
++    value = next(node for node in graph.graph.nodes if node.op == "placeholder")
++    # Unsupported user metadata is never a proof authority.
++    value.meta["unique_global"] = True
++    value.meta["semantic_contracts"] = {"unique_global": True}
++    output = next(node for node in graph.graph.nodes if node.op == "output")
++    assert not FactsAnalyzer(graph).analyze().at(output, value).unique_global
++
++
++def _semantic_require_cuda(device):
++    if torch.version.cuda is None or not str(device).startswith("cuda"):
++        pytest.skip("Semantic-contract CUDA lowerings require NVIDIA PTX")
++
++
++def _semantic_report_node(compiled, operation):
++    return next(node for node in compiled.report()["nodes"] if node["op"] == operation)
++
++
++def _semantic_update_has_atomic(compiled):
++    import re
++    node = _semantic_report_node(compiled, "embedding_backward")
++    ptx = compiled.kernels[node["name"]]["update"].asm["ptx"]
++    return bool(re.search(r"\b(?:atom|red)\.", ptx))
++
++
++@pytest.mark.parametrize("baseline,inferred,expected", [
++    (10.0, 8.0, "inferred"),
++    (10.0, 11.0, "baseline"),
++    (10.0, 9.9, "baseline"),
++    (10.0, 10.0, "baseline"),
++    (10.0, 9.8, "baseline"),
++    (10.0, float("nan"), "baseline"),
++])
++def test_semantic_profitability_keeps_baseline_without_clear_win(baseline, inferred, expected):
++    from triton.experimental.semantic_contracts.backend import choose_hoist
++    assert choose_hoist({"median_us": {"baseline": baseline, "inferred": inferred}}) == expected
++
++
++def _semantic_embedding_reference(grad, indices, vocabulary, padding=-1, scale=False):
++    # Compute an independent host FP64 oracle, rather than using the same GPU
++    # scatter implementation as the candidate.
++    g = grad.detach().cpu().double()
++    i = indices.detach().cpu().long()
++    valid = (i >= 0) & (i < vocabulary) & (i != padding)
++    result = torch.zeros((vocabulary, grad.shape[1]), dtype=torch.float64)
++    counts = torch.bincount(i[valid], minlength=vocabulary)
++    for row in torch.where(valid)[0].tolist():
++        update = g[row] / counts[i[row]] if scale else g[row]
++        result[i[row]] += update
++    return result.to(device=grad.device, dtype=grad.dtype)
++
++
++@pytest.mark.parametrize("producer", ["randperm", "arange"])
++@pytest.mark.parametrize("scale", [False, True])
++def test_semantic_graph_unique_producer_removes_atomics_and_count(device, producer, scale):
++    _semantic_require_cuda(device)
++    from triton.experimental.semantic_contracts.backend import compile
++    from triton.experimental.semantic_contracts.ops import embedding_backward
++
++    vocabulary, count, dim = 67, 31, 137
++    grad = torch.randn((count, dim), device=device, dtype=torch.float32)
++
++    def graph(gradient):
++        if producer == "randperm":
++            indices = torch.randperm(vocabulary, device=gradient.device)[:count]
++        else:
++            indices = torch.arange(vocabulary, device=gradient.device)[1:count + 1]
++        indices = indices.clone()
++        return embedding_backward(gradient, indices, vocabulary, padding_idx=0, scale_by_freq=scale), indices
++
++    compiled = compile(graph, (grad, ), enabled=True, autotune=False)
++    result, indices = compiled(grad)
++    expected = _semantic_embedding_reference(grad, indices, vocabulary, padding=0, scale=scale)
++    torch.testing.assert_close(result, expected, atol=0, rtol=0)
++    node = _semantic_report_node(compiled, "embedding_backward")
++    assert node["selected_optimization"] == "unique_scatter"
++    assert "count" not in node["kernel_launches"]
++    assert "zero_counts" not in node["kernel_launches"]
++    assert "zero_scratch" in node["kernel_launches"]
++    assert not _semantic_update_has_atomic(compiled)
++
++
++@pytest.mark.parametrize("source", ["placeholder", "mutated", "remainder"])
++def test_semantic_graph_unproven_or_invalidated_indices_use_atomics(device, source):
++    _semantic_require_cuda(device)
++    from triton.experimental.semantic_contracts.backend import compile
++    from triton.experimental.semantic_contracts.ops import embedding_backward
++
++    count, dim, vocabulary = 19, 137, 23
++    grad = torch.randn((count, dim), device=device, dtype=torch.float32)
++    supplied_indices = torch.arange(count, device=device).remainder(5)
++
++    def graph(gradient, supplied):
++        if source == "placeholder":
++            indices = supplied
++        else:
++            indices = torch.arange(count, device=gradient.device)
++            if source == "mutated":
++                indices[::2].fill_(0)
++            else:
++                indices = indices.remainder(5)
++        return embedding_backward(gradient, indices, vocabulary, padding_idx=0, scale_by_freq=True), indices
++
++    compiled = compile(graph, (grad, supplied_indices), enabled=True, autotune=False)
++    result, indices = compiled(grad, supplied_indices)
++    expected = _semantic_embedding_reference(grad, indices, vocabulary, padding=0, scale=True)
++    torch.testing.assert_close(result, expected, atol=2e-6, rtol=2e-6)
++    node = _semantic_report_node(compiled, "embedding_backward")
++    assert node["selected_optimization"] == "atomic_scatter"
++    assert "count" in node["kernel_launches"]
++    assert _semantic_update_has_atomic(compiled)
++
++
++@pytest.mark.parametrize("dtype", [torch.float32, torch.float16, torch.bfloat16])
++@pytest.mark.parametrize("scale", [False, True])
++def test_semantic_graph_unique_preserves_atomic_special_values(device, dtype, scale):
++    _semantic_require_cuda(device)
++    from triton.experimental.semantic_contracts.backend import compile
++    from triton.experimental.semantic_contracts.ops import embedding_backward
++
++    if dtype == torch.float32:
++        bits = [
++            0, 0x80000000, 1, 0x80000001, 0x007fffff, 0x807fffff, 0x00800000, 0x80800000, 0x7f800000, 0xff800000,
++            0x7fc12345, 0x3f800000
++        ]
++        storage_dtype = torch.uint32
++    elif dtype == torch.float16:
++        bits = [0, 0x8000, 1, 0x8001, 0x03ff, 0x83ff, 0x0400, 0x8400, 0x7c00, 0xfc00, 0x7e01, 0x3c00]
++        storage_dtype = torch.uint16
++    else:
++        bits = [0, 0x8000, 1, 0x8001, 0x007f, 0x807f, 0x0080, 0x8080, 0x7f80, 0xff80, 0x7fc1, 0x3f80]
++        storage_dtype = torch.uint16
++    grad = torch.tensor(bits, dtype=storage_dtype, device=device).view(dtype).reshape(4, 3)
++
++    def graph(gradient):
++        indices = torch.arange(gradient.shape[0], device=gradient.device)
++        return embedding_backward(gradient, indices, 9, scale_by_freq=scale)
++
++    baseline = compile(graph, (grad, ), enabled=False, autotune=False)
++    optimized = compile(graph, (grad, ), enabled=True, autotune=False)
++    expected, actual = baseline(grad), optimized(grad)
++    assert torch.equal(torch.isnan(actual), torch.isnan(expected))
++    ordinary = ~torch.isnan(expected)
++    assert torch.equal(actual[ordinary].view(torch.uint8), expected[ordinary].view(torch.uint8))
++    assert _semantic_report_node(optimized, "embedding_backward")["selected_optimization"] == "unique_scatter"
++
++
++def test_semantic_graph_unique_masks_invalid_and_padding_indices(device):
++    _semantic_require_cuda(device)
++    from triton.experimental.semantic_contracts.backend import compile
++    from triton.experimental.semantic_contracts.ops import embedding_backward
++
++    grad = torch.randn((15, 137), device=device, dtype=torch.float32)
++
++    def graph(gradient):
++        indices = torch.arange(-2, 13, device=gradient.device)
++        return embedding_backward(gradient, indices, 9, padding_idx=3, scale_by_freq=True), indices
++
++    compiled = compile(graph, (grad, ), enabled=True, autotune=False)
++    actual, indices = compiled(grad)
++    expected = _semantic_embedding_reference(grad, indices, 9, padding=3, scale=True)
++    torch.testing.assert_close(actual, expected, atol=0, rtol=0)
++    assert _semantic_report_node(compiled, "embedding_backward")["selected_optimization"] == "unique_scatter"
++
++
++def test_semantic_kernel_unique_update_without_zero_fact(device):
++    _semantic_require_cuda(device)
++    from triton.experimental.semantic_contracts.kernels import embedding_update
++
++    old_bits = [0x80000000, 1, 0x80000001, 0x3f800000, 0x7f800000, 0xff800000, 0x7fc12345]
++    old = torch.tensor(old_bits, dtype=torch.uint32, device=device).view(torch.float32).reshape(-1, 1)
++    grad = torch.tensor([0.0, -0.0, 1.0, 2.0, -float("inf"), float("inf"), 3.0], device=device).reshape(-1, 1)
++    indices = torch.arange(old.shape[0], device=device)
++    baseline, optimized = old.clone(), old.clone()
++    for destination, unique in [(baseline, False), (optimized, True)]:
++        embedding_update[(old.shape[0], 1)](
++            grad,
++            indices,
++            None,
++            destination,
++            old.shape[0],
++            1,
++            old.shape[0],
++            PADDING_IDX=-1,
++            SCALE_BY_FREQ=False,
++            UNIQUE_INDICES=unique,
++            KNOWN_ZERO=False,
++            BLOCK_D=32,
++        )
++    assert torch.equal(torch.isnan(baseline), torch.isnan(optimized))
++    ordinary = ~torch.isnan(baseline)
++    assert torch.equal(baseline[ordinary].view(torch.uint8), optimized[ordinary].view(torch.uint8))
++
++
++@pytest.mark.parametrize("input_alias", [False, True])
++def test_semantic_graph_rms_infers_immutable_regions_and_preserves_empty_ctas(device, input_alias):
++    _semantic_require_cuda(device)
++    from triton.experimental.semantic_contracts.backend import compile
++    from triton.experimental.semantic_contracts.ops import rms_norm
++
++    x = torch.randn((31, 137), device=device, dtype=torch.float32)
++    weights = x[0] if input_alias else torch.randn((137, ), device=device)
++
++    def graph(value, weight):
++        return rms_norm(value, weight, num_warps=4, grid_multiplier=1)
++
++    baseline = compile(graph, (x, weights), enabled=False, autotune=False)
++    optimized = compile(graph, (x, weights), enabled=True, autotune=False)
++    expected = baseline(x, weights)
++    actual = optimized(x, weights)
++    for got, ref in zip(actual, expected):
++        assert torch.equal(got.view(torch.uint8), ref.view(torch.uint8))
++    inverse_rms = torch.rsqrt(x.double().square().mean(1) + 1e-6)
++    torch.testing.assert_close(actual[0], (x.double() * inverse_rms[:, None] * weights.double()).float(), atol=3e-6,
++                               rtol=3e-6)
++    torch.testing.assert_close(actual[1], inverse_rms.float(), atol=2e-6, rtol=2e-6)
++    node = _semantic_report_node(optimized, "rms_norm")
++    assert node["selected_optimization"] == "immutable_hoist"
++    attr_names = {name for attrs in node["native_attrs"].values() for name, value in attrs}
++    assert "tt.experimental_alias_group" in attr_names
++    assert "tt.experimental_immutable" not in attr_names
++    variants = optimized.kernels[node["name"]]
++    original_ir = variants["baseline"].asm["ttgir"]
++    inferred_ir = variants["inferred"].asm["ttgir"]
++    # The baseline pipelines both X and W. Native no-clobber inference moves
++    # the single ordinary W load before the loop, leaving only X in the async
++    # pipeline. This checks actual compiler consumption of the alias proof.
++    assert inferred_ir.count("tt.load") == 1
++    assert inferred_ir.index("tt.load") < inferred_ir.index("scf.for")
++    assert original_ir.count("async_copy_global_to_local") > inferred_ir.count("async_copy_global_to_local")
++
++
++@pytest.mark.parametrize("change", ["shape", "dtype", "stride", "alignment"])
++def test_semantic_graph_rejects_changed_input_metadata(device, change):
++    _semantic_require_cuda(device)
++    from triton.experimental.semantic_contracts.backend import compile
++    from triton.experimental.semantic_contracts.ops import rms_norm
++
++    x = torch.randn((16, 64), device=device)
++    w = torch.randn((64, ), device=device)
++    compiled = compile(lambda value, weight: rms_norm(value, weight), (x, w), enabled=True, autotune=False)
++    if change == "shape":
++        changed = torch.randn((17, 64), device=device)
++    elif change == "dtype":
++        changed = x.to(torch.float16)
++    elif change == "stride":
++        changed = torch.randn((64, 16), device=device).t()
++    else:
++        changed = torch.randn((16 * 64 + 1, ), device=device)[1:].reshape(16, 64)
++        assert changed.stride() == x.stride()
++        assert changed.data_ptr() % 16 != x.data_ptr() % 16
++    with pytest.raises((ValueError, RuntimeError)):
++        compiled(changed, w)
++
++
++def test_semantic_graph_rejects_unresolved_negative_view(device):
++    _semantic_require_cuda(device)
++    from triton.experimental.semantic_contracts.backend import compile
++    from triton.experimental.semantic_contracts.ops import rms_norm
++
++    x = torch.randn((16, 64), device=device)
++    w = torch.randn((64, ), device=device)
++    compiled = compile(lambda value, weight: rms_norm(value, weight), (x, w), enabled=True, autotune=False)
++    negative = torch._neg_view(x)
++    assert negative.is_neg()
++    with pytest.raises((ValueError, RuntimeError)):
++        compiled(negative, w)
++
++
++def test_semantic_graph_guards_captured_tensor_metadata(device):
++    _semantic_require_cuda(device)
++    from triton.experimental.semantic_contracts.backend import compile
++    from triton.experimental.semantic_contracts.ops import rms_norm
++
++    x = torch.randn((16, 64), device=device)
++    weight = torch.randn((64, ), device=device)
++
++    def graph(value):
++        return rms_norm(value, weight)
++
++    compiled = compile(graph, (x, ), enabled=True, autotune=False)
++    assert any(node.op == "get_attr" for node in compiled.graph_module.graph.nodes)
++    weight.resize_(32)
++    with pytest.raises((ValueError, RuntimeError)):
++        compiled(x)
++
++
++def test_semantic_graph_rms_rejects_induction_overflow(device):
++    _semantic_require_cuda(device)
++    from triton.experimental.semantic_contracts.backend import compile
++    from triton.experimental.semantic_contracts.ops import rms_norm
++
++    x = torch.randn((1, 16), device=device)
++    weight = torch.randn((16, ), device=device)
++
++    def graph(value, scale):
++        return rms_norm(value, scale, grid_multiplier=2**31)
++
++    with pytest.raises(ValueError, match="induction.*int32"):
++        compiled = compile(graph, (x, weight), enabled=True, autotune=False)
++        compiled(x, weight)
+diff --git a/test/Triton/loop-invariant-code-motion.mlir b/test/Triton/loop-invariant-code-motion.mlir
+index cc80c2bf3..1e02db506 100644
+--- a/test/Triton/loop-invariant-code-motion.mlir
++++ b/test/Triton/loop-invariant-code-motion.mlir
+@@ -181,3 +181,529 @@ tt.func @do_not_hoist_from_for_with_licm_disabled(%lb: i32, %ub: i32, %step: i32
+   } {llvm.loop_annotation = #llvm.loop_annotation<licm = <disable = true>>}
+   tt.return %result : i32
+ }
++
++// -----
++
++// The contract is about memory contents through all aliases, not just the
++// absence of stores through %weights. The entry guard must survive hoisting.
++// CHECK-LABEL: @immutable_with_output_store
++// CHECK: %[[ENTRY:.*]] = arith.cmpi slt
++// CHECK: %[[GUARD:.*]] = arith.andi %[[ENTRY]], %{{.*}}
++// CHECK: tt.load %{{.*}}, %[[GUARD]]
++// CHECK: scf.for
++// CHECK-NOT: tt.load
++// CHECK: tt.store
++tt.func @immutable_with_output_store(%weights: !tt.ptr<f32> {tt.experimental_immutable = 1 : i32}, %out: !tt.ptr<f32>, %n: i32, %mask: i1) {
++  %c0 = arith.constant 0 : i32
++  %c1 = arith.constant 1 : i32
++  scf.for %i = %c0 to %n step %c1 : i32 {
++    %value = tt.load %weights, %mask : !tt.ptr<f32>
++    %dst = tt.addptr %out, %i : !tt.ptr<f32>, i32
++    tt.store %dst, %value : !tt.ptr<f32>
++  }
++  tt.return
++}
++
++// -----
++
++// CHECK-LABEL: @immutable_zero_is_not_a_contract
++// CHECK-NOT: tt.load
++// CHECK: scf.for
++// CHECK: tt.load
++tt.func @immutable_zero_is_not_a_contract(%weights: !tt.ptr<f32> {tt.experimental_immutable = 0 : i32}, %out: !tt.ptr<f32>, %n: i32) {
++  %c0 = arith.constant 0 : i32
++  %c1 = arith.constant 1 : i32
++  scf.for %i = %c0 to %n step %c1 : i32 {
++    %value = tt.load %weights : !tt.ptr<f32>
++    tt.store %out, %value : !tt.ptr<f32>
++  }
++  tt.return
++}
++
++// -----
++
++// CHECK-LABEL: @immutable_volatile_stays
++// CHECK-NOT: tt.load
++// CHECK: scf.for
++// CHECK: tt.load %{{.*}} {isVolatile = true}
++tt.func @immutable_volatile_stays(%weights: !tt.ptr<f32> {tt.experimental_immutable = 1 : i32}, %out: !tt.ptr<f32>, %n: i32) {
++  %c0 = arith.constant 0 : i32
++  %c1 = arith.constant 1 : i32
++  scf.for %i = %c0 to %n step %c1 : i32 {
++    %value = tt.load %weights {isVolatile = true} : !tt.ptr<f32>
++    tt.store %out, %value : !tt.ptr<f32>
++  }
++  tt.return
++}
++
++// -----
++
++// CHECK-LABEL: @immutable_constant_entry_while
++// CHECK: %[[TRUE:.*]] = arith.constant true
++// CHECK: tt.load %{{.*}}, %[[TRUE]]
++// CHECK: scf.while
++// CHECK: do
++// CHECK-NOT: tt.load
++// CHECK: tt.store
++tt.func @immutable_constant_entry_while(%weights: !tt.ptr<f32> {tt.experimental_immutable = 1 : i32}, %out: !tt.ptr<f32>) {
++  %c0 = arith.constant 0 : i32
++  %c1 = arith.constant 1 : i32
++  %c8 = arith.constant 8 : i32
++  %end = scf.while (%i = %c0) : (i32) -> i32 {
++    %cond = arith.cmpi slt, %i, %c8 : i32
++    scf.condition(%cond) %i : i32
++  } do {
++  ^bb0(%i: i32):
++    %value = tt.load %weights : !tt.ptr<f32>
++    %dst = tt.addptr %out, %i : !tt.ptr<f32>, i32
++    tt.store %dst, %value : !tt.ptr<f32>
++    %next = arith.addi %i, %c1 : i32
++    scf.yield %next : i32
++  }
++  tt.return
++}
++
++// -----
++
++// CHECK-LABEL: @immutable_unknown_entry_while
++// CHECK-NOT: tt.load
++// CHECK: scf.while
++// CHECK: do
++// CHECK: tt.load
++tt.func @immutable_unknown_entry_while(%weights: !tt.ptr<f32> {tt.experimental_immutable = 1 : i32}, %out: !tt.ptr<f32>, %n: i32) {
++  %c0 = arith.constant 0 : i32
++  %c1 = arith.constant 1 : i32
++  %end = scf.while (%i = %c0) : (i32) -> i32 {
++    %cond = arith.cmpi slt, %i, %n : i32
++    scf.condition(%cond) %i : i32
++  } do {
++  ^bb0(%i: i32):
++    %value = tt.load %weights : !tt.ptr<f32>
++    tt.store %out, %value : !tt.ptr<f32>
++    %next = arith.addi %i, %c1 : i32
++    scf.yield %next : i32
++  }
++  tt.return
++}
++
++// -----
++
++// CHECK-LABEL: @immutable_zero_trip_while
++// CHECK: %[[FALSE:.*]] = arith.constant false
++// CHECK: tt.load %{{.*}}, %[[FALSE]]
++// CHECK: scf.while
++// CHECK: do
++// CHECK-NOT: tt.load
++tt.func @immutable_zero_trip_while(%weights: !tt.ptr<f32> {tt.experimental_immutable = 1 : i32}, %out: !tt.ptr<f32>) {
++  %c0 = arith.constant 0 : i32
++  %c1 = arith.constant 1 : i32
++  %end = scf.while (%i = %c0) : (i32) -> i32 {
++    %cond = arith.cmpi slt, %i, %c0 : i32
++    scf.condition(%cond) %i : i32
++  } do {
++  ^bb0(%i: i32):
++    %value = tt.load %weights : !tt.ptr<f32>
++    tt.store %out, %value : !tt.ptr<f32>
++    %next = arith.addi %i, %c1 : i32
++    scf.yield %next : i32
++  }
++  tt.return
++}
++
++// -----
++
++// CHECK-LABEL: @immutable_derived_tensor_pointer
++// CHECK: tt.splat
++// CHECK: tt.addptr
++// CHECK: tt.load
++// CHECK: scf.for
++// CHECK-NOT: tt.load
++// CHECK: tt.store
++tt.func @immutable_derived_tensor_pointer(%weights: !tt.ptr<f32> {tt.experimental_immutable = 1 : i32}, %out: tensor<32x!tt.ptr<f32>>, %n: i32) {
++  %c0 = arith.constant 0 : i32
++  %c1 = arith.constant 1 : i32
++  scf.for %i = %c0 to %n step %c1 : i32 {
++    %offsets = tt.make_range {start = 0 : i32, end = 32 : i32} : tensor<32xi32>
++    %base = tt.splat %weights : !tt.ptr<f32> -> tensor<32x!tt.ptr<f32>>
++    %ptrs = tt.addptr %base, %offsets : tensor<32x!tt.ptr<f32>>, tensor<32xi32>
++    %value = tt.load %ptrs : tensor<32x!tt.ptr<f32>>
++    tt.store %out, %value : tensor<32x!tt.ptr<f32>>
++  }
++  tt.return
++}
++
++// -----
++
++// A contract on values must not speculate an address ahead of a device assert.
++// CHECK-LABEL: @immutable_assert_stays
++// CHECK-NOT: tt.load
++// CHECK: scf.for
++// CHECK: tt.assert
++// CHECK: tt.load
++tt.func @immutable_assert_stays(%weights: !tt.ptr<f32> {tt.experimental_immutable = 1 : i32}, %out: !tt.ptr<f32>, %n: i32, %valid: i1) {
++  %c0 = arith.constant 0 : i32
++  %c1 = arith.constant 1 : i32
++  scf.for %i = %c0 to %n step %c1 : i32 {
++    tt.assert %valid, "address must be valid" : i1
++    %value = tt.load %weights : !tt.ptr<f32>
++    tt.store %out, %value : !tt.ptr<f32>
++  }
++  tt.return
++}
++
++// -----
++
++// Unknown pointer provenance does not inherit the contract.
++// CHECK-LABEL: @immutable_select_stays
++// CHECK-NOT: tt.load
++// CHECK: scf.for
++// CHECK: tt.load
++tt.func @immutable_select_stays(%weights: !tt.ptr<f32> {tt.experimental_immutable = 1 : i32}, %other: !tt.ptr<f32>, %out: !tt.ptr<f32>, %n: i32, %choose: i1) {
++  %c0 = arith.constant 0 : i32
++  %c1 = arith.constant 1 : i32
++  %ptr = arith.select %choose, %weights, %other : !tt.ptr<f32>
++  scf.for %i = %c0 to %n step %c1 : i32 {
++    %value = tt.load %ptr : !tt.ptr<f32>
++    tt.store %out, %value : !tt.ptr<f32>
++  }
++  tt.return
++}
++
++// -----
++
++// The caller provides disjoint access footprints. The pass proves the input
++// is not modified; the caller asserts neither initialization nor immutability.
++// CHECK-LABEL: @alias_groups_derive_invariant
++// CHECK: %[[ENTRY:.*]] = arith.cmpi slt
++// CHECK: %[[GUARD:.*]] = arith.andi %[[ENTRY]], %{{.*}}
++// CHECK: tt.load %{{.*}}, %[[GUARD]]
++// CHECK: scf.for
++// CHECK-NOT: tt.load
++// CHECK: tt.store
++tt.func @alias_groups_derive_invariant(%weights: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32}, %n: i32, %mask: i1) {
++  %c0 = arith.constant 0 : i32
++  %c1 = arith.constant 1 : i32
++  scf.for %i = %c0 to %n step %c1 : i32 {
++    %value = tt.load %weights, %mask : !tt.ptr<f32>
++    %dst = tt.addptr %out, %i : !tt.ptr<f32>, i32
++    tt.store %dst, %value : !tt.ptr<f32>
++  }
++  tt.return
++}
++
++// -----
++
++// Read-only inputs may alias each other; only overlapping writes prevent reuse.
++// CHECK-LABEL: @alias_groups_readonly_aliases
++// CHECK: tt.load
++// CHECK: tt.load
++// CHECK: scf.for
++// CHECK-NOT: tt.load
++// CHECK: tt.store
++tt.func @alias_groups_readonly_aliases(%a: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32}, %b: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32}, %n: i32) {
++  %c0 = arith.constant 0 : i32
++  %c1 = arith.constant 1 : i32
++  scf.for %i = %c0 to %n step %c1 : i32 {
++    %x = tt.load %a : !tt.ptr<f32>
++    %y = tt.load %b : !tt.ptr<f32>
++    %sum = arith.addf %x, %y : f32
++    tt.store %out, %sum : !tt.ptr<f32>
++  }
++  tt.return
++}
++
++// -----
++
++// CHECK-LABEL: @alias_groups_overlapping_write_stays
++// CHECK-NOT: tt.load
++// CHECK: scf.for
++// CHECK: tt.load
++tt.func @alias_groups_overlapping_write_stays(%weights: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32}, %alias: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32}, %n: i32) {
++  %c0 = arith.constant 0 : i32
++  %c1 = arith.constant 1 : i32
++  scf.for %i = %c0 to %n step %c1 : i32 {
++    %value = tt.load %weights : !tt.ptr<f32>
++    tt.store %alias, %value : !tt.ptr<f32>
++  }
++  tt.return
++}
++
++// -----
++
++// An unannotated writer may overlap every annotated input region.
++// CHECK-LABEL: @alias_groups_unknown_writer_stays
++// CHECK-NOT: tt.load
++// CHECK: scf.for
++// CHECK: tt.load
++tt.func @alias_groups_unknown_writer_stays(%weights: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32}, %out: !tt.ptr<f32>, %n: i32) {
++  %c0 = arith.constant 0 : i32
++  %c1 = arith.constant 1 : i32
++  scf.for %i = %c0 to %n step %c1 : i32 {
++    %value = tt.load %weights : !tt.ptr<f32>
++    tt.store %out, %value : !tt.ptr<f32>
++  }
++  tt.return
++}
++
++// -----
++
++// A missing group on the read argument also supplies no disjointness fact.
++// CHECK-LABEL: @alias_groups_unknown_reader_stays
++// CHECK-NOT: tt.load
++// CHECK: scf.for
++// CHECK: tt.load
++tt.func @alias_groups_unknown_reader_stays(%weights: !tt.ptr<f32>, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32}, %n: i32) {
++  %c0 = arith.constant 0 : i32
++  %c1 = arith.constant 1 : i32
++  scf.for %i = %c0 to %n step %c1 : i32 {
++    %value = tt.load %weights : !tt.ptr<f32>
++    tt.store %out, %value : !tt.ptr<f32>
++  }
++  tt.return
++}
++
++// -----
++
++// The summary covers the function, including writes outside the candidate loop.
++// CHECK-LABEL: @alias_groups_write_before_loop_stays
++// CHECK: tt.store
++// CHECK-NOT: tt.load
++// CHECK: scf.for
++// CHECK: tt.load
++tt.func @alias_groups_write_before_loop_stays(%weights: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32}, %n: i32) {
++  %zero = arith.constant 0.0 : f32
++  %c0 = arith.constant 0 : i32
++  %c1 = arith.constant 1 : i32
++  tt.store %weights, %zero : !tt.ptr<f32>
++  scf.for %i = %c0 to %n step %c1 : i32 {
++    %value = tt.load %weights : !tt.ptr<f32>
++    tt.store %out, %value : !tt.ptr<f32>
++  }
++  tt.return
++}
++
++// -----
++
++// A negative group ID supplies no disjointness fact.
++// CHECK-LABEL: @alias_groups_negative_id_stays
++// CHECK-NOT: tt.load
++// CHECK: scf.for
++// CHECK: tt.load
++tt.func @alias_groups_negative_id_stays(%weights: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = -1 : i32}, %n: i32) {
++  %c0 = arith.constant 0 : i32
++  %c1 = arith.constant 1 : i32
++  scf.for %i = %c0 to %n step %c1 : i32 {
++    %value = tt.load %weights : !tt.ptr<f32>
++    tt.store %out, %value : !tt.ptr<f32>
++  }
++  tt.return
++}
++
++// -----
++
++// CHECK-LABEL: @alias_groups_unknown_origin_stays
++// CHECK-NOT: tt.load
++// CHECK: scf.for
++// CHECK: tt.load
++tt.func @alias_groups_unknown_origin_stays(%weights: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32}, %out1: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32}, %out2: !tt.ptr<f32> {tt.experimental_alias_group = 2 : i32}, %n: i32, %choose: i1) {
++  %c0 = arith.constant 0 : i32
++  %c1 = arith.constant 1 : i32
++  %out = arith.select %choose, %out1, %out2 : !tt.ptr<f32>
++  scf.for %i = %c0 to %n step %c1 : i32 {
++    %value = tt.load %weights : !tt.ptr<f32>
++    tt.store %out, %value : !tt.ptr<f32>
++  }
++  tt.return
++}
++
++// -----
++
++tt.func private @unknown_effect(!tt.ptr<f32>)
++
++// CHECK-LABEL: @alias_groups_unknown_call_stays
++// CHECK-NOT: tt.load
++// CHECK: scf.for
++// CHECK: tt.call
++// CHECK: tt.load
++tt.func @alias_groups_unknown_call_stays(%weights: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32}, %n: i32) {
++  %c0 = arith.constant 0 : i32
++  %c1 = arith.constant 1 : i32
++  scf.for %i = %c0 to %n step %c1 : i32 {
++    tt.call @unknown_effect(%out) : (!tt.ptr<f32>) -> ()
++    %value = tt.load %weights : !tt.ptr<f32>
++    tt.store %out, %value : !tt.ptr<f32>
++  }
++  tt.return
++}
++
++// -----
++
++// The new inference path preserves the same zero-trip guard as explicit facts.
++// CHECK-LABEL: @alias_groups_zero_trip_while
++// CHECK: %[[FALSE:.*]] = arith.constant false
++// CHECK: tt.load %{{.*}}, %[[FALSE]]
++// CHECK: scf.while
++// CHECK: do
++// CHECK-NOT: tt.load
++// CHECK: tt.store
++tt.func @alias_groups_zero_trip_while(%weights: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32}) {
++  %c0 = arith.constant 0 : i32
++  %c1 = arith.constant 1 : i32
++  %end = scf.while (%i = %c0) : (i32) -> i32 {
++    %cond = arith.cmpi slt, %i, %c0 : i32
++    scf.condition(%cond) %i : i32
++  } do {
++  ^bb0(%i: i32):
++    %value = tt.load %weights : !tt.ptr<f32>
++    tt.store %out, %value : !tt.ptr<f32>
++    %next = arith.addi %i, %c1 : i32
++    scf.yield %next : i32
++  }
++  tt.return
++}
++
++// -----
++
++// CHECK-LABEL: @alias_groups_volatile_stays
++// CHECK-NOT: tt.load
++// CHECK: scf.for
++// CHECK: tt.load %{{.*}} {isVolatile = true}
++tt.func @alias_groups_volatile_stays(%weights: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32}, %n: i32) {
++  %c0 = arith.constant 0 : i32
++  %c1 = arith.constant 1 : i32
++  scf.for %i = %c0 to %n step %c1 : i32 {
++    %value = tt.load %weights {isVolatile = true} : !tt.ptr<f32>
++    tt.store %out, %value : !tt.ptr<f32>
++  }
++  tt.return
++}
++
++// -----
++
++// Calls and publication/ordering effects are outside the bounded effect model.
++// CHECK-LABEL: @alias_groups_atomic_stays
++// CHECK-NOT: tt.load
++// CHECK: scf.for
++// CHECK: tt.atomic_rmw
++// CHECK: tt.load
++tt.func @alias_groups_atomic_stays(%weights: !tt.ptr<i32> {tt.experimental_alias_group = 0 : i32}, %out: !tt.ptr<i32> {tt.experimental_alias_group = 1 : i32}, %n: i32) {
++  %c0 = arith.constant 0 : i32
++  %c1 = arith.constant 1 : i32
++  scf.for %i = %c0 to %n step %c1 : i32 {
++    %old = tt.atomic_rmw add, relaxed, gpu, %out, %c1 : (!tt.ptr<i32>, i32) -> i32
++    %value = tt.load %weights : !tt.ptr<i32>
++    tt.store %out, %value : !tt.ptr<i32>
++  }
++  tt.return
++}
++
++// -----
++
++// CHECK-LABEL: @alias_groups_assert_stays
++// CHECK-NOT: tt.load
++// CHECK: scf.for
++// CHECK: tt.assert
++// CHECK: tt.load
++tt.func @alias_groups_assert_stays(%weights: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32}, %n: i32, %valid: i1) {
++  %c0 = arith.constant 0 : i32
++  %c1 = arith.constant 1 : i32
++  scf.for %i = %c0 to %n step %c1 : i32 {
++    tt.assert %valid, "address must be valid" : i1
++    %value = tt.load %weights : !tt.ptr<f32>
++    tt.store %out, %value : !tt.ptr<f32>
++  }
++  tt.return
++}
++
++// -----
++
++// A constant outer condition alone cannot bypass a nonterminating before region.
++// CHECK-LABEL: @alias_groups_nonterminating_before_stays
++// CHECK-NOT: tt.load
++// CHECK: scf.while
++// CHECK: scf.while
++// CHECK: tt.load
++tt.func @alias_groups_nonterminating_before_stays(%weights: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32}) {
++  %true = arith.constant true
++  scf.while : () -> () {
++    scf.while : () -> () {
++      scf.condition(%true)
++    } do {
++      scf.yield
++    }
++    scf.condition(%true)
++  } do {
++    %value = tt.load %weights : !tt.ptr<f32>
++    tt.store %out, %value : !tt.ptr<f32>
++    scf.yield
++  }
++  tt.return
++}
++
++// -----
++
++// A positive for trip count does not make a load after a nested loop reachable.
++// CHECK-LABEL: @alias_groups_nonterminating_for_prefix_stays
++// CHECK-NOT: tt.load
++// CHECK: scf.for
++// CHECK: scf.while
++// CHECK: tt.load
++tt.func @alias_groups_nonterminating_for_prefix_stays(%weights: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32}, %n: i32) {
++  %c0 = arith.constant 0 : i32
++  %c1 = arith.constant 1 : i32
++  %true = arith.constant true
++  scf.for %i = %c0 to %n step %c1 : i32 {
++    scf.while : () -> () {
++      scf.condition(%true)
++    } do {
++      scf.yield
++    }
++    %value = tt.load %weights : !tt.ptr<f32>
++    tt.store %out, %value : !tt.ptr<f32>
++  }
++  tt.return
++}
++
++// -----
++
++// The same prefix restriction applies to the after-region of a while loop.
++// CHECK-LABEL: @alias_groups_nonterminating_after_prefix_stays
++// CHECK-NOT: tt.load
++// CHECK: scf.while
++// CHECK: scf.while
++// CHECK: tt.load
++tt.func @alias_groups_nonterminating_after_prefix_stays(%weights: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32}) {
++  %true = arith.constant true
++  scf.while : () -> () {
++    scf.condition(%true)
++  } do {
++    scf.while : () -> () {
++      scf.condition(%true)
++    } do {
++      scf.yield
++    }
++    %value = tt.load %weights : !tt.ptr<f32>
++    tt.store %out, %value : !tt.ptr<f32>
++    scf.yield
++  }
++  tt.return
++}
++
++// -----
++
++// Signed -1 < 1 would incorrectly enable a load on this unsigned zero-trip path.
++// CHECK-LABEL: @alias_groups_unsigned_entry_guard
++// CHECK: %[[ENTRY:.*]] = arith.cmpi ult
++// CHECK: tt.load %{{.*}}, %[[ENTRY]]
++// CHECK: scf.for unsigned
++// CHECK-NOT: tt.load
++// CHECK: tt.store
++tt.func @alias_groups_unsigned_entry_guard(%weights: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32}) {
++  %cneg1 = arith.constant -1 : i32
++  %c1 = arith.constant 1 : i32
++  scf.for unsigned %i = %cneg1 to %c1 step %c1 : i32 {
++    %value = tt.load %weights : !tt.ptr<f32>
++    tt.store %out, %value : !tt.ptr<f32>
++  }
++  tt.return
++}

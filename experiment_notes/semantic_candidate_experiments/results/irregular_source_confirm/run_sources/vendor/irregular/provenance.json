@@ -1,0 +1,47 @@
+[
+  {
+    "file": "flag_embedding.py",
+    "url": "https://raw.githubusercontent.com/flagos-ai/FlagGems/3f1f896fd90f5db42d167d64fcb9691326071bc2/src/flag_gems/ops/embedding_dense_backward.py",
+    "sha256": "0c83c3fc7cb875ba9589a0c3b358e8483ad9712c53b9d1df58fc56a88eae7065"
+  },
+  {
+    "file": "flag_segment.py",
+    "url": "https://raw.githubusercontent.com/flagos-ai/FlagGems/3f1f896fd90f5db42d167d64fcb9691326071bc2/src/flag_gems/ops/segment_reduce.py",
+    "sha256": "8e064881400985a4657e93415788e0810fe5a9eab7df8b62bf1ae5179844ee52"
+  },
+  {
+    "file": "mamba_state_passing.py",
+    "url": "https://raw.githubusercontent.com/state-spaces/mamba/620cd9816997730a652b7c21d1b59c802e35add0/mamba_ssm/ops/triton/ssd_state_passing.py",
+    "sha256": "ae1fab6c680cb5312ef746862a2cf8e74157033c80878490cc64fa1f24f88b70"
+  },
+  {
+    "file": "flag_LICENSE",
+    "url": "https://raw.githubusercontent.com/flagos-ai/FlagGems/3f1f896fd90f5db42d167d64fcb9691326071bc2/LICENSE",
+    "sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594"
+  },
+  {
+    "file": "mamba_LICENSE",
+    "url": "https://raw.githubusercontent.com/state-spaces/mamba/620cd9816997730a652b7c21d1b59c802e35add0/LICENSE",
+    "sha256": "760939b000194d04548ede6a857bbe735d1695d8422ec85955c8e2bd7f4b95c5"
+  },
+  {
+    "file": "torchrec_tbe.py",
+    "url": "https://raw.githubusercontent.com/meta-pytorch/torchrec/df9b5ec58a241163b6db832b78c4c8388164e73f/torchrec/distributed/triton_tbe/triton_table_batched_embeddings.py",
+    "sha256": "5f527b2dd5d14f6b474fb2d6f5587319b1c66d726aae9079948f9235085450ed"
+  },
+  {
+    "file": "torchrec_utils.py",
+    "url": "https://raw.githubusercontent.com/meta-pytorch/torchrec/df9b5ec58a241163b6db832b78c4c8388164e73f/torchrec/distributed/triton_tbe/triton_tbe_backward_utils.py",
+    "sha256": "76f194d7a4b9afb7e2b9e2edc67322ea8b878cac03ccb8a615ebb3c46724ef49"
+  },
+  {
+    "file": "torchrec_LICENSE",
+    "url": "https://raw.githubusercontent.com/meta-pytorch/torchrec/df9b5ec58a241163b6db832b78c4c8388164e73f/LICENSE",
+    "sha256": "7b4128b5b7ffac73983ee114969a486efc32e1237df0266797f86ac2f6c30384"
+  },
+  {
+    "file": "torchrec_config.py",
+    "url": "https://raw.githubusercontent.com/meta-pytorch/torchrec/df9b5ec58a241163b6db832b78c4c8388164e73f/torchrec/distributed/triton_tbe/triton_tbe_backward_config.py",
+    "sha256": "f974d9a84b29d39adf0301a87b249ed729f69cee3be0e7438372d4413b42ad96"
+  }
+]

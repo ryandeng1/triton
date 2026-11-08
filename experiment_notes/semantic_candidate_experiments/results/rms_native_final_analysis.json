@@ -1,0 +1,1307 @@
+{
+  "scope": "Direct extracted pinned AITER kernels compiled on local Triton; hardware recorded below. BF16, USE_BLOCKED=False. All86 screen configurations rerun with shared outputs; all winning configurations covered by39 confirmation cases (13 configs x3 data seeds),15 shuffled graph rounds per seed. Not full AITER provider dispatch nor globally optimal tuning. Backward total includes dgamma reduction.",
+  "environment": {
+    "torch": "2.14.1+cu130",
+    "triton": "3.9.0",
+    "triton_path": "/home/ryandeng/tpaa/triton/python/triton/__init__.py",
+    "device": "NVIDIA B300 SXM6 PC",
+    "capability": [
+      10,
+      3
+    ],
+    "python": "/home/ryandeng/tpaa/.venv-semantic/bin/python"
+  },
+  "timing_allocation": "All timed variants write identical output/intermediate addresses; separate correctness buffers; each rebound variant individually verified before capture and after timing.",
+  "harness_sha256": "21950774f69259d8cf372dc128c090d313b7160f197d2a6a1ef0dd7f028c30d6",
+  "screen_case_count": 86,
+  "all_screen_winners_confirmed": true,
+  "confirmed_case_count": 39,
+  "all_cases_passed": true,
+  "combined_confirmation_report": "triton/experiment_notes/semantic_candidate_experiments/results/rms_native_confirm_shared_combined.json",
+  "combined_confirmation_sha256": "876bd6beeffa98f4494660e7917251b2c145480092051111ff401e098698f481",
+  "rows": [
+    {
+      "operation": "forward",
+      "shape": [
+        4096,
+        1024
+      ],
+      "best_confirmed": {
+        "original": {
+          "latency_us": 4.9760001711547375,
+          "warps": 4,
+          "grid": 2368
+        },
+        "hoisted": {
+          "latency_us": 3.5039999056607485,
+          "warps": 4,
+          "grid": 2368
+        },
+        "compiler": {
+          "latency_us": 3.5069999285042286,
+          "warps": 4,
+          "grid": 2368
+        }
+      },
+      "compiler_speedup_best_to_best": 1.4188766103787895,
+      "compiler_latency_change_pct": -29.521708041051188,
+      "selected_configuration_evidence": {
+        "original": {
+          "warps": 4,
+          "grid": 2368,
+          "seed_medians_us": {
+            "original": [
+              5.028000101447105,
+              4.970999900251627,
+              4.9760001711547375
+            ],
+            "compiler": [
+              3.515999997034669,
+              3.5069999285042286,
+              3.4990001004189253
+            ],
+            "hoisted": [
+              3.504999913275242,
+              3.4990001004189253,
+              3.5039999056607485
+            ]
+          },
+          "same_configuration_compiler_speedup": 1.4188766103787895,
+          "same_configuration_manual_compiler_latency_ratio": 0.9991445614757227,
+          "resources": {
+            "original": {
+              "registers": 36,
+              "shared_bytes": 4112,
+              "spills": 0,
+              "async_copy_static_sites": 4
+            },
+            "compiler": {
+              "registers": 39,
+              "shared_bytes": 2064,
+              "spills": 0,
+              "async_copy_static_sites": 2
+            },
+            "hoisted": {
+              "registers": 39,
+              "shared_bytes": 2064,
+              "spills": 0,
+              "async_copy_static_sites": 2
+            }
+          },
+          "artifacts_case": "triton/experiment_notes/semantic_candidate_experiments/results/rms_native_confirm_shared/forward-m4096-n1024-w4-grid2368-seed0"
+        },
+        "compiler": {
+          "warps": 4,
+          "grid": 2368,
+          "seed_medians_us": {
+            "original": [
+              5.028000101447105,
+              4.970999900251627,
+              4.9760001711547375
+            ],
+            "compiler": [
+              3.515999997034669,
+              3.5069999285042286,
+              3.4990001004189253
+            ],
+            "hoisted": [
+              3.504999913275242,
+              3.4990001004189253,
+              3.5039999056607485
+            ]
+          },
+          "same_configuration_compiler_speedup": 1.4188766103787895,
+          "same_configuration_manual_compiler_latency_ratio": 0.9991445614757227,
+          "resources": {
+            "original": {
+              "registers": 36,
+              "shared_bytes": 4112,
+              "spills": 0,
+              "async_copy_static_sites": 4
+            },
+            "compiler": {
+              "registers": 39,
+              "shared_bytes": 2064,
+              "spills": 0,
+              "async_copy_static_sites": 2
+            },
+            "hoisted": {
+              "registers": 39,
+              "shared_bytes": 2064,
+              "spills": 0,
+              "async_copy_static_sites": 2
+            }
+          },
+          "artifacts_case": "triton/experiment_notes/semantic_candidate_experiments/results/rms_native_confirm_shared/forward-m4096-n1024-w4-grid2368-seed0"
+        }
+      }
+    },
+    {
+      "operation": "forward",
+      "shape": [
+        8192,
+        1024
+      ],
+      "best_confirmed": {
+        "original": {
+          "latency_us": 8.313000202178955,
+          "warps": 4,
+          "grid": 4736
+        },
+        "hoisted": {
+          "latency_us": 5.6130001321434975,
+          "warps": 4,
+          "grid": 1184
+        },
+        "compiler": {
+          "latency_us": 5.613999906927347,
+          "warps": 4,
+          "grid": 4736
+        }
+      },
+      "compiler_speedup_best_to_best": 1.4807624403272968,
+      "compiler_latency_change_pct": -32.467222778897096,
+      "selected_configuration_evidence": {
+        "original": {
+          "warps": 4,
+          "grid": 4736,
+          "seed_medians_us": {
+            "original": [
+              8.314999751746655,
+              8.313000202178955,
+              8.310000412166119
+            ],
+            "compiler": [
+              5.611000116914511,
+              5.613999906927347,
+              5.625000223517418
+            ],
+            "hoisted": [
+              5.626999773085117,
+              5.6420001201331615,
+              5.632000043988228
+            ]
+          },
+          "same_configuration_compiler_speedup": 1.4807624403272968,
+          "same_configuration_manual_compiler_latency_ratio": 1.0032062945064657,
+          "resources": {
+            "original": {
+              "registers": 36,
+              "shared_bytes": 4112,
+              "spills": 0,
+              "async_copy_static_sites": 4
+            },
+            "compiler": {
+              "registers": 39,
+              "shared_bytes": 2064,
+              "spills": 0,
+              "async_copy_static_sites": 2
+            },
+            "hoisted": {
+              "registers": 39,
+              "shared_bytes": 2064,
+              "spills": 0,
+              "async_copy_static_sites": 2
+            }
+          },
+          "artifacts_case": "triton/experiment_notes/semantic_candidate_experiments/results/rms_native_confirm_shared/forward-m8192-n1024-w4-grid4736-seed0"
+        },
+        "compiler": {
+          "warps": 4,
+          "grid": 4736,
+          "seed_medians_us": {
+            "original": [
+              8.314999751746655,
+              8.313000202178955,
+              8.310000412166119
+            ],
+            "compiler": [
+              5.611000116914511,
+              5.613999906927347,
+              5.625000223517418
+            ],
+            "hoisted": [
+              5.626999773085117,
+              5.6420001201331615,
+              5.632000043988228
+            ]
+          },
+          "same_configuration_compiler_speedup": 1.4807624403272968,
+          "same_configuration_manual_compiler_latency_ratio": 1.0032062945064657,
+          "resources": {
+            "original": {
+              "registers": 36,
+              "shared_bytes": 4112,
+              "spills": 0,
+              "async_copy_static_sites": 4
+            },
+            "compiler": {
+              "registers": 39,
+              "shared_bytes": 2064,
+              "spills": 0,
+              "async_copy_static_sites": 2
+            },
+            "hoisted": {
+              "registers": 39,
+              "shared_bytes": 2064,
+              "spills": 0,
+              "async_copy_static_sites": 2
+            }
+          },
+          "artifacts_case": "triton/experiment_notes/semantic_candidate_experiments/results/rms_native_confirm_shared/forward-m8192-n1024-w4-grid4736-seed0"
+        }
+      }
+    },
+    {
+      "operation": "forward",
+      "shape": [
+        4096,
+        4096
+      ],
+      "best_confirmed": {
+        "original": {
+          "latency_us": 9.642000310122967,
+          "warps": 4,
+          "grid": 4096
+        },
+        "hoisted": {
+          "latency_us": 8.646000176668167,
+          "warps": 4,
+          "grid": 592
+        },
+        "compiler": {
+          "latency_us": 8.648999966681004,
+          "warps": 4,
+          "grid": 592
+        }
+      },
+      "compiler_speedup_best_to_best": 1.1148110009558736,
+      "compiler_latency_change_pct": -10.298696447867039,
+      "selected_configuration_evidence": {
+        "original": {
+          "warps": 4,
+          "grid": 4096,
+          "seed_medians_us": {
+            "original": [
+              9.603999555110931,
+              9.642000310122967,
+              9.643999859690666
+            ],
+            "compiler": [
+              9.417000226676464,
+              9.40600037574768,
+              9.40299965441227
+            ],
+            "hoisted": [
+              9.39099956303835,
+              9.398000314831734,
+              9.405000135302544
+            ]
+          },
+          "same_configuration_compiler_speedup": 1.025090359871108,
+          "same_configuration_manual_compiler_latency_ratio": 0.9991494726136122,
+          "resources": {
+            "original": {
+              "registers": 68,
+              "shared_bytes": 16400,
+              "spills": 0,
+              "async_copy_static_sites": 16
+            },
+            "compiler": {
+              "registers": 94,
+              "shared_bytes": 8208,
+              "spills": 0,
+              "async_copy_static_sites": 8
+            },
+            "hoisted": {
+              "registers": 94,
+              "shared_bytes": 8208,
+              "spills": 0,
+              "async_copy_static_sites": 8
+            }
+          },
+          "artifacts_case": "triton/experiment_notes/semantic_candidate_experiments/results/rms_native_confirm_shared/forward-m4096-n4096-w4-grid4096-seed0"
+        },
+        "compiler": {
+          "warps": 4,
+          "grid": 592,
+          "seed_medians_us": {
+            "original": [
+              10.356999933719635,
+              10.346000082790852,
+              10.317999869585037
+            ],
+            "compiler": [
+              8.762000128626823,
+              8.628999814391136,
+              8.648999966681004
+            ],
+            "hoisted": [
+              8.754000067710876,
+              8.642000146210194,
+              8.646000176668167
+            ]
+          },
+          "same_configuration_compiler_speedup": 1.1962076682445706,
+          "same_configuration_manual_compiler_latency_ratio": 0.9996531633686677,
+          "resources": {
+            "original": {
+              "registers": 68,
+              "shared_bytes": 16400,
+              "spills": 0,
+              "async_copy_static_sites": 16
+            },
+            "compiler": {
+              "registers": 94,
+              "shared_bytes": 8208,
+              "spills": 0,
+              "async_copy_static_sites": 8
+            },
+            "hoisted": {
+              "registers": 94,
+              "shared_bytes": 8208,
+              "spills": 0,
+              "async_copy_static_sites": 8
+            }
+          },
+          "artifacts_case": "triton/experiment_notes/semantic_candidate_experiments/results/rms_native_confirm_shared/forward-m4096-n4096-w4-grid592-seed0"
+        }
+      }
+    },
+    {
+      "operation": "forward",
+      "shape": [
+        16384,
+        4096
+      ],
+      "best_confirmed": {
+        "original": {
+          "latency_us": 42.433999478816986,
+          "warps": 4,
+          "grid": 4736
+        },
+        "hoisted": {
+          "latency_us": 46.241000294685364,
+          "warps": 4,
+          "grid": 4736
+        },
+        "compiler": {
+          "latency_us": 46.25000059604645,
+          "warps": 4,
+          "grid": 4736
+        }
+      },
+      "compiler_speedup_best_to_best": 0.917491868798902,
+      "compiler_latency_change_pct": 8.992791544747991,
+      "selected_configuration_evidence": {
+        "original": {
+          "warps": 4,
+          "grid": 4736,
+          "seed_medians_us": {
+            "original": [
+              42.43500158190727,
+              42.403001338243484,
+              42.433999478816986
+            ],
+            "compiler": [
+              46.25000059604645,
+              46.229999512434006,
+              46.250998973846436
+            ],
+            "hoisted": [
+              46.25599831342697,
+              46.241000294685364,
+              46.2380014359951
+            ]
+          },
+          "same_configuration_compiler_speedup": 0.917491868798902,
+          "same_configuration_manual_compiler_latency_ratio": 0.999805398891998,
+          "resources": {
+            "original": {
+              "registers": 68,
+              "shared_bytes": 16400,
+              "spills": 0,
+              "async_copy_static_sites": 16
+            },
+            "compiler": {
+              "registers": 94,
+              "shared_bytes": 8208,
+              "spills": 0,
+              "async_copy_static_sites": 8
+            },
+            "hoisted": {
+              "registers": 94,
+              "shared_bytes": 8208,
+              "spills": 0,
+              "async_copy_static_sites": 8
+            }
+          },
+          "artifacts_case": "triton/experiment_notes/semantic_candidate_experiments/results/rms_native_confirm_shared/forward-m16384-n4096-w4-grid4736-seed0"
+        },
+        "compiler": {
+          "warps": 4,
+          "grid": 4736,
+          "seed_medians_us": {
+            "original": [
+              42.43500158190727,
+              42.403001338243484,
+              42.433999478816986
+            ],
+            "compiler": [
+              46.25000059604645,
+              46.229999512434006,
+              46.250998973846436
+            ],
+            "hoisted": [
+              46.25599831342697,
+              46.241000294685364,
+              46.2380014359951
+            ]
+          },
+          "same_configuration_compiler_speedup": 0.917491868798902,
+          "same_configuration_manual_compiler_latency_ratio": 0.999805398891998,
+          "resources": {
+            "original": {
+              "registers": 68,
+              "shared_bytes": 16400,
+              "spills": 0,
+              "async_copy_static_sites": 16
+            },
+            "compiler": {
+              "registers": 94,
+              "shared_bytes": 8208,
+              "spills": 0,
+              "async_copy_static_sites": 8
+            },
+            "hoisted": {
+              "registers": 94,
+              "shared_bytes": 8208,
+              "spills": 0,
+              "async_copy_static_sites": 8
+            }
+          },
+          "artifacts_case": "triton/experiment_notes/semantic_candidate_experiments/results/rms_native_confirm_shared/forward-m16384-n4096-w4-grid4736-seed0"
+        }
+      }
+    },
+    {
+      "operation": "backward",
+      "shape": [
+        4096,
+        1024
+      ],
+      "best_confirmed": {
+        "original": {
+          "latency_us": 12.617000378668308,
+          "warps": 4,
+          "grid": 296
+        },
+        "hoisted": {
+          "latency_us": 11.96299958974123,
+          "warps": 8,
+          "grid": 296
+        },
+        "compiler": {
+          "latency_us": 11.966000311076641,
+          "warps": 8,
+          "grid": 296
+        }
+      },
+      "compiler_speedup_best_to_best": 1.0544041493120346,
+      "compiler_latency_change_pct": -5.15970554056826,
+      "selected_configuration_evidence": {
+        "original": {
+          "warps": 4,
+          "grid": 296,
+          "seed_medians_us": {
+            "original": [
+              12.617000378668308,
+              12.608000077307224,
+              12.617000378668308
+            ],
+            "compiler": [
+              12.086999602615833,
+              12.149999849498272,
+              12.07599975168705
+            ],
+            "hoisted": [
+              12.06899993121624,
+              12.116000056266785,
+              12.089000083506107
+            ]
+          },
+          "same_configuration_compiler_speedup": 1.0438488287811123,
+          "same_configuration_manual_compiler_latency_ratio": 1.0001655068218784,
+          "resources": {
+            "original": {
+              "registers": 69,
+              "shared_bytes": 6164,
+              "spills": 0,
+              "async_copy_static_sites": 8
+            },
+            "compiler": {
+              "registers": 70,
+              "shared_bytes": 4116,
+              "spills": 0,
+              "async_copy_static_sites": 6
+            },
+            "hoisted": {
+              "registers": 70,
+              "shared_bytes": 4116,
+              "spills": 0,
+              "async_copy_static_sites": 6
+            }
+          },
+          "artifacts_case": "triton/experiment_notes/semantic_candidate_experiments/results/rms_native_confirm_shared/backward-m4096-n1024-w4-grid296-seed0"
+        },
+        "compiler": {
+          "warps": 8,
+          "grid": 296,
+          "seed_medians_us": {
+            "original": [
+              12.657999992370605,
+              12.663999572396278,
+              12.652000412344933
+            ],
+            "compiler": [
+              11.963999830186367,
+              11.966000311076641,
+              11.970000341534615
+            ],
+            "hoisted": [
+              11.96100004017353,
+              11.96299958974123,
+              11.965000070631504
+            ]
+          },
+          "same_configuration_compiler_speedup": 1.0578304916684147,
+          "same_configuration_manual_compiler_latency_ratio": 0.9997492293784555,
+          "resources": {
+            "original": {
+              "registers": 48,
+              "shared_bytes": 6180,
+              "spills": 0,
+              "async_copy_static_sites": 8
+            },
+            "compiler": {
+              "registers": 47,
+              "shared_bytes": 4132,
+              "spills": 0,
+              "async_copy_static_sites": 6
+            },
+            "hoisted": {
+              "registers": 47,
+              "shared_bytes": 4132,
+              "spills": 0,
+              "async_copy_static_sites": 6
+            }
+          },
+          "artifacts_case": "triton/experiment_notes/semantic_candidate_experiments/results/rms_native_confirm_shared/backward-m4096-n1024-w8-grid296-seed0"
+        }
+      }
+    },
+    {
+      "operation": "backward",
+      "shape": [
+        8192,
+        1024
+      ],
+      "best_confirmed": {
+        "original": {
+          "latency_us": 19.943999126553535,
+          "warps": 4,
+          "grid": 296
+        },
+        "hoisted": {
+          "latency_us": 18.98599974811077,
+          "warps": 4,
+          "grid": 296
+        },
+        "compiler": {
+          "latency_us": 18.95900070667267,
+          "warps": 4,
+          "grid": 296
+        }
+      },
+      "compiler_speedup_best_to_best": 1.0519541317140304,
+      "compiler_latency_change_pct": -4.938821013933136,
+      "selected_configuration_evidence": {
+        "original": {
+          "warps": 4,
+          "grid": 296,
+          "seed_medians_us": {
+            "original": [
+              19.97300051152706,
+              19.92199942469597,
+              19.943999126553535
+            ],
+            "compiler": [
+              19.0069992095232,
+              18.95900070667267,
+              18.95800046622753
+            ],
+            "hoisted": [
+              19.003000110387802,
+              18.98599974811077,
+              18.95200088620186
+            ]
+          },
+          "same_configuration_compiler_speedup": 1.0519541317140304,
+          "same_configuration_manual_compiler_latency_ratio": 1.0014240751322194,
+          "resources": {
+            "original": {
+              "registers": 69,
+              "shared_bytes": 6164,
+              "spills": 0,
+              "async_copy_static_sites": 8
+            },
+            "compiler": {
+              "registers": 70,
+              "shared_bytes": 4116,
+              "spills": 0,
+              "async_copy_static_sites": 6
+            },
+            "hoisted": {
+              "registers": 70,
+              "shared_bytes": 4116,
+              "spills": 0,
+              "async_copy_static_sites": 6
+            }
+          },
+          "artifacts_case": "triton/experiment_notes/semantic_candidate_experiments/results/rms_native_confirm_shared/backward-m8192-n1024-w4-grid296-seed0"
+        },
+        "compiler": {
+          "warps": 4,
+          "grid": 296,
+          "seed_medians_us": {
+            "original": [
+              19.97300051152706,
+              19.92199942469597,
+              19.943999126553535
+            ],
+            "compiler": [
+              19.0069992095232,
+              18.95900070667267,
+              18.95800046622753
+            ],
+            "hoisted": [
+              19.003000110387802,
+              18.98599974811077,
+              18.95200088620186
+            ]
+          },
+          "same_configuration_compiler_speedup": 1.0519541317140304,
+          "same_configuration_manual_compiler_latency_ratio": 1.0014240751322194,
+          "resources": {
+            "original": {
+              "registers": 69,
+              "shared_bytes": 6164,
+              "spills": 0,
+              "async_copy_static_sites": 8
+            },
+            "compiler": {
+              "registers": 70,
+              "shared_bytes": 4116,
+              "spills": 0,
+              "async_copy_static_sites": 6
+            },
+            "hoisted": {
+              "registers": 70,
+              "shared_bytes": 4116,
+              "spills": 0,
+              "async_copy_static_sites": 6
+            }
+          },
+          "artifacts_case": "triton/experiment_notes/semantic_candidate_experiments/results/rms_native_confirm_shared/backward-m8192-n1024-w4-grid296-seed0"
+        }
+      }
+    },
+    {
+      "operation": "backward",
+      "shape": [
+        4096,
+        4096
+      ],
+      "best_confirmed": {
+        "original": {
+          "latency_us": 28.596999123692513,
+          "warps": 4,
+          "grid": 296
+        },
+        "hoisted": {
+          "latency_us": 26.830000802874565,
+          "warps": 4,
+          "grid": 296
+        },
+        "compiler": {
+          "latency_us": 26.8740002065897,
+          "warps": 4,
+          "grid": 296
+        }
+      },
+      "compiler_speedup_best_to_best": 1.0641139727564757,
+      "compiler_latency_change_pct": -6.02510392664003,
+      "selected_configuration_evidence": {
+        "original": {
+          "warps": 4,
+          "grid": 296,
+          "seed_medians_us": {
+            "original": [
+              28.404999524354935,
+              28.596999123692513,
+              28.598999604582787
+            ],
+            "compiler": [
+              26.62999927997589,
+              26.878999546170235,
+              26.8740002065897
+            ],
+            "hoisted": [
+              26.67500078678131,
+              26.830000802874565,
+              26.838000863790512
+            ]
+          },
+          "same_configuration_compiler_speedup": 1.0641139727564757,
+          "same_configuration_manual_compiler_latency_ratio": 0.9983627519767472,
+          "resources": {
+            "original": {
+              "registers": 176,
+              "shared_bytes": 24596,
+              "spills": 0,
+              "async_copy_static_sites": 26
+            },
+            "compiler": {
+              "registers": 220,
+              "shared_bytes": 16404,
+              "spills": 0,
+              "async_copy_static_sites": 18
+            },
+            "hoisted": {
+              "registers": 220,
+              "shared_bytes": 16404,
+              "spills": 0,
+              "async_copy_static_sites": 18
+            }
+          },
+          "artifacts_case": "triton/experiment_notes/semantic_candidate_experiments/results/rms_native_confirm_shared/backward-m4096-n4096-w4-grid296-seed0"
+        },
+        "compiler": {
+          "warps": 4,
+          "grid": 296,
+          "seed_medians_us": {
+            "original": [
+              28.404999524354935,
+              28.596999123692513,
+              28.598999604582787
+            ],
+            "compiler": [
+              26.62999927997589,
+              26.878999546170235,
+              26.8740002065897
+            ],
+            "hoisted": [
+              26.67500078678131,
+              26.830000802874565,
+              26.838000863790512
+            ]
+          },
+          "same_configuration_compiler_speedup": 1.0641139727564757,
+          "same_configuration_manual_compiler_latency_ratio": 0.9983627519767472,
+          "resources": {
+            "original": {
+              "registers": 176,
+              "shared_bytes": 24596,
+              "spills": 0,
+              "async_copy_static_sites": 26
+            },
+            "compiler": {
+              "registers": 220,
+              "shared_bytes": 16404,
+              "spills": 0,
+              "async_copy_static_sites": 18
+            },
+            "hoisted": {
+              "registers": 220,
+              "shared_bytes": 16404,
+              "spills": 0,
+              "async_copy_static_sites": 18
+            }
+          },
+          "artifacts_case": "triton/experiment_notes/semantic_candidate_experiments/results/rms_native_confirm_shared/backward-m4096-n4096-w4-grid296-seed0"
+        }
+      }
+    },
+    {
+      "operation": "backward",
+      "shape": [
+        16384,
+        4096
+      ],
+      "best_confirmed": {
+        "original": {
+          "latency_us": 98.29100221395493,
+          "warps": 4,
+          "grid": 296
+        },
+        "hoisted": {
+          "latency_us": 93.04899722337723,
+          "warps": 4,
+          "grid": 296
+        },
+        "compiler": {
+          "latency_us": 93.0899977684021,
+          "warps": 4,
+          "grid": 296
+        }
+      },
+      "compiler_speedup_best_to_best": 1.0558707118942292,
+      "compiler_latency_change_pct": -5.291434951727869,
+      "selected_configuration_evidence": {
+        "original": {
+          "warps": 4,
+          "grid": 296,
+          "seed_medians_us": {
+            "original": [
+              98.38200360536575,
+              98.29100221395493,
+              98.27599674463272
+            ],
+            "compiler": [
+              93.11400353908539,
+              93.0899977684021,
+              93.08800101280212
+            ],
+            "hoisted": [
+              93.04899722337723,
+              93.07800233364105,
+              93.03999692201614
+            ]
+          },
+          "same_configuration_compiler_speedup": 1.0558707118942292,
+          "same_configuration_manual_compiler_latency_ratio": 0.9995595601460119,
+          "resources": {
+            "original": {
+              "registers": 176,
+              "shared_bytes": 24596,
+              "spills": 0,
+              "async_copy_static_sites": 26
+            },
+            "compiler": {
+              "registers": 220,
+              "shared_bytes": 16404,
+              "spills": 0,
+              "async_copy_static_sites": 18
+            },
+            "hoisted": {
+              "registers": 220,
+              "shared_bytes": 16404,
+              "spills": 0,
+              "async_copy_static_sites": 18
+            }
+          },
+          "artifacts_case": "triton/experiment_notes/semantic_candidate_experiments/results/rms_native_confirm_shared/backward-m16384-n4096-w4-grid296-seed0"
+        },
+        "compiler": {
+          "warps": 4,
+          "grid": 296,
+          "seed_medians_us": {
+            "original": [
+              98.38200360536575,
+              98.29100221395493,
+              98.27599674463272
+            ],
+            "compiler": [
+              93.11400353908539,
+              93.0899977684021,
+              93.08800101280212
+            ],
+            "hoisted": [
+              93.04899722337723,
+              93.07800233364105,
+              93.03999692201614
+            ]
+          },
+          "same_configuration_compiler_speedup": 1.0558707118942292,
+          "same_configuration_manual_compiler_latency_ratio": 0.9995595601460119,
+          "resources": {
+            "original": {
+              "registers": 176,
+              "shared_bytes": 24596,
+              "spills": 0,
+              "async_copy_static_sites": 26
+            },
+            "compiler": {
+              "registers": 220,
+              "shared_bytes": 16404,
+              "spills": 0,
+              "async_copy_static_sites": 18
+            },
+            "hoisted": {
+              "registers": 220,
+              "shared_bytes": 16404,
+              "spills": 0,
+              "async_copy_static_sites": 18
+            }
+          },
+          "artifacts_case": "triton/experiment_notes/semantic_candidate_experiments/results/rms_native_confirm_shared/backward-m16384-n4096-w4-grid296-seed0"
+        }
+      }
+    }
+  ],
+  "manual_compiler_text_identical_count": 13,
+  "text_equivalence": [
+    {
+      "case": "forward-m4096-n1024-w4-grid2368-seed0",
+      "text_sections": {
+        "original": [
+          {
+            "section": ".text.rmsnorm_forward_original",
+            "bytes": 2688,
+            "sha256": "1e0fb7bfacd9753087f847f926d052a67147e780dbf8cb56f3e9bdb7d890d270"
+          }
+        ],
+        "hoisted": [
+          {
+            "section": ".text.rmsnorm_forward_hoisted",
+            "bytes": 2688,
+            "sha256": "02e7de8ef96ad818be9d449dae64271094a87bc5628aa225acb8618b98fb24fe"
+          }
+        ],
+        "compiler": [
+          {
+            "section": ".text.rmsnorm_forward_original",
+            "bytes": 2688,
+            "sha256": "02e7de8ef96ad818be9d449dae64271094a87bc5628aa225acb8618b98fb24fe"
+          }
+        ]
+      },
+      "manual_compiler_text_identical": true
+    },
+    {
+      "case": "forward-m8192-n1024-w4-grid1184-seed0",
+      "text_sections": {
+        "original": [
+          {
+            "section": ".text.rmsnorm_forward_original",
+            "bytes": 2688,
+            "sha256": "1e0fb7bfacd9753087f847f926d052a67147e780dbf8cb56f3e9bdb7d890d270"
+          }
+        ],
+        "hoisted": [
+          {
+            "section": ".text.rmsnorm_forward_hoisted",
+            "bytes": 2688,
+            "sha256": "02e7de8ef96ad818be9d449dae64271094a87bc5628aa225acb8618b98fb24fe"
+          }
+        ],
+        "compiler": [
+          {
+            "section": ".text.rmsnorm_forward_original",
+            "bytes": 2688,
+            "sha256": "02e7de8ef96ad818be9d449dae64271094a87bc5628aa225acb8618b98fb24fe"
+          }
+        ]
+      },
+      "manual_compiler_text_identical": true
+    },
+    {
+      "case": "forward-m8192-n1024-w4-grid4736-seed0",
+      "text_sections": {
+        "original": [
+          {
+            "section": ".text.rmsnorm_forward_original",
+            "bytes": 2688,
+            "sha256": "1e0fb7bfacd9753087f847f926d052a67147e780dbf8cb56f3e9bdb7d890d270"
+          }
+        ],
+        "hoisted": [
+          {
+            "section": ".text.rmsnorm_forward_hoisted",
+            "bytes": 2688,
+            "sha256": "02e7de8ef96ad818be9d449dae64271094a87bc5628aa225acb8618b98fb24fe"
+          }
+        ],
+        "compiler": [
+          {
+            "section": ".text.rmsnorm_forward_original",
+            "bytes": 2688,
+            "sha256": "02e7de8ef96ad818be9d449dae64271094a87bc5628aa225acb8618b98fb24fe"
+          }
+        ]
+      },
+      "manual_compiler_text_identical": true
+    },
+    {
+      "case": "forward-m4096-n4096-w4-grid592-seed0",
+      "text_sections": {
+        "original": [
+          {
+            "section": ".text.rmsnorm_forward_original",
+            "bytes": 5760,
+            "sha256": "342de32ebefee81d43e21ace0f9a4d20cf9aa4f9e8329cde49424b6422f8dcc1"
+          }
+        ],
+        "hoisted": [
+          {
+            "section": ".text.rmsnorm_forward_hoisted",
+            "bytes": 5376,
+            "sha256": "91bf46b33ccee8f183b50ccb61a2253d799dd46d791c9a777fdb3b5a98f4e128"
+          }
+        ],
+        "compiler": [
+          {
+            "section": ".text.rmsnorm_forward_original",
+            "bytes": 5376,
+            "sha256": "91bf46b33ccee8f183b50ccb61a2253d799dd46d791c9a777fdb3b5a98f4e128"
+          }
+        ]
+      },
+      "manual_compiler_text_identical": true
+    },
+    {
+      "case": "forward-m4096-n4096-w4-grid4096-seed0",
+      "text_sections": {
+        "original": [
+          {
+            "section": ".text.rmsnorm_forward_original",
+            "bytes": 5760,
+            "sha256": "342de32ebefee81d43e21ace0f9a4d20cf9aa4f9e8329cde49424b6422f8dcc1"
+          }
+        ],
+        "hoisted": [
+          {
+            "section": ".text.rmsnorm_forward_hoisted",
+            "bytes": 5376,
+            "sha256": "91bf46b33ccee8f183b50ccb61a2253d799dd46d791c9a777fdb3b5a98f4e128"
+          }
+        ],
+        "compiler": [
+          {
+            "section": ".text.rmsnorm_forward_original",
+            "bytes": 5376,
+            "sha256": "91bf46b33ccee8f183b50ccb61a2253d799dd46d791c9a777fdb3b5a98f4e128"
+          }
+        ]
+      },
+      "manual_compiler_text_identical": true
+    },
+    {
+      "case": "forward-m16384-n4096-w4-grid4736-seed0",
+      "text_sections": {
+        "original": [
+          {
+            "section": ".text.rmsnorm_forward_original",
+            "bytes": 5760,
+            "sha256": "342de32ebefee81d43e21ace0f9a4d20cf9aa4f9e8329cde49424b6422f8dcc1"
+          }
+        ],
+        "hoisted": [
+          {
+            "section": ".text.rmsnorm_forward_hoisted",
+            "bytes": 5376,
+            "sha256": "91bf46b33ccee8f183b50ccb61a2253d799dd46d791c9a777fdb3b5a98f4e128"
+          }
+        ],
+        "compiler": [
+          {
+            "section": ".text.rmsnorm_forward_original",
+            "bytes": 5376,
+            "sha256": "91bf46b33ccee8f183b50ccb61a2253d799dd46d791c9a777fdb3b5a98f4e128"
+          }
+        ]
+      },
+      "manual_compiler_text_identical": true
+    },
+    {
+      "case": "backward-m4096-n1024-w4-grid296-seed0",
+      "text_sections": {
+        "original": [
+          {
+            "section": ".text.rmsnorm_backward_original",
+            "bytes": 4352,
+            "sha256": "217dd6966d233bcbb0b4c4d1399d2e5446b8d3dc40fa30c617884139d1c117e5"
+          }
+        ],
+        "hoisted": [
+          {
+            "section": ".text.rmsnorm_backward_hoisted",
+            "bytes": 4352,
+            "sha256": "fd2066b5252c9e1ae1a7c24270f230c9f82d30241ae1ee9914fffada1eca5c7d"
+          }
+        ],
+        "compiler": [
+          {
+            "section": ".text.rmsnorm_backward_original",
+            "bytes": 4352,
+            "sha256": "fd2066b5252c9e1ae1a7c24270f230c9f82d30241ae1ee9914fffada1eca5c7d"
+          }
+        ]
+      },
+      "manual_compiler_text_identical": true
+    },
+    {
+      "case": "backward-m4096-n1024-w8-grid296-seed0",
+      "text_sections": {
+        "original": [
+          {
+            "section": ".text.rmsnorm_backward_original",
+            "bytes": 3200,
+            "sha256": "902473f9875df486e867ec84fb4a4910cd64afa861fe489e7d88ca26b1a22506"
+          }
+        ],
+        "hoisted": [
+          {
+            "section": ".text.rmsnorm_backward_hoisted",
+            "bytes": 3072,
+            "sha256": "0b4b0f4be410000040a3429ed46362add5ca96480fa9c0a6ac5e940fc04192b3"
+          }
+        ],
+        "compiler": [
+          {
+            "section": ".text.rmsnorm_backward_original",
+            "bytes": 3072,
+            "sha256": "0b4b0f4be410000040a3429ed46362add5ca96480fa9c0a6ac5e940fc04192b3"
+          }
+        ]
+      },
+      "manual_compiler_text_identical": true
+    },
+    {
+      "case": "backward-m8192-n1024-w4-grid296-seed0",
+      "text_sections": {
+        "original": [
+          {
+            "section": ".text.rmsnorm_backward_original",
+            "bytes": 4352,
+            "sha256": "217dd6966d233bcbb0b4c4d1399d2e5446b8d3dc40fa30c617884139d1c117e5"
+          }
+        ],
+        "hoisted": [
+          {
+            "section": ".text.rmsnorm_backward_hoisted",
+            "bytes": 4352,
+            "sha256": "fd2066b5252c9e1ae1a7c24270f230c9f82d30241ae1ee9914fffada1eca5c7d"
+          }
+        ],
+        "compiler": [
+          {
+            "section": ".text.rmsnorm_backward_original",
+            "bytes": 4352,
+            "sha256": "fd2066b5252c9e1ae1a7c24270f230c9f82d30241ae1ee9914fffada1eca5c7d"
+          }
+        ]
+      },
+      "manual_compiler_text_identical": true
+    },
+    {
+      "case": "backward-m8192-n1024-w8-grid296-seed0",
+      "text_sections": {
+        "original": [
+          {
+            "section": ".text.rmsnorm_backward_original",
+            "bytes": 3200,
+            "sha256": "902473f9875df486e867ec84fb4a4910cd64afa861fe489e7d88ca26b1a22506"
+          }
+        ],
+        "hoisted": [
+          {
+            "section": ".text.rmsnorm_backward_hoisted",
+            "bytes": 3072,
+            "sha256": "0b4b0f4be410000040a3429ed46362add5ca96480fa9c0a6ac5e940fc04192b3"
+          }
+        ],
+        "compiler": [
+          {
+            "section": ".text.rmsnorm_backward_original",
+            "bytes": 3072,
+            "sha256": "0b4b0f4be410000040a3429ed46362add5ca96480fa9c0a6ac5e940fc04192b3"
+          }
+        ]
+      },
+      "manual_compiler_text_identical": true
+    },
+    {
+      "case": "backward-m4096-n4096-w4-grid296-seed0",
+      "text_sections": {
+        "original": [
+          {
+            "section": ".text.rmsnorm_backward_original",
+            "bytes": 11136,
+            "sha256": "7c285c3a18095fcde3c7a1c13c6a3d3c51895ac490a110369650b1f51f7cfb0b"
+          }
+        ],
+        "hoisted": [
+          {
+            "section": ".text.rmsnorm_backward_hoisted",
+            "bytes": 11008,
+            "sha256": "2ea023792556159bb913fec3062613ad3e70815cd3493f95a0e50f77424d434f"
+          }
+        ],
+        "compiler": [
+          {
+            "section": ".text.rmsnorm_backward_original",
+            "bytes": 11008,
+            "sha256": "2ea023792556159bb913fec3062613ad3e70815cd3493f95a0e50f77424d434f"
+          }
+        ]
+      },
+      "manual_compiler_text_identical": true
+    },
+    {
+      "case": "backward-m16384-n4096-w4-grid296-seed0",
+      "text_sections": {
+        "original": [
+          {
+            "section": ".text.rmsnorm_backward_original",
+            "bytes": 11136,
+            "sha256": "7c285c3a18095fcde3c7a1c13c6a3d3c51895ac490a110369650b1f51f7cfb0b"
+          }
+        ],
+        "hoisted": [
+          {
+            "section": ".text.rmsnorm_backward_hoisted",
+            "bytes": 11008,
+            "sha256": "2ea023792556159bb913fec3062613ad3e70815cd3493f95a0e50f77424d434f"
+          }
+        ],
+        "compiler": [
+          {
+            "section": ".text.rmsnorm_backward_original",
+            "bytes": 11008,
+            "sha256": "2ea023792556159bb913fec3062613ad3e70815cd3493f95a0e50f77424d434f"
+          }
+        ]
+      },
+      "manual_compiler_text_identical": true
+    },
+    {
+      "case": "forward-m4096-n1024-w8-grid1184-seed0",
+      "text_sections": {
+        "original": [
+          {
+            "section": ".text.rmsnorm_forward_original",
+            "bytes": 2304,
+            "sha256": "5251ac31d028ec3f060e80cb944bf4a502372e5c353ddea1bd58b6aa78ab88d9"
+          }
+        ],
+        "hoisted": [
+          {
+            "section": ".text.rmsnorm_forward_hoisted",
+            "bytes": 2304,
+            "sha256": "546ae1977b6d88c4b5b2b2167e4e5739032fea78f363dac4bbd4e8f93d219a54"
+          }
+        ],
+        "compiler": [
+          {
+            "section": ".text.rmsnorm_forward_original",
+            "bytes": 2304,
+            "sha256": "546ae1977b6d88c4b5b2b2167e4e5739032fea78f363dac4bbd4e8f93d219a54"
+          }
+        ]
+      },
+      "manual_compiler_text_identical": true
+    }
+  ],
+  "interpretation": "The argument contract licenses gamma hoisting and removes recurring async-copy/shared-memory work. Large forward case increases registers68 to94 and slows~9%; occupancy/stall causality was not profiled. The native pass has no profitability model. Earlier separate-allocation timings are exploratory only."
+}

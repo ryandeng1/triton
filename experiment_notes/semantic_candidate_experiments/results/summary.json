@@ -1,0 +1,1219 @@
+{
+  "status": "completed",
+  "hardware": "NVIDIA B300 SXM6 PC, compute capability 10.3",
+  "compiler": "Local Triton at 18368cb1f5747acd35f269193dfe25d71aedeb9f plus environment/compiler.patch",
+  "canonical_reports": {
+    "rmsnorm": "rms_native_final_analysis.json",
+    "moe_unpermute_backward": "te_final_analysis.json",
+    "irregular": "irregular_findings.json",
+    "mamba_expanded_search": "mamba_source_supplement/results.json",
+    "segment_primed_cache": "irregular_segment_confirm/results.json",
+    "compiler_environment": "environment/manifest.json"
+  },
+  "canonical_report_sha256": {
+    "rmsnorm": "2fada7c1c690cbd09ff466887639a985f35ecd5e4e5c23df936ebf89c4227018",
+    "moe_unpermute_backward": "85a1f0f5195772e43edbc5481eb08d815362b5b77dbc950fc883eacac1834c30",
+    "irregular": "b65fe83a800bcf4ea368a0401655adc4043beec81f5b6725f9d6d47239dcc591",
+    "mamba_expanded_search": "099911748a4e2f0ee2cbb5234cc06ad7a9b3c243078ce93fb535c5d4481b3221",
+    "segment_primed_cache": "d1f3d60a8134668f6ebd6218f7e9bb12275757d361db07fc52580d68ab5d3307",
+    "compiler_environment": "c01d925608c2f6def39e3ddf34cf855f1f866aedeb354ccb34d00fc0cf42c359"
+  },
+  "methodology": {
+    "comparison": "Best tested configuration per variant, selected from configuration medians over three data seeds; bounded tuning search, not a global optimum.",
+    "timing": "Serialized GPU suites, randomized interleaved CUDA graphs, common physical output/scratch buffers for timed variants, unlocked clocks.",
+    "correctness": "Separate correctness buffers and independent references; shared timing bindings validated individually; native hoists tested for bitwise equality; masked tails, empty work, poison reruns, duplicate fallback and recurrence resets tested where relevant.",
+    "scope": "Direct extracted pinned kernels, not full framework/model speedups. AITER code is AMD-origin compiled on NVIDIA. No TLX CLC or multi-CTA protocol benchmark was executed.",
+    "superseded": "Wheel smoke runs and separate-allocation preliminary timings are diagnostic only. Canonical reports above supersede those. Old irregular segment rows are superseded by the primed-cache segment report."
+  },
+  "native_compiler_change": {
+    "file": "../../../lib/Dialect/Triton/Transforms/LoopInvariantCodeMotion.cpp",
+    "attribute": "tt.experimental_immutable = 1 : i32",
+    "contract": "Memory reached through the argument is initialized at invocation entry and unchanged through every alias for the entire invocation. Caller-established; not automatically inferred.",
+    "transformation": "Hoist invariant ordinary loads across ordinary stores, retain masks and loop-entry guards; bounded constant-entry while support; exclude volatile/unknown effects.",
+    "validation": "make passed; 14 Triton lit tests and 5 selected loop GPU tests passed. Regression cases added to existing LICM lit file."
+  },
+  "rmsnorm": [
+    {
+      "operation": "forward",
+      "shape": [
+        4096,
+        1024
+      ],
+      "best_confirmed": {
+        "original": {
+          "latency_us": 4.9760001711547375,
+          "warps": 4,
+          "grid": 2368
+        },
+        "hoisted": {
+          "latency_us": 3.5039999056607485,
+          "warps": 4,
+          "grid": 2368
+        },
+        "compiler": {
+          "latency_us": 3.5069999285042286,
+          "warps": 4,
+          "grid": 2368
+        }
+      },
+      "compiler_speedup_best_to_best": 1.4188766103787895,
+      "compiler_latency_change_pct": -29.521708041051188
+    },
+    {
+      "operation": "forward",
+      "shape": [
+        8192,
+        1024
+      ],
+      "best_confirmed": {
+        "original": {
+          "latency_us": 8.313000202178955,
+          "warps": 4,
+          "grid": 4736
+        },
+        "hoisted": {
+          "latency_us": 5.6130001321434975,
+          "warps": 4,
+          "grid": 1184
+        },
+        "compiler": {
+          "latency_us": 5.613999906927347,
+          "warps": 4,
+          "grid": 4736
+        }
+      },
+      "compiler_speedup_best_to_best": 1.4807624403272968,
+      "compiler_latency_change_pct": -32.467222778897096
+    },
+    {
+      "operation": "forward",
+      "shape": [
+        4096,
+        4096
+      ],
+      "best_confirmed": {
+        "original": {
+          "latency_us": 9.642000310122967,
+          "warps": 4,
+          "grid": 4096
+        },
+        "hoisted": {
+          "latency_us": 8.646000176668167,
+          "warps": 4,
+          "grid": 592
+        },
+        "compiler": {
+          "latency_us": 8.648999966681004,
+          "warps": 4,
+          "grid": 592
+        }
+      },
+      "compiler_speedup_best_to_best": 1.1148110009558736,
+      "compiler_latency_change_pct": -10.298696447867039
+    },
+    {
+      "operation": "forward",
+      "shape": [
+        16384,
+        4096
+      ],
+      "best_confirmed": {
+        "original": {
+          "latency_us": 42.433999478816986,
+          "warps": 4,
+          "grid": 4736
+        },
+        "hoisted": {
+          "latency_us": 46.241000294685364,
+          "warps": 4,
+          "grid": 4736
+        },
+        "compiler": {
+          "latency_us": 46.25000059604645,
+          "warps": 4,
+          "grid": 4736
+        }
+      },
+      "compiler_speedup_best_to_best": 0.917491868798902,
+      "compiler_latency_change_pct": 8.992791544747991
+    },
+    {
+      "operation": "backward",
+      "shape": [
+        4096,
+        1024
+      ],
+      "best_confirmed": {
+        "original": {
+          "latency_us": 12.617000378668308,
+          "warps": 4,
+          "grid": 296
+        },
+        "hoisted": {
+          "latency_us": 11.96299958974123,
+          "warps": 8,
+          "grid": 296
+        },
+        "compiler": {
+          "latency_us": 11.966000311076641,
+          "warps": 8,
+          "grid": 296
+        }
+      },
+      "compiler_speedup_best_to_best": 1.0544041493120346,
+      "compiler_latency_change_pct": -5.15970554056826
+    },
+    {
+      "operation": "backward",
+      "shape": [
+        8192,
+        1024
+      ],
+      "best_confirmed": {
+        "original": {
+          "latency_us": 19.943999126553535,
+          "warps": 4,
+          "grid": 296
+        },
+        "hoisted": {
+          "latency_us": 18.98599974811077,
+          "warps": 4,
+          "grid": 296
+        },
+        "compiler": {
+          "latency_us": 18.95900070667267,
+          "warps": 4,
+          "grid": 296
+        }
+      },
+      "compiler_speedup_best_to_best": 1.0519541317140304,
+      "compiler_latency_change_pct": -4.938821013933136
+    },
+    {
+      "operation": "backward",
+      "shape": [
+        4096,
+        4096
+      ],
+      "best_confirmed": {
+        "original": {
+          "latency_us": 28.596999123692513,
+          "warps": 4,
+          "grid": 296
+        },
+        "hoisted": {
+          "latency_us": 26.830000802874565,
+          "warps": 4,
+          "grid": 296
+        },
+        "compiler": {
+          "latency_us": 26.8740002065897,
+          "warps": 4,
+          "grid": 296
+        }
+      },
+      "compiler_speedup_best_to_best": 1.0641139727564757,
+      "compiler_latency_change_pct": -6.02510392664003
+    },
+    {
+      "operation": "backward",
+      "shape": [
+        16384,
+        4096
+      ],
+      "best_confirmed": {
+        "original": {
+          "latency_us": 98.29100221395493,
+          "warps": 4,
+          "grid": 296
+        },
+        "hoisted": {
+          "latency_us": 93.04899722337723,
+          "warps": 4,
+          "grid": 296
+        },
+        "compiler": {
+          "latency_us": 93.0899977684021,
+          "warps": 4,
+          "grid": 296
+        }
+      },
+      "compiler_speedup_best_to_best": 1.0558707118942292,
+      "compiler_latency_change_pct": -5.291434951727869
+    }
+  ],
+  "moe_unpermute_backward": {
+    "m1024-h8192-k2-e16": {
+      "best": {
+        "original": {
+          "config": [
+            4096,
+            8
+          ],
+          "median_us": 12.140999548137188
+        },
+        "hoisted": {
+          "config": [
+            1024,
+            8
+          ],
+          "median_us": 10.219000279903412
+        },
+        "contract": {
+          "config": [
+            1024,
+            8
+          ],
+          "median_us": 10.18999982625246
+        }
+      },
+      "speedups": {
+        "original": 1.0,
+        "hoisted": 1.1880809487806319,
+        "contract": 1.1914621938322683
+      }
+    },
+    "m512-h16384-k4-e16": {
+      "best": {
+        "original": {
+          "config": [
+            8192,
+            8
+          ],
+          "median_us": 34.74700078368187
+        },
+        "hoisted": {
+          "config": [
+            4096,
+            4
+          ],
+          "median_us": 31.440000981092453
+        },
+        "contract": {
+          "config": [
+            4096,
+            4
+          ],
+          "median_us": 31.42699971795082
+        }
+      },
+      "speedups": {
+        "original": 1.0,
+        "hoisted": 1.105184468810233,
+        "contract": 1.1056416805780762
+      }
+    },
+    "m256-h32768-k8-e16": {
+      "best": {
+        "original": {
+          "config": [
+            16384,
+            4
+          ],
+          "median_us": 68.65599751472473
+        },
+        "hoisted": {
+          "config": [
+            16384,
+            4
+          ],
+          "median_us": 69.03199851512909
+        },
+        "contract": {
+          "config": [
+            16384,
+            4
+          ],
+          "median_us": 68.9850002527237
+        }
+      },
+      "speedups": {
+        "original": 1.0,
+        "hoisted": 0.9945532360573053,
+        "contract": 0.9952308076133409
+      }
+    }
+  },
+  "embedding": {
+    "implementation": "Source specialization; no native uniqueness analysis added.",
+    "contract": "Globally unique indices established by producer, fresh zero FP32 scratch, finite non-subnormal BF16 gradients with signed-zero handling. Ordinary duplicate-index workload uses original atomics.",
+    "timing_scope": "Includes dense zero reset and final BF16 copy; frequency mode baseline also includes counting.",
+    "results": [
+      {
+        "shape": [
+          4096,
+          128,
+          8192
+        ],
+        "scale_by_freq": false,
+        "best_block_d": {
+          "atomic": 256,
+          "unique": 256
+        },
+        "config_median_us": {
+          "128": {
+            "atomic": 7.985999807715416,
+            "unique": 6.339000072330236
+          },
+          "256": {
+            "atomic": 7.9739997163414955,
+            "unique": 6.331999786198139
+          }
+        },
+        "median_us": {
+          "atomic": 7.9739997163414955,
+          "unique": 6.331999786198139
+        },
+        "speedup": 1.2593177488291178,
+        "fixed_config_seed_speedups": [
+          1.244437511168173,
+          1.2613096321909385,
+          1.2645294489591234
+        ]
+      },
+      {
+        "shape": [
+          4096,
+          128,
+          8192
+        ],
+        "scale_by_freq": true,
+        "best_block_d": {
+          "atomic": 128,
+          "unique": 128
+        },
+        "config_median_us": {
+          "128": {
+            "atomic": 13.81400041282177,
+            "unique": 6.333999801427126
+          },
+          "256": {
+            "atomic": 13.849999755620956,
+            "unique": 6.333999801427126
+          }
+        },
+        "median_us": {
+          "atomic": 13.81400041282177,
+          "unique": 6.333999801427126
+        },
+        "speedup": 2.1809284568826968,
+        "fixed_config_seed_speedups": [
+          2.179895895273314,
+          2.1811434235342517,
+          2.191664103961128
+        ]
+      },
+      {
+        "shape": [
+          16384,
+          256,
+          32768
+        ],
+        "scale_by_freq": false,
+        "best_block_d": {
+          "atomic": 256,
+          "unique": 256
+        },
+        "config_median_us": {
+          "128": {
+            "atomic": 32.02399984002113,
+            "unique": 28.66699919104576
+          },
+          "256": {
+            "atomic": 23.1890007853508,
+            "unique": 20.076999440789223
+          }
+        },
+        "median_us": {
+          "atomic": 23.1890007853508,
+          "unique": 20.076999440789223
+        },
+        "speedup": 1.155003308823086,
+        "fixed_config_seed_speedups": [
+          1.1562515008408425,
+          1.155003308823086,
+          1.160229945882435
+        ]
+      },
+      {
+        "shape": [
+          16384,
+          256,
+          32768
+        ],
+        "scale_by_freq": true,
+        "best_block_d": {
+          "atomic": 256,
+          "unique": 256
+        },
+        "config_median_us": {
+          "128": {
+            "atomic": 40.24399816989899,
+            "unique": 28.508000075817108
+          },
+          "256": {
+            "atomic": 30.278999358415604,
+            "unique": 20.0360007584095
+          }
+        },
+        "median_us": {
+          "atomic": 30.278999358415604,
+          "unique": 20.0360007584095
+        },
+        "speedup": 1.5112296971593453,
+        "fixed_config_seed_speedups": [
+          1.512513050564967,
+          1.5070372582935396,
+          1.5370067121423683
+        ]
+      },
+      {
+        "shape": [
+          8192,
+          1024,
+          16384
+        ],
+        "scale_by_freq": false,
+        "best_block_d": {
+          "atomic": 256,
+          "unique": 256
+        },
+        "config_median_us": {
+          "128": {
+            "atomic": 67.64800101518631,
+            "unique": 56.283000856637955
+          },
+          "256": {
+            "atomic": 47.00399935245514,
+            "unique": 39.500001817941666
+          }
+        },
+        "median_us": {
+          "atomic": 47.00399935245514,
+          "unique": 39.500001817941666
+        },
+        "speedup": 1.1899746123835624,
+        "fixed_config_seed_speedups": [
+          1.1894682558597163,
+          1.1886205545214068,
+          1.1909548207986485
+        ]
+      },
+      {
+        "shape": [
+          8192,
+          1024,
+          16384
+        ],
+        "scale_by_freq": true,
+        "best_block_d": {
+          "atomic": 256,
+          "unique": 256
+        },
+        "config_median_us": {
+          "128": {
+            "atomic": 78.91400158405304,
+            "unique": 56.26799911260605
+          },
+          "256": {
+            "atomic": 55.88899925351143,
+            "unique": 39.531998336315155
+          }
+        },
+        "median_us": {
+          "atomic": 55.88899925351143,
+          "unique": 39.531998336315155
+        },
+        "speedup": 1.4137661035508617,
+        "fixed_config_seed_speedups": [
+          1.4153234312749428,
+          1.4137661035508617,
+          1.412695633781077
+        ]
+      }
+    ]
+  },
+  "mamba": {
+    "implementation": "Source affine associative-scan prototype; no native recurrence pass added.",
+    "contract": "Floating-point reassociation allowed within experimental tolerances; tested dA in [-0.2,0], FP32 states scaled by 0.1; all intermediate and final states retained. Not an application-wide numerical guarantee.",
+    "representative_results": [
+      {
+        "shape": [
+          1,
+          64,
+          32,
+          4096
+        ],
+        "has_seq_resets": false,
+        "workload_class": "representative_state_dimension",
+        "source_report": "mamba_source_supplement/results.json",
+        "best_configs": {
+          "sequential": "sequential_128",
+          "scan": "scan_64_w4"
+        },
+        "config_median_us": {
+          "scan_128_w4": 17.433999106287956,
+          "scan_128_w8": 26.148000732064247,
+          "scan_16_w4": 25.164000689983368,
+          "scan_256_w4": 23.932000622153282,
+          "scan_256_w8": 21.90599963068962,
+          "scan_32_w4": 18.943000584840775,
+          "scan_64_w4": 16.87300018966198,
+          "scan_64_w8": 26.061000302433968,
+          "sequential_1024": 26.415999978780746,
+          "sequential_128": 14.774000272154808,
+          "sequential_2048": 30.80900013446808,
+          "sequential_256": 15.111000277101994,
+          "sequential_512": 15.75399935245514,
+          "sequential_64": 16.054999083280563
+        },
+        "median_us": {
+          "sequential": 14.774000272154808,
+          "scan": 16.87300018966198
+        },
+        "speedup": 0.8756000774069083,
+        "fixed_config_seed_speedups": [
+          0.8775764746650392,
+          0.8774026074168727,
+          0.8710365802837804
+        ],
+        "resource_failures_by_seed": {
+          "0": {},
+          "1": {},
+          "2": {}
+        },
+        "excluded_configs": []
+      },
+      {
+        "shape": [
+          1,
+          64,
+          32,
+          4096
+        ],
+        "has_seq_resets": true,
+        "workload_class": "representative_state_dimension",
+        "source_report": "mamba_source_supplement/results.json",
+        "best_configs": {
+          "sequential": "sequential_128",
+          "scan": "scan_64_w4"
+        },
+        "config_median_us": {
+          "scan_128_w4": 18.57299916446209,
+          "scan_128_w8": 24.70799908041954,
+          "scan_16_w4": 25.662999600172043,
+          "scan_256_w4": 27.14800089597702,
+          "scan_256_w8": 22.20200002193451,
+          "scan_32_w4": 19.58400011062622,
+          "scan_64_w4": 17.860999330878258,
+          "scan_64_w8": 27.451999485492706,
+          "sequential_1024": 26.007000356912613,
+          "sequential_128": 15.588000416755676,
+          "sequential_2048": 29.093999415636063,
+          "sequential_256": 16.24700054526329,
+          "sequential_512": 17.16499961912632,
+          "sequential_64": 26.95400081574917
+        },
+        "median_us": {
+          "sequential": 15.588000416755676,
+          "scan": 17.860999330878258
+        },
+        "speedup": 0.8727395442990136,
+        "fixed_config_seed_speedups": [
+          0.87980444110442,
+          0.8727395442990136,
+          0.8709370370740873
+        ],
+        "resource_failures_by_seed": {
+          "0": {},
+          "1": {},
+          "2": {}
+        },
+        "excluded_configs": []
+      },
+      {
+        "shape": [
+          1,
+          256,
+          32,
+          8192
+        ],
+        "has_seq_resets": false,
+        "workload_class": "representative_state_dimension",
+        "source_report": "mamba_source_supplement/results.json",
+        "best_configs": {
+          "sequential": "sequential_128",
+          "scan": "scan_32_w4"
+        },
+        "config_median_us": {
+          "scan_16_w4": 167.34500229358673,
+          "scan_32_w4": 164.31400179862976,
+          "scan_64_w4": 210.23699641227722,
+          "scan_64_w8": 270.42099833488464,
+          "sequential_1024": 274.52999353408813,
+          "sequential_128": 148.49400520324707,
+          "sequential_2048": 306.3200116157532,
+          "sequential_256": 149.16500449180603,
+          "sequential_512": 159.64800119400024,
+          "sequential_64": 259.6909999847412
+        },
+        "median_us": {
+          "sequential": 148.49400520324707,
+          "scan": 164.31400179862976
+        },
+        "speedup": 0.9037209463453368,
+        "fixed_config_seed_speedups": [
+          0.9026518377835688,
+          0.9037209463453368,
+          0.9037930020902183
+        ],
+        "resource_failures_by_seed": {
+          "0": {
+            "scan_128_w4": {
+              "type": "OutOfResources",
+              "error": "out of resource: shared memory, Required: 262144, Hardware limit: 232448. Reducing block sizes or `num_stages` may help."
+            },
+            "scan_256_w4": {
+              "type": "OutOfResources",
+              "error": "out of resource: shared memory, Required: 524288, Hardware limit: 232448. Reducing block sizes or `num_stages` may help."
+            },
+            "scan_128_w8": {
+              "type": "OutOfResources",
+              "error": "out of resource: shared memory, Required: 262144, Hardware limit: 232448. Reducing block sizes or `num_stages` may help."
+            },
+            "scan_256_w8": {
+              "type": "OutOfResources",
+              "error": "out of resource: shared memory, Required: 524288, Hardware limit: 232448. Reducing block sizes or `num_stages` may help."
+            }
+          },
+          "1": {
+            "scan_128_w4": {
+              "type": "OutOfResources",
+              "error": "out of resource: shared memory, Required: 262144, Hardware limit: 232448. Reducing block sizes or `num_stages` may help."
+            },
+            "scan_256_w4": {
+              "type": "OutOfResources",
+              "error": "out of resource: shared memory, Required: 524288, Hardware limit: 232448. Reducing block sizes or `num_stages` may help."
+            },
+            "scan_128_w8": {
+              "type": "OutOfResources",
+              "error": "out of resource: shared memory, Required: 262144, Hardware limit: 232448. Reducing block sizes or `num_stages` may help."
+            },
+            "scan_256_w8": {
+              "type": "OutOfResources",
+              "error": "out of resource: shared memory, Required: 524288, Hardware limit: 232448. Reducing block sizes or `num_stages` may help."
+            }
+          },
+          "2": {
+            "scan_128_w4": {
+              "type": "OutOfResources",
+              "error": "out of resource: shared memory, Required: 262144, Hardware limit: 232448. Reducing block sizes or `num_stages` may help."
+            },
+            "scan_256_w4": {
+              "type": "OutOfResources",
+              "error": "out of resource: shared memory, Required: 524288, Hardware limit: 232448. Reducing block sizes or `num_stages` may help."
+            },
+            "scan_128_w8": {
+              "type": "OutOfResources",
+              "error": "out of resource: shared memory, Required: 262144, Hardware limit: 232448. Reducing block sizes or `num_stages` may help."
+            },
+            "scan_256_w8": {
+              "type": "OutOfResources",
+              "error": "out of resource: shared memory, Required: 524288, Hardware limit: 232448. Reducing block sizes or `num_stages` may help."
+            }
+          }
+        },
+        "excluded_configs": [
+          "scan_128_w4",
+          "scan_128_w8",
+          "scan_256_w4",
+          "scan_256_w8"
+        ]
+      },
+      {
+        "shape": [
+          1,
+          256,
+          32,
+          8192
+        ],
+        "has_seq_resets": true,
+        "workload_class": "representative_state_dimension",
+        "source_report": "mamba_source_supplement/results.json",
+        "best_configs": {
+          "sequential": "sequential_256",
+          "scan": "scan_32_w4"
+        },
+        "config_median_us": {
+          "scan_16_w4": 168.07100176811218,
+          "scan_32_w4": 164.88799452781677,
+          "scan_64_w4": 211.38200163841248,
+          "scan_64_w8": 270.35701274871826,
+          "sequential_1024": 202.6209980249405,
+          "sequential_128": 153.75900268554688,
+          "sequential_2048": 225.42500495910645,
+          "sequential_256": 153.62800657749176,
+          "sequential_512": 162.58999705314636,
+          "sequential_64": 271.1620032787323
+        },
+        "median_us": {
+          "sequential": 153.62800657749176,
+          "scan": 164.88799452781677
+        },
+        "speedup": 0.9317112929745444,
+        "fixed_config_seed_speedups": [
+          0.9314625908436045,
+          0.9309025217898943,
+          0.9319825803579298
+        ],
+        "resource_failures_by_seed": {
+          "0": {
+            "scan_128_w4": {
+              "type": "OutOfResources",
+              "error": "out of resource: shared memory, Required: 262144, Hardware limit: 232448. Reducing block sizes or `num_stages` may help."
+            },
+            "scan_256_w4": {
+              "type": "OutOfResources",
+              "error": "out of resource: shared memory, Required: 524288, Hardware limit: 232448. Reducing block sizes or `num_stages` may help."
+            },
+            "scan_128_w8": {
+              "type": "OutOfResources",
+              "error": "out of resource: shared memory, Required: 262144, Hardware limit: 232448. Reducing block sizes or `num_stages` may help."
+            },
+            "scan_256_w8": {
+              "type": "OutOfResources",
+              "error": "out of resource: shared memory, Required: 524288, Hardware limit: 232448. Reducing block sizes or `num_stages` may help."
+            }
+          },
+          "1": {
+            "scan_128_w4": {
+              "type": "OutOfResources",
+              "error": "out of resource: shared memory, Required: 262144, Hardware limit: 232448. Reducing block sizes or `num_stages` may help."
+            },
+            "scan_256_w4": {
+              "type": "OutOfResources",
+              "error": "out of resource: shared memory, Required: 524288, Hardware limit: 232448. Reducing block sizes or `num_stages` may help."
+            },
+            "scan_128_w8": {
+              "type": "OutOfResources",
+              "error": "out of resource: shared memory, Required: 262144, Hardware limit: 232448. Reducing block sizes or `num_stages` may help."
+            },
+            "scan_256_w8": {
+              "type": "OutOfResources",
+              "error": "out of resource: shared memory, Required: 524288, Hardware limit: 232448. Reducing block sizes or `num_stages` may help."
+            }
+          },
+          "2": {
+            "scan_128_w4": {
+              "type": "OutOfResources",
+              "error": "out of resource: shared memory, Required: 262144, Hardware limit: 232448. Reducing block sizes or `num_stages` may help."
+            },
+            "scan_256_w4": {
+              "type": "OutOfResources",
+              "error": "out of resource: shared memory, Required: 524288, Hardware limit: 232448. Reducing block sizes or `num_stages` may help."
+            },
+            "scan_128_w8": {
+              "type": "OutOfResources",
+              "error": "out of resource: shared memory, Required: 262144, Hardware limit: 232448. Reducing block sizes or `num_stages` may help."
+            },
+            "scan_256_w8": {
+              "type": "OutOfResources",
+              "error": "out of resource: shared memory, Required: 524288, Hardware limit: 232448. Reducing block sizes or `num_stages` may help."
+            }
+          }
+        },
+        "excluded_configs": [
+          "scan_128_w4",
+          "scan_128_w8",
+          "scan_256_w4",
+          "scan_256_w8"
+        ]
+      }
+    ],
+    "small_state_diagnostics": [
+      {
+        "shape": [
+          1,
+          64,
+          4,
+          128
+        ],
+        "has_seq_resets": false,
+        "workload_class": "low_parallelism_diagnostic",
+        "best_configs": {
+          "sequential": "sequential_256",
+          "scan": "scan_16"
+        },
+        "config_median_us": {
+          "sequential_64": 11.94899994879961,
+          "sequential_128": 12.147000059485435,
+          "sequential_256": 11.877999641001225,
+          "sequential_512": 12.601000256836414,
+          "sequential_1024": 14.065999537706375,
+          "sequential_2048": 14.515000395476818,
+          "scan_16": 2.2360000293701887,
+          "scan_32": 2.6140001136809587,
+          "scan_64": 3.0590000096708536
+        },
+        "median_us": {
+          "sequential": 11.877999641001225,
+          "scan": 2.2360000293701887
+        },
+        "speedup": 5.312164349276366,
+        "fixed_config_seed_speedups": [
+          5.312164349276366,
+          5.296777046525587,
+          5.281208642433867
+        ]
+      },
+      {
+        "shape": [
+          1,
+          64,
+          4,
+          128
+        ],
+        "has_seq_resets": true,
+        "workload_class": "low_parallelism_diagnostic",
+        "best_configs": {
+          "sequential": "sequential_64",
+          "scan": "scan_16"
+        },
+        "config_median_us": {
+          "sequential_64": 12.59199995547533,
+          "sequential_128": 12.666000053286552,
+          "sequential_256": 12.852000072598457,
+          "sequential_512": 13.190999627113342,
+          "sequential_1024": 15.208999626338482,
+          "sequential_2048": 15.988999977707863,
+          "scan_16": 2.334000077098608,
+          "scan_32": 2.6910000015050173,
+          "scan_64": 3.117999993264675
+        },
+        "median_us": {
+          "sequential": 12.59199995547533,
+          "scan": 2.334000077098608
+        },
+        "speedup": 5.395029794141407,
+        "fixed_config_seed_speedups": [
+          5.383890234819772,
+          5.453443297164417,
+          5.381624268436631
+        ]
+      },
+      {
+        "shape": [
+          1,
+          256,
+          4,
+          128
+        ],
+        "has_seq_resets": false,
+        "workload_class": "low_parallelism_diagnostic",
+        "best_configs": {
+          "sequential": "sequential_256",
+          "scan": "scan_16"
+        },
+        "config_median_us": {
+          "sequential_64": 44.02799904346466,
+          "sequential_128": 44.81799900531769,
+          "sequential_256": 43.588001281023026,
+          "sequential_512": 46.47200182080269,
+          "sequential_1024": 52.5129996240139,
+          "sequential_2048": 54.33100089430809,
+          "scan_16": 4.091999959200621,
+          "scan_32": 5.8120000176131725,
+          "scan_64": 9.664000011980534
+        },
+        "median_us": {
+          "sequential": 43.588001281023026,
+          "scan": 4.091999959200621
+        },
+        "speedup": 10.652004329329959,
+        "fixed_config_seed_speedups": [
+          10.672870315038567,
+          10.645192461968723,
+          10.648094231091585
+        ]
+      },
+      {
+        "shape": [
+          1,
+          256,
+          4,
+          128
+        ],
+        "has_seq_resets": true,
+        "workload_class": "low_parallelism_diagnostic",
+        "best_configs": {
+          "sequential": "sequential_64",
+          "scan": "scan_16"
+        },
+        "config_median_us": {
+          "sequential_64": 46.94399982690811,
+          "sequential_128": 47.162000089883804,
+          "sequential_256": 47.478001564741135,
+          "sequential_512": 48.88400062918663,
+          "sequential_1024": 57.00499936938286,
+          "sequential_2048": 60.24700030684471,
+          "scan_16": 4.093999974429607,
+          "scan_32": 5.888999905437231,
+          "scan_64": 9.662999771535397
+        },
+        "median_us": {
+          "sequential": 46.94399982690811,
+          "scan": 4.093999974429607
+        },
+        "speedup": 11.466536424062518,
+        "fixed_config_seed_speedups": [
+          11.466633338478259,
+          11.295476429986884,
+          11.469955974875674
+        ]
+      },
+      {
+        "shape": [
+          4,
+          256,
+          16,
+          128
+        ],
+        "has_seq_resets": false,
+        "workload_class": "low_parallelism_diagnostic",
+        "best_configs": {
+          "sequential": "sequential_256",
+          "scan": "scan_32"
+        },
+        "config_median_us": {
+          "sequential_64": 47.690000385046005,
+          "sequential_128": 48.57400059700012,
+          "sequential_256": 46.65699973702431,
+          "sequential_512": 48.1100007891655,
+          "sequential_1024": 56.515999138355255,
+          "sequential_2048": 60.52200123667717,
+          "scan_16": 7.780999876558781,
+          "scan_32": 7.555000018328428,
+          "scan_64": 11.385999619960785
+        },
+        "median_us": {
+          "sequential": 46.65699973702431,
+          "scan": 7.555000018328428
+        },
+        "speedup": 6.175645218244135,
+        "fixed_config_seed_speedups": [
+          6.175645218244135,
+          6.194584607762266,
+          6.170370439722239
+        ]
+      },
+      {
+        "shape": [
+          4,
+          256,
+          16,
+          128
+        ],
+        "has_seq_resets": true,
+        "workload_class": "low_parallelism_diagnostic",
+        "best_configs": {
+          "sequential": "sequential_256",
+          "scan": "scan_32"
+        },
+        "config_median_us": {
+          "sequential_64": 49.855999648571014,
+          "sequential_128": 49.72900077700615,
+          "sequential_256": 49.18599873781204,
+          "sequential_512": 50.11399835348129,
+          "sequential_1024": 59.33000147342682,
+          "sequential_2048": 63.603997230529785,
+          "scan_16": 8.120999671518803,
+          "scan_32": 7.668000180274248,
+          "scan_64": 11.500000022351742
+        },
+        "median_us": {
+          "sequential": 49.18599873781204,
+          "scan": 7.668000180274248
+        },
+        "speedup": 6.414449345520606,
+        "fixed_config_seed_speedups": [
+          6.4152320062573995,
+          6.406441366509742,
+          6.438800562865552
+        ]
+      }
+    ],
+    "interpretation": "Large gains on dim128 diagnostics did not transfer to representative flattened state dimensions4096/8192; broader tile/warp search remained slower. Some large scan tiles exceeded shared-memory limits; retained in raw report."
+  },
+  "segment": {
+    "implementation": "Existing upstream algorithms; producer-known facts skip host discovery. No new compiler pass or new uniform reduction kernel.",
+    "results": [
+      {
+        "shape": [
+          8192,
+          128
+        ],
+        "host_median_us": {
+          "cold_discovery": 83.632,
+          "cached_discovery": 31.33,
+          "producer_known": 24.505
+        },
+        "device_median_us": {
+          "generic": 6.812000181525946,
+          "uniform": 2.076999982818961
+        }
+      },
+      {
+        "shape": [
+          65536,
+          16
+        ],
+        "host_median_us": {
+          "cold_discovery": 229.251,
+          "cached_discovery": 34.74,
+          "producer_known": 26.392
+        },
+        "device_median_us": {
+          "generic": 43.060000985860825,
+          "uniform": 2.1780000533908606
+        }
+      }
+    ],
+    "interpretation": "Upstream already selects uniform GPU kernels. Incremental savings are host discovery/dispatch, especially the cold CPU copy; do not claim generic-vs-uniform GPU ratio as a new optimization."
+  },
+  "torchrec_tbe": {
+    "implementation": "Unchanged static short-run Rowwise Adagrad kernel, original versus native immutable metadata contract; upstream launch and explicitly persistent grid tested.",
+    "results": [
+      {
+        "shape": [
+          512,
+          1,
+          64
+        ],
+        "schedule": "upstream",
+        "speedup_median": 0.9992871091829217,
+        "speedup_min": 0.9975044372707335,
+        "speedup_max": 1.0,
+        "all_ptx_identical": true,
+        "all_cubin_text_identical": true,
+        "median_us": {
+          "original": 5.5959997698664665,
+          "contract": 5.609999876469374
+        },
+        "speedup_ratio_of_seed_medians": 0.9975044372707335
+      },
+      {
+        "shape": [
+          512,
+          1,
+          64
+        ],
+        "schedule": "persistent",
+        "speedup_median": 0.9978470355766264,
+        "speedup_min": 0.9974891917901609,
+        "speedup_max": 0.9991066375271727,
+        "all_ptx_identical": true,
+        "all_cubin_text_identical": true,
+        "median_us": {
+          "original": 8.806000463664532,
+          "contract": 8.825000375509262
+        },
+        "speedup_ratio_of_seed_medians": 0.9978470355766264
+      },
+      {
+        "shape": [
+          4096,
+          8,
+          128
+        ],
+        "schedule": "upstream",
+        "speedup_median": 1.000089228008913,
+        "speedup_min": 0.9999553842525022,
+        "speedup_max": 1.0008467776544998,
+        "all_ptx_identical": true,
+        "all_cubin_text_identical": true,
+        "median_us": {
+          "original": 22.417999804019928,
+          "contract": 22.419000044465065
+        },
+        "speedup_ratio_of_seed_medians": 0.9999553842525022
+      },
+      {
+        "shape": [
+          4096,
+          8,
+          128
+        ],
+        "schedule": "persistent",
+        "speedup_median": 0.9999458601801827,
+        "speedup_min": 0.9994608044398701,
+        "speedup_max": 1.0013520076437152,
+        "all_ptx_identical": true,
+        "all_cubin_text_identical": true,
+        "median_us": {
+          "original": 55.54899945855141,
+          "contract": 55.47399818897247
+        },
+        "speedup_ratio_of_seed_medians": 1.0013520076437152
+      },
+      {
+        "shape": [
+          8192,
+          32,
+          256
+        ],
+        "schedule": "upstream",
+        "speedup_median": 1.0000192867343443,
+        "speedup_min": 0.9996587930386489,
+        "speedup_max": 1.0003670024059046,
+        "all_ptx_identical": true,
+        "all_cubin_text_identical": true,
+        "median_us": {
+          "original": 155.29799461364746,
+          "contract": 155.30399978160858
+        },
+        "speedup_ratio_of_seed_medians": 0.9999613328184106
+      },
+      {
+        "shape": [
+          8192,
+          32,
+          256
+        ],
+        "schedule": "persistent",
+        "speedup_median": 1.0001116346290475,
+        "speedup_min": 1.000060891717471,
+        "speedup_max": 1.0001456768916936,
+        "all_ptx_identical": true,
+        "all_cubin_text_identical": true,
+        "median_us": {
+          "original": 411.87599301338196,
+          "contract": 411.8160009384155
+        },
+        "speedup_ratio_of_seed_medians": 1.0001456768916936
+      }
+    ],
+    "interpretation": "Identical PTX and executable instruction bytes. Metadata addresses vary per run/entry, so immutability alone does not establish invariant loads. No CLC work queue tested."
+  },
+  "takeaways": [
+    "Additional caller facts can enable real native compiler improvements: RMSNorm and MoE hoists match manual machine code.",
+    "Legality needs profitability: large RMSNorm forward regresses about9%, with registers68 to94; causal occupancy profiling was not performed.",
+    "Input immutability and producer-proven index uniqueness are the strongest leads in these experiments.",
+    "Results do not establish state-of-the-art performance, global tuning optima, cross-device portability of gains, or a fundamental impossibility for alternative scan implementations."
+  ],
+  "implementation_files": [
+    "../rmsnorm_experiment.py",
+    "../rmsnorm_kernels.py",
+    "../te_experiment.py",
+    "../te_kernels.py",
+    "../irregular_experiment.py",
+    "../irregular_kernels.py",
+    "../mamba_supplement.py"
+  ],
+  "source_provenance": [
+    "../vendor/aiter/provenance.json",
+    "../vendor/transformer_engine_provenance.json",
+    "../vendor/irregular/provenance.json"
+  ],
+  "reproduction": "Current harnesses ../rmsnorm_experiment.py, ../te_experiment.py, ../irregular_experiment.py, and ../mamba_supplement.py expose --help. Retained timing reports record historical arguments; environment/manifest.json and compiler.patch identify the earlier compiler. See ../../README.md for the current proof-pipeline command. Old rms_logs commands and redundant run trees were pruned.",
+  "archive_note": "Compacted 2026-11-08. Numerical records and selected raw timings are retained. Superseded runs and historical generated-code trees were removed; old artifact paths are provenance. These benchmarks predate the automatic proof pipeline; their timings and narrower numerical contracts do not describe that newer implementation."
+}

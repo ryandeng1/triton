@@ -1,0 +1,22 @@
+{
+  "embedding_backward": {
+    "zero_scratch": {
+      "atomic_instruction_sites": 0,
+      "registers": 10,
+      "spills": 0,
+      "shared": 0
+    },
+    "update": {
+      "atomic_instruction_sites": 1,
+      "registers": 18,
+      "spills": 0,
+      "shared": 0
+    },
+    "convert": {
+      "atomic_instruction_sites": 0,
+      "registers": 20,
+      "spills": 0,
+      "shared": 0
+    }
+  }
+}

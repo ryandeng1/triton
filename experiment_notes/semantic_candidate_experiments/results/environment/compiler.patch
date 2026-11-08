@@ -1,0 +1,343 @@
+diff --git a/include/triton/Dialect/Triton/Transforms/Passes.td b/include/triton/Dialect/Triton/Transforms/Passes.td
+index bc163b10f..865abfea9 100644
+--- a/include/triton/Dialect/Triton/Transforms/Passes.td
++++ b/include/triton/Dialect/Triton/Transforms/Passes.td
+@@ -60,9 +60,19 @@ def TritonLoopInvariantCodeMotion : Pass</*cli-arg*/"triton-licm", /*Op*/"mlir::
+   let summary = "MLIR's LICM plus hoist load ops out of loops with masks.";
+   let description = [{
+     This pass uses MLIR's LICM pass as base. Additionally, it hoists load ops
+-    out of loops that consists of pure/read-only ops. For scf.for loops, it
+-    generates a trip-count check. For scf.while loops, it clones the condition
+-    from the before body.
++    out of loops that consist of pure/read-only ops. For scf.for loops, it
++    generates a trip-count check.
++
++    Experimental opt-in: a pointer argument with `tt.experimental_immutable =
++    1 : i32` promises that the memory reached through that argument is
++    initialized at call entry and remains unchanged through every alias for
++    the entire call. This is stronger than a readonly pointer argument and
++    must be established by the caller. It allows invariant ordinary loads
++    across ordinary stores, retaining their masks and loop-entry guards.
++    Constant initial integer comparisons are supported for after-region loads
++    in scf.while; unknown initial conditions remain unsupported. Volatile
++    accesses and loops with assertions, calls, or other unknown effects are
++    not eligible for this extension. No contract is inferred automatically.
+   }];
+ 
+   let dependentDialects = ["mlir::triton::TritonDialect"];
+diff --git a/lib/Dialect/Triton/Transforms/LoopInvariantCodeMotion.cpp b/lib/Dialect/Triton/Transforms/LoopInvariantCodeMotion.cpp
+index eba8d1119..673083f6c 100644
+--- a/lib/Dialect/Triton/Transforms/LoopInvariantCodeMotion.cpp
++++ b/lib/Dialect/Triton/Transforms/LoopInvariantCodeMotion.cpp
+@@ -1,4 +1,6 @@
++#include "mlir/Dialect/Arith/IR/Arith.h"
+ #include "mlir/Dialect/LLVMIR/LLVMAttrs.h"
++#include "mlir/IR/Matchers.h"
+ #include "mlir/Transforms/LoopInvariantCodeMotionUtils.h"
+ #include "triton/Dialect/Triton/IR/Dialect.h"
+ #include "triton/Dialect/Triton/IR/Utility.h"
+@@ -20,6 +22,66 @@ class LoopInvariantCodeMotionPass
+ 
+   DenseMap<LoopLikeOpInterface, bool> isLoopMemoryEffectFreeOrOnlyRead;
+ 
++  bool hasOnlyOrdinaryMemoryEffects(LoopLikeOpInterface loop) {
++    return !loop->walk([](Operation *op) {
++      if (auto load = dyn_cast<LoadOp>(op))
++        return load.getIsVolatile() ? WalkResult::interrupt()
++                                    : WalkResult::advance();
++      if (isa<StoreOp>(op) || isMemoryEffectFree(op) ||
++          op->hasTrait<OpTrait::HasRecursiveMemoryEffects>())
++        return WalkResult::advance();
++      // In particular, do not move reads ahead of assertions or unknown calls.
++      return WalkResult::interrupt();
++    }).wasInterrupted();
++  }
++
++  // Experimental caller contract, deliberately stronger than LLVM readonly:
++  // memory reached through this argument is initialized at call entry and is
++  // unchanged through *all aliases* for the entire call. It is not inferred
++  // from race freedom, nor from the absence of stores through this argument.
++  // This only licenses value invariance; masks and execution guards still
++  // determine which addresses may actually be accessed.
++  bool hasImmutableArgument(Value ptr) {
++    while (Operation *def = ptr.getDefiningOp()) {
++      if (!isa<AddPtrOp, SplatOp, BroadcastOp, ExpandDimsOp, ReshapeOp>(def))
++        return false;
++      ptr = def->getOperand(0);
++    }
++    auto arg = dyn_cast<BlockArgument>(ptr);
++    if (!arg)
++      return false;
++    auto func = dyn_cast<FuncOp>(arg.getOwner()->getParentOp());
++    if (!func || arg.getOwner() != &func.getBody().front())
++      return false;
++    auto attr = func.getArgAttrOfType<IntegerAttr>(arg.getArgNumber(),
++                                                 "tt.experimental_immutable");
++    return attr && attr.getInt() == 1;
++  }
++
++  // A bounded while-loop extension for constant initial conditions, such as
++  // `offset = 0; while offset < HIDDEN_SIZE`. Do not speculate an ordinary load
++  // out of a while loop whose first execution cannot be established.
++  std::optional<bool> initialWhileCondition(scf::WhileOp loop) {
++    auto condition = loop.getConditionOp().getCondition();
++    auto resolveInitial = [&](Value value) {
++      if (auto arg = dyn_cast<BlockArgument>(value))
++        if (arg.getOwner() == &loop.getBefore().front())
++          return loop.getInits()[arg.getArgNumber()];
++      return value;
++    };
++    APInt constant;
++    if (matchPattern(resolveInitial(condition), m_ConstantInt(&constant)))
++      return !constant.isZero();
++    auto cmp = condition.getDefiningOp<arith::CmpIOp>();
++    if (!cmp || !cmp.getType().isInteger(1))
++      return std::nullopt;
++    APInt lhs, rhs;
++    if (!matchPattern(resolveInitial(cmp.getLhs()), m_ConstantInt(&lhs)) ||
++        !matchPattern(resolveInitial(cmp.getRhs()), m_ConstantInt(&rhs)))
++      return std::nullopt;
++    return arith::applyCmpPredicate(cmp.getPredicate(), lhs, rhs);
++  }
++
+   bool isLICMDisabled(LoopLikeOpInterface loopLike) {
+     auto loopMD = loopLike->getAttrOfType<LLVM::LoopAnnotationAttr>(
+         LLVM::LoopAnnotationAttr::name);
+@@ -60,13 +122,27 @@ class LoopInvariantCodeMotionPass
+           },
+           // shouldMoveOutOfRegion
+           [&](Operation *op, Region *region) {
+-            if (!isa<LoadOp>(op))
++            auto load = dyn_cast<LoadOp>(op);
++            if (!load)
+               return isSpeculatable(op) && isMemoryEffectFree(op);
++            if (load.getIsVolatile())
++              return false;
++            bool immutable = hasImmutableArgument(load.getPtr()) &&
++                             hasOnlyOrdinaryMemoryEffects(loopLike);
++            if (auto whileOp = dyn_cast<scf::WhileOp>(loopLike.getOperation())) {
++              // Only after-region loads are conditional on the entry test.
++              // Existing unannotated while behavior remains unchanged.
++              if (!immutable || region != &whileOp.getAfter() ||
++                  !initialWhileCondition(whileOp).has_value())
++                return false;
++            } else if (!isa<scf::ForOp>(loopLike.getOperation())) {
++              return false;
++            }
+             if (!isLoopMemoryEffectFreeOrOnlyRead.contains(loopLike))
+               isLoopMemoryEffectFreeOrOnlyRead[loopLike] =
+                   isMemoryEffectFreeOrOnlyRead(loopLike);
+             return isMemoryEffectFreeOrOnlyRead(op) &&
+-                   isLoopMemoryEffectFreeOrOnlyRead[loopLike];
++                   (immutable || isLoopMemoryEffectFreeOrOnlyRead[loopLike]);
+           },
+           // moveOutOfRegion
+           [&](Operation *op, Region *) {
+@@ -81,8 +157,10 @@ class LoopInvariantCodeMotionPass
+                     forOp.getLowerBound(), forOp.getUpperBound());
+               } else if (auto whileOp =
+                              dyn_cast<scf::WhileOp>(loopLike.getOperation())) {
+-                // TODO: Support Load Op hoisting for while loop.
+-                return;
++                auto entry = initialWhileCondition(whileOp);
++                if (!entry)
++                  return;
++                cond = arith::ConstantIntOp::create(rewriter, loc, *entry, 1);
+               } else {
+                 return;
+               }
+diff --git a/test/Triton/loop-invariant-code-motion.mlir b/test/Triton/loop-invariant-code-motion.mlir
+index cc80c2bf3..6aeed0614 100644
+--- a/test/Triton/loop-invariant-code-motion.mlir
++++ b/test/Triton/loop-invariant-code-motion.mlir
+@@ -181,3 +181,190 @@ tt.func @do_not_hoist_from_for_with_licm_disabled(%lb: i32, %ub: i32, %step: i32
+   } {llvm.loop_annotation = #llvm.loop_annotation<licm = <disable = true>>}
+   tt.return %result : i32
+ }
++
++// -----
++
++// The contract is about memory contents through all aliases, not just the
++// absence of stores through %weights. The entry guard must survive hoisting.
++// CHECK-LABEL: @immutable_with_output_store
++// CHECK: %[[ENTRY:.*]] = arith.cmpi slt
++// CHECK: %[[GUARD:.*]] = arith.andi %[[ENTRY]], %{{.*}}
++// CHECK: tt.load %{{.*}}, %[[GUARD]]
++// CHECK: scf.for
++// CHECK-NOT: tt.load
++// CHECK: tt.store
++tt.func @immutable_with_output_store(%weights: !tt.ptr<f32> {tt.experimental_immutable = 1 : i32}, %out: !tt.ptr<f32>, %n: i32, %mask: i1) {
++  %c0 = arith.constant 0 : i32
++  %c1 = arith.constant 1 : i32
++  scf.for %i = %c0 to %n step %c1 : i32 {
++    %value = tt.load %weights, %mask : !tt.ptr<f32>
++    %dst = tt.addptr %out, %i : !tt.ptr<f32>, i32
++    tt.store %dst, %value : !tt.ptr<f32>
++  }
++  tt.return
++}
++
++// -----
++
++// CHECK-LABEL: @immutable_zero_is_not_a_contract
++// CHECK-NOT: tt.load
++// CHECK: scf.for
++// CHECK: tt.load
++tt.func @immutable_zero_is_not_a_contract(%weights: !tt.ptr<f32> {tt.experimental_immutable = 0 : i32}, %out: !tt.ptr<f32>, %n: i32) {
++  %c0 = arith.constant 0 : i32
++  %c1 = arith.constant 1 : i32
++  scf.for %i = %c0 to %n step %c1 : i32 {
++    %value = tt.load %weights : !tt.ptr<f32>
++    tt.store %out, %value : !tt.ptr<f32>
++  }
++  tt.return
++}
++
++// -----
++
++// CHECK-LABEL: @immutable_volatile_stays
++// CHECK-NOT: tt.load
++// CHECK: scf.for
++// CHECK: tt.load %{{.*}} {isVolatile = true}
++tt.func @immutable_volatile_stays(%weights: !tt.ptr<f32> {tt.experimental_immutable = 1 : i32}, %out: !tt.ptr<f32>, %n: i32) {
++  %c0 = arith.constant 0 : i32
++  %c1 = arith.constant 1 : i32
++  scf.for %i = %c0 to %n step %c1 : i32 {
++    %value = tt.load %weights {isVolatile = true} : !tt.ptr<f32>
++    tt.store %out, %value : !tt.ptr<f32>
++  }
++  tt.return
++}
++
++// -----
++
++// CHECK-LABEL: @immutable_constant_entry_while
++// CHECK: %[[TRUE:.*]] = arith.constant true
++// CHECK: tt.load %{{.*}}, %[[TRUE]]
++// CHECK: scf.while
++// CHECK: do
++// CHECK-NOT: tt.load
++// CHECK: tt.store
++tt.func @immutable_constant_entry_while(%weights: !tt.ptr<f32> {tt.experimental_immutable = 1 : i32}, %out: !tt.ptr<f32>) {
++  %c0 = arith.constant 0 : i32
++  %c1 = arith.constant 1 : i32
++  %c8 = arith.constant 8 : i32
++  %end = scf.while (%i = %c0) : (i32) -> i32 {
++    %cond = arith.cmpi slt, %i, %c8 : i32
++    scf.condition(%cond) %i : i32
++  } do {
++  ^bb0(%i: i32):
++    %value = tt.load %weights : !tt.ptr<f32>
++    %dst = tt.addptr %out, %i : !tt.ptr<f32>, i32
++    tt.store %dst, %value : !tt.ptr<f32>
++    %next = arith.addi %i, %c1 : i32
++    scf.yield %next : i32
++  }
++  tt.return
++}
++
++// -----
++
++// CHECK-LABEL: @immutable_unknown_entry_while
++// CHECK-NOT: tt.load
++// CHECK: scf.while
++// CHECK: do
++// CHECK: tt.load
++tt.func @immutable_unknown_entry_while(%weights: !tt.ptr<f32> {tt.experimental_immutable = 1 : i32}, %out: !tt.ptr<f32>, %n: i32) {
++  %c0 = arith.constant 0 : i32
++  %c1 = arith.constant 1 : i32
++  %end = scf.while (%i = %c0) : (i32) -> i32 {
++    %cond = arith.cmpi slt, %i, %n : i32
++    scf.condition(%cond) %i : i32
++  } do {
++  ^bb0(%i: i32):
++    %value = tt.load %weights : !tt.ptr<f32>
++    tt.store %out, %value : !tt.ptr<f32>
++    %next = arith.addi %i, %c1 : i32
++    scf.yield %next : i32
++  }
++  tt.return
++}
++
++// -----
++
++// CHECK-LABEL: @immutable_zero_trip_while
++// CHECK: %[[FALSE:.*]] = arith.constant false
++// CHECK: tt.load %{{.*}}, %[[FALSE]]
++// CHECK: scf.while
++// CHECK: do
++// CHECK-NOT: tt.load
++tt.func @immutable_zero_trip_while(%weights: !tt.ptr<f32> {tt.experimental_immutable = 1 : i32}, %out: !tt.ptr<f32>) {
++  %c0 = arith.constant 0 : i32
++  %c1 = arith.constant 1 : i32
++  %end = scf.while (%i = %c0) : (i32) -> i32 {
++    %cond = arith.cmpi slt, %i, %c0 : i32
++    scf.condition(%cond) %i : i32
++  } do {
++  ^bb0(%i: i32):
++    %value = tt.load %weights : !tt.ptr<f32>
++    tt.store %out, %value : !tt.ptr<f32>
++    %next = arith.addi %i, %c1 : i32
++    scf.yield %next : i32
++  }
++  tt.return
++}
++
++// -----
++
++// CHECK-LABEL: @immutable_derived_tensor_pointer
++// CHECK: tt.splat
++// CHECK: tt.addptr
++// CHECK: tt.load
++// CHECK: scf.for
++// CHECK-NOT: tt.load
++// CHECK: tt.store
++tt.func @immutable_derived_tensor_pointer(%weights: !tt.ptr<f32> {tt.experimental_immutable = 1 : i32}, %out: tensor<32x!tt.ptr<f32>>, %n: i32) {
++  %c0 = arith.constant 0 : i32
++  %c1 = arith.constant 1 : i32
++  scf.for %i = %c0 to %n step %c1 : i32 {
++    %offsets = tt.make_range {start = 0 : i32, end = 32 : i32} : tensor<32xi32>
++    %base = tt.splat %weights : !tt.ptr<f32> -> tensor<32x!tt.ptr<f32>>
++    %ptrs = tt.addptr %base, %offsets : tensor<32x!tt.ptr<f32>>, tensor<32xi32>
++    %value = tt.load %ptrs : tensor<32x!tt.ptr<f32>>
++    tt.store %out, %value : tensor<32x!tt.ptr<f32>>
++  }
++  tt.return
++}
++
++// -----
++
++// A contract on values must not speculate an address ahead of a device assert.
++// CHECK-LABEL: @immutable_assert_stays
++// CHECK-NOT: tt.load
++// CHECK: scf.for
++// CHECK: tt.assert
++// CHECK: tt.load
++tt.func @immutable_assert_stays(%weights: !tt.ptr<f32> {tt.experimental_immutable = 1 : i32}, %out: !tt.ptr<f32>, %n: i32, %valid: i1) {
++  %c0 = arith.constant 0 : i32
++  %c1 = arith.constant 1 : i32
++  scf.for %i = %c0 to %n step %c1 : i32 {
++    tt.assert %valid, "address must be valid" : i1
++    %value = tt.load %weights : !tt.ptr<f32>
++    tt.store %out, %value : !tt.ptr<f32>
++  }
++  tt.return
++}
++
++// -----
++
++// Unknown pointer provenance does not inherit the contract.
++// CHECK-LABEL: @immutable_select_stays
++// CHECK-NOT: tt.load
++// CHECK: scf.for
++// CHECK: tt.load
++tt.func @immutable_select_stays(%weights: !tt.ptr<f32> {tt.experimental_immutable = 1 : i32}, %other: !tt.ptr<f32>, %out: !tt.ptr<f32>, %n: i32, %choose: i1) {
++  %c0 = arith.constant 0 : i32
++  %c1 = arith.constant 1 : i32
++  %ptr = arith.select %choose, %weights, %other : !tt.ptr<f32>
++  scf.for %i = %c0 to %n step %c1 : i32 {
++    %value = tt.load %ptr : !tt.ptr<f32>
++    tt.store %out, %value : !tt.ptr<f32>
++  }
++  tt.return
++}
