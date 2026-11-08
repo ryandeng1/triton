@@ -5,6 +5,7 @@ The historical harness was not committed. This reconstruction extracts the exact
 registered tutorial provider and builds the owner from its row-computation AST.
 The optional native mode compiles the unchanged original through the ownership
 pass; the source owner remains an independent comparison.
+The reuse control pairs that same native proof with contract load reuse off/on.
 """
 
 import argparse
@@ -166,7 +167,7 @@ def direct_round(values, dtype):
 
 
 class Case:
-    def __init__(self, module, m, n, dtype, scratch_dtype, seed, native_enabled=False):
+    def __init__(self, module, m, n, dtype, scratch_dtype, seed, native_enabled=False, reuse_control=False):
         self.module, self.m, self.n, self.dtype, self.scratch_dtype = module, m, n, dtype, scratch_dtype
         torch.manual_seed(seed)
         self.x = torch.randn((m, n), device="cuda", dtype=dtype)
@@ -183,7 +184,9 @@ class Case:
         self.contexts = {}
         self.rows_by_warps = {}
         self.native_enabled = native_enabled
-        self.modes = ("locked", "owner", "native") if native_enabled else ("locked", "owner")
+        self.reuse_control = reuse_control
+        self.modes = (("locked", "owner", "native_off", "native_on") if reuse_control else
+                      ("locked", "owner", "native") if native_enabled else ("locked", "owner"))
         self.math_reference = self.reference()
 
     def reference(self):
@@ -212,14 +215,18 @@ class Case:
         ctx = self.context(group)
         buf = ctx["buffers"]
         buf["lock"].tensor.zero_()
-        if mode == "native":
+        if mode.startswith("native"):
             from triton.experimental.semantic_contracts.native import compile_private_reduction_ownership
-            if ("plan", warps) not in ctx:
-                ctx[("plan", warps)] = compile_private_reduction_ownership(
+            key = ("plan", warps) if mode == "native" else ("plan", mode, warps)
+            if key not in ctx:
+                options = dict(FLAGS, num_warps=warps)
+                if mode in ("native_off", "native_on"):
+                    options["enable_contract_load_reuse"] = mode == "native_on"
+                ctx[key] = compile_private_reduction_ownership(
                     self.module._layer_norm_bwd_dx_fused, ctx["args"], grid=(self.m,),
                     private_args=("DX", "DW", "DB", "Lock"), zero_initialized_args=("Lock",),
-                    options=dict(FLAGS, num_warps=warps))
-            plan = ctx[("plan", warps)]
+                    options=options)
+            plan = ctx[key]
             assert plan.report()["transformed"], "native protocol recognition declined"
             plan(*ctx["args"])
             ctx["compiled"][(mode, warps)] = plan.optimized
@@ -274,7 +281,7 @@ class Case:
         for item in buf.values():
             item.check()
         check = self.record_accuracy(actual)
-        if mode in ("owner", "native") and ordered:
+        if (mode == "owner" or mode.startswith("native")) and ordered:
             row_dx, row_dw, row_db = self.row_contributions(warps)
             ref_dw, ref_db = torch.empty_like(buf["dw"].tensor), torch.empty_like(buf["db"].tensor)
             ordered_reference[(active, triton.cdiv(self.n, 128))](row_dw, row_db, ref_dw, ref_db,
@@ -300,9 +307,20 @@ def evidence(kernel, output, label):
     directory.mkdir(exist_ok=True)
     for kind in ("ttir", "ttgir", "ptx"):
         (directory / f"{label}.{kind}").write_text(kernel.asm[kind])
+    roots = {"%W": "%W"}
+    weight_loads = 0
+    for line in kernel.asm["ttgir"].splitlines():
+        derived = re.match(r"\s*(%[\w.]+) = (?:tt\.splat|tt\.addptr|ttg\.convert_layout|tt\.broadcast|tt\.expand_dims|tt\.reshape)\s+(%[\w.]+)", line)
+        if derived and derived[2] in roots:
+            roots[derived[1]] = roots[derived[2]]
+        load = re.search(r"\btt\.load\s+(%[\w.]+)", line)
+        weight_loads += bool(load and roots.get(load[1]) == "%W")
     return {"registers": kernel.n_regs, "spills": kernel.n_spills, "shared": kernel.metadata.shared,
             "atomic_sites": len(re.findall(r"\b(?:atom|red)\.", kernel.asm["ptx"])),
             "barrier_sites": len(re.findall(r"\bbar\.sync\b", kernel.asm["ptx"])),
+            "ttgir_load_sites": len(re.findall(r"\btt\.load\b", kernel.asm["ttgir"])),
+            "weight_load_sites": weight_loads,
+            "ptx_sha256": hashlib.sha256(kernel.asm["ptx"].encode()).hexdigest(),
             "cubin_sha256": hashlib.sha256(kernel.asm["cubin"]).hexdigest(), "artifact_prefix": f"code/{label}"}
 
 
@@ -312,9 +330,24 @@ def one_configuration(case, group, warps, seed, settings):
     functions["torch_native"] = case.native
     times = paired_device_times(functions, seed=seed, **settings)
     post = {mode: case.validate(mode, group, warps) for mode in case.modes}
-    report = case.context(group)[("plan", warps)].report() if case.native_enabled else None
-    return {"group": group, "warps": warps, "seed": seed, "timing": times, "pre": pre, "post": post,
-            "native_report": report}
+    ctx = case.context(group)
+    report = ctx[("plan", warps)].report() if case.native_enabled and not case.reuse_control else None
+    record = {"group": group, "warps": warps, "seed": seed, "timing": times, "pre": pre, "post": post,
+              "native_report": report}
+    if case.reuse_control:
+        off, on = (ctx[("plan", mode, warps)] for mode in ("native_off", "native_on"))
+        assert off.optimized.src.fn is on.optimized.src.fn
+        assert off.optimized.src.signature == on.optimized.src.signature
+        assert off.optimized.src.constants == on.optimized.src.constants
+        assert off.attrs == on.attrs and off.grid == on.grid
+        assert off.optimized.asm["ttir"] == on.optimized.asm["ttir"]
+        assert off.baseline.asm["ptx"] == on.baseline.asm["ptx"]
+        record["reuse_control"] = {
+            "off": off.report(), "on": on.report(), "same_source_signature_constants_contracts_grid": True,
+            "identical_ownership_ttir": True, "identical_unannotated_baseline_ptx": True,
+            "off_over_on": times["median_us"]["native_off"] / times["median_us"]["native_on"],
+        }
+    return record
 
 
 def main():
@@ -334,7 +367,14 @@ def main():
     parser.add_argument("--warps", default="1,2,4,8")
     parser.add_argument("--seeds", default="0,1,2")
     parser.add_argument("--native", action="store_true", help="Also verify the rebuilt native ownership pass")
+    parser.add_argument("--reuse-control", action="store_true", help="Pair native ownership with contract load reuse disabled/enabled")
     args = parser.parse_args()
+    if args.reuse_control:
+        args.native = True
+        if args.scratch_dtype != "float32":
+            parser.error("--reuse-control requires FP32 partial scratch")
+    if (args.output / "results.json").exists():
+        parser.error("Use a fresh output directory; existing measured artifacts are immutable")
     args.output.mkdir(parents=True, exist_ok=True)
     module, audit = extract(args.tutorial, args.output)
     save_json(args.output / "source_audit.json", audit)
@@ -350,12 +390,13 @@ def main():
     records = []
     metadata = {"shape": [m, n], "dtype": args.dtype, "scratch_dtype": str(scratch), "flags": FLAGS,
                 "settings": settings, "fingerprints": fingerprints, "source_audit": audit,
+                "reuse_control": args.reuse_control,
                 "device": torch.cuda.get_device_name(), "torch": torch.__version__, "triton": triton.__version__,
                 "scope": "Same M-program grid and signature; lock/count reset and unchanged final reduction included; allocations/forward/guards excluded.",
                 "numerics": "Owner must match a permitted original increasing-row serialization bitwise. FP64 saved-statistics oracle and historical0.01 diagnostic reported separately; no tolerance enlarged.",
                 "strong_provider": "torch aten.native_layer_norm_backward; Quack is unavailable in this environment."}
     for seed in map(int, args.seeds.split(",")):
-        case = Case(module, m, n, dtype, scratch, seed, args.native)
+        case = Case(module, m, n, dtype, scratch, seed, args.native, args.reuse_control)
         native_check = case.record_accuracy(case.native())
         for group in groups:
             for warp in warps:
@@ -381,9 +422,12 @@ def main():
         best = min(medians, key=medians.get)
         summary["best_tested"][mode] = {"group": best[0], "warps": best[1], "us": medians[best]}
     summary["best_tested_speedup"] = summary["best_tested"]["locked"]["us"] / summary["best_tested"]["owner"]["us"]
-    if args.native:
+    if args.native and not args.reuse_control:
         summary["best_tested_native_speedup"] = (summary["best_tested"]["locked"]["us"] /
                                                  summary["best_tested"]["native"]["us"])
+    if args.reuse_control:
+        summary["reuse_control_seed_ratios"] = [record["reuse_control"]["off_over_on"] for record in records]
+        summary["reuse_control_median_ratio"] = statistics.median(summary["reuse_control_seed_ratios"])
     save_json(args.output / "summary.json", summary)
 
 

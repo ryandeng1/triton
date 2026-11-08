@@ -1,8 +1,12 @@
+#include "mlir/Dialect/Arith/IR/Arith.h"
 #include "mlir/Dialect/SCF/IR/SCF.h"
 #include "mlir/IR/Dominance.h"
 #include "mlir/Pass/Pass.h"
 #include "mlir/Transforms/CSE.h"
 #include "mlir/Transforms/GreedyPatternRewriteDriver.h"
+#include "triton/Analysis/GlobalMemoryEffects.h"
+#include "triton/Dialect/Triton/IR/Dialect.h"
+#include "triton/Dialect/Triton/Transforms/Passes.h"
 #include "llvm/ADT/EquivalenceClasses.h"
 
 using namespace mlir;
@@ -13,6 +17,89 @@ namespace mlir::triton {
 } // namespace mlir::triton
 
 namespace {
+// A bounded implication proof for masks introduced by LICM: a later mask of
+// (originalMask & loopEntry) reads a subset of the earlier load's lanes. This
+// does not authorize a new read or require either mask to be true.
+bool maskImplies(Value later, Value earlier, unsigned &budget) {
+  if (later == earlier)
+    return true;
+  if (!later || !earlier || !budget)
+    return false;
+  --budget;
+  auto conjunction = later.getDefiningOp<arith::AndIOp>();
+  return conjunction && (maskImplies(conjunction.getLhs(), earlier, budget) ||
+                         maskImplies(conjunction.getRhs(), earlier, budget));
+}
+
+bool canReuseLoad(triton::LoadOp earlier, triton::LoadOp later) {
+  // Check every property, attribute, result type/layout and operand. Only mask
+  // equality may be weakened, and only when both masked-off results are
+  // unspecified. Explicit `other` values require exact operation equivalence.
+  return OperationEquivalence::isEquivalentTo(
+      earlier, later,
+      [&](Value left, Value right) {
+        if (left == right)
+          return success();
+        if (left != earlier.getMask() || right != later.getMask() ||
+            earlier.getOther() || later.getOther())
+          return failure();
+        unsigned budget = 64;
+        return success(maskImplies(right, left, budget));
+      },
+      /*markEquivalent=*/nullptr, OperationEquivalence::IgnoreLocations);
+}
+
+bool reuseContractLoads(triton::FuncOp function, IRRewriter &rewriter) {
+  bool hasContracts = false;
+  for (unsigned i = 0; i < function.getNumArguments(); ++i)
+    hasContracts |=
+        bool(function.getArgAttr(i, "tt.experimental_alias_group")) ||
+        bool(function.getArgAttr(i, "tt.experimental_immutable"));
+  if (!hasContracts)
+    return false;
+  triton::GlobalMemoryEffects memory(function);
+  bool ordinary = triton::GlobalMemoryEffects::hasOnlyOrdinaryEffects(function);
+  bool immutableOrdinary =
+      ordinary ||
+      triton::GlobalMemoryEffects::hasOnlyOrdinaryEffects(function, true);
+
+  bool changed = false;
+  function->walk([&](Block *block) {
+    // Do not carry availability into or out of a region. In particular, a
+    // zero-trip loop, sibling branch or warp-specialized region cannot provide
+    // a value for a load outside that block.
+    DenseMap<Value, SmallVector<triton::LoadOp>> available;
+    for (Operation &op : llvm::make_early_inc_range(*block)) {
+      auto load = dyn_cast<triton::LoadOp>(op);
+      if (!load || load.getIsVolatile())
+        continue;
+      auto root = memory.getArgumentRoot(load.getPtr());
+      auto pointerType = root ? dyn_cast<triton::PointerType>(root.getType())
+                              : triton::PointerType();
+      if (!pointerType ||
+          pointerType.getAddressSpace() != triton::PtrAddrSpace::Global)
+        continue;
+      bool invariant = memory.isExplicitlyImmutableGlobal(load.getPtr())
+                           ? immutableOrdinary
+                           : ordinary && memory.getAliasGroup(load.getPtr()) &&
+                                 !memory.mayModify(load.getPtr());
+      if (!invariant)
+        continue;
+      auto &candidates = available[load.getPtr()];
+      auto previous = llvm::find_if(candidates, [&](triton::LoadOp earlier) {
+        return canReuseLoad(earlier, load);
+      });
+      if (previous != candidates.end()) {
+        rewriter.replaceOp(load, (*previous).getResult());
+        changed = true;
+      } else {
+        candidates.push_back(load);
+      }
+    }
+  });
+  return changed;
+}
+
 struct LoopCSEDriver {
   LoopCSEDriver(scf::ForOp loop) : loop(loop) {}
 
@@ -143,6 +230,17 @@ struct LoopAwareCSE
     // Now that equivalent iter args have been made pointer equal, run CSE again
     // to clean up the loop body.
     eliminateCommonSubExpressions(rewriter, domInfo, getOperation());
+
+    // Argument contracts can establish invariance across ordinary stores that
+    // generic CSE must treat as clobbers. Build fresh summaries after the loop
+    // rewrites; this phase only removes loads and never moves or adds a read.
+    if (enableContractLoadReuse) {
+      bool changed = false;
+      for (auto function : getOperation().getOps<triton::FuncOp>())
+        changed |= reuseContractLoads(function, rewriter);
+      if (changed)
+        eliminateCommonSubExpressions(rewriter, domInfo, getOperation());
+    }
 
     // Run the `scf.for` canonicalizer to clean up the loops (short-circuited
     // values, unused results, etc.).

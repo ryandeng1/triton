@@ -1625,3 +1625,187 @@ def test_native_immutable_cta_barrier_preserves_recurrence_and_zero_trip(device,
         assert torch.equal(output, expected)
         for storage in (scratch_storage, output_storage):
             assert torch.all(storage[:guard] == 123.) and torch.all(storage[-guard:] == 123.)
+
+
+@triton.jit
+def _native_global_load_reuse_tl(X, Scratch, Y, N, BLOCK: tl.constexpr, VOLATILE: tl.constexpr, BARRIER: tl.constexpr,
+                                 DIFFERENT_MASK: tl.constexpr, DIFFERENT_OTHER: tl.constexpr):
+    col = tl.arange(0, BLOCK)
+    offset = tl.program_id(0) * BLOCK + col
+    first = tl.load(X + offset, col < N, other=7, volatile=VOLATILE)
+    tl.store(Scratch + offset, first + 3)
+    if BARRIER:
+        tl.debug_barrier()
+    second = tl.load(X + offset, col < (N - 1 if DIFFERENT_MASK else N), other=11 if DIFFERENT_OTHER else 7,
+                     volatile=VOLATILE)
+    tl.store(Y + offset, first * 2 + second)
+
+
+@gluon.jit
+def _native_global_load_reuse_gluon(X, Scratch, Y, N, BLOCK: gl.constexpr, VOLATILE: gl.constexpr,
+                                    BARRIER: gl.constexpr, DIFFERENT_MASK: gl.constexpr, DIFFERENT_OTHER: gl.constexpr):
+    col = gl.arange(0, BLOCK, layout=gl.BlockedLayout([1], [32], [4], [0]))
+    offset = gl.program_id(0) * BLOCK + col
+    first = gl.load(X + offset, col < N, other=7, volatile=VOLATILE)
+    gl.store(Scratch + offset, first + 3)
+    if BARRIER:
+        gl.barrier()
+    second = gl.load(X + offset, col < (N - 1 if DIFFERENT_MASK else N), other=11 if DIFFERENT_OTHER else 7,
+                     volatile=VOLATILE)
+    gl.store(Y + offset, first * 2 + second)
+
+
+@pytest.mark.parametrize("frontend", ["triton", "gluon"])
+@pytest.mark.parametrize("mode", [
+    "alias", "immutable", "missing", "same_group", "volatile", "barrier_alias", "barrier_immutable", "different_mask",
+    "different_other", "zero_mask"
+])
+def test_native_global_load_reuse_preserves_masked_values_and_stores(device, frontend, mode):
+    _semantic_require_cuda(device)
+    batch, block, guard = 4, 128, 64
+    width = 0 if mode == "zero_mask" else 65
+    shape = (batch, block)
+    x_storage = torch.full((batch * block + 2 * guard, ), 123., device=device)
+    x = x_storage[guard:-guard].reshape(shape) if width else torch.empty(0, device=device)
+    scratch_storage = torch.full_like(x_storage, 123.)
+    output_storage = torch.full_like(x_storage, 123.)
+    scratch = scratch_storage[guard:-guard].reshape(shape)
+    output = output_storage[guard:-guard].reshape(shape)
+    kernel = _native_global_load_reuse_tl if frontend == "triton" else _native_global_load_reuse_gluon
+    args = (x, scratch, output, width, block, mode == "volatile", mode.startswith("barrier_"), mode == "different_mask",
+            mode == "different_other")
+    options = dict(num_warps=4, num_stages=1, enable_indexed_update_specialization=False,
+                   enable_private_atomic_relaxation=False, enable_private_reduction_ownership=False)
+    baseline = kernel.warmup(*args, grid=(batch, ), **options)
+    attrs = {key: list(value) for key, value in baseline.src.attrs.items()}
+    if mode in ("immutable", "barrier_immutable"):
+        attrs.setdefault((0, ), []).append(("tt.experimental_immutable", 1))
+    elif mode != "missing":
+        for index in range(3):
+            group = 0 if index == 0 or mode == "same_group" else 1
+            attrs.setdefault((index, ), []).append(("tt.experimental_alias_group", group))
+    source = type(baseline.src)(baseline.src.fn, baseline.src.signature, constexprs=baseline.src.constants, attrs=attrs)
+    contracted = triton.compile(source, target=baseline.metadata.target, options=options)
+    variants = [baseline, contracted]
+    if mode == "alias":
+        disabled = triton.compile(source, target=baseline.metadata.target,
+                                  options=dict(options, enable_contract_load_reuse=False))
+        assert disabled.asm["ttgir"].count("tt.load") == 2
+        variants.append(disabled)
+    should_reuse = mode in ("alias", "immutable", "barrier_immutable", "zero_mask")
+    assert baseline.asm["ttgir"].count("tt.load") == 2
+    assert contracted.asm["ttgir"].count("tt.load") == 2 - should_reuse
+    assert contracted.asm["ttgir"].count("ttg.barrier") == baseline.asm["ttgir"].count("ttg.barrier")
+    cols = torch.arange(block, device=device)
+    for shift in (0, 19):
+        values = (torch.arange(batch * block, device=device).reshape(shape) % 17 + shift).float()
+        if width:
+            x.copy_(values)
+        first = torch.where(cols < width, values, 7)
+        second = torch.where(cols < (width - 1 if mode == "different_mask" else width), values,
+                             11 if mode == "different_other" else 7)
+        for compiled in variants:
+            scratch.fill_(float("nan"))
+            output.fill_(float("nan"))
+            compiled[(batch, 1, 1)](*args)
+            assert torch.equal(scratch, first + 3)
+            assert torch.equal(output, first * 2 + second)
+            if width:
+                assert torch.equal(x, values)
+            for storage in (x_storage, scratch_storage, output_storage):
+                assert torch.all(storage[:guard] == 123.) and torch.all(storage[-guard:] == 123.)
+
+
+@triton.jit
+def _native_global_load_reuse_narrow_mask_tl(X, Scratch, Y, N, BLOCK: tl.constexpr):
+    col = tl.arange(0, BLOCK)
+    offset = tl.program_id(0) * BLOCK + col
+    first_mask = col < N
+    first = tl.load(X + offset, first_mask)
+    tl.store(Scratch + offset, first, first_mask)
+    second_mask = first_mask & (col % 2 == 0)
+    second = tl.load(X + offset, second_mask)
+    tl.store(Y + offset, second, second_mask)
+
+
+@gluon.jit
+def _native_global_load_reuse_narrow_mask_gluon(X, Scratch, Y, N, BLOCK: gl.constexpr):
+    col = gl.arange(0, BLOCK, layout=gl.BlockedLayout([1], [32], [4], [0]))
+    offset = gl.program_id(0) * BLOCK + col
+    first_mask = col < N
+    first = gl.load(X + offset, first_mask)
+    gl.store(Scratch + offset, first, first_mask)
+    second_mask = first_mask & (col % 2 == 0)
+    second = gl.load(X + offset, second_mask)
+    gl.store(Y + offset, second, second_mask)
+
+
+@pytest.mark.parametrize("frontend", ["triton", "gluon"])
+@pytest.mark.parametrize("width", [0, 65])
+def test_native_global_load_reuse_stronger_mask_preserves_inactive_memory(device, frontend, width):
+    _semantic_require_cuda(device)
+    batch, block, guard = 4, 128, 64
+    shape = (batch, block)
+    x = torch.arange(batch * block, device=device, dtype=torch.float32).reshape(shape) if width else torch.empty(
+        0, device=device)
+    scratch_storage = torch.full((batch * block + 2 * guard, ), 123., device=device)
+    output_storage = torch.full_like(scratch_storage, 123.)
+    scratch, output = (storage[guard:-guard].reshape(shape) for storage in (scratch_storage, output_storage))
+    kernel = _native_global_load_reuse_narrow_mask_tl if frontend == "triton" else _native_global_load_reuse_narrow_mask_gluon
+    args = (x, scratch, output, width, block)
+    options = dict(num_warps=4, num_stages=1, enable_indexed_update_specialization=False,
+                   enable_private_atomic_relaxation=False, enable_private_reduction_ownership=False)
+    baseline = kernel.warmup(*args, grid=(batch, ), **options)
+    attrs = {key: list(value) for key, value in baseline.src.attrs.items()}
+    for index in range(3):
+        attrs.setdefault((index, ), []).append(("tt.experimental_alias_group", 0 if index == 0 else 1))
+    source = type(baseline.src)(baseline.src.fn, baseline.src.signature, constexprs=baseline.src.constants, attrs=attrs)
+    contracted = triton.compile(source, target=baseline.metadata.target, options=options)
+    assert baseline.asm["ttgir"].count("tt.load") == 2
+    assert contracted.asm["ttgir"].count("tt.load") == 1
+    cols = torch.arange(block, device=device)
+    values = torch.arange(batch * block, device=device, dtype=torch.float32).reshape(shape)
+    expected_scratch = torch.where(cols < width, values, 123.)
+    expected_output = torch.where((cols < width) & (cols % 2 == 0), values, 123.)
+    for compiled in (baseline, contracted):
+        scratch.fill_(123.)
+        output.fill_(123.)
+        compiled[(batch, 1, 1)](*args)
+        assert torch.equal(scratch, expected_scratch)
+        assert torch.equal(output, expected_output)
+        for storage in (scratch_storage, output_storage):
+            assert torch.all(storage[:guard] == 123.) and torch.all(storage[-guard:] == 123.)
+
+
+@pytest.mark.parametrize("frontend", ["triton", "gluon"])
+def test_native_global_load_reuse_retains_real_aliased_updates(device, frontend):
+    _semantic_require_cuda(device)
+    batch, block, width, guard = 4, 128, 65, 64
+    shape = (batch, block)
+    input_storage = torch.full((batch * block + 2 * guard, ), 123., device=device)
+    output_storage = torch.full_like(input_storage, 123.)
+    x, output = (storage[guard:-guard].reshape(shape) for storage in (input_storage, output_storage))
+    kernel = _native_global_load_reuse_tl if frontend == "triton" else _native_global_load_reuse_gluon
+    args = (x, x, output, width, block, False, False, False, False)
+    options = dict(num_warps=4, num_stages=1, enable_indexed_update_specialization=False,
+                   enable_private_atomic_relaxation=False, enable_private_reduction_ownership=False)
+    baseline = kernel.warmup(*args, grid=(batch, ), **options)
+    attrs = {key: list(value) for key, value in baseline.src.attrs.items()}
+    for index, group in enumerate((0, 0, 1)):
+        attrs.setdefault((index, ), []).append(("tt.experimental_alias_group", group))
+    source = type(baseline.src)(baseline.src.fn, baseline.src.signature, constexprs=baseline.src.constants, attrs=attrs)
+    contracted = triton.compile(source, target=baseline.metadata.target, options=options)
+    assert contracted.asm["ttgir"].count("tt.load") == 2
+    values = torch.arange(batch * block, device=device, dtype=torch.float32).reshape(shape)
+    cols = torch.arange(block, device=device)
+    first = torch.where(cols < width, values, 7)
+    mutated = first + 3
+    second = torch.where(cols < width, mutated, 7)
+    for compiled in (baseline, contracted):
+        x.copy_(values)
+        output.fill_(float("nan"))
+        compiled[(batch, 1, 1)](*args)
+        assert torch.equal(x, mutated)
+        assert torch.equal(output, first * 2 + second)
+        for storage in (input_storage, output_storage):
+            assert torch.all(storage[:guard] == 123.) and torch.all(storage[-guard:] == 123.)

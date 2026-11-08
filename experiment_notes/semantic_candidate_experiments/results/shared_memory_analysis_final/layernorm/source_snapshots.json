@@ -1,0 +1,34 @@
+{
+  "experiment_notes/semantic_candidate_experiments/layernorm_ownership_experiment.py": {
+    "sha256": "b81d0128c46c1f19333c4d87511e97966664b105a65a2bc69dfcdc5ae5baef1b",
+    "snapshot": "sources/experiment_notes__semantic_candidate_experiments__layernorm_ownership_experiment.py.gz"
+  },
+  "experiment_notes/semantic_candidate_experiments/coverage_experiment.py": {
+    "sha256": "db50502fc3f549eb7550f594521835097e0d14d994f477e77da7bbaa812330d2",
+    "snapshot": "sources/experiment_notes__semantic_candidate_experiments__coverage_experiment.py.gz"
+  },
+  "include/triton/Analysis/GlobalMemoryEffects.h": {
+    "sha256": "94124234d7ddd8a1ad691e89e83a033b40d98285abd9cdb7ba70e017a24f3ce3",
+    "snapshot": "sources/include__triton__Analysis__GlobalMemoryEffects.h.gz"
+  },
+  "lib/Analysis/GlobalMemoryEffects.cpp": {
+    "sha256": "04b00614d7e8150b3c6a874e5b2bd299ff68c6a6ac6c906cd11dbc1e197c9626",
+    "snapshot": "sources/lib__Analysis__GlobalMemoryEffects.cpp.gz"
+  },
+  "lib/Dialect/Triton/Transforms/LoopAwareCSE.cpp": {
+    "sha256": "c92c025d537d5664dce45663053aa8127e0958c20529a39f87aa19a1503bf121",
+    "snapshot": "sources/lib__Dialect__Triton__Transforms__LoopAwareCSE.cpp.gz"
+  },
+  "lib/Dialect/Triton/Transforms/LoopInvariantCodeMotion.cpp": {
+    "sha256": "3450813f3fbbb4d02d2eb19351d58fcb77b357e2c9a2e085bc920916c5806bf7",
+    "snapshot": "sources/lib__Dialect__Triton__Transforms__LoopInvariantCodeMotion.cpp.gz"
+  },
+  "third_party/nvidia/backend/compiler.py": {
+    "sha256": "eb9e9f5a2f59f80244d005b459afe6c52061720059d5db4ada8a761dcb246011",
+    "snapshot": "sources/third_party__nvidia__backend__compiler.py.gz"
+  },
+  "python/triton/experimental/semantic_contracts/native.py": {
+    "sha256": "adc50d9772d853dfe54b8474e1459049da9b0a3ea1c421601d4d736c9df323d9",
+    "snapshot": "sources/python__triton__experimental__semantic_contracts__native.py.gz"
+  }
+}

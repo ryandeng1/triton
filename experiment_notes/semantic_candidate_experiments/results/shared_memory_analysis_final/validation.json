@@ -1,0 +1,61 @@
+{
+  "date": "2026-11-08",
+  "base_commit": "fb6650b0527110a7523eefba98b2e483e33c2610",
+  "library_sha256": "600f64d69c767567ecf271b1393ab08c8ce187c0f520581357979e21c71ba3dd",
+  "source_sha256": {
+    "include/triton/Analysis/GlobalMemoryEffects.h": "94124234d7ddd8a1ad691e89e83a033b40d98285abd9cdb7ba70e017a24f3ce3",
+    "lib/Analysis/GlobalMemoryEffects.cpp": "04b00614d7e8150b3c6a874e5b2bd299ff68c6a6ac6c906cd11dbc1e197c9626",
+    "lib/Analysis/CMakeLists.txt": "df490fe4d0c57611c0880782955e1c730c7398c8a8839c20cd5af94408db5717",
+    "lib/Dialect/Triton/Transforms/CMakeLists.txt": "ad5aa528149b91e7086ab532e6933ac7e0246ff310cfb80b66b64ffa3d5662ef",
+    "lib/Dialect/Triton/Transforms/LoopInvariantCodeMotion.cpp": "3450813f3fbbb4d02d2eb19351d58fcb77b357e2c9a2e085bc920916c5806bf7",
+    "lib/Dialect/Triton/Transforms/LoopAwareCSE.cpp": "c92c025d537d5664dce45663053aa8127e0958c20529a39f87aa19a1503bf121",
+    "include/triton/Dialect/Triton/Transforms/Passes.td": "75e12172dbb920c1716e510a38be9e4d967815cedfa5356fa7c359db6fbea7fe",
+    "python/src/passes.cc": "3765083d6f7c13cb90c7c05db2814defbbf5a45cf354fc236e8710bc337b30ac",
+    "third_party/nvidia/backend/compiler.py": "eb9e9f5a2f59f80244d005b459afe6c52061720059d5db4ada8a761dcb246011",
+    "python/test/unit/runtime/test_specialize.py": "f46185ee528aef9adf1af3ddd21081f4a45fd8ecdccd516db15d0218a9137fd8",
+    "test/Triton/loop_cse.mlir": "c1b87d70331f96fcca6b63da1bc08044b8d0f756a93d288dfd971435382de70d"
+  },
+  "changes": [
+    "Shared GlobalMemoryEffects argument provenance, alias groups, immutable facts, whole-function effects and ordinary-operation classification",
+    "LICM consumes shared analysis with unchanged masks, entry predicates and straight-line-prefix restrictions",
+    "LoopAwareCSE reuses equivalent same-block global loads across disjoint stores; bounded AND-mask implication only when both other operands absent",
+    "CUDA enable_contract_load_reuse flag provides paired controls; existing Triton and Gluon CSE pipelines consume it"
+  ],
+  "validation": {
+    "commands": [
+      {
+        "command": "make",
+        "exit_code": 0,
+        "log": "validation-0.log.gz"
+      },
+      {
+        "command": "ninja triton-opt; lit -v test/Triton",
+        "exit_code": 0,
+        "log": "validation-1.log.gz"
+      },
+      {
+        "command": "pytest -s --tb=short python/test/unit/runtime/test_specialize.py",
+        "exit_code": 0,
+        "log": "validation-2.log.gz"
+      }
+    ],
+    "runtime_tests_passed": 308,
+    "new_runtime_cases": 26,
+    "compiler_test_files_passed": 14,
+    "new_compiler_cases": 29,
+    "formatting": [
+      "clang-format --dry-run --Werror: clean",
+      "yapf --diff: empty",
+      "git diff --check: clean"
+    ]
+  },
+  "scope": [
+    "ordinary pointer access footprints described by caller contracts; no automatic fact discovery",
+    "no initialization, observer, safe-speculation or synchronization-removal conclusions from no-clobber alone",
+    "same-block load availability; no cross-region or cross-iteration reuse",
+    "unknown/call/atomic/volatile/asynchronous memory effects conservatively reject; CTA barrier exception only explicit immutable global contents",
+    "function-scoped summary invalidated by changes to writes, contracts, pointer provenance or function structure",
+    "no new shared-memory descriptor/TMEM alias model; existing shared-memory allocation analyses untouched"
+  ],
+  "real_kernel_evidence": "layernorm/summary.json"
+}

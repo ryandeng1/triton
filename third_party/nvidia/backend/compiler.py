@@ -162,6 +162,8 @@ class CUDAOptions:
     enable_indexed_update_specialization: bool = False
     enable_private_atomic_relaxation: bool = False
     enable_private_reduction_ownership: bool = False
+    # Argument contracts enable load reuse; this switch permits paired controls.
+    enable_contract_load_reuse: bool = True
 
     def __post_init__(self):
         if self.max_occupancy is not None and (type(self.max_occupancy) is not int or self.max_occupancy <= 0):
@@ -345,7 +347,7 @@ class CUDABackend(BaseBackend):
         passes.ttgpuir.add_remove_layout_conversions(pm)
         passes.ttgpuir.add_optimize_dot_operands(pm, capability >= 80)
         nvidia.passes.ttnvgpuir.add_optimize_descriptor_encoding(pm)
-        passes.ttir.add_loop_aware_cse(pm)
+        passes.ttir.add_loop_aware_cse(pm, opt.enable_contract_load_reuse)
         if capability // 10 in [8, 9]:
             passes.ttgpuir.add_fuse_nested_loops(pm)
             passes.common.add_canonicalizer(pm)
@@ -375,7 +377,7 @@ class CUDABackend(BaseBackend):
         else:
             passes.ttir.add_triton_licm(pm)
         passes.common.add_canonicalizer(pm)
-        passes.ttir.add_loop_aware_cse(pm)
+        passes.ttir.add_loop_aware_cse(pm, opt.enable_contract_load_reuse)
         if capability // 10 == 8:
             passes.ttgpuir.add_prefetch(pm)
         passes.ttgpuir.add_optimize_dot_operands(pm, capability >= 80)
@@ -390,7 +392,7 @@ class CUDABackend(BaseBackend):
         nvidia.passes.ttnvgpuir.add_interleave_tmem(pm)
         passes.ttgpuir.add_reduce_data_duplication(pm)
         passes.ttgpuir.add_reorder_instructions(pm)
-        passes.ttir.add_loop_aware_cse(pm)
+        passes.ttir.add_loop_aware_cse(pm, opt.enable_contract_load_reuse)
         passes.common.add_symbol_dce(pm)
         nvidia.passes.ttnvgpuir.add_fence_insertion(pm, capability)
         nvidia.passes.ttnvgpuir.add_lower_mma(pm)
@@ -419,7 +421,7 @@ class CUDABackend(BaseBackend):
         nvidia.passes.ttnvgpuir.add_tma_lowering(pm)
         passes.gluon.add_canonicalizer(pm)
         passes.common.add_sccp(pm)
-        passes.ttir.add_loop_aware_cse(pm)
+        passes.ttir.add_loop_aware_cse(pm, options.enable_contract_load_reuse)
         passes.gluon.add_canonicalizer(pm)
         passes.ttgpuir.add_combine_tensor_select_and_if(pm)
         passes.common.add_symbol_dce(pm)

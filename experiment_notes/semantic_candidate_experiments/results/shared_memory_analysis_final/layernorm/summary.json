@@ -1,0 +1,296 @@
+{
+  "scope": "Paired native ownership with only CUDA option enable_contract_load_reuse false/true; same source, arguments, contracts, grid, scalar specialization and fixed configuration. Locked/manual-owner/Torch are controls, not newly tuned baselines.",
+  "protocol": "Five preselected configurations; three fresh seeds21/22/23;15 randomized paired rounds and32 CUDA-graph repetitions. Same physical outputs, lock/count reset and unchanged final reduction included. Forward/allocation/Python guards excluded.",
+  "records": 15,
+  "fingerprints": {
+    "harness": "b81d0128c46c1f19333c4d87511e97966664b105a65a2bc69dfcdc5ae5baef1b",
+    "libtriton": "600f64d69c767567ecf271b1393ab08c8ce187c0f520581357979e21c71ba3dd",
+    "tutorial": "58716180088be8a05e3e21fb2bab2db2bc5e7780fd3dd7e680e682a82ecdd048"
+  },
+  "validation": "All native_off/on and source-owner partials, DX, final gradients, lock/count state, canaries and unchanged inputs pass exact selected-serialization checks before and after timing. Identical native ownership TTIR and identical unannotated baseline PTX asserted on every record.",
+  "mechanism": "W-rooted static TTGIR loads fall2\u21921 and total loads10\u21929 in all five cases. Earlier mask cols<N covers later cols<N AND loop-entry; omitted other values permit safe reuse on active lanes.",
+  "interpretation": [
+    "This establishes a second compiler consumer of shared memory facts; it does not establish a substantial new speedup on the four main LayerNorm shapes.",
+    "The irregular spilling case improves6.1\u20137.3% relative to prior native ownership as spills fall170\u2192164; this does not establish a general spill-avoidance policy.",
+    "FP32N4096 regresses slightly despite235\u2192234 registers. Static resource counts alone do not predict profitability.",
+    "The four main shapes retain the prior source/manual gap on some configurations; eliminating one weight load does not explain the whole gap.",
+    "Original/owner/native BF16 mathematical diagnostics can fail absolute0.01 against FP64, unchanged from prior studies; no tolerance enlarged or case excluded."
+  ],
+  "cases": [
+    {
+      "case": "bfloat16-m4096-n1024-g256-w4",
+      "shape": [
+        4096,
+        1024
+      ],
+      "input_dtype": "bfloat16",
+      "scratch_dtype": "torch.float32",
+      "group": 256,
+      "warps": 4,
+      "seeds": [
+        21,
+        22,
+        23
+      ],
+      "median_us": {
+        "locked": 54.47300150990486,
+        "owner": 24.574000388383865,
+        "native_off": 24.09300021827221,
+        "native_on": 24.00599978864193,
+        "torch_native": 23.087000474333763
+      },
+      "reuse_speedup_per_seed": [
+        1.005775058957838,
+        1.0050056695958154,
+        1.0026243542213245
+      ],
+      "reuse_speedup_median": 1.0050056695958154,
+      "resources": {
+        "native_off": {
+          "registers": 80,
+          "spills": 0,
+          "shared": 4096,
+          "atomic_sites": 0,
+          "barrier_sites": 11,
+          "weight_load_sites": 2,
+          "ttgir_load_sites": 10,
+          "ptx_sha256": "51e829096ddb39dc7591fb216f7a9b1af4664d49e56165caf1d6da5825bf0896",
+          "cubin_sha256": "bfb8c480e31f78617cc6e423b3c026d50d3f2e79906c46334ff5df5bc571f288"
+        },
+        "native_on": {
+          "registers": 80,
+          "spills": 0,
+          "shared": 4096,
+          "atomic_sites": 0,
+          "barrier_sites": 11,
+          "weight_load_sites": 1,
+          "ttgir_load_sites": 9,
+          "ptx_sha256": "937ba7bcc51cb079eb4fe3ac1c299e37a60b3beb48eed9d0a1f673c0ad368c9d",
+          "cubin_sha256": "2553948cc0b779b6a951f343dba8a627cc814c76ff9e37d6553c7e4037054644"
+        }
+      },
+      "all_exact_state_checks_pass": true,
+      "contract_and_ttir_identity_checks_pass": true
+    },
+    {
+      "case": "bfloat16-m4096-n4096-g256-w8",
+      "shape": [
+        4096,
+        4096
+      ],
+      "input_dtype": "bfloat16",
+      "scratch_dtype": "torch.float32",
+      "group": 256,
+      "warps": 8,
+      "seeds": [
+        21,
+        22,
+        23
+      ],
+      "median_us": {
+        "locked": 80.18799871206284,
+        "owner": 43.60400140285492,
+        "native_off": 49.84800145030022,
+        "native_on": 49.84999820590019,
+        "torch_native": 56.262001395225525
+      },
+      "reuse_speedup_per_seed": [
+        0.9999599447207254,
+        0.9978335633976219,
+        1.0016443026499915
+      ],
+      "reuse_speedup_median": 0.9999599447207254,
+      "resources": {
+        "native_off": {
+          "registers": 128,
+          "spills": 0,
+          "shared": 8192,
+          "atomic_sites": 0,
+          "barrier_sites": 15,
+          "weight_load_sites": 2,
+          "ttgir_load_sites": 10,
+          "ptx_sha256": "457bce970c4c4608f2631553468791740504dab21117d306e87b1a2e579a5b2c",
+          "cubin_sha256": "b5e9d434f45e7407efa40a026af2d3b6a8043ce05052a168e399a0f4b2543b40"
+        },
+        "native_on": {
+          "registers": 128,
+          "spills": 0,
+          "shared": 8192,
+          "atomic_sites": 0,
+          "barrier_sites": 15,
+          "weight_load_sites": 1,
+          "ttgir_load_sites": 9,
+          "ptx_sha256": "f3357a36dd1bb2d0d491b6d1407e0522391699b533666c1db84ddec17a84bdbd",
+          "cubin_sha256": "53108f9b0d96d2c4f7aaede6511663263053ac49bdd481f71af9c163645d9b3d"
+        }
+      },
+      "all_exact_state_checks_pass": true,
+      "contract_and_ttir_identity_checks_pass": true
+    },
+    {
+      "case": "float32-m4096-n1024-g256-w4",
+      "shape": [
+        4096,
+        1024
+      ],
+      "input_dtype": "float32",
+      "scratch_dtype": "torch.float32",
+      "group": 256,
+      "warps": 4,
+      "seeds": [
+        21,
+        22,
+        23
+      ],
+      "median_us": {
+        "locked": 48.37299883365631,
+        "owner": 25.505000725388527,
+        "native_off": 27.323000133037567,
+        "native_on": 27.278000488877296,
+        "torch_native": 22.07699976861477
+      },
+      "reuse_speedup_per_seed": [
+        1.0011842292645798,
+        1.0016493052355457,
+        1.0016496679871614
+      ],
+      "reuse_speedup_median": 1.0016493052355457,
+      "resources": {
+        "native_off": {
+          "registers": 72,
+          "spills": 0,
+          "shared": 16,
+          "atomic_sites": 0,
+          "barrier_sites": 7,
+          "weight_load_sites": 2,
+          "ttgir_load_sites": 10,
+          "ptx_sha256": "80d224c5c06a00a3a6d391dcf21fef6085745324d8bd651ccc32c21777992381",
+          "cubin_sha256": "82742b17f860d87c02c154c61da91a8f7efe0ecdc5f83cb70c990391a0a5797a"
+        },
+        "native_on": {
+          "registers": 72,
+          "spills": 0,
+          "shared": 16,
+          "atomic_sites": 0,
+          "barrier_sites": 7,
+          "weight_load_sites": 1,
+          "ttgir_load_sites": 9,
+          "ptx_sha256": "10e0889d08d1436aeaa92589a917329246d0ef91f934185925afa8a18ff9fd3b",
+          "cubin_sha256": "3da1d2387ca4f73728e7da2b86a13ef1e1f71a232835c1c024be01b228db9f84"
+        }
+      },
+      "all_exact_state_checks_pass": true,
+      "contract_and_ttir_identity_checks_pass": true
+    },
+    {
+      "case": "float32-m4096-n4096-g256-w4",
+      "shape": [
+        4096,
+        4096
+      ],
+      "input_dtype": "float32",
+      "scratch_dtype": "torch.float32",
+      "group": 256,
+      "warps": 4,
+      "seeds": [
+        21,
+        22,
+        23
+      ],
+      "median_us": {
+        "locked": 78.12300324440002,
+        "owner": 54.777998477220535,
+        "native_off": 54.53699827194214,
+        "native_on": 54.91099879145622,
+        "torch_native": 82.93300122022629
+      },
+      "reuse_speedup_per_seed": [
+        0.9992050263924372,
+        0.99320090376657,
+        0.993188968917967
+      ],
+      "reuse_speedup_median": 0.99320090376657,
+      "resources": {
+        "native_off": {
+          "registers": 235,
+          "spills": 0,
+          "shared": 16,
+          "atomic_sites": 0,
+          "barrier_sites": 7,
+          "weight_load_sites": 2,
+          "ttgir_load_sites": 10,
+          "ptx_sha256": "21545dd09da335589d39f58f87a5a3b607bbec62624fb70e0a0aa71644a65f61",
+          "cubin_sha256": "7e1fea5e800ac1f58f46b2a3f05da340544adf4d464a852e97c63e41ef6565a3"
+        },
+        "native_on": {
+          "registers": 234,
+          "spills": 0,
+          "shared": 16,
+          "atomic_sites": 0,
+          "barrier_sites": 7,
+          "weight_load_sites": 1,
+          "ttgir_load_sites": 9,
+          "ptx_sha256": "b15045bdf75dd0fb2684182893e57bd8410f878e3bb8eb2afa6a22594599567d",
+          "cubin_sha256": "dade8eefa5305589f8b5df7843936f14a0b510fc5a7448a732c500cd23c55e25"
+        }
+      },
+      "all_exact_state_checks_pass": true,
+      "contract_and_ttir_identity_checks_pass": true
+    },
+    {
+      "case": "float32-m513-n4097-g128-w4",
+      "shape": [
+        513,
+        4097
+      ],
+      "input_dtype": "float32",
+      "scratch_dtype": "torch.float32",
+      "group": 128,
+      "warps": 4,
+      "seeds": [
+        21,
+        22,
+        23
+      ],
+      "median_us": {
+        "locked": 32.51200169324875,
+        "owner": 32.85200148820877,
+        "native_off": 35.565998405218124,
+        "native_on": 33.28099846839905,
+        "torch_native": 16.91799983382225
+      },
+      "reuse_speedup_per_seed": [
+        1.0612006865115544,
+        1.0722015149355821,
+        1.072984620206407
+      ],
+      "reuse_speedup_median": 1.0722015149355821,
+      "resources": {
+        "native_off": {
+          "registers": 255,
+          "spills": 170,
+          "shared": 2048,
+          "atomic_sites": 0,
+          "barrier_sites": 135,
+          "weight_load_sites": 2,
+          "ttgir_load_sites": 10,
+          "ptx_sha256": "1f38e2ac6493ad1eae32be1645a1c12ef30ecd09aec7ef4e9372bc84d98aefe8",
+          "cubin_sha256": "f14ede4992229643102edb9ded453ce08db59e7a54863cdeaed3fe46a22c5598"
+        },
+        "native_on": {
+          "registers": 255,
+          "spills": 164,
+          "shared": 2048,
+          "atomic_sites": 0,
+          "barrier_sites": 135,
+          "weight_load_sites": 1,
+          "ttgir_load_sites": 9,
+          "ptx_sha256": "326f7da356ef666aa18266b8709fad97311d5ba177f83a355893ca6312eb5999",
+          "cubin_sha256": "145cd02002be7857f95f534ba4ad1e578e166d7e8e82c34c8b57b9ebc87edf84"
+        }
+      },
+      "all_exact_state_checks_pass": true,
+      "contract_and_ttir_identity_checks_pass": true
+    }
+  ]
+}

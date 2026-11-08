@@ -68,7 +68,14 @@ void init_triton_passes_ttir(py::module_ &m) {
           options.target = target;
           pm.addPass(createTritonPrivateReductionOwnership(options));
         });
-  ADD_PASS_WRAPPER_0("add_loop_aware_cse", createTritonLoopAwareCSE);
+  m.def(
+      "add_loop_aware_cse",
+      [](mlir::PassManager &pm, bool enableContractLoadReuse) {
+        TritonLoopAwareCSEOptions options;
+        options.enableContractLoadReuse = enableContractLoadReuse;
+        pm.addPass(createTritonLoopAwareCSE(options));
+      },
+      py::arg("pm"), py::arg("enable_contract_load_reuse") = true);
   ADD_PASS_OPTION_WRAPPER_4("add_convert_to_ttgpuir",
                             createConvertTritonToTritonGPU, const std::string &,
                             int, int, int);

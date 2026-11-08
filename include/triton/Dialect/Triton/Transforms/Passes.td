@@ -119,7 +119,26 @@ def TritonLoopAwareCSE : Pass<"triton-loop-aware-cse", "mlir::ModuleOp"> {
     elimination within loop bodies. Unlike regular CSE, which is a single-pass
     greedy algorithm, this pass can recursively eliminate loop iteration
     arguments and subcomputations that always have the same value.
+
+    For ordinary global loads with experimental argument contracts, also reuse
+    an earlier load in the same block across disjoint ordinary stores. Shared
+    GlobalMemoryEffects analysis proves whole-function no-clobber from alias
+    groups, or accepts an explicit initialized-at-entry immutable contract.
+    Calls, volatile accesses and unknown effects conservatively prevent this
+    extension; CTA barriers are permitted only for explicit immutable global
+    contents. No values are propagated across block/region boundaries.
+
+    Pointer, result type/layout, cache properties, attributes and other operands
+    must match. Masks normally match too; when both loads omit `other`, a later
+    mask formed by conjunction with the earlier mask may reuse its value.
+    Unspecified inactive lanes are refined without adding or speculating reads.
+    This does not infer initialization or permit changing explicit masked values.
+    The option below disables only this contract-based extension for ablation.
   }];
+  let options = [
+    Option<"enableContractLoadReuse", "enable-contract-load-reuse", "bool", "true",
+           "Reuse ordinary global loads using scoped argument contracts">
+  ];
 }
 
 def TritonSpecializeIndexedUpdates : Pass<"triton-specialize-indexed-updates", "mlir::ModuleOp"> {

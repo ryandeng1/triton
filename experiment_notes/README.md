@@ -23,6 +23,7 @@ runs rather than absolute timings across experiments.
 | Identity accumulator rescale elision | FA4 1.096×; manual Gluon port 1.050× | Same threshold-eight policy and exactly equal paired outputs/LSE. Threshold-zero elision was slightly slower; threshold-eight failed scale-four accuracy stress checks. |
 | Typed score/probability storage reuse | D64 reservation 512→256; runtime 94.12→94.09 μs | Capacity rather than throughput benefit: another tile fits 512 columns instead of requiring 640. |
 | LayerNorm backward, native private ownership | BF16 2.05×/1.59× at 4096×1024/4096; FP32 1.77×/1.42× | Matched FP32 scratch, original grid/reset/final reduction, tuned locked baseline and fixed candidate configurations. Torch native is faster at width 1024. Exact permitted-serialization checks pass; separate BF16 mathematical accuracy limits remain. |
+| Shared global-memory analysis and redundant-load reuse | LayerNorm weight loads 2→1; main cases within about 1%; spilling boundary 1.061–1.073× | 15 paired on/off records with identical source/contracts/ownership TTIR. FP32 width4096 slightly regresses. Reuses the same analysis as LICM; no broad new speedup claim. |
 | Persistent AITER RMSNorm, native immutable-input contract | Forward 1.11–1.48×; backward 1.05–1.06× | Large-shape regression now profiled: occupancy falls while DRAM traffic barely changes. Resource guard declines measured losses, but also misses a held-out 17% gain. AMD-origin kernels compiled on NVIDIA. |
 | FlagGems CTC, native immutable input across CTA barriers | Complete training-forward 1.021–1.024× at T1024/N64/U128; 1.047–1.053× at T256/N256/U64 | 139 source-study records and 51 rebuilt-native confirmations. Full saved alpha and loss checked; barriers retained. Most other cases gain 0–3%. Backward is excluded. |
 | AITER recurrent delta rule, native alias-derived LICM | About 1.134× at upstream T1024/D128; 1.09× at larger decode; 1.056× at T500/D60 | Three of six cases improve; three are neutral/slower. Includes state reset, every timestep output and final state. New pointer provenance makes alias-only and immutable PTX identical. Supported long-T tests do not establish production prevalence. |
@@ -232,21 +233,38 @@ and privacy remain caller promises. This is a bounded prototype, not a general
 reduction or profitability analysis. Normal scalar arguments retain their original
 specialization policy; exact-value facts are used for proof only. Native backward
 measures 49.69→24.19 μs and 80.22→50.39 μs on BF16 widths 1024/4096. The manual
-owner remains faster on some configurations: native code reloads an invariant
-weight vector after the peeled first row and keeps pointer setup live longer.
+owner remained faster on some configurations: that native build reloaded an
+invariant weight vector after the peeled first row and kept pointer setup live longer.
 At the irregular 513×4097 boundary, native regresses 32.99→35.90 μs with spills
-rising from 2 to 170. Reusing proven invariant values and screening spill-heavy
-ownership variants are concrete next opportunities; neither is claimed solved.
+rising from 2 to 170. The load-reuse follow-up below removes the duplicated weight
+read. A profitability guard for ownership remains unimplemented.
 
-The ownership pass is connected to the Triton CUDA pipeline, with one CTA per
-logical program. Gluon's production pipeline does not invoke Triton LICM; the new
-Gluon tests are unchanged-pipeline correctness controls, not optimization results.
-No TLX or torch-mlir implementation was added. Timings exclude allocations and
-Python guards and are device timings, not model speedups.
-Current [validation](native_extensions_validation_11_08.json) passed `make`,
-**282 runtime tests** and **14 compiler test files**, adding 19 runtime and 35
-compiler cases. CTC, AITER and LayerNorm native follow-ups preserve complete
-observable state under their respective contracts.
+The shared [GlobalMemoryEffects analysis](../include/triton/Analysis/GlobalMemoryEffects.h)
+now centralizes function-scoped argument provenance, alias groups, immutable
+facts and ordinary memory-effect summaries. LICM uses it with its existing
+legality checks. A second consumer in [LoopAwareCSE](../lib/Dialect/Triton/Transforms/LoopAwareCSE.cpp)
+reuses earlier global loads across disjoint stores within the same block. All
+pointer, type/layout, property and operand checks remain exact, except a bounded
+AND-mask implication when both loads omit `other`. This handles LICM's added
+loop-entry mask without speculating reads or changing defined inactive values.
+The analysis does not infer initialization, privacy or freedom to remove waits;
+unknown effects stay conservative, and summaries have explicit invalidation rules.
+
+The new consumer runs through existing Triton and Gluon CSE pipelines. Gluon
+still does not run Triton LICM, and native ownership remains Triton CUDA-only.
+`enable_contract_load_reuse=False` disables the new consumer for controlled
+comparisons while retaining contracts and ownership rewriting. Fifteen complete
+LayerNorm backward on/off records preserve bitwise selected-serialization, state
+and guard checks. All remove one of two weight loads, but main-case timings stay
+within about 1%; FP32 width4096 is slightly slower. The irregular spilling case
+improves 6.1–7.3%, with spills 170→164. Fewer loads are not a general profitability
+proof. No new TLX or torch-mlir integration was added; allocation/host guards remain
+outside these GPU timings.
+
+Current [shared-analysis validation](semantic_candidate_experiments/results/shared_memory_analysis_final/validation.json)
+passed `make`, **308 runtime tests** and **14 compiler test files**, adding 26
+runtime and 29 compiler cases. The [previous native validation](native_extensions_validation_11_08.json)
+and its performance measurements retain their original source/library fingerprints.
 
 Retained evidence and reproducers:
 
@@ -300,6 +318,11 @@ Retained evidence and reproducers:
   [Reconstructed LayerNorm evidence](semantic_candidate_experiments/results/layernorm_ownership_final/README.md)
   retains the exact original source, independent serialization oracle, numerical
   limitations, fresh tuning and separate native follow-up.
+- [Shared-analysis load-reuse control](semantic_candidate_experiments/results/shared_memory_analysis_final/layernorm/README.md)
+  retains paired feature-on/off measurements, exact program/state checks, resource
+  changes and reproduction commands. The first application establishes a second
+  consumer of reusable memory facts; its small main-case changes are not a new
+  general LayerNorm speedup.
 - [Experiment scripts](semantic_candidate_experiments/) and pinned `vendor/`
   sources/licenses remain. RMSNorm, MoE, irregular-kernel, and Mamba harnesses
   expose `--help`; analyses can consume newly generated reports.
