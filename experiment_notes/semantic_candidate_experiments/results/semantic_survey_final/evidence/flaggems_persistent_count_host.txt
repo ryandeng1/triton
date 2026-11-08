@@ -1,0 +1,32 @@
+145:     D = grad_output.shape[-1]
+146:     go = grad_output.contiguous().view(-1, D)  # (N, D)
+147:     idx = indices.contiguous().view(-1)
+148:     N = idx.numel()
+149: 
+150:     assert go.shape[0] == N, "indices number must match grad_output rows."
+151:     grad_weight_fp32 = torch.zeros((num_weights, D), device=device, dtype=torch.float32)
+152: 
+153:     num_warps = 1
+154:     MAX_GRID_SIZE = TOTAL_CORE_NUM // num_warps
+155: 
+156:     BLOCK_D = 128
+157:     grid_dim_d = (D + BLOCK_D - 1) // BLOCK_D
+158:     total_blocks = N * grid_dim_d
+159:     grid = lambda meta: (min(total_blocks, MAX_GRID_SIZE),)
+160: 
+161:     if scale_grad_by_freq:
+162:         counts = torch.zeros((num_weights,), device=device, dtype=torch.int32)
+163:         BLOCK_N = 512
+164:         total_blocks_count = (N + BLOCK_N - 1) // BLOCK_N
+165:         grid_count = lambda meta: (min(total_blocks_count, MAX_GRID_SIZE),)
+166:         _embedding_dense_backward_count_kernel[grid_count](
+167:             idx,
+168:             counts,
+169:             N,
+170:             num_weights,
+171:             padding_idx if padding_idx is not None else -1,
+172:             BLOCK_N=BLOCK_N,
+173:             total_blocks=total_blocks_count,
+174:             num_warps=num_warps,
+175:         )
+176: 

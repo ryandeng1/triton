@@ -162,16 +162,16 @@ def TritonSpecializeIndexedUpdates : Pass<"triton-specialize-indexed-updates", "
 def TritonRelaxPrivateAtomics : Pass<"triton-relax-private-atomics", "mlir::ModuleOp"> {
   let summary = "Relax atomic ordering for closed private-output reductions";
   let description = [{
-    Experimental opt-in for CUDA f32 additions. Keep the atomic operation and
+    Experimental opt-in for CUDA f32 and i32 additions. Keep the atomic operation and
     change acquire, release, or acquire-release ordering to relaxed after proving
     that the ordering has no observable synchronization role. Already-relaxed
     atomics are unchanged and do not receive a specialization marker.
 
     On the global output pointer, `tt.experimental_private = 1 : i32` promises
     initialized storage ready at invocation entry and no outside accesses or
-    observers until invocation completion. Its effects proof establishes the
-    absence of internal synchronization/publication rather than accepting that
-    as another promise.
+    observers until invocation completion. Its effects proof establishes that
+    weakening internal ordering preserves observable results, rather than
+    accepting that as another promise.
     The output additionally requires `tt.experimental_num_ctas = 1 : i32`.
     The existing `tt.experimental_alias_group` contracts must prove every
     ordinary read footprint disjoint from the output footprint. All accesses must remain
@@ -179,12 +179,18 @@ def TritonRelaxPrivateAtomics : Pass<"triton-relax-private-atomics", "mlir::Modu
     inferred from race freedom or from observed example values.
 
     The bounded proof accepts a public kernel with no symbol uses in its module,
-    consisting of one straight-line block containing one unused-result
-    GPU-scope rank-one f32 atomic add. Only ordinary nonvolatile loads from known
-    disjoint argument roots and memory-effect-free operations may accompany it.
-    Loops, regions, calls, inline assembly, unknown effects, additional writes,
-    ordinary output reads, used atomic results, non-GPU scopes, and called/private
-    helper functions are unsupported.
+    with unused-result GPU-scope rank-one atomic additions. For f32, only one
+    straight-line atomic site is supported. For i32, multiple sites and nested
+    scf.for loops without iter_args are supported, provided every atomic adds
+    to the same private output argument. Integer addition modulo 2^32 makes the
+    final state independent of cross-location/iteration ordering, including
+    overflow. Floating-point loops and multiple sites need a stronger proof
+    because ordering can constrain their observable rounding results.
+    Only ordinary nonvolatile loads from known disjoint argument roots and
+    memory-effect-free leaf operations may accompany these additions. Other
+    regions, calls, inline assembly, unknown effects, additional writes, ordinary
+    output reads, used atomic results, non-GPU scopes, and called/private helper
+    functions are unsupported. All sites are checked before any are changed.
 
     Other programs cannot observe an old atomic value or acquire an additional
     write from this function, and the private contract excludes external partners.
@@ -200,7 +206,7 @@ def TritonRelaxPrivateAtomics : Pass<"triton-relax-private-atomics", "mlir::Modu
   let options = [
     Option<"target", "target", "std::string", "\"\"", "Target architecture; only cuda is supported">
   ];
-  let dependentDialects = ["mlir::triton::TritonDialect"];
+  let dependentDialects = ["mlir::triton::TritonDialect", "mlir::scf::SCFDialect"];
 }
 
 #endif

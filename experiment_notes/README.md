@@ -23,12 +23,14 @@ runs rather than absolute timings across experiments.
 | Identity accumulator rescale elision | FA4 1.096×; manual Gluon port 1.050× | Same threshold-eight policy and exactly equal paired outputs/LSE. Threshold-zero elision was slightly slower; threshold-eight failed scale-four accuracy stress checks. |
 | Typed score/probability storage reuse | D64 reservation 512→256; runtime 94.12→94.09 μs | Capacity rather than throughput benefit: another tile fits 512 columns instead of requiring 640. |
 | LayerNorm backward owner-computes rewrite | BF16: about 1.9–2.0× at 4096×1024; 1.78× at 4096×4096 | Source prototype against the tuned tutorial-derived registered Tritonbench provider, with FP32 partials on both sides. Other providers sometimes match or beat it. FP32 gains were 1.88×/1.40×; FP16 1151×8192 gained 1.83×. |
-| Persistent AITER RMSNorm, native immutable-input contract | Forward 1.11–1.48×; backward 1.05–1.06× | Forward 16384×4096 regressed about 9%. Registers increased 68→94; occupancy causality was not profiled. AMD-origin kernels were compiled on NVIDIA. |
+| Persistent AITER RMSNorm, native immutable-input contract | Forward 1.11–1.48×; backward 1.05–1.06× | Large-shape regression now profiled: occupancy falls while DRAM traffic barely changes. Resource guard declines measured losses, but also misses a held-out 17% gain. AMD-origin kernels compiled on NVIDIA. |
 | Transformer Engine MoE unpermute backward | Native hoist 1.19×, 1.11×, approximately 1.00× | Best tested configuration per variant after bounded tuning; manual and contract variants matched machine code. |
 | Producer-unique embedding backward | Source specialization 1.16–1.26×; frequency-scaled 1.41–2.18× | Includes dense zeroing and final copy. These historical timings used finite, non-subnormal BF16 gradients and predate the automatic proof pipeline below. |
 | Unchanged FlagGems indexed updates, native Triton pass | Unique RMW 1.15–1.25×; initialized-zero 1.15–1.28× | Correct native transformation, but the ordering control below recovers essentially all of this gain while retaining atomics. Reset/count/conversion included. Gluon correctness also validated. |
 | Embedding atomic-ordering control | Original→relaxed atomics 1.186× geometric mean; relaxed→native RMW 0.996×; relaxed→native zero 1.006× | 36 paired measurements. Changing only `sem="relaxed"` removes two CTA barriers and permits no-return reductions. Earlier attribution to uniqueness was too strong. |
 | Native private-output ordering relaxation | 1.192× geometric mean with unique indices; 1.179× with fourfold repeated indices | 72 measurements; atomics retained, unchanged source, native/manual relaxed timings within 0.3%. Includes reset/count/conversion; no uniqueness or immutable-index contracts. |
+| Four-way atomic ordering control | Original→relaxed 1.189×; original→acquire 1.150×; release→relaxed 1.070× | 36 paired cases. Acquire still uses `atom` and beats release's `red`; release also emits a GPU fence. Pure CTA-barrier cost remains unisolated. |
+| Persistent FlagGems integer frequency counter | Uniform indices 1.54–1.76×; hot-32 indices 1.003–1.34× | 114 measurements, best tested block/grid per variant including nonpersistent launches. Native loop relaxation matches manual relaxed within 0.03% geometrically. Reset+count only; Cambricon-origin body on B300. |
 | Segmented-unique FlagGems scatter-add | Ordinary RMW 0.65–0.91× consumer ratio; known-zero stores about 1.00–1.03× | 96 screening and 26 confirmation cases. With topk producer included, known-zero gains stay below 0.5% on tuned shapes. Baseline already uses relaxed atomics; native expansion was not implemented. |
 | Complete coverage and direct output writes | 1.40–2.30× over the previous unique-index implementation | Shared-output consumer ablation, including required initialization/conversion; bounded tuning over block sizes 128/256. Full permutations need one write launch; unique subsets need zeroing plus write. |
 | Real embedding backward vs Inductor, frequency scaling enabled | 1.69–14.61× GPU speedup over the faster tested mode | Output-only graphs include arange/randperm generation. Inductor default and max-autotune-no-cudagraphs retain atomic-update/count work. External CUDA graphs give all variants the same timing protocol. |
@@ -118,7 +120,11 @@ unique RMW and **1.195×** with initialized zero, matching manual rewrites withi
 **0.996×** and native zero **1.006×**. Thus the original result establishes legality
 of atomic removal, but does not establish meaningful performance benefit from
 uniqueness. The ordering change removes two block barriers and enables no-return
-`red` instructions; their individual contributions were not isolated. The larger
+`red` instructions. A subsequent four-way control measured original→acquire
+**1.150×**, original→release **1.112×**, and original→relaxed **1.189×** over 36
+matched cases. Acquire retains `atom` yet beats release's `red`; SASS shows release
+also adds `MEMBAR.ALL.GPU`. Thus instruction family alone does not explain the
+gain, and these controls still do not isolate pure CTA-barrier latency. The larger
 historical frequency-scaled gains also removed counting work.
 
 The second native candidate was unchanged FlagGems `scatter_add_2d_kernel`, using
@@ -135,9 +141,9 @@ That weaker ordering proof is now implemented as a separate native
 `triton-relax-private-atomics` pass, exposed through
 [`compile_private_atomic`](../python/triton/experimental/semantic_contracts/native.py).
 The caller promises initialized output and no access from outside the invocation.
-The compiler derives the absence of internal synchronization partners: one
-unused-result GPU f32 atomic add, ordinary reads disjoint from its output, and no
-other writes, calls, regions, or unknown effects. It keeps the atomic and changes
+The compiler derives the absence of an observable synchronization role: ordinary
+reads are disjoint from its private output, atomic old values are unused, and no
+other writes, calls, or unknown effects are allowed. It keeps the atomic and changes
 only its ordering. No uniqueness, immutable-index, bound, grid, or zero facts are
 required by the native proof. Input contents and objects may change between
 guarded launches. Both native passes now reject private/called helper functions,
@@ -153,15 +159,56 @@ gradient checks use a derived FP32 summation-error bound against FP64 references
 allowing valid atomic serialization differences. Fourfold repeats are a controlled
 collision workload, not a claim about every training-index distribution.
 
-The pass is opt-in, CUDA-only, and bounded to one CTA per logical program and
-straight-line entry kernels. Initialization and external privacy remain caller
-obligations; the wrapper checks allocation disjointness and launch metadata.
-All timings include reset/count/conversion and exclude producer generation,
-allocation, and Python guards. They are device timings, not ordinary-call or model
-speedups. `make`, **237 runtime tests** and **14 compiler test files** passed;
-the new phase adds 22 GPU cases and 27 compiler cases, including helper rejections
-for the earlier indexed pass. Gluon correctness is covered; performance used
-Triton kernels. Persistent reduction ownership remains a larger opportunity.
+The new extension accepts multiple **i32 additions** to one private output,
+including nested `scf.for` loops without carried state. Addition modulo 2^32
+preserves the final result independently of ordering. Floating-point loops and
+multiple sites remain unsupported: acquire/release ordering can constrain their
+observable rounding outcomes across locations. Dynamic loop bounds, zero trips,
+collisions, masks, overflow, and whole-function rejection are tested in Triton and
+Gluon. Ordinary input accesses must be defined, as in the original program; no
+immutability between invocations is required.
+
+On the unchanged FlagGems persistent frequency counter, **114 measurements** across
+three sizes, two collision distributions, block sizes 256/512 and persistent/full
+grids give best-tested speedups **1.76×, 1.54×, 1.61×** for uniform indices. With
+only 32 hot destinations they fall to **1.34×, 1.05×, 1.003×**: contention limits
+the opportunity. Native/manual relaxed timings agree within **0.03%** geometrically.
+These include output reset and counting only, not complete embedding backward.
+The Cambricon-origin source body was compiled directly on B300; this is not a
+comparison against FlagGems' NVIDIA dispatch or a tuned histogram library.
+
+The RMSNorm profitability follow-up covers **22 configurations × three seeds**,
+plus eight Nsight Compute profiles. At 16384×4096/grid4736, hoisting changes
+achieved occupancy **40.51%→29.04%** and eligible warps/scheduler **0.65→0.38**,
+while DRAM reads remain approximately **134.23 MB**. Repeated weights were already
+cached. Grid592 avoids the occupancy loss and the regression. A predeclared guard
+declines spills or reduced residency unless all launched CTAs fit the optimized
+resident capacity. It rejects all held-out >2% losses but also declines a 17% gain.
+[`compile_immutable_licm`](../python/triton/experimental/semantic_contracts/native.py)
+implements this heuristic after compiling both variants, where actual resource
+use is available. It is separate from FX timing calibration, requires explicit
+immutable-input contracts, and cannot guarantee profitability.
+
+The pinned FlagGems/Liger/AITER/Transformer Engine AST survey finds **311**
+default-order, syntactically unused atomic-add sites (**274** after exact-body
+deduplication), including **75** inside loops. It also finds **250** invariant
+load/loop pairs with a store in the loop (**233** after deduplication), checking
+address, mask and `other`, not just pointer roots. These are source candidates,
+including platform-specific code and helpers, rather than proven legal or
+profitable transformations. CPU-only compilation confirms a scalar LICM miss in
+Liger cross-entropy backward and two invariant gating-parameter loads in AITER's
+recurrent delta-rule update. Contracts hoist these loads. FlagGems CTC retains its
+invariant target load because the current effects guard rejects its barrier;
+alias-only analysis also misses AITER's loop-carried pointer effects. These are
+concrete analysis-extension candidates; none has a performance result yet.
+
+Both native passes remain opt-in and CUDA-only with one CTA per logical program.
+Initialization/privacy and immutable-input promises remain caller obligations;
+wrappers check storage and launch bindings. Timings exclude producer generation,
+allocation, and Python guards. They are device timings, not model speedups.
+Final validation: `make`, **263 runtime tests**, and **14 compiler test files**
+passed. This phase adds 13 compiler cases and 26 runtime cases; five real RMSNorm
+wrapper integrations also passed with binaries identical to the profiling study.
 
 Retained evidence and reproducers:
 
@@ -201,6 +248,12 @@ Retained evidence and reproducers:
   retains 72 paired measurements, proof scope, numerical checks, source/compiler
   hashes, representative IR/PTX and build/test logs. Earlier records retain their
   original compiler fingerprints and are historical measurements.
+- [Four-way ordering control](semantic_candidate_experiments/results/atomic_fourway_final/README.md),
+  [integer loop extension](semantic_candidate_experiments/results/private_atomic_loop_final/summary.json),
+  [LICM profitability](semantic_candidate_experiments/results/licm_profitability_final/findings.json),
+  and [pinned prevalence survey](semantic_candidate_experiments/results/semantic_survey_final/summary.json)
+  retain current measurements, profiler evidence, compiled follow-ups and
+  reproduction commands. Source counts are not measured optimization coverage.
 - [Experiment scripts](semantic_candidate_experiments/) and pinned `vendor/`
   sources/licenses remain. RMSNorm, MoE, irregular-kernel, and Mamba harnesses
   expose `--help`; analyses can consume newly generated reports.

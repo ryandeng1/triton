@@ -2298,3 +2298,283 @@ tt.func public @indexed_update_calling_entry(%indices: !tt.ptr<i32>, %out: !tt.p
   tt.call @indexed_update_called_public_helper(%indices, %out) : (!tt.ptr<i32>, !tt.ptr<f32>) -> ()
   tt.return
 }
+
+// Integer multi-site relaxation uses order-independent modular sums.
+
+// -----
+
+// Dynamic bounds, step and induction-variable addresses are preserved; no carried state.
+// PRIVATE-LABEL: @private_integer_nested_loop
+// PRIVATE-SAME: tt.experimental_private_atomic_relaxed = 1 : i32
+// PRIVATE: scf.for
+// PRIVATE: tt.atomic_rmw add, relaxed, gpu
+// PRIVATE: scf.for
+// PRIVATE: tt.atomic_rmw add, relaxed, gpu
+// PRIVATE: tt.return
+tt.func public @private_integer_nested_loop(%src: !tt.ptr<i32> {tt.experimental_alias_group = 0 : i32}, %out: !tt.ptr<i32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32, tt.experimental_num_ctas = 1 : i32}, %n: i32, %step: i32) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %value = tt.load %src : !tt.ptr<i32>
+  %values = tt.splat %value : i32 -> tensor<8xi32>
+  %ptrs = tt.splat %out : !tt.ptr<i32> -> tensor<8x!tt.ptr<i32>>
+  %mask = arith.constant dense<true> : tensor<8xi1>
+  scf.for %i = %c0 to %n step %step : i32 {
+    %offsets = tt.splat %i : i32 -> tensor<8xi32>
+    %shifted = tt.addptr %ptrs, %offsets : tensor<8x!tt.ptr<i32>>, tensor<8xi32>
+  %old = tt.atomic_rmw add, acq_rel, gpu, %shifted, %values, %mask : (tensor<8x!tt.ptr<i32>>, tensor<8xi32>, tensor<8xi1>) -> tensor<8xi32>
+    scf.for %j = %c0 to %i step %c1 : i32 {
+  %inner = tt.atomic_rmw add, release, gpu, %shifted, %values, %mask : (tensor<8x!tt.ptr<i32>>, tensor<8xi32>, tensor<8xi1>) -> tensor<8xi32>
+    }
+  }
+  tt.return
+}
+
+// -----
+
+// An already-relaxed site does not prevent proving the other same-output sites.
+// PRIVATE-LABEL: @private_integer_mixed_sites
+// PRIVATE-SAME: tt.experimental_private_atomic_relaxed = 1 : i32
+// PRIVATE-COUNT-3: tt.atomic_rmw add, relaxed, gpu
+// PRIVATE: tt.return
+tt.func public @private_integer_mixed_sites(%src: !tt.ptr<i32> {tt.experimental_alias_group = 0 : i32}, %out: !tt.ptr<i32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32, tt.experimental_num_ctas = 1 : i32}, %n: i32, %step: i32) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %value = tt.load %src : !tt.ptr<i32>
+  %values = tt.splat %value : i32 -> tensor<8xi32>
+  %ptrs = tt.splat %out : !tt.ptr<i32> -> tensor<8x!tt.ptr<i32>>
+  %mask = arith.constant dense<true> : tensor<8xi1>
+  %old = tt.atomic_rmw add, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<i32>>, tensor<8xi32>, tensor<8xi1>) -> tensor<8xi32>
+  %second = tt.atomic_rmw add, release, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<i32>>, tensor<8xi32>, tensor<8xi1>) -> tensor<8xi32>
+  %third = tt.atomic_rmw add, relaxed, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<i32>>, tensor<8xi32>, tensor<8xi1>) -> tensor<8xi32>
+  tt.return
+}
+
+// -----
+
+// PRIVATE-LABEL: @private_integer_all_relaxed
+// PRIVATE-NOT: tt.experimental_private_atomic_relaxed
+// PRIVATE-COUNT-2: tt.atomic_rmw add, relaxed, gpu
+// PRIVATE: tt.return
+tt.func public @private_integer_all_relaxed(%src: !tt.ptr<i32> {tt.experimental_alias_group = 0 : i32}, %out: !tt.ptr<i32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32, tt.experimental_num_ctas = 1 : i32}, %n: i32, %step: i32) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %value = tt.load %src : !tt.ptr<i32>
+  %values = tt.splat %value : i32 -> tensor<8xi32>
+  %ptrs = tt.splat %out : !tt.ptr<i32> -> tensor<8x!tt.ptr<i32>>
+  %mask = arith.constant dense<true> : tensor<8xi1>
+  %old = tt.atomic_rmw add, relaxed, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<i32>>, tensor<8xi32>, tensor<8xi1>) -> tensor<8xi32>
+  scf.for %i = %c0 to %n step %step : i32 {
+  %second = tt.atomic_rmw add, relaxed, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<i32>>, tensor<8xi32>, tensor<8xi1>) -> tensor<8xi32>
+  }
+  tt.return
+}
+
+// -----
+
+// A nested side effect invalidates the whole proof before any ordering changes.
+// PRIVATE-LABEL: @private_integer_nested_store
+// PRIVATE-NOT: tt.experimental_private_atomic_relaxed
+// PRIVATE: tt.atomic_rmw add, acq_rel, gpu
+// PRIVATE: scf.for
+// PRIVATE: tt.store
+// PRIVATE: tt.return
+tt.func public @private_integer_nested_store(%src: !tt.ptr<i32> {tt.experimental_alias_group = 0 : i32}, %out: !tt.ptr<i32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32, tt.experimental_num_ctas = 1 : i32}, %n: i32, %step: i32) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %value = tt.load %src : !tt.ptr<i32>
+  %values = tt.splat %value : i32 -> tensor<8xi32>
+  %ptrs = tt.splat %out : !tt.ptr<i32> -> tensor<8x!tt.ptr<i32>>
+  %mask = arith.constant dense<true> : tensor<8xi1>
+  %old = tt.atomic_rmw add, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<i32>>, tensor<8xi32>, tensor<8xi1>) -> tensor<8xi32>
+  scf.for %i = %c0 to %n step %step : i32 {
+    tt.store %src, %i : !tt.ptr<i32>
+  }
+  tt.return
+}
+
+// -----
+
+// PRIVATE-LABEL: @private_integer_nested_output_read
+// PRIVATE-NOT: tt.experimental_private_atomic_relaxed
+// PRIVATE: tt.atomic_rmw add, acq_rel, gpu
+// PRIVATE: tt.load
+// PRIVATE: tt.atomic_rmw add, acq_rel, gpu
+// PRIVATE: tt.return
+tt.func public @private_integer_nested_output_read(%src: !tt.ptr<i32> {tt.experimental_alias_group = 0 : i32}, %out: !tt.ptr<i32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32, tt.experimental_num_ctas = 1 : i32}, %n: i32, %step: i32) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %value = tt.load %src : !tt.ptr<i32>
+  %values = tt.splat %value : i32 -> tensor<8xi32>
+  %ptrs = tt.splat %out : !tt.ptr<i32> -> tensor<8x!tt.ptr<i32>>
+  %mask = arith.constant dense<true> : tensor<8xi1>
+  %old = tt.atomic_rmw add, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<i32>>, tensor<8xi32>, tensor<8xi1>) -> tensor<8xi32>
+  scf.for %i = %c0 to %n step %step : i32 {
+    %read = tt.load %out : !tt.ptr<i32>
+    %reads = tt.splat %read : i32 -> tensor<8xi32>
+  %second = tt.atomic_rmw add, acq_rel, gpu, %ptrs, %reads, %mask : (tensor<8x!tt.ptr<i32>>, tensor<8xi32>, tensor<8xi1>) -> tensor<8xi32>
+  }
+  tt.return
+}
+
+// -----
+
+// PRIVATE-LABEL: @private_integer_used_result
+// PRIVATE-NOT: tt.experimental_private_atomic_relaxed
+// PRIVATE: tt.atomic_rmw add, acq_rel, gpu
+// PRIVATE: tt.atomic_rmw add, acq_rel, gpu
+// PRIVATE: tt.return
+tt.func public @private_integer_used_result(%src: !tt.ptr<i32> {tt.experimental_alias_group = 0 : i32}, %out: !tt.ptr<i32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32, tt.experimental_num_ctas = 1 : i32}, %n: i32, %step: i32) -> tensor<8xi32> {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %value = tt.load %src : !tt.ptr<i32>
+  %values = tt.splat %value : i32 -> tensor<8xi32>
+  %ptrs = tt.splat %out : !tt.ptr<i32> -> tensor<8x!tt.ptr<i32>>
+  %mask = arith.constant dense<true> : tensor<8xi1>
+  %old = tt.atomic_rmw add, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<i32>>, tensor<8xi32>, tensor<8xi1>) -> tensor<8xi32>
+  %second = tt.atomic_rmw add, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<i32>>, tensor<8xi32>, tensor<8xi1>) -> tensor<8xi32>
+  tt.return %second : tensor<8xi32>
+}
+
+// -----
+
+// PRIVATE-LABEL: @private_integer_mixed_operation
+// PRIVATE-NOT: tt.experimental_private_atomic_relaxed
+// PRIVATE: tt.atomic_rmw add, acq_rel, gpu
+// PRIVATE: tt.atomic_rmw exch, acq_rel, gpu
+// PRIVATE: tt.return
+tt.func public @private_integer_mixed_operation(%src: !tt.ptr<i32> {tt.experimental_alias_group = 0 : i32}, %out: !tt.ptr<i32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32, tt.experimental_num_ctas = 1 : i32}, %n: i32, %step: i32) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %value = tt.load %src : !tt.ptr<i32>
+  %values = tt.splat %value : i32 -> tensor<8xi32>
+  %ptrs = tt.splat %out : !tt.ptr<i32> -> tensor<8x!tt.ptr<i32>>
+  %mask = arith.constant dense<true> : tensor<8xi1>
+  %old = tt.atomic_rmw add, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<i32>>, tensor<8xi32>, tensor<8xi1>) -> tensor<8xi32>
+  %second = tt.atomic_rmw exch, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<i32>>, tensor<8xi32>, tensor<8xi1>) -> tensor<8xi32>
+  tt.return
+}
+
+// -----
+
+// PRIVATE-LABEL: @private_integer_second_output
+// PRIVATE-NOT: tt.experimental_private_atomic_relaxed
+// PRIVATE: tt.atomic_rmw add, acq_rel, gpu
+// PRIVATE: tt.atomic_rmw add, acq_rel, gpu
+// PRIVATE: tt.return
+tt.func public @private_integer_second_output(%src: !tt.ptr<i32> {tt.experimental_alias_group = 0 : i32}, %out: !tt.ptr<i32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32, tt.experimental_num_ctas = 1 : i32}, %n: i32, %step: i32, %other: !tt.ptr<i32> {tt.experimental_alias_group = 2 : i32, tt.experimental_private = 1 : i32, tt.experimental_num_ctas = 1 : i32}) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %value = tt.load %src : !tt.ptr<i32>
+  %values = tt.splat %value : i32 -> tensor<8xi32>
+  %ptrs = tt.splat %out : !tt.ptr<i32> -> tensor<8x!tt.ptr<i32>>
+  %mask = arith.constant dense<true> : tensor<8xi1>
+  %old = tt.atomic_rmw add, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<i32>>, tensor<8xi32>, tensor<8xi1>) -> tensor<8xi32>
+  %other_ptrs = tt.splat %other : !tt.ptr<i32> -> tensor<8x!tt.ptr<i32>>
+  %second = tt.atomic_rmw add, acq_rel, gpu, %other_ptrs, %values, %mask : (tensor<8x!tt.ptr<i32>>, tensor<8xi32>, tensor<8xi1>) -> tensor<8xi32>
+  tt.return
+}
+
+// -----
+
+// PRIVATE-LABEL: @private_integer_carried_state
+// PRIVATE-NOT: tt.experimental_private_atomic_relaxed
+// PRIVATE: tt.atomic_rmw add, acq_rel, gpu
+// PRIVATE: scf.for
+// PRIVATE: tt.atomic_rmw add, acq_rel, gpu
+// PRIVATE: tt.return
+tt.func public @private_integer_carried_state(%src: !tt.ptr<i32> {tt.experimental_alias_group = 0 : i32}, %out: !tt.ptr<i32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32, tt.experimental_num_ctas = 1 : i32}, %n: i32, %step: i32) -> i32 {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %value = tt.load %src : !tt.ptr<i32>
+  %values = tt.splat %value : i32 -> tensor<8xi32>
+  %ptrs = tt.splat %out : !tt.ptr<i32> -> tensor<8x!tt.ptr<i32>>
+  %mask = arith.constant dense<true> : tensor<8xi1>
+  %old = tt.atomic_rmw add, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<i32>>, tensor<8xi32>, tensor<8xi1>) -> tensor<8xi32>
+  %result = scf.for %i = %c0 to %n step %step iter_args(%carry = %c0) -> (i32) : i32 {
+  %second = tt.atomic_rmw add, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<i32>>, tensor<8xi32>, tensor<8xi1>) -> tensor<8xi32>
+    %next = arith.addi %carry, %c1 : i32
+    scf.yield %next : i32
+  }
+  tt.return %result : i32
+}
+
+// -----
+
+// PRIVATE-LABEL: @private_integer_other_region
+// PRIVATE-NOT: tt.experimental_private_atomic_relaxed
+// PRIVATE: tt.atomic_rmw add, acq_rel, gpu
+// PRIVATE: scf.if
+// PRIVATE: tt.atomic_rmw add, acq_rel, gpu
+// PRIVATE: tt.return
+tt.func public @private_integer_other_region(%src: !tt.ptr<i32> {tt.experimental_alias_group = 0 : i32}, %out: !tt.ptr<i32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32, tt.experimental_num_ctas = 1 : i32}, %n: i32, %step: i32, %condition: i1) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %value = tt.load %src : !tt.ptr<i32>
+  %values = tt.splat %value : i32 -> tensor<8xi32>
+  %ptrs = tt.splat %out : !tt.ptr<i32> -> tensor<8x!tt.ptr<i32>>
+  %mask = arith.constant dense<true> : tensor<8xi1>
+  %old = tt.atomic_rmw add, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<i32>>, tensor<8xi32>, tensor<8xi1>) -> tensor<8xi32>
+  scf.if %condition {
+  %second = tt.atomic_rmw add, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<i32>>, tensor<8xi32>, tensor<8xi1>) -> tensor<8xi32>
+  }
+  tt.return
+}
+
+// -----
+
+// PRIVATE-LABEL: @private_integer_nested_volatile
+// PRIVATE-NOT: tt.experimental_private_atomic_relaxed
+// PRIVATE: tt.atomic_rmw add, acq_rel, gpu
+// PRIVATE: tt.load {{.*}}isVolatile = true
+// PRIVATE: tt.return
+tt.func public @private_integer_nested_volatile(%src: !tt.ptr<i32> {tt.experimental_alias_group = 0 : i32}, %out: !tt.ptr<i32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32, tt.experimental_num_ctas = 1 : i32}, %n: i32, %step: i32) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %value = tt.load %src : !tt.ptr<i32>
+  %values = tt.splat %value : i32 -> tensor<8xi32>
+  %ptrs = tt.splat %out : !tt.ptr<i32> -> tensor<8x!tt.ptr<i32>>
+  %mask = arith.constant dense<true> : tensor<8xi1>
+  %old = tt.atomic_rmw add, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<i32>>, tensor<8xi32>, tensor<8xi1>) -> tensor<8xi32>
+  scf.for %i = %c0 to %n step %step : i32 {
+    %read = tt.load %src {isVolatile = true} : !tt.ptr<i32>
+  }
+  tt.return
+}
+
+// -----
+
+// PRIVATE-LABEL: @private_integer_pure_asm
+// PRIVATE-NOT: tt.experimental_private_atomic_relaxed
+// PRIVATE: tt.atomic_rmw add, acq_rel, gpu
+// PRIVATE: tt.elementwise_inline_asm
+// PRIVATE: tt.return
+tt.func public @private_integer_pure_asm(%src: !tt.ptr<i32> {tt.experimental_alias_group = 0 : i32}, %out: !tt.ptr<i32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32, tt.experimental_num_ctas = 1 : i32}, %n: i32, %step: i32) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %value = tt.load %src : !tt.ptr<i32>
+  %values = tt.splat %value : i32 -> tensor<8xi32>
+  %ptrs = tt.splat %out : !tt.ptr<i32> -> tensor<8x!tt.ptr<i32>>
+  %mask = arith.constant dense<true> : tensor<8xi1>
+  %old = tt.atomic_rmw add, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<i32>>, tensor<8xi32>, tensor<8xi1>) -> tensor<8xi32>
+  %opaque = tt.elementwise_inline_asm "mov.b32 $0, $1;" {constraints = "=r,r", packed_element = 1 : i32, pure = true} %values : tensor<8xi32> -> tensor<8xi32>
+  tt.return
+}
+
+// -----
+
+// PRIVATE-LABEL: @private_integer_mixed_scope
+// PRIVATE-NOT: tt.experimental_private_atomic_relaxed
+// PRIVATE: tt.atomic_rmw add, acq_rel, gpu
+// PRIVATE: tt.atomic_rmw add, acq_rel, sys
+// PRIVATE: tt.return
+tt.func public @private_integer_mixed_scope(%src: !tt.ptr<i32> {tt.experimental_alias_group = 0 : i32}, %out: !tt.ptr<i32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32, tt.experimental_num_ctas = 1 : i32}, %n: i32, %step: i32) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %value = tt.load %src : !tt.ptr<i32>
+  %values = tt.splat %value : i32 -> tensor<8xi32>
+  %ptrs = tt.splat %out : !tt.ptr<i32> -> tensor<8x!tt.ptr<i32>>
+  %mask = arith.constant dense<true> : tensor<8xi1>
+  %old = tt.atomic_rmw add, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<i32>>, tensor<8xi32>, tensor<8xi1>) -> tensor<8xi32>
+  %second = tt.atomic_rmw add, acq_rel, sys, %ptrs, %values, %mask : (tensor<8x!tt.ptr<i32>>, tensor<8xi32>, tensor<8xi1>) -> tensor<8xi32>
+  tt.return
+}

@@ -1,0 +1,441 @@
+{
+  "status": "passed",
+  "mode": "smoke",
+  "gpu": "NVIDIA B300 SXM6 PC",
+  "torch": "2.14.1+cu130",
+  "triton": "3.9.0",
+  "compiler_sha256": "37070dd90c060d7c56ab48ff3e4194e4948addc4bb66038e5a014be59da77185",
+  "git_revision": "d36cb91d0e030da31c27c86ffbbb2faf4d102ce4",
+  "source_sha256": {
+    "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/atomic_fourway_experiment.py": "96afada45f9a9d2606c9cb27ac5a98d2c20a9dd81f3e2946a1af72591c905586",
+    "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/native_indexed_update_experiment.py": "4a45f90c8e1ac4722bac06a845c5cf450b955920d0b3118066aabcf252979279",
+    "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/irregular_kernels.py": "ac5bb1ae6da6c5dd384a0fcb1a807c04988aca1008dc0badcd1f94660ba58d25",
+    "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/coverage_experiment.py": "db50502fc3f549eb7550f594521835097e0d14d994f477e77da7bbaa812330d2",
+    "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/vendor/irregular/flag_embedding.py": "0c83c3fc7cb875ba9589a0c3b358e8483ad9712c53b9d1df58fc56a88eae7065",
+    "/home/ryandeng/tpaa/triton/third_party/nvidia/backend/compiler.py": "d1eaf0482966046765543ba0fe705e32c2256f390a0f9678d4a3a92931308d4d",
+    "/home/ryandeng/tpaa/triton/lib/Analysis/Utility.cpp": "b55fa799180ee8976cbfafbbda417cd65898a1cf5cb17b38330840fe55ffde99",
+    "/home/ryandeng/tpaa/triton/lib/Conversion/TritonGPUToLLVM/Utility.cpp": "bb92fe42554400707f88430382c2fb14041890915e0014a9cd7c7d3aa1f0c9e3",
+    "/home/ryandeng/tpaa/triton/third_party/nvidia/lib/TritonNVIDIAGPUToLLVM/LoadStoreOpToLLVM.cpp": "06bc6ad30841a60c98e0e1c6e69e9d850f981d15c971f9d644a0a54e81fe6baf"
+  },
+  "source_audit": {
+    "upstream": {
+      "_embedding_dense_backward_kernel": {
+        "ast_identical_to_pinned_upstream": true,
+        "ast_sha256": "d0ec650fe2662e96af902bce223638f02eede96fd53fb35fadad1cd421ad1d84"
+      },
+      "_embedding_dense_backward_kernel_scale_by_freq": {
+        "ast_identical_to_pinned_upstream": true,
+        "ast_sha256": "40b7b414d34a1bb68e8a1f4cd7c4ea3481234b5abc698554f04af83e4701df90"
+      }
+    },
+    "controls": {
+      "_embedding_dense_backward_kernel_acquire": "Only sem keyword added, apart from function name; AST audited",
+      "_embedding_dense_backward_kernel_release": "Only sem keyword added, apart from function name; AST audited",
+      "_embedding_dense_backward_kernel_relaxed": "Only sem keyword added, apart from function name; AST audited",
+      "_embedding_dense_backward_kernel_scale_by_freq_acquire": "Only sem keyword added, apart from function name; AST audited",
+      "_embedding_dense_backward_kernel_scale_by_freq_release": "Only sem keyword added, apart from function name; AST audited",
+      "_embedding_dense_backward_kernel_scale_by_freq_relaxed": "Only sem keyword added, apart from function name; AST audited"
+    }
+  },
+  "native_flags": {
+    "enable_indexed_update_specialization": false,
+    "enable_private_atomic_relaxation": false
+  },
+  "settings": {
+    "rounds": 3,
+    "repetitions": 8,
+    "warmup_ms": 20
+  },
+  "cases": [
+    {
+      "shape_n_d_v": [
+        31,
+        137,
+        67
+      ],
+      "frequency": false,
+      "block_d": 128,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "acq_rel": [
+            4.7079999931156635,
+            4.523999989032745,
+            4.612000193446875
+          ],
+          "acquire": [
+            4.383999854326248,
+            4.064000211656094,
+            4.064000211656094
+          ],
+          "release": [
+            4.480000119656324,
+            4.308000206947327,
+            4.296000115573406
+          ],
+          "relaxed": [
+            3.759999992325902,
+            3.8240000139921904,
+            3.776000114157796
+          ]
+        },
+        "median_us": {
+          "acq_rel": 4.612000193446875,
+          "acquire": 4.064000211656094,
+          "release": 4.308000206947327,
+          "relaxed": 3.776000114157796
+        },
+        "rounds": 3,
+        "repetitions": 8,
+        "warmup_ms": 20,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "code": {
+        "acq_rel": {
+          "ptx_sha256": "f1a81e2dcf87a27947fbfc74a6872fd77f7923120e98c31234d7c7b06de21cec",
+          "atomic_sites": 1,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "atom.global.gpu.acq_rel.add.f32"
+          ],
+          "bar_sync_sites": 2,
+          "ptx_atomic_and_barrier_lines": [
+            "bar.sync \t0;",
+            "@%p2 atom.global.gpu.acq_rel.add.f32 %r1, [ %rd4 + 0 ], %r2;",
+            "bar.sync \t0;"
+          ],
+          "native_flags": {
+            "enable_indexed_update_specialization": false,
+            "enable_private_atomic_relaxation": false
+          }
+        },
+        "acquire": {
+          "ptx_sha256": "6ffc3a723c439fc0365d746842a0556d8964e5882f9d800067da9ddace3bf35a",
+          "atomic_sites": 1,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "atom.global.gpu.acquire.add.f32"
+          ],
+          "bar_sync_sites": 1,
+          "ptx_atomic_and_barrier_lines": [
+            "@%p2 atom.global.gpu.acquire.add.f32 %r1, [ %rd4 + 0 ], %r2;",
+            "bar.sync \t0;"
+          ],
+          "native_flags": {
+            "enable_indexed_update_specialization": false,
+            "enable_private_atomic_relaxation": false
+          }
+        },
+        "release": {
+          "ptx_sha256": "91168b15131ab7a1e150b5a67b7256d2467487c1ec357d0859ddd8d104bc0f71",
+          "atomic_sites": 1,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.release.add.f32"
+          ],
+          "bar_sync_sites": 1,
+          "ptx_atomic_and_barrier_lines": [
+            "bar.sync \t0;",
+            "@%p2 red.global.gpu.release.add.f32 [ %rd4 + 0 ], %r1;"
+          ],
+          "native_flags": {
+            "enable_indexed_update_specialization": false,
+            "enable_private_atomic_relaxation": false
+          }
+        },
+        "relaxed": {
+          "ptx_sha256": "c149b2b21b744d7e3edeee381ecf235cd6576b4455ca6add7d3b4533fe8440aa",
+          "atomic_sites": 1,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.f32"
+          ],
+          "bar_sync_sites": 0,
+          "ptx_atomic_and_barrier_lines": [
+            "@%p2 red.global.gpu.relaxed.add.f32 [ %rd4 + 0 ], %r1;"
+          ],
+          "native_flags": {
+            "enable_indexed_update_specialization": false,
+            "enable_private_atomic_relaxation": false
+          }
+        }
+      },
+      "ratios": {
+        "acq_rel_over_relaxed": 1.2213983193894953,
+        "acq_rel_over_release": 1.0705663815914632,
+        "acq_rel_over_acquire": 1.134842508181728,
+        "release_over_relaxed": 1.1408898508225254,
+        "acquire_over_relaxed": 1.0762712099553349,
+        "acquire_over_release": 0.9433611923003753
+      },
+      "validation": "Exact FP32 scratch/BF16 result; poisoned output; changed gradients; explicit FTZ and signed zero",
+      "scope": "Scratch zero + optional unchanged frequency-count reset/kernel + update + BF16 conversion"
+    },
+    {
+      "shape_n_d_v": [
+        31,
+        137,
+        67
+      ],
+      "frequency": true,
+      "block_d": 128,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "acq_rel": [
+            6.839999929070473,
+            6.812000181525946,
+            6.575999781489372
+          ],
+          "acquire": [
+            6.283999886363745,
+            6.268000230193138,
+            6.347999908030033
+          ],
+          "release": [
+            6.779999937862158,
+            6.264000199735165,
+            6.335999816656113
+          ],
+          "relaxed": [
+            6.008000113070011,
+            6.1519998125731945,
+            6.023999769240618
+          ]
+        },
+        "median_us": {
+          "acq_rel": 6.812000181525946,
+          "acquire": 6.283999886363745,
+          "release": 6.335999816656113,
+          "relaxed": 6.023999769240618
+        },
+        "rounds": 3,
+        "repetitions": 8,
+        "warmup_ms": 20,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "code": {
+        "acq_rel": {
+          "ptx_sha256": "59599f387472834d27f17571500b401523e08bfeaf7165b315c17f8e089d1be5",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "atom.global.gpu.acq_rel.add.f32"
+          ],
+          "bar_sync_sites": 2,
+          "ptx_atomic_and_barrier_lines": [
+            "bar.sync \t0;",
+            "@%p3 atom.global.gpu.acq_rel.add.f32 %r2, [ %rd5 + 0 ], %r3;",
+            "bar.sync \t0;"
+          ],
+          "native_flags": {
+            "enable_indexed_update_specialization": false,
+            "enable_private_atomic_relaxation": false
+          }
+        },
+        "acquire": {
+          "ptx_sha256": "2e97d2328c71268571bc23153f4332dd0bbc37686ba79a663cd973d08a31bb8f",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "atom.global.gpu.acquire.add.f32"
+          ],
+          "bar_sync_sites": 1,
+          "ptx_atomic_and_barrier_lines": [
+            "@%p3 atom.global.gpu.acquire.add.f32 %r2, [ %rd5 + 0 ], %r3;",
+            "bar.sync \t0;"
+          ],
+          "native_flags": {
+            "enable_indexed_update_specialization": false,
+            "enable_private_atomic_relaxation": false
+          }
+        },
+        "release": {
+          "ptx_sha256": "af03f45e808ec071af11c215e39661dacb9066cfafb4759297d5bf6c2cb5c5e6",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.release.add.f32"
+          ],
+          "bar_sync_sites": 1,
+          "ptx_atomic_and_barrier_lines": [
+            "bar.sync \t0;",
+            "@%p3 red.global.gpu.release.add.f32 [ %rd5 + 0 ], %r2;"
+          ],
+          "native_flags": {
+            "enable_indexed_update_specialization": false,
+            "enable_private_atomic_relaxation": false
+          }
+        },
+        "relaxed": {
+          "ptx_sha256": "56efb2160423c1428b8a34e99482869e165d73cf0ca98744f7af748d1b88b880",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.f32"
+          ],
+          "bar_sync_sites": 0,
+          "ptx_atomic_and_barrier_lines": [
+            "@%p3 red.global.gpu.relaxed.add.f32 [ %rd5 + 0 ], %r2;"
+          ],
+          "native_flags": {
+            "enable_indexed_update_specialization": false,
+            "enable_private_atomic_relaxation": false
+          }
+        }
+      },
+      "ratios": {
+        "acq_rel_over_relaxed": 1.1308101664128487,
+        "acq_rel_over_release": 1.075126322386961,
+        "acq_rel_over_acquire": 1.0840229638304035,
+        "release_over_relaxed": 1.0517928385403683,
+        "acquire_over_relaxed": 1.0431607116671424,
+        "acquire_over_release": 0.9917929400572787
+      },
+      "validation": "Exact FP32 scratch/BF16 result; poisoned output; changed gradients; explicit FTZ and signed zero",
+      "scope": "Scratch zero + optional unchanged frequency-count reset/kernel + update + BF16 conversion"
+    }
+  ],
+  "scope": "Four memory orders on original FlagGems indexed updates; no native transformation, FX or Inductor",
+  "limits": "Unique randperm subsets, ordinary finite BF16 gradients; device timings exclude producers, allocations and host guards. Release versus relaxed holds red family fixed but changes GPU ordering as well as CTA barriers: no pure-barrier causal claim.",
+  "summary": [
+    {
+      "shape_n_d_v": [
+        31,
+        137,
+        67
+      ],
+      "frequency": false,
+      "config_median_us": {
+        "128": {
+          "acq_rel": 4.612000193446875,
+          "acquire": 4.064000211656094,
+          "release": 4.308000206947327,
+          "relaxed": 3.776000114157796
+        }
+      },
+      "config_ratios": {
+        "128": {
+          "acq_rel_over_relaxed": 1.2213983193894953,
+          "acq_rel_over_release": 1.0705663815914632,
+          "acq_rel_over_acquire": 1.134842508181728,
+          "release_over_relaxed": 1.1408898508225254,
+          "acquire_over_relaxed": 1.0762712099553349,
+          "acquire_over_release": 0.9433611923003753
+        }
+      },
+      "best": {
+        "acq_rel": {
+          "median_us": 4.612000193446875,
+          "block_d": 128
+        },
+        "acquire": {
+          "median_us": 4.064000211656094,
+          "block_d": 128
+        },
+        "release": {
+          "median_us": 4.308000206947327,
+          "block_d": 128
+        },
+        "relaxed": {
+          "median_us": 3.776000114157796,
+          "block_d": 128
+        }
+      },
+      "best_ratios": {
+        "acq_rel_over_relaxed": 1.2213983193894953,
+        "acq_rel_over_release": 1.0705663815914632,
+        "acq_rel_over_acquire": 1.134842508181728,
+        "release_over_relaxed": 1.1408898508225254,
+        "acquire_over_relaxed": 1.0762712099553349,
+        "acquire_over_release": 0.9433611923003753
+      }
+    },
+    {
+      "shape_n_d_v": [
+        31,
+        137,
+        67
+      ],
+      "frequency": true,
+      "config_median_us": {
+        "128": {
+          "acq_rel": 6.812000181525946,
+          "acquire": 6.283999886363745,
+          "release": 6.335999816656113,
+          "relaxed": 6.023999769240618
+        }
+      },
+      "config_ratios": {
+        "128": {
+          "acq_rel_over_relaxed": 1.1308101664128487,
+          "acq_rel_over_release": 1.075126322386961,
+          "acq_rel_over_acquire": 1.0840229638304035,
+          "release_over_relaxed": 1.0517928385403683,
+          "acquire_over_relaxed": 1.0431607116671424,
+          "acquire_over_release": 0.9917929400572787
+        }
+      },
+      "best": {
+        "acq_rel": {
+          "median_us": 6.812000181525946,
+          "block_d": 128
+        },
+        "acquire": {
+          "median_us": 6.283999886363745,
+          "block_d": 128
+        },
+        "release": {
+          "median_us": 6.335999816656113,
+          "block_d": 128
+        },
+        "relaxed": {
+          "median_us": 6.023999769240618,
+          "block_d": 128
+        }
+      },
+      "best_ratios": {
+        "acq_rel_over_relaxed": 1.1308101664128487,
+        "acq_rel_over_release": 1.075126322386961,
+        "acq_rel_over_acquire": 1.0840229638304035,
+        "release_over_relaxed": 1.0517928385403683,
+        "acquire_over_relaxed": 1.0431607116671424,
+        "acquire_over_release": 0.9917929400572787
+      }
+    }
+  ],
+  "geometric_mean_ratios_all_36_paired_cases": {
+    "acq_rel_over_relaxed": 1.1752317374906147,
+    "acq_rel_over_release": 1.0728439293352718,
+    "acq_rel_over_acquire": 1.109141712857237,
+    "release_over_relaxed": 1.0954358834082993,
+    "acquire_over_relaxed": 1.0595866370070282,
+    "acquire_over_release": 0.9672739893368006
+  },
+  "geometric_mean_ratios_best_of_two_blocks": {
+    "acq_rel_over_relaxed": 1.1752317374906147,
+    "acq_rel_over_release": 1.0728439293352718,
+    "acq_rel_over_acquire": 1.109141712857237,
+    "release_over_relaxed": 1.0954358834082993,
+    "acquire_over_relaxed": 1.0595866370070282,
+    "acquire_over_release": 0.9672739893368006
+  },
+  "compiler_unchanged": true,
+  "sources_unchanged": true
+}

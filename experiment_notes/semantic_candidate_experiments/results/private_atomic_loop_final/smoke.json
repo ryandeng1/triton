@@ -1,0 +1,108 @@
+{
+  "n": 513,
+  "vocabulary": 67,
+  "block": 256,
+  "grid": 8,
+  "distribution": "uniform",
+  "seed": 0,
+  "device": null,
+  "report": {
+    "transformed": true,
+    "grid": [
+      8,
+      1,
+      1
+    ],
+    "native_attributes": {
+      "(0,)": [
+        [
+          "tt.divisibility",
+          16
+        ],
+        [
+          "tt.experimental_alias_group",
+          0
+        ]
+      ],
+      "(1,)": [
+        [
+          "tt.divisibility",
+          16
+        ],
+        [
+          "tt.experimental_alias_group",
+          1
+        ],
+        [
+          "tt.experimental_private",
+          1
+        ],
+        [
+          "tt.experimental_num_ctas",
+          1
+        ]
+      ],
+      "(2,)": [],
+      "(3,)": [],
+      "(4,)": [
+        [
+          "tt.divisibility",
+          16
+        ]
+      ],
+      "(5,)": [],
+      "(6,)": []
+    },
+    "proof": "private output plus closed memory effects and disjoint read footprints; atomicity retained",
+    "scope": "unchanged source; no uniqueness or immutable-index assumptions; no host launch removal",
+    "variants": {
+      "baseline": {
+        "atomic_instruction_sites": 2,
+        "atomic_instructions": [
+          "atom.global.gpu.acq_rel.add.u32"
+        ],
+        "bar_sync_sites": 5,
+        "registers": 23,
+        "spills": 0,
+        "shared_bytes": 2048
+      },
+      "optimized": {
+        "atomic_instruction_sites": 2,
+        "atomic_instructions": [
+          "red.global.gpu.relaxed.add.u32"
+        ],
+        "bar_sync_sites": 4,
+        "registers": 23,
+        "spills": 0,
+        "shared_bytes": 2048
+      }
+    }
+  },
+  "code": {
+    "baseline": {
+      "ptx_sha256": "fb1d31e14ddea8e680fb91f40a16b66cb3438d14259230d32d96be9afb9edc05",
+      "atomic_sites": 2,
+      "registers": 23,
+      "spills": 0,
+      "shared_bytes": 2048,
+      "retained_prefix": "code/n513-v67-b256-g8-uniform-baseline"
+    },
+    "native": {
+      "ptx_sha256": "2003f32670430d986a593f191904aef461d839e46deeaa2e5b1d3bd64aa607b1",
+      "atomic_sites": 2,
+      "registers": 23,
+      "spills": 0,
+      "shared_bytes": 2048,
+      "retained_prefix": "code/n513-v67-b256-g8-uniform-native"
+    },
+    "manual": {
+      "ptx_sha256": "7f736ee3ef386ddc2410d278d5bdee9a79818d024f64e93ab8626a70e5a6d3ee",
+      "atomic_sites": 2,
+      "registers": 23,
+      "spills": 0,
+      "shared_bytes": 2048,
+      "retained_prefix": "code/n513-v67-b256-g8-uniform-manual"
+    }
+  },
+  "correctness": "exact int32 reference; invalid/padding/tail masks; guard storage; changed input; smoke includes overflow"
+}

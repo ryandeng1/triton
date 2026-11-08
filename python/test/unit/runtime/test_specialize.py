@@ -1224,3 +1224,181 @@ def test_native_private_atomic_without_contract_keeps_ordering(device):
     assert torch.equal(out, expected)
     assert "atom.global.gpu.acq_rel" in compiled.asm["ptx"]
     assert "bar.sync" in compiled.asm["ptx"]
+
+
+@triton.jit
+def _native_private_integer_loop_tl(Values, Indices, Bounds, Out, N: tl.constexpr, V: tl.constexpr, BLOCK: tl.constexpr,
+                                    NESTED: tl.constexpr, SEM0: tl.constexpr, SEM1: tl.constexpr):
+    offsets = tl.program_id(0) * BLOCK + tl.arange(0, BLOCK)
+    index = tl.load(Indices + offsets, offsets < N, other=-1)
+    value = tl.load(Values + offsets, offsets < N, other=0)
+    valid = (offsets < N) & (index >= 0) & (index < V)
+    stop = tl.load(Bounds)
+    step = tl.load(Bounds + 1)
+    for i in range(0, stop, step):
+        inner_stop = i + 1 if NESTED else 1
+        for j in range(inner_stop):
+            tl.atomic_add(Out + index, value + i + j, mask=valid, sem=SEM0)
+            tl.atomic_add(Out + (index + 1) % V, value * 3 - i, mask=valid, sem=SEM1)
+
+
+@gluon.jit
+def _native_private_integer_loop_gluon(Values, Indices, Bounds, Out, N: gl.constexpr, V: gl.constexpr,
+                                       BLOCK: gl.constexpr, NESTED: gl.constexpr, SEM0: gl.constexpr,
+                                       SEM1: gl.constexpr):
+    offsets = gl.program_id(0) * BLOCK + gl.arange(0, BLOCK, layout=gl.BlockedLayout([1], [32], [4], [0]))
+    index = gl.load(Indices + offsets, offsets < N, other=-1)
+    value = gl.load(Values + offsets, offsets < N, other=0)
+    valid = (offsets < N) & (index >= 0) & (index < V)
+    stop = gl.load(Bounds)
+    step = gl.load(Bounds + 1)
+    for i in range(0, stop, step):
+        inner_stop = i + 1 if NESTED else 1
+        for j in range(inner_stop):
+            gl.atomic_add(Out + index, value + i + j, mask=valid, sem=SEM0)
+            gl.atomic_add(Out + (index + 1) % V, value * 3 - i, mask=valid, sem=SEM1)
+
+
+@pytest.mark.parametrize("frontend", ["triton", "gluon"])
+@pytest.mark.parametrize("nested", [False, True])
+@pytest.mark.parametrize("orders", [("acq_rel", "release"), ("acquire", "relaxed"), ("relaxed", "relaxed")])
+def test_native_private_integer_loops_preserve_modular_sums(device, frontend, nested, orders):
+    _semantic_require_cuda(device)
+    from triton.experimental.semantic_contracts.native import compile_private_atomic
+
+    count, vocabulary, block, guard = 137, 7, 128, 16
+    values_cpu = (torch.arange(count, dtype=torch.int64) * 100000003 + 2147483600).to(torch.int32)
+    indices_cpu = torch.arange(count) % vocabulary
+    indices_cpu[:2] = torch.tensor([-1, vocabulary])
+    values, indices = values_cpu.to(device), indices_cpu.to(device)
+    bounds = torch.tensor([4, 1], device=device, dtype=torch.int32)
+    storage = torch.full((vocabulary + 2 * guard, ), 17, device=device, dtype=torch.int32)
+    out = storage[guard:-guard]
+    initial_cpu = torch.arange(vocabulary, dtype=torch.int64) + 2147483640
+    initial = initial_cpu.to(device=device, dtype=torch.int32)
+    kernel = _native_private_integer_loop_tl if frontend == "triton" else _native_private_integer_loop_gluon
+    args = (values, indices, bounds, out, count, vocabulary, block, nested, *orders)
+    plan = compile_private_atomic(kernel, args, grid=(triton.cdiv(count, block), ), output_arg="Out")
+    report = plan.report()
+    assert report["transformed"] == (orders != ("relaxed", "relaxed"))
+    assert "scf.for" in plan.optimized.asm["ttgir" if frontend == "gluon" else "ttir"]
+    assert _native_indexed_has_atomic(plan.baseline) and _native_indexed_has_atomic(plan.optimized)
+    assert report["variants"]["optimized"]["bar_sync_sites"] == 0
+    assert all("relaxed" in op for op in report["variants"]["optimized"]["atomic_instructions"])
+    assert plan.baseline.src.fn is plan.optimized.src.fn
+
+    for stop, step in ((0, 1), (1, 1), (4, 1), (5, 2)):
+        # Bounds are loaded at runtime, so these launches also cover zero trips
+        # and dynamic steps without compiling a different specialization.
+        bounds.copy_(torch.tensor([stop, step], device=device, dtype=torch.int32))
+        expected64 = initial_cpu.clone()
+        valid = (indices_cpu >= 0) & (indices_cpu < vocabulary)
+        index = indices_cpu[valid]
+        value = values_cpu[valid].to(torch.int64)
+        for i in range(0, stop, step):
+            for j in range(i + 1 if nested else 1):
+                expected64.index_add_(0, index, value + i + j)
+                expected64.index_add_(0, (index + 1) % vocabulary, value * 3 - i)
+        if stop:
+            assert torch.any((expected64 < -(2**31)) | (expected64 >= 2**31))
+        expected = (((expected64 + 2**31) % 2**32) - 2**31).to(device=device, dtype=torch.int32)
+        for variant in (plan.baseline, plan.optimized):
+            out.copy_(initial)
+            variant[plan.grid](*args)
+            assert torch.equal(out, expected)
+            assert torch.all(storage[:guard] == 17) and torch.all(storage[-guard:] == 17)
+
+
+@triton.jit
+def _native_immutable_loop_tl(X, Gamma, Y, M, N: tl.constexpr, BLOCK: tl.constexpr):
+    col = tl.arange(0, BLOCK)
+    for row in range(tl.program_id(0), M, tl.num_programs(0)):
+        x = tl.load(X + row * N + col, col < N, other=0)
+        gamma = tl.load(Gamma + col, col < N, other=0)
+        tl.store(Y + row * N + col, x * gamma, col < N)
+
+
+@gluon.jit
+def _native_immutable_loop_gluon(X, Gamma, Y, M, N: gl.constexpr, BLOCK: gl.constexpr):
+    col = gl.arange(0, BLOCK, layout=gl.BlockedLayout([1], [32], [4], [0]))
+    for row in range(gl.program_id(0), M, gl.num_programs(0)):
+        x = gl.load(X + row * N + col, col < N, other=0)
+        gamma = gl.load(Gamma + col, col < N, other=0)
+        gl.store(Y + row * N + col, x * gamma, col < N)
+
+
+@pytest.mark.parametrize("frontend", ["triton", "gluon"])
+@pytest.mark.parametrize("grid", [1, 17])
+def test_native_immutable_licm_preserves_outputs_and_allows_new_inputs(device, frontend, grid):
+    _semantic_require_cuda(device)
+    from triton.experimental.semantic_contracts.native import compile_immutable_licm
+
+    m, n = 11, 65
+    x = torch.arange(m * n, device=device, dtype=torch.float32).reshape(m, n)
+    gamma = torch.full((n, ), 2, device=device)
+    y = torch.full_like(x, float("nan"))
+    kernel = _native_immutable_loop_tl if frontend == "triton" else _native_immutable_loop_gluon
+    args = (x, gamma, y, m, n, 128)
+    plan = compile_immutable_licm(kernel, args, grid=(grid, ), immutable_args=("Gamma", ))
+    assert plan.baseline.src.fn is plan.optimized.src.fn
+    assert not any(
+        name.startswith("tt.experimental_") for attrs in plan.baseline.src.attrs.values() for name, _ in attrs)
+    assert ("tt.experimental_immutable", 1) in plan.optimized.src.attrs[(1, )]
+    for variant in (plan.baseline, plan.optimized, plan.selected):
+        y.fill_(float("nan"))
+        variant[plan.grid](*args)
+        assert torch.equal(y, x * gamma)
+    # The contract lasts through one invocation, not for the lifetime of a plan.
+    gamma.fill_(3)
+    plan(*args)
+    assert torch.equal(y, x * gamma)
+    replacement = (torch.full_like(x, 7), torch.full_like(gamma, 5), torch.empty_like(y), *args[3:])
+    plan(*replacement)
+    assert torch.equal(replacement[2], torch.full_like(y, 35))
+    report = plan.report()
+    assert report["variants"]["optimized"]["blocks_per_sm"] > 0
+    assert report["launched_ctas"] == grid
+    assert not plan.baseline.metadata.enable_private_atomic_relaxation
+    assert not plan.optimized.metadata.enable_indexed_update_specialization
+
+
+@pytest.mark.parametrize("change", ["grid", "scalar", "metadata", "direct_alias", "disjoint_views_one_storage"])
+def test_native_immutable_licm_launch_rechecks_binding_and_allocations(device, change):
+    _semantic_require_cuda(device)
+    from triton.experimental.semantic_contracts.native import compile_immutable_licm
+
+    m, n = 11, 64
+    x = torch.ones((m, n), device=device)
+    gamma = torch.ones(n, device=device)
+    y = torch.empty_like(x)
+    args = (x, gamma, y, m, n, 64)
+    plan = compile_immutable_licm(_native_immutable_loop_tl, args, grid=(2, ), immutable_args=(1, ))
+    changed, kwargs = list(args), {}
+    if change == "grid":
+        kwargs["grid"] = (3, )
+    elif change == "scalar":
+        changed[3] = m + 1
+    elif change == "metadata":
+        changed[1] = gamma.to(torch.float64)
+    elif change == "direct_alias":
+        changed[1] = x[0]
+    else:
+        backing = torch.empty(m * n + n, device=device)
+        changed[1], changed[2] = backing[:n], backing[n:].reshape_as(y)
+    with pytest.raises(ValueError):
+        plan(*changed, **kwargs)
+
+
+@pytest.mark.parametrize("invalid", ["empty", "duplicate", "scalar", "alias", "multiple_ctas"])
+def test_native_immutable_licm_compile_rejects_invalid_contract(device, invalid):
+    _semantic_require_cuda(device)
+    from triton.experimental.semantic_contracts.native import compile_immutable_licm
+
+    m, n = 11, 64
+    x = torch.ones((m, n), device=device)
+    gamma = x[0] if invalid == "alias" else torch.ones(n, device=device)
+    args = (x, gamma, torch.empty_like(x), m, n, 64)
+    immutable = {"empty": (), "duplicate": (1, "Gamma"), "scalar": (3, )}.get(invalid, (1, ))
+    options = {"num_ctas": 2} if invalid == "multiple_ctas" else {}
+    with pytest.raises((ValueError, TypeError)):
+        compile_immutable_licm(_native_immutable_loop_tl, args, grid=(2, ), immutable_args=immutable, options=options)

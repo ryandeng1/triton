@@ -1,0 +1,1288 @@
+{
+  "checks": [
+    {
+      "shape": [
+        4096,
+        4096
+      ],
+      "grid": [
+        592
+      ],
+      "report": {
+        "selected": "optimized",
+        "binary_changed": true,
+        "grid": [
+          592,
+          1,
+          1
+        ],
+        "launched_ctas": 592,
+        "immutable_args": [
+          2
+        ],
+        "native_attributes": {
+          "(0,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(1,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(2,)": [
+            [
+              "tt.divisibility",
+              16
+            ],
+            [
+              "tt.experimental_immutable",
+              1
+            ]
+          ],
+          "(3,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(4,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(5,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(6,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(7,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(9,)": [],
+          "(10,)": []
+        },
+        "variants": {
+          "baseline": {
+            "blocks_per_sm": 7,
+            "sm_count": 148,
+            "threads_per_block": 128,
+            "registers": 68,
+            "spills": 0,
+            "shared_bytes": 16400
+          },
+          "optimized": {
+            "blocks_per_sm": 5,
+            "sm_count": 148,
+            "threads_per_block": 128,
+            "registers": 94,
+            "spills": 0,
+            "shared_bytes": 8208
+          }
+        },
+        "guard": {
+          "no_residency_loss": false,
+          "grid_limited": true,
+          "definition": "no spills and (no blocks/SM loss or total launched CTAs fit optimized residency)",
+          "limitation": "profitability heuristic; can miss gains and cannot guarantee no regressions"
+        },
+        "contract": "initialized immutable inputs remain unchanged through invocation completion, including aliases",
+        "scope": "same source and launch; both atomic specialization passes disabled; no timing calibration"
+      },
+      "timing": {
+        "rounds_us": {
+          "original": [
+            12.036499567329884,
+            12.013000436127186,
+            11.976500041782856,
+            11.974000371992588,
+            12.013999745249748,
+            12.001999653875828,
+            12.028500437736511,
+            12.042500078678131,
+            11.971499770879745,
+            12.015500105917454,
+            12.002999894320965,
+            11.975999921560287,
+            12.012500315904617,
+            11.993500404059887,
+            11.996500194072723
+          ],
+          "compiler": [
+            8.65899957716465,
+            8.635500445961952,
+            8.654999546706676,
+            8.64300038665533,
+            8.645500056445599,
+            8.65899957716465,
+            8.666999638080597,
+            8.65199975669384,
+            8.638500235974789,
+            8.63800011575222,
+            8.63100029528141,
+            8.636499755084515,
+            8.638500235974789,
+            8.642000146210194,
+            8.640499785542488
+          ],
+          "selected": [
+            8.64300038665533,
+            8.634500205516815,
+            8.627000264823437,
+            8.623500354588032,
+            8.675499819219112,
+            8.636999875307083,
+            8.63800011575222,
+            8.634000085294247,
+            8.646500296890736,
+            8.647499606013298,
+            8.640999905765057,
+            8.635999634861946,
+            8.634000085294247,
+            8.670499548316002,
+            8.649500086903572
+          ]
+        },
+        "orders": [
+          [
+            "original",
+            "selected",
+            "compiler"
+          ],
+          [
+            "original",
+            "compiler",
+            "selected"
+          ],
+          [
+            "original",
+            "selected",
+            "compiler"
+          ],
+          [
+            "selected",
+            "original",
+            "compiler"
+          ],
+          [
+            "selected",
+            "original",
+            "compiler"
+          ],
+          [
+            "original",
+            "selected",
+            "compiler"
+          ],
+          [
+            "original",
+            "compiler",
+            "selected"
+          ],
+          [
+            "original",
+            "compiler",
+            "selected"
+          ],
+          [
+            "original",
+            "selected",
+            "compiler"
+          ],
+          [
+            "selected",
+            "compiler",
+            "original"
+          ],
+          [
+            "original",
+            "compiler",
+            "selected"
+          ],
+          [
+            "original",
+            "selected",
+            "compiler"
+          ],
+          [
+            "selected",
+            "compiler",
+            "original"
+          ],
+          [
+            "original",
+            "compiler",
+            "selected"
+          ],
+          [
+            "compiler",
+            "selected",
+            "original"
+          ]
+        ],
+        "median_us": {
+          "original": 12.002999894320965,
+          "compiler": 8.642000146210194,
+          "selected": 8.63800011575222
+        },
+        "speedup_over_original": {
+          "original": 1.0,
+          "compiler": 1.3889145673741607,
+          "selected": 1.3895577371470909
+        }
+      },
+      "cubins": {
+        "baseline": "2db7b16527b1fe30f3e6a71ce42418e7c5e5d0df25d6b49cc712efb7e9701982",
+        "optimized": "9f50a88daa47606d711272c5774643b6bb143188b88c472436b251e0fd609e27"
+      },
+      "bitwise_validation_passed": true,
+      "shared_outputs": true,
+      "matches_original_study_cubins": {
+        "baseline": true,
+        "optimized": true
+      }
+    },
+    {
+      "shape": [
+        16384,
+        4096
+      ],
+      "grid": [
+        4736
+      ],
+      "report": {
+        "selected": "baseline",
+        "binary_changed": true,
+        "grid": [
+          4736,
+          1,
+          1
+        ],
+        "launched_ctas": 4736,
+        "immutable_args": [
+          2
+        ],
+        "native_attributes": {
+          "(0,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(1,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(2,)": [
+            [
+              "tt.divisibility",
+              16
+            ],
+            [
+              "tt.experimental_immutable",
+              1
+            ]
+          ],
+          "(3,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(4,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(5,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(6,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(7,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(9,)": [],
+          "(10,)": []
+        },
+        "variants": {
+          "baseline": {
+            "blocks_per_sm": 7,
+            "sm_count": 148,
+            "threads_per_block": 128,
+            "registers": 68,
+            "spills": 0,
+            "shared_bytes": 16400
+          },
+          "optimized": {
+            "blocks_per_sm": 5,
+            "sm_count": 148,
+            "threads_per_block": 128,
+            "registers": 94,
+            "spills": 0,
+            "shared_bytes": 8208
+          }
+        },
+        "guard": {
+          "no_residency_loss": false,
+          "grid_limited": false,
+          "definition": "no spills and (no blocks/SM loss or total launched CTAs fit optimized residency)",
+          "limitation": "profitability heuristic; can miss gains and cannot guarantee no regressions"
+        },
+        "contract": "initialized immutable inputs remain unchanged through invocation completion, including aliases",
+        "scope": "same source and launch; both atomic specialization passes disabled; no timing calibration"
+      },
+      "timing": {
+        "rounds_us": {
+          "original": [
+            42.794499546289444,
+            42.72549971938133,
+            42.71300137042999,
+            42.74199903011322,
+            42.7045002579689,
+            42.745500802993774,
+            42.7200011909008,
+            42.711999267339706,
+            42.723000049591064,
+            42.71800071001053,
+            42.73049905896187,
+            42.74649918079376,
+            42.746998369693756,
+            42.745500802993774,
+            42.71150007843971
+          ],
+          "compiler": [
+            46.18849977850914,
+            46.169500797986984,
+            46.13550007343292,
+            46.14799842238426,
+            46.227000653743744,
+            46.11450061202049,
+            46.16149887442589,
+            46.127498149871826,
+            46.167001128196716,
+            46.138498932123184,
+            46.21199890971184,
+            46.1605004966259,
+            46.207498759031296,
+            46.163998544216156,
+            46.156998723745346
+          ],
+          "selected": [
+            42.73249953985214,
+            42.724501341581345,
+            42.72500053048134,
+            42.7124984562397,
+            42.750000953674316,
+            42.71500185132027,
+            42.70850121974945,
+            42.71150007843971,
+            42.72399842739105,
+            42.70999878644943,
+            42.67900064587593,
+            42.73350164294243,
+            42.68699884414673,
+            42.711999267339706,
+            42.67499968409538
+          ]
+        },
+        "orders": [
+          [
+            "original",
+            "selected",
+            "compiler"
+          ],
+          [
+            "original",
+            "compiler",
+            "selected"
+          ],
+          [
+            "original",
+            "selected",
+            "compiler"
+          ],
+          [
+            "selected",
+            "original",
+            "compiler"
+          ],
+          [
+            "selected",
+            "original",
+            "compiler"
+          ],
+          [
+            "original",
+            "selected",
+            "compiler"
+          ],
+          [
+            "original",
+            "compiler",
+            "selected"
+          ],
+          [
+            "original",
+            "compiler",
+            "selected"
+          ],
+          [
+            "original",
+            "selected",
+            "compiler"
+          ],
+          [
+            "selected",
+            "compiler",
+            "original"
+          ],
+          [
+            "original",
+            "compiler",
+            "selected"
+          ],
+          [
+            "original",
+            "selected",
+            "compiler"
+          ],
+          [
+            "selected",
+            "compiler",
+            "original"
+          ],
+          [
+            "original",
+            "compiler",
+            "selected"
+          ],
+          [
+            "compiler",
+            "selected",
+            "original"
+          ]
+        ],
+        "median_us": {
+          "original": 42.72549971938133,
+          "compiler": 46.16149887442589,
+          "selected": 42.7124984562397
+        },
+        "speedup_over_original": {
+          "original": 1.0,
+          "compiler": 0.925565693514598,
+          "selected": 1.0003043901343058
+        }
+      },
+      "cubins": {
+        "baseline": "2db7b16527b1fe30f3e6a71ce42418e7c5e5d0df25d6b49cc712efb7e9701982",
+        "optimized": "9f50a88daa47606d711272c5774643b6bb143188b88c472436b251e0fd609e27"
+      },
+      "bitwise_validation_passed": true,
+      "shared_outputs": true,
+      "matches_original_study_cubins": {
+        "baseline": true,
+        "optimized": true
+      }
+    },
+    {
+      "shape": [
+        8192,
+        4096
+      ],
+      "grid": [
+        592
+      ],
+      "report": {
+        "selected": "optimized",
+        "binary_changed": true,
+        "grid": [
+          592,
+          1,
+          1
+        ],
+        "launched_ctas": 592,
+        "immutable_args": [
+          2
+        ],
+        "native_attributes": {
+          "(0,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(1,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(2,)": [
+            [
+              "tt.divisibility",
+              16
+            ],
+            [
+              "tt.experimental_immutable",
+              1
+            ]
+          ],
+          "(3,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(4,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(5,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(6,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(7,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(9,)": [],
+          "(10,)": []
+        },
+        "variants": {
+          "baseline": {
+            "blocks_per_sm": 7,
+            "sm_count": 148,
+            "threads_per_block": 128,
+            "registers": 68,
+            "spills": 0,
+            "shared_bytes": 16400
+          },
+          "optimized": {
+            "blocks_per_sm": 5,
+            "sm_count": 148,
+            "threads_per_block": 128,
+            "registers": 94,
+            "spills": 0,
+            "shared_bytes": 8208
+          }
+        },
+        "guard": {
+          "no_residency_loss": false,
+          "grid_limited": true,
+          "definition": "no spills and (no blocks/SM loss or total launched CTAs fit optimized residency)",
+          "limitation": "profitability heuristic; can miss gains and cannot guarantee no regressions"
+        },
+        "contract": "initialized immutable inputs remain unchanged through invocation completion, including aliases",
+        "scope": "same source and launch; both atomic specialization passes disabled; no timing calibration"
+      },
+      "timing": {
+        "rounds_us": {
+          "original": [
+            27.46950089931488,
+            27.464499697089195,
+            27.42600068449974,
+            27.458999305963516,
+            27.550499886274338,
+            27.49199979007244,
+            27.520500123500824,
+            27.44249999523163,
+            27.455000206828117,
+            27.37949974834919,
+            27.41900086402893,
+            27.48899906873703,
+            27.545999735593796,
+            27.402499690651894,
+            27.39799953997135
+          ],
+          "compiler": [
+            27.116000652313232,
+            27.100499719381332,
+            27.065500617027283,
+            27.013499289751053,
+            27.03849971294403,
+            27.031999081373215,
+            27.073999866843224,
+            27.101000770926476,
+            27.07649953663349,
+            27.15650014579296,
+            26.988500729203224,
+            27.047500014305115,
+            27.033500373363495,
+            27.062999084591866,
+            27.10849978029728
+          ],
+          "selected": [
+            27.227500453591347,
+            27.16599963605404,
+            27.04799920320511,
+            27.062999084591866,
+            27.032500132918358,
+            27.030499652028084,
+            27.04549953341484,
+            27.10600011050701,
+            27.101000770926476,
+            27.10600011050701,
+            27.013499289751053,
+            27.101000770926476,
+            27.041500434279442,
+            27.0370002835989,
+            27.007000520825386
+          ]
+        },
+        "orders": [
+          [
+            "original",
+            "selected",
+            "compiler"
+          ],
+          [
+            "original",
+            "compiler",
+            "selected"
+          ],
+          [
+            "original",
+            "selected",
+            "compiler"
+          ],
+          [
+            "selected",
+            "original",
+            "compiler"
+          ],
+          [
+            "selected",
+            "original",
+            "compiler"
+          ],
+          [
+            "original",
+            "selected",
+            "compiler"
+          ],
+          [
+            "original",
+            "compiler",
+            "selected"
+          ],
+          [
+            "original",
+            "compiler",
+            "selected"
+          ],
+          [
+            "original",
+            "selected",
+            "compiler"
+          ],
+          [
+            "selected",
+            "compiler",
+            "original"
+          ],
+          [
+            "original",
+            "compiler",
+            "selected"
+          ],
+          [
+            "original",
+            "selected",
+            "compiler"
+          ],
+          [
+            "selected",
+            "compiler",
+            "original"
+          ],
+          [
+            "original",
+            "compiler",
+            "selected"
+          ],
+          [
+            "compiler",
+            "selected",
+            "original"
+          ]
+        ],
+        "median_us": {
+          "original": 27.458999305963516,
+          "compiler": 27.065500617027283,
+          "selected": 27.04799920320511
+        },
+        "speedup_over_original": {
+          "original": 1.0,
+          "compiler": 1.0145387552406357,
+          "selected": 1.0151952127649317
+        }
+      },
+      "cubins": {
+        "baseline": "2db7b16527b1fe30f3e6a71ce42418e7c5e5d0df25d6b49cc712efb7e9701982",
+        "optimized": "9f50a88daa47606d711272c5774643b6bb143188b88c472436b251e0fd609e27"
+      },
+      "bitwise_validation_passed": true,
+      "shared_outputs": true,
+      "matches_original_study_cubins": {
+        "baseline": true,
+        "optimized": true
+      }
+    },
+    {
+      "shape": [
+        32768,
+        4096
+      ],
+      "grid": [
+        4736
+      ],
+      "report": {
+        "selected": "baseline",
+        "binary_changed": true,
+        "grid": [
+          4736,
+          1,
+          1
+        ],
+        "launched_ctas": 4736,
+        "immutable_args": [
+          2
+        ],
+        "native_attributes": {
+          "(0,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(1,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(2,)": [
+            [
+              "tt.divisibility",
+              16
+            ],
+            [
+              "tt.experimental_immutable",
+              1
+            ]
+          ],
+          "(3,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(4,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(5,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(6,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(7,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(9,)": [],
+          "(10,)": []
+        },
+        "variants": {
+          "baseline": {
+            "blocks_per_sm": 7,
+            "sm_count": 148,
+            "threads_per_block": 128,
+            "registers": 68,
+            "spills": 0,
+            "shared_bytes": 16400
+          },
+          "optimized": {
+            "blocks_per_sm": 5,
+            "sm_count": 148,
+            "threads_per_block": 128,
+            "registers": 94,
+            "spills": 0,
+            "shared_bytes": 8208
+          }
+        },
+        "guard": {
+          "no_residency_loss": false,
+          "grid_limited": false,
+          "definition": "no spills and (no blocks/SM loss or total launched CTAs fit optimized residency)",
+          "limitation": "profitability heuristic; can miss gains and cannot guarantee no regressions"
+        },
+        "contract": "initialized immutable inputs remain unchanged through invocation completion, including aliases",
+        "scope": "same source and launch; both atomic specialization passes disabled; no timing calibration"
+      },
+      "timing": {
+        "rounds_us": {
+          "original": [
+            82.75099843740463,
+            82.82650262117386,
+            82.6990008354187,
+            82.7305018901825,
+            82.66150206327438,
+            82.74249732494354,
+            82.60399848222733,
+            82.7065035700798,
+            82.73600041866302,
+            82.67000317573547,
+            82.68599957227707,
+            82.59949833154678,
+            82.76449888944626,
+            82.68199861049652,
+            82.65049755573273
+          ],
+          "compiler": [
+            90.41450172662735,
+            90.43850004673004,
+            90.35450220108032,
+            90.44650197029114,
+            90.38899838924408,
+            90.41450172662735,
+            90.33849835395813,
+            90.34500271081924,
+            90.38949757814407,
+            90.41400253772736,
+            90.31599760055542,
+            90.34200012683868,
+            90.3720036149025,
+            90.48350155353546,
+            90.35550057888031
+          ],
+          "selected": [
+            82.74400234222412,
+            82.66899734735489,
+            82.70499855279922,
+            82.64999836683273,
+            82.66200125217438,
+            82.60449767112732,
+            82.70149677991867,
+            82.66100287437439,
+            82.70149677991867,
+            82.64850080013275,
+            82.67150074243546,
+            82.53099769353867,
+            82.68649876117706,
+            82.67749845981598,
+            82.72849768400192
+          ]
+        },
+        "orders": [
+          [
+            "original",
+            "selected",
+            "compiler"
+          ],
+          [
+            "original",
+            "compiler",
+            "selected"
+          ],
+          [
+            "original",
+            "selected",
+            "compiler"
+          ],
+          [
+            "selected",
+            "original",
+            "compiler"
+          ],
+          [
+            "selected",
+            "original",
+            "compiler"
+          ],
+          [
+            "original",
+            "selected",
+            "compiler"
+          ],
+          [
+            "original",
+            "compiler",
+            "selected"
+          ],
+          [
+            "original",
+            "compiler",
+            "selected"
+          ],
+          [
+            "original",
+            "selected",
+            "compiler"
+          ],
+          [
+            "selected",
+            "compiler",
+            "original"
+          ],
+          [
+            "original",
+            "compiler",
+            "selected"
+          ],
+          [
+            "original",
+            "selected",
+            "compiler"
+          ],
+          [
+            "selected",
+            "compiler",
+            "original"
+          ],
+          [
+            "original",
+            "compiler",
+            "selected"
+          ],
+          [
+            "compiler",
+            "selected",
+            "original"
+          ]
+        ],
+        "median_us": {
+          "original": 82.6990008354187,
+          "compiler": 90.38899838924408,
+          "selected": 82.67150074243546
+        },
+        "speedup_over_original": {
+          "original": 1.0,
+          "compiler": 0.9149233016090103,
+          "selected": 1.0003326429632495
+        }
+      },
+      "cubins": {
+        "baseline": "2db7b16527b1fe30f3e6a71ce42418e7c5e5d0df25d6b49cc712efb7e9701982",
+        "optimized": "9f50a88daa47606d711272c5774643b6bb143188b88c472436b251e0fd609e27"
+      },
+      "bitwise_validation_passed": true,
+      "shared_outputs": true,
+      "matches_original_study_cubins": {
+        "baseline": true,
+        "optimized": true
+      }
+    },
+    {
+      "shape": [
+        4096,
+        2048
+      ],
+      "grid": [
+        4736
+      ],
+      "report": {
+        "selected": "baseline",
+        "binary_changed": true,
+        "grid": [
+          4736,
+          1,
+          1
+        ],
+        "launched_ctas": 4736,
+        "immutable_args": [
+          2
+        ],
+        "native_attributes": {
+          "(0,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(1,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(2,)": [
+            [
+              "tt.divisibility",
+              16
+            ],
+            [
+              "tt.experimental_immutable",
+              1
+            ]
+          ],
+          "(3,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(4,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(5,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(6,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(7,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(9,)": [],
+          "(10,)": []
+        },
+        "variants": {
+          "baseline": {
+            "blocks_per_sm": 10,
+            "sm_count": 148,
+            "threads_per_block": 128,
+            "registers": 45,
+            "spills": 0,
+            "shared_bytes": 8208
+          },
+          "optimized": {
+            "blocks_per_sm": 9,
+            "sm_count": 148,
+            "threads_per_block": 128,
+            "registers": 52,
+            "spills": 0,
+            "shared_bytes": 4112
+          }
+        },
+        "guard": {
+          "no_residency_loss": false,
+          "grid_limited": false,
+          "definition": "no spills and (no blocks/SM loss or total launched CTAs fit optimized residency)",
+          "limitation": "profitability heuristic; can miss gains and cannot guarantee no regressions"
+        },
+        "contract": "initialized immutable inputs remain unchanged through invocation completion, including aliases",
+        "scope": "same source and launch; both atomic specialization passes disabled; no timing calibration"
+      },
+      "timing": {
+        "rounds_us": {
+          "original": [
+            6.2409997917711735,
+            6.207999773323536,
+            6.271000020205975,
+            6.178500130772591,
+            6.171999964863062,
+            6.171000190079212,
+            6.2004998326301575,
+            6.169999949634075,
+            6.173000205308199,
+            6.186000071465969,
+            6.209999788552523,
+            6.2095001339912415,
+            6.17949990555644,
+            6.175000220537186,
+            6.171499844640493
+          ],
+          "compiler": [
+            5.327499937266111,
+            5.281500052660704,
+            5.308500025421381,
+            5.2999998442828655,
+            5.303500220179558,
+            5.284999962896109,
+            5.281500052660704,
+            5.274999886751175,
+            5.281500052660704,
+            5.282000172883272,
+            5.293999798595905,
+            5.297000054270029,
+            5.289500113576651,
+            5.364499986171722,
+            5.287500098347664
+          ],
+          "selected": [
+            6.219999864697456,
+            6.1610001139342785,
+            6.195500027388334,
+            6.219000089913607,
+            6.206999998539686,
+            6.165999919176102,
+            6.17250008508563,
+            6.177499890327454,
+            6.163999903947115,
+            6.198999937623739,
+            6.186999846249819,
+            6.199500057846308,
+            6.190000101923943,
+            6.167000159621239,
+            6.1980001628398895
+          ]
+        },
+        "orders": [
+          [
+            "original",
+            "selected",
+            "compiler"
+          ],
+          [
+            "original",
+            "compiler",
+            "selected"
+          ],
+          [
+            "original",
+            "selected",
+            "compiler"
+          ],
+          [
+            "selected",
+            "original",
+            "compiler"
+          ],
+          [
+            "selected",
+            "original",
+            "compiler"
+          ],
+          [
+            "original",
+            "selected",
+            "compiler"
+          ],
+          [
+            "original",
+            "compiler",
+            "selected"
+          ],
+          [
+            "original",
+            "compiler",
+            "selected"
+          ],
+          [
+            "original",
+            "selected",
+            "compiler"
+          ],
+          [
+            "selected",
+            "compiler",
+            "original"
+          ],
+          [
+            "original",
+            "compiler",
+            "selected"
+          ],
+          [
+            "original",
+            "selected",
+            "compiler"
+          ],
+          [
+            "selected",
+            "compiler",
+            "original"
+          ],
+          [
+            "original",
+            "compiler",
+            "selected"
+          ],
+          [
+            "compiler",
+            "selected",
+            "original"
+          ]
+        ],
+        "median_us": {
+          "original": 6.17949990555644,
+          "compiler": 5.289500113576651,
+          "selected": 6.190000101923943
+        },
+        "speedup_over_original": {
+          "original": 1.0,
+          "compiler": 1.1682578264239776,
+          "selected": 0.9983036839750231
+        }
+      },
+      "cubins": {
+        "baseline": "d7ac65dc3d3e5ecd04dea180287f2d3913df0c3e608ca56c1875e30f280d48a8",
+        "optimized": "f3cbeaed4aecf78c734a966117eb29c9291be43d7de6abd6ce53fd095980dc36"
+      },
+      "bitwise_validation_passed": true,
+      "shared_outputs": true,
+      "matches_original_study_cubins": {
+        "baseline": true,
+        "optimized": true
+      }
+    }
+  ],
+  "native_wrapper_sha256": "97be9f669c4c1a3e20d9e849cbac2140152f16b02343f23d69057c3e544f1593",
+  "harness_sha256": "bee1c305d89fb3f8cd23bae86ec6820f24f0b57d5c2959a54cd4de2513355919",
+  "libtriton_sha256": "7ce04279b259aa032acf62c9125a598adf5c20e66b828067d1c7ca458a9c0d19",
+  "scope": "Five integration cases for actual compiled selector. Main study uses66 cases/3seeds; these single-seed timings only verify wrapper selection and no host launch removal."
+}

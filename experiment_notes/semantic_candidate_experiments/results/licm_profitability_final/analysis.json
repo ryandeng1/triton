@@ -1,0 +1,1581 @@
+{
+  "configurations": [
+    {
+      "split": "heldout",
+      "shape": [
+        4096,
+        2048
+      ],
+      "warps": 4,
+      "grid": 592,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "seed_speedups": [
+        1.186840288405581,
+        1.1806522991660653,
+        1.1877602448843954
+      ],
+      "median_speedup": 1.186840288405581,
+      "guard_accept": true,
+      "guarded_speedup": 1.186840288405581,
+      "material_regression": false,
+      "missed_material_improvement": false,
+      "resources": {
+        "original": {
+          "static_shared_bytes": 0,
+          "local_bytes": 0,
+          "registers_per_thread": 45,
+          "active_blocks_per_sm": 10,
+          "active_blocks_per_sm_zero_dynamic_shared": 10,
+          "threads_per_block": 128,
+          "dynamic_shared_bytes": 8208,
+          "n_spills": 0,
+          "theoretical_active_warps_per_sm": 40,
+          "theoretical_occupancy_fraction": 0.625
+        },
+        "compiler": {
+          "static_shared_bytes": 0,
+          "local_bytes": 0,
+          "registers_per_thread": 52,
+          "active_blocks_per_sm": 9,
+          "active_blocks_per_sm_zero_dynamic_shared": 9,
+          "threads_per_block": 128,
+          "dynamic_shared_bytes": 4112,
+          "n_spills": 0,
+          "theoretical_active_warps_per_sm": 36,
+          "theoretical_occupancy_fraction": 0.5625
+        }
+      },
+      "work": {
+        "active_ctas": 592,
+        "launched_ctas": 592,
+        "nonempty_ctas_per_sm_average": 4.0,
+        "rows_per_nonempty_cta_mean": 6.918918918918919,
+        "loop_trip_count_min": 6,
+        "loop_trip_count_max": 7,
+        "logical_input_output_bytes": 33570816,
+        "logical_gamma_bytes_original": 16777216,
+        "logical_gamma_bytes_compiler": 2424832,
+        "logical_gamma_bytes_saved": 14352384,
+        "note": "Logical element traffic, not measured DRAM/cache transactions; invariant gamma can be cached. Zero-trip CTAs excluded from gamma hoist.",
+        "original": {
+          "effective_average_cta_residency_upper_bound": 4.0,
+          "grid_waves_at_theoretical_residency": 0.4
+        },
+        "compiler": {
+          "effective_average_cta_residency_upper_bound": 4.0,
+          "grid_waves_at_theoretical_residency": 0.4444444444444444
+        }
+      }
+    },
+    {
+      "split": "heldout",
+      "shape": [
+        4096,
+        2048
+      ],
+      "warps": 4,
+      "grid": 4736,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "seed_speedups": [
+        1.169344138388444,
+        1.1725509388948352,
+        1.1721660369357418
+      ],
+      "median_speedup": 1.1721660369357418,
+      "guard_accept": false,
+      "guarded_speedup": 1.0,
+      "material_regression": false,
+      "missed_material_improvement": true,
+      "resources": {
+        "original": {
+          "static_shared_bytes": 0,
+          "local_bytes": 0,
+          "registers_per_thread": 45,
+          "active_blocks_per_sm": 10,
+          "active_blocks_per_sm_zero_dynamic_shared": 10,
+          "threads_per_block": 128,
+          "dynamic_shared_bytes": 8208,
+          "n_spills": 0,
+          "theoretical_active_warps_per_sm": 40,
+          "theoretical_occupancy_fraction": 0.625
+        },
+        "compiler": {
+          "static_shared_bytes": 0,
+          "local_bytes": 0,
+          "registers_per_thread": 52,
+          "active_blocks_per_sm": 9,
+          "active_blocks_per_sm_zero_dynamic_shared": 9,
+          "threads_per_block": 128,
+          "dynamic_shared_bytes": 4112,
+          "n_spills": 0,
+          "theoretical_active_warps_per_sm": 36,
+          "theoretical_occupancy_fraction": 0.5625
+        }
+      },
+      "work": {
+        "active_ctas": 4096,
+        "launched_ctas": 4736,
+        "nonempty_ctas_per_sm_average": 27.675675675675677,
+        "rows_per_nonempty_cta_mean": 1.0,
+        "loop_trip_count_min": 0,
+        "loop_trip_count_max": 1,
+        "logical_input_output_bytes": 33570816,
+        "logical_gamma_bytes_original": 16777216,
+        "logical_gamma_bytes_compiler": 16777216,
+        "logical_gamma_bytes_saved": 0,
+        "note": "Logical element traffic, not measured DRAM/cache transactions; invariant gamma can be cached. Zero-trip CTAs excluded from gamma hoist.",
+        "original": {
+          "effective_average_cta_residency_upper_bound": 10,
+          "grid_waves_at_theoretical_residency": 3.2
+        },
+        "compiler": {
+          "effective_average_cta_residency_upper_bound": 9,
+          "grid_waves_at_theoretical_residency": 3.5555555555555554
+        }
+      }
+    },
+    {
+      "split": "heldout",
+      "shape": [
+        8192,
+        4096
+      ],
+      "warps": 4,
+      "grid": 592,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "seed_speedups": [
+        1.0054326950097314,
+        1.0191269538717227,
+        1.016694745490034
+      ],
+      "median_speedup": 1.016694745490034,
+      "guard_accept": true,
+      "guarded_speedup": 1.016694745490034,
+      "material_regression": false,
+      "missed_material_improvement": false,
+      "resources": {
+        "original": {
+          "static_shared_bytes": 0,
+          "local_bytes": 0,
+          "registers_per_thread": 68,
+          "active_blocks_per_sm": 7,
+          "active_blocks_per_sm_zero_dynamic_shared": 7,
+          "threads_per_block": 128,
+          "dynamic_shared_bytes": 16400,
+          "n_spills": 0,
+          "theoretical_active_warps_per_sm": 28,
+          "theoretical_occupancy_fraction": 0.4375
+        },
+        "compiler": {
+          "static_shared_bytes": 0,
+          "local_bytes": 0,
+          "registers_per_thread": 94,
+          "active_blocks_per_sm": 5,
+          "active_blocks_per_sm_zero_dynamic_shared": 5,
+          "threads_per_block": 128,
+          "dynamic_shared_bytes": 8208,
+          "n_spills": 0,
+          "theoretical_active_warps_per_sm": 20,
+          "theoretical_occupancy_fraction": 0.3125
+        }
+      },
+      "work": {
+        "active_ctas": 592,
+        "launched_ctas": 592,
+        "nonempty_ctas_per_sm_average": 4.0,
+        "rows_per_nonempty_cta_mean": 13.837837837837839,
+        "loop_trip_count_min": 13,
+        "loop_trip_count_max": 14,
+        "logical_input_output_bytes": 134250496,
+        "logical_gamma_bytes_original": 67108864,
+        "logical_gamma_bytes_compiler": 4849664,
+        "logical_gamma_bytes_saved": 62259200,
+        "note": "Logical element traffic, not measured DRAM/cache transactions; invariant gamma can be cached. Zero-trip CTAs excluded from gamma hoist.",
+        "original": {
+          "effective_average_cta_residency_upper_bound": 4.0,
+          "grid_waves_at_theoretical_residency": 0.5714285714285714
+        },
+        "compiler": {
+          "effective_average_cta_residency_upper_bound": 4.0,
+          "grid_waves_at_theoretical_residency": 0.8
+        }
+      }
+    },
+    {
+      "split": "heldout",
+      "shape": [
+        8192,
+        4096
+      ],
+      "warps": 4,
+      "grid": 2368,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "seed_speedups": [
+        0.926226278445542,
+        0.9248771272094642,
+        0.9250561444919528
+      ],
+      "median_speedup": 0.9250561444919528,
+      "guard_accept": false,
+      "guarded_speedup": 1.0,
+      "material_regression": true,
+      "missed_material_improvement": false,
+      "resources": {
+        "original": {
+          "static_shared_bytes": 0,
+          "local_bytes": 0,
+          "registers_per_thread": 68,
+          "active_blocks_per_sm": 7,
+          "active_blocks_per_sm_zero_dynamic_shared": 7,
+          "threads_per_block": 128,
+          "dynamic_shared_bytes": 16400,
+          "n_spills": 0,
+          "theoretical_active_warps_per_sm": 28,
+          "theoretical_occupancy_fraction": 0.4375
+        },
+        "compiler": {
+          "static_shared_bytes": 0,
+          "local_bytes": 0,
+          "registers_per_thread": 94,
+          "active_blocks_per_sm": 5,
+          "active_blocks_per_sm_zero_dynamic_shared": 5,
+          "threads_per_block": 128,
+          "dynamic_shared_bytes": 8208,
+          "n_spills": 0,
+          "theoretical_active_warps_per_sm": 20,
+          "theoretical_occupancy_fraction": 0.3125
+        }
+      },
+      "work": {
+        "active_ctas": 2368,
+        "launched_ctas": 2368,
+        "nonempty_ctas_per_sm_average": 16.0,
+        "rows_per_nonempty_cta_mean": 3.4594594594594597,
+        "loop_trip_count_min": 3,
+        "loop_trip_count_max": 4,
+        "logical_input_output_bytes": 134250496,
+        "logical_gamma_bytes_original": 67108864,
+        "logical_gamma_bytes_compiler": 19398656,
+        "logical_gamma_bytes_saved": 47710208,
+        "note": "Logical element traffic, not measured DRAM/cache transactions; invariant gamma can be cached. Zero-trip CTAs excluded from gamma hoist.",
+        "original": {
+          "effective_average_cta_residency_upper_bound": 7,
+          "grid_waves_at_theoretical_residency": 2.2857142857142856
+        },
+        "compiler": {
+          "effective_average_cta_residency_upper_bound": 5,
+          "grid_waves_at_theoretical_residency": 3.2
+        }
+      }
+    },
+    {
+      "split": "heldout",
+      "shape": [
+        8192,
+        4096
+      ],
+      "warps": 4,
+      "grid": 4736,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "seed_speedups": [
+        0.924702581566663,
+        0.9239226206996921,
+        0.9192739006888596
+      ],
+      "median_speedup": 0.9239226206996921,
+      "guard_accept": false,
+      "guarded_speedup": 1.0,
+      "material_regression": true,
+      "missed_material_improvement": false,
+      "resources": {
+        "original": {
+          "static_shared_bytes": 0,
+          "local_bytes": 0,
+          "registers_per_thread": 68,
+          "active_blocks_per_sm": 7,
+          "active_blocks_per_sm_zero_dynamic_shared": 7,
+          "threads_per_block": 128,
+          "dynamic_shared_bytes": 16400,
+          "n_spills": 0,
+          "theoretical_active_warps_per_sm": 28,
+          "theoretical_occupancy_fraction": 0.4375
+        },
+        "compiler": {
+          "static_shared_bytes": 0,
+          "local_bytes": 0,
+          "registers_per_thread": 94,
+          "active_blocks_per_sm": 5,
+          "active_blocks_per_sm_zero_dynamic_shared": 5,
+          "threads_per_block": 128,
+          "dynamic_shared_bytes": 8208,
+          "n_spills": 0,
+          "theoretical_active_warps_per_sm": 20,
+          "theoretical_occupancy_fraction": 0.3125
+        }
+      },
+      "work": {
+        "active_ctas": 4736,
+        "launched_ctas": 4736,
+        "nonempty_ctas_per_sm_average": 32.0,
+        "rows_per_nonempty_cta_mean": 1.7297297297297298,
+        "loop_trip_count_min": 1,
+        "loop_trip_count_max": 2,
+        "logical_input_output_bytes": 134250496,
+        "logical_gamma_bytes_original": 67108864,
+        "logical_gamma_bytes_compiler": 38797312,
+        "logical_gamma_bytes_saved": 28311552,
+        "note": "Logical element traffic, not measured DRAM/cache transactions; invariant gamma can be cached. Zero-trip CTAs excluded from gamma hoist.",
+        "original": {
+          "effective_average_cta_residency_upper_bound": 7,
+          "grid_waves_at_theoretical_residency": 4.571428571428571
+        },
+        "compiler": {
+          "effective_average_cta_residency_upper_bound": 5,
+          "grid_waves_at_theoretical_residency": 6.4
+        }
+      }
+    },
+    {
+      "split": "heldout",
+      "shape": [
+        16384,
+        2048
+      ],
+      "warps": 4,
+      "grid": 592,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "seed_speedups": [
+        1.0140312806197684,
+        1.018639362048389,
+        1.0186774403582262
+      ],
+      "median_speedup": 1.018639362048389,
+      "guard_accept": true,
+      "guarded_speedup": 1.018639362048389,
+      "material_regression": false,
+      "missed_material_improvement": false,
+      "resources": {
+        "original": {
+          "static_shared_bytes": 0,
+          "local_bytes": 0,
+          "registers_per_thread": 45,
+          "active_blocks_per_sm": 10,
+          "active_blocks_per_sm_zero_dynamic_shared": 10,
+          "threads_per_block": 128,
+          "dynamic_shared_bytes": 8208,
+          "n_spills": 0,
+          "theoretical_active_warps_per_sm": 40,
+          "theoretical_occupancy_fraction": 0.625
+        },
+        "compiler": {
+          "static_shared_bytes": 0,
+          "local_bytes": 0,
+          "registers_per_thread": 52,
+          "active_blocks_per_sm": 9,
+          "active_blocks_per_sm_zero_dynamic_shared": 9,
+          "threads_per_block": 128,
+          "dynamic_shared_bytes": 4112,
+          "n_spills": 0,
+          "theoretical_active_warps_per_sm": 36,
+          "theoretical_occupancy_fraction": 0.5625
+        }
+      },
+      "work": {
+        "active_ctas": 592,
+        "launched_ctas": 592,
+        "nonempty_ctas_per_sm_average": 4.0,
+        "rows_per_nonempty_cta_mean": 27.675675675675677,
+        "loop_trip_count_min": 27,
+        "loop_trip_count_max": 28,
+        "logical_input_output_bytes": 134283264,
+        "logical_gamma_bytes_original": 67108864,
+        "logical_gamma_bytes_compiler": 2424832,
+        "logical_gamma_bytes_saved": 64684032,
+        "note": "Logical element traffic, not measured DRAM/cache transactions; invariant gamma can be cached. Zero-trip CTAs excluded from gamma hoist.",
+        "original": {
+          "effective_average_cta_residency_upper_bound": 4.0,
+          "grid_waves_at_theoretical_residency": 0.4
+        },
+        "compiler": {
+          "effective_average_cta_residency_upper_bound": 4.0,
+          "grid_waves_at_theoretical_residency": 0.4444444444444444
+        }
+      }
+    },
+    {
+      "split": "heldout",
+      "shape": [
+        16384,
+        2048
+      ],
+      "warps": 4,
+      "grid": 4736,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "seed_speedups": [
+        1.010659035360576,
+        1.0087039114057637,
+        1.0109943549130747
+      ],
+      "median_speedup": 1.010659035360576,
+      "guard_accept": false,
+      "guarded_speedup": 1.0,
+      "material_regression": false,
+      "missed_material_improvement": false,
+      "resources": {
+        "original": {
+          "static_shared_bytes": 0,
+          "local_bytes": 0,
+          "registers_per_thread": 45,
+          "active_blocks_per_sm": 10,
+          "active_blocks_per_sm_zero_dynamic_shared": 10,
+          "threads_per_block": 128,
+          "dynamic_shared_bytes": 8208,
+          "n_spills": 0,
+          "theoretical_active_warps_per_sm": 40,
+          "theoretical_occupancy_fraction": 0.625
+        },
+        "compiler": {
+          "static_shared_bytes": 0,
+          "local_bytes": 0,
+          "registers_per_thread": 52,
+          "active_blocks_per_sm": 9,
+          "active_blocks_per_sm_zero_dynamic_shared": 9,
+          "threads_per_block": 128,
+          "dynamic_shared_bytes": 4112,
+          "n_spills": 0,
+          "theoretical_active_warps_per_sm": 36,
+          "theoretical_occupancy_fraction": 0.5625
+        }
+      },
+      "work": {
+        "active_ctas": 4736,
+        "launched_ctas": 4736,
+        "nonempty_ctas_per_sm_average": 32.0,
+        "rows_per_nonempty_cta_mean": 3.4594594594594597,
+        "loop_trip_count_min": 3,
+        "loop_trip_count_max": 4,
+        "logical_input_output_bytes": 134283264,
+        "logical_gamma_bytes_original": 67108864,
+        "logical_gamma_bytes_compiler": 19398656,
+        "logical_gamma_bytes_saved": 47710208,
+        "note": "Logical element traffic, not measured DRAM/cache transactions; invariant gamma can be cached. Zero-trip CTAs excluded from gamma hoist.",
+        "original": {
+          "effective_average_cta_residency_upper_bound": 10,
+          "grid_waves_at_theoretical_residency": 3.2
+        },
+        "compiler": {
+          "effective_average_cta_residency_upper_bound": 9,
+          "grid_waves_at_theoretical_residency": 3.5555555555555554
+        }
+      }
+    },
+    {
+      "split": "heldout",
+      "shape": [
+        32768,
+        4096
+      ],
+      "warps": 4,
+      "grid": 592,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "seed_speedups": [
+        1.0222387089584235,
+        1.021977717922179,
+        1.0190537298464368
+      ],
+      "median_speedup": 1.021977717922179,
+      "guard_accept": true,
+      "guarded_speedup": 1.021977717922179,
+      "material_regression": false,
+      "missed_material_improvement": false,
+      "resources": {
+        "original": {
+          "static_shared_bytes": 0,
+          "local_bytes": 0,
+          "registers_per_thread": 68,
+          "active_blocks_per_sm": 7,
+          "active_blocks_per_sm_zero_dynamic_shared": 7,
+          "threads_per_block": 128,
+          "dynamic_shared_bytes": 16400,
+          "n_spills": 0,
+          "theoretical_active_warps_per_sm": 28,
+          "theoretical_occupancy_fraction": 0.4375
+        },
+        "compiler": {
+          "static_shared_bytes": 0,
+          "local_bytes": 0,
+          "registers_per_thread": 94,
+          "active_blocks_per_sm": 5,
+          "active_blocks_per_sm_zero_dynamic_shared": 5,
+          "threads_per_block": 128,
+          "dynamic_shared_bytes": 8208,
+          "n_spills": 0,
+          "theoretical_active_warps_per_sm": 20,
+          "theoretical_occupancy_fraction": 0.3125
+        }
+      },
+      "work": {
+        "active_ctas": 592,
+        "launched_ctas": 592,
+        "nonempty_ctas_per_sm_average": 4.0,
+        "rows_per_nonempty_cta_mean": 55.351351351351354,
+        "loop_trip_count_min": 55,
+        "loop_trip_count_max": 56,
+        "logical_input_output_bytes": 537001984,
+        "logical_gamma_bytes_original": 268435456,
+        "logical_gamma_bytes_compiler": 4849664,
+        "logical_gamma_bytes_saved": 263585792,
+        "note": "Logical element traffic, not measured DRAM/cache transactions; invariant gamma can be cached. Zero-trip CTAs excluded from gamma hoist.",
+        "original": {
+          "effective_average_cta_residency_upper_bound": 4.0,
+          "grid_waves_at_theoretical_residency": 0.5714285714285714
+        },
+        "compiler": {
+          "effective_average_cta_residency_upper_bound": 4.0,
+          "grid_waves_at_theoretical_residency": 0.8
+        }
+      }
+    },
+    {
+      "split": "heldout",
+      "shape": [
+        32768,
+        4096
+      ],
+      "warps": 4,
+      "grid": 2368,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "seed_speedups": [
+        0.9302739031871327,
+        0.9301238070657332,
+        0.928403877246453
+      ],
+      "median_speedup": 0.9301238070657332,
+      "guard_accept": false,
+      "guarded_speedup": 1.0,
+      "material_regression": true,
+      "missed_material_improvement": false,
+      "resources": {
+        "original": {
+          "static_shared_bytes": 0,
+          "local_bytes": 0,
+          "registers_per_thread": 68,
+          "active_blocks_per_sm": 7,
+          "active_blocks_per_sm_zero_dynamic_shared": 7,
+          "threads_per_block": 128,
+          "dynamic_shared_bytes": 16400,
+          "n_spills": 0,
+          "theoretical_active_warps_per_sm": 28,
+          "theoretical_occupancy_fraction": 0.4375
+        },
+        "compiler": {
+          "static_shared_bytes": 0,
+          "local_bytes": 0,
+          "registers_per_thread": 94,
+          "active_blocks_per_sm": 5,
+          "active_blocks_per_sm_zero_dynamic_shared": 5,
+          "threads_per_block": 128,
+          "dynamic_shared_bytes": 8208,
+          "n_spills": 0,
+          "theoretical_active_warps_per_sm": 20,
+          "theoretical_occupancy_fraction": 0.3125
+        }
+      },
+      "work": {
+        "active_ctas": 2368,
+        "launched_ctas": 2368,
+        "nonempty_ctas_per_sm_average": 16.0,
+        "rows_per_nonempty_cta_mean": 13.837837837837839,
+        "loop_trip_count_min": 13,
+        "loop_trip_count_max": 14,
+        "logical_input_output_bytes": 537001984,
+        "logical_gamma_bytes_original": 268435456,
+        "logical_gamma_bytes_compiler": 19398656,
+        "logical_gamma_bytes_saved": 249036800,
+        "note": "Logical element traffic, not measured DRAM/cache transactions; invariant gamma can be cached. Zero-trip CTAs excluded from gamma hoist.",
+        "original": {
+          "effective_average_cta_residency_upper_bound": 7,
+          "grid_waves_at_theoretical_residency": 2.2857142857142856
+        },
+        "compiler": {
+          "effective_average_cta_residency_upper_bound": 5,
+          "grid_waves_at_theoretical_residency": 3.2
+        }
+      }
+    },
+    {
+      "split": "heldout",
+      "shape": [
+        32768,
+        4096
+      ],
+      "warps": 4,
+      "grid": 4736,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "seed_speedups": [
+        0.9193941116294346,
+        0.9195961610473331,
+        0.9196764511945333
+      ],
+      "median_speedup": 0.9195961610473331,
+      "guard_accept": false,
+      "guarded_speedup": 1.0,
+      "material_regression": true,
+      "missed_material_improvement": false,
+      "resources": {
+        "original": {
+          "static_shared_bytes": 0,
+          "local_bytes": 0,
+          "registers_per_thread": 68,
+          "active_blocks_per_sm": 7,
+          "active_blocks_per_sm_zero_dynamic_shared": 7,
+          "threads_per_block": 128,
+          "dynamic_shared_bytes": 16400,
+          "n_spills": 0,
+          "theoretical_active_warps_per_sm": 28,
+          "theoretical_occupancy_fraction": 0.4375
+        },
+        "compiler": {
+          "static_shared_bytes": 0,
+          "local_bytes": 0,
+          "registers_per_thread": 94,
+          "active_blocks_per_sm": 5,
+          "active_blocks_per_sm_zero_dynamic_shared": 5,
+          "threads_per_block": 128,
+          "dynamic_shared_bytes": 8208,
+          "n_spills": 0,
+          "theoretical_active_warps_per_sm": 20,
+          "theoretical_occupancy_fraction": 0.3125
+        }
+      },
+      "work": {
+        "active_ctas": 4736,
+        "launched_ctas": 4736,
+        "nonempty_ctas_per_sm_average": 32.0,
+        "rows_per_nonempty_cta_mean": 6.918918918918919,
+        "loop_trip_count_min": 6,
+        "loop_trip_count_max": 7,
+        "logical_input_output_bytes": 537001984,
+        "logical_gamma_bytes_original": 268435456,
+        "logical_gamma_bytes_compiler": 38797312,
+        "logical_gamma_bytes_saved": 229638144,
+        "note": "Logical element traffic, not measured DRAM/cache transactions; invariant gamma can be cached. Zero-trip CTAs excluded from gamma hoist.",
+        "original": {
+          "effective_average_cta_residency_upper_bound": 7,
+          "grid_waves_at_theoretical_residency": 4.571428571428571
+        },
+        "compiler": {
+          "effective_average_cta_residency_upper_bound": 5,
+          "grid_waves_at_theoretical_residency": 6.4
+        }
+      }
+    },
+    {
+      "split": "training",
+      "shape": [
+        4096,
+        4096
+      ],
+      "warps": 4,
+      "grid": 592,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "seed_speedups": [
+        1.3676411391660057,
+        1.3644249458066144,
+        1.4052955491736905
+      ],
+      "median_speedup": 1.3676411391660057,
+      "guard_accept": true,
+      "guarded_speedup": 1.3676411391660057,
+      "material_regression": false,
+      "missed_material_improvement": false,
+      "resources": {
+        "original": {
+          "static_shared_bytes": 0,
+          "local_bytes": 0,
+          "registers_per_thread": 68,
+          "active_blocks_per_sm": 7,
+          "active_blocks_per_sm_zero_dynamic_shared": 7,
+          "threads_per_block": 128,
+          "dynamic_shared_bytes": 16400,
+          "n_spills": 0,
+          "theoretical_active_warps_per_sm": 28,
+          "theoretical_occupancy_fraction": 0.4375
+        },
+        "compiler": {
+          "static_shared_bytes": 0,
+          "local_bytes": 0,
+          "registers_per_thread": 94,
+          "active_blocks_per_sm": 5,
+          "active_blocks_per_sm_zero_dynamic_shared": 5,
+          "threads_per_block": 128,
+          "dynamic_shared_bytes": 8208,
+          "n_spills": 0,
+          "theoretical_active_warps_per_sm": 20,
+          "theoretical_occupancy_fraction": 0.3125
+        }
+      },
+      "work": {
+        "active_ctas": 592,
+        "launched_ctas": 592,
+        "nonempty_ctas_per_sm_average": 4.0,
+        "rows_per_nonempty_cta_mean": 6.918918918918919,
+        "loop_trip_count_min": 6,
+        "loop_trip_count_max": 7,
+        "logical_input_output_bytes": 67125248,
+        "logical_gamma_bytes_original": 33554432,
+        "logical_gamma_bytes_compiler": 4849664,
+        "logical_gamma_bytes_saved": 28704768,
+        "note": "Logical element traffic, not measured DRAM/cache transactions; invariant gamma can be cached. Zero-trip CTAs excluded from gamma hoist.",
+        "original": {
+          "effective_average_cta_residency_upper_bound": 4.0,
+          "grid_waves_at_theoretical_residency": 0.5714285714285714
+        },
+        "compiler": {
+          "effective_average_cta_residency_upper_bound": 4.0,
+          "grid_waves_at_theoretical_residency": 0.8
+        }
+      }
+    },
+    {
+      "split": "training",
+      "shape": [
+        4096,
+        4096
+      ],
+      "warps": 4,
+      "grid": 2368,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "seed_speedups": [
+        1.226798266246302,
+        1.2251822086541078,
+        1.2301093738338362
+      ],
+      "median_speedup": 1.226798266246302,
+      "guard_accept": false,
+      "guarded_speedup": 1.0,
+      "material_regression": false,
+      "missed_material_improvement": true,
+      "resources": {
+        "original": {
+          "static_shared_bytes": 0,
+          "local_bytes": 0,
+          "registers_per_thread": 68,
+          "active_blocks_per_sm": 7,
+          "active_blocks_per_sm_zero_dynamic_shared": 7,
+          "threads_per_block": 128,
+          "dynamic_shared_bytes": 16400,
+          "n_spills": 0,
+          "theoretical_active_warps_per_sm": 28,
+          "theoretical_occupancy_fraction": 0.4375
+        },
+        "compiler": {
+          "static_shared_bytes": 0,
+          "local_bytes": 0,
+          "registers_per_thread": 94,
+          "active_blocks_per_sm": 5,
+          "active_blocks_per_sm_zero_dynamic_shared": 5,
+          "threads_per_block": 128,
+          "dynamic_shared_bytes": 8208,
+          "n_spills": 0,
+          "theoretical_active_warps_per_sm": 20,
+          "theoretical_occupancy_fraction": 0.3125
+        }
+      },
+      "work": {
+        "active_ctas": 2368,
+        "launched_ctas": 2368,
+        "nonempty_ctas_per_sm_average": 16.0,
+        "rows_per_nonempty_cta_mean": 1.7297297297297298,
+        "loop_trip_count_min": 1,
+        "loop_trip_count_max": 2,
+        "logical_input_output_bytes": 67125248,
+        "logical_gamma_bytes_original": 33554432,
+        "logical_gamma_bytes_compiler": 19398656,
+        "logical_gamma_bytes_saved": 14155776,
+        "note": "Logical element traffic, not measured DRAM/cache transactions; invariant gamma can be cached. Zero-trip CTAs excluded from gamma hoist.",
+        "original": {
+          "effective_average_cta_residency_upper_bound": 7,
+          "grid_waves_at_theoretical_residency": 2.2857142857142856
+        },
+        "compiler": {
+          "effective_average_cta_residency_upper_bound": 5,
+          "grid_waves_at_theoretical_residency": 3.2
+        }
+      }
+    },
+    {
+      "split": "training",
+      "shape": [
+        4096,
+        4096
+      ],
+      "warps": 4,
+      "grid": 4736,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "seed_speedups": [
+        1.1243741365327178,
+        1.1149809635937544,
+        1.133064250525918
+      ],
+      "median_speedup": 1.1243741365327178,
+      "guard_accept": false,
+      "guarded_speedup": 1.0,
+      "material_regression": false,
+      "missed_material_improvement": true,
+      "resources": {
+        "original": {
+          "static_shared_bytes": 0,
+          "local_bytes": 0,
+          "registers_per_thread": 68,
+          "active_blocks_per_sm": 7,
+          "active_blocks_per_sm_zero_dynamic_shared": 7,
+          "threads_per_block": 128,
+          "dynamic_shared_bytes": 16400,
+          "n_spills": 0,
+          "theoretical_active_warps_per_sm": 28,
+          "theoretical_occupancy_fraction": 0.4375
+        },
+        "compiler": {
+          "static_shared_bytes": 0,
+          "local_bytes": 0,
+          "registers_per_thread": 94,
+          "active_blocks_per_sm": 5,
+          "active_blocks_per_sm_zero_dynamic_shared": 5,
+          "threads_per_block": 128,
+          "dynamic_shared_bytes": 8208,
+          "n_spills": 0,
+          "theoretical_active_warps_per_sm": 20,
+          "theoretical_occupancy_fraction": 0.3125
+        }
+      },
+      "work": {
+        "active_ctas": 4096,
+        "launched_ctas": 4736,
+        "nonempty_ctas_per_sm_average": 27.675675675675677,
+        "rows_per_nonempty_cta_mean": 1.0,
+        "loop_trip_count_min": 0,
+        "loop_trip_count_max": 1,
+        "logical_input_output_bytes": 67125248,
+        "logical_gamma_bytes_original": 33554432,
+        "logical_gamma_bytes_compiler": 33554432,
+        "logical_gamma_bytes_saved": 0,
+        "note": "Logical element traffic, not measured DRAM/cache transactions; invariant gamma can be cached. Zero-trip CTAs excluded from gamma hoist.",
+        "original": {
+          "effective_average_cta_residency_upper_bound": 7,
+          "grid_waves_at_theoretical_residency": 4.571428571428571
+        },
+        "compiler": {
+          "effective_average_cta_residency_upper_bound": 5,
+          "grid_waves_at_theoretical_residency": 6.4
+        }
+      }
+    },
+    {
+      "split": "training",
+      "shape": [
+        4096,
+        4096
+      ],
+      "warps": 8,
+      "grid": 592,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "seed_speedups": [
+        1.2851847121367583,
+        1.3328781195668822,
+        1.3248966481307851
+      ],
+      "median_speedup": 1.3248966481307851,
+      "guard_accept": true,
+      "guarded_speedup": 1.3248966481307851,
+      "material_regression": false,
+      "missed_material_improvement": false,
+      "resources": {
+        "original": {
+          "static_shared_bytes": 0,
+          "local_bytes": 0,
+          "registers_per_thread": 44,
+          "active_blocks_per_sm": 5,
+          "active_blocks_per_sm_zero_dynamic_shared": 5,
+          "threads_per_block": 256,
+          "dynamic_shared_bytes": 16416,
+          "n_spills": 0,
+          "theoretical_active_warps_per_sm": 40,
+          "theoretical_occupancy_fraction": 0.625
+        },
+        "compiler": {
+          "static_shared_bytes": 0,
+          "local_bytes": 0,
+          "registers_per_thread": 52,
+          "active_blocks_per_sm": 4,
+          "active_blocks_per_sm_zero_dynamic_shared": 4,
+          "threads_per_block": 256,
+          "dynamic_shared_bytes": 8224,
+          "n_spills": 0,
+          "theoretical_active_warps_per_sm": 32,
+          "theoretical_occupancy_fraction": 0.5
+        }
+      },
+      "work": {
+        "active_ctas": 592,
+        "launched_ctas": 592,
+        "nonempty_ctas_per_sm_average": 4.0,
+        "rows_per_nonempty_cta_mean": 6.918918918918919,
+        "loop_trip_count_min": 6,
+        "loop_trip_count_max": 7,
+        "logical_input_output_bytes": 67125248,
+        "logical_gamma_bytes_original": 33554432,
+        "logical_gamma_bytes_compiler": 4849664,
+        "logical_gamma_bytes_saved": 28704768,
+        "note": "Logical element traffic, not measured DRAM/cache transactions; invariant gamma can be cached. Zero-trip CTAs excluded from gamma hoist.",
+        "original": {
+          "effective_average_cta_residency_upper_bound": 4.0,
+          "grid_waves_at_theoretical_residency": 0.8
+        },
+        "compiler": {
+          "effective_average_cta_residency_upper_bound": 4.0,
+          "grid_waves_at_theoretical_residency": 1.0
+        }
+      }
+    },
+    {
+      "split": "training",
+      "shape": [
+        4096,
+        4096
+      ],
+      "warps": 8,
+      "grid": 2368,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "seed_speedups": [
+        1.108633594100423,
+        1.1005604310619232,
+        1.1078528275430564
+      ],
+      "median_speedup": 1.1078528275430564,
+      "guard_accept": false,
+      "guarded_speedup": 1.0,
+      "material_regression": false,
+      "missed_material_improvement": true,
+      "resources": {
+        "original": {
+          "static_shared_bytes": 0,
+          "local_bytes": 0,
+          "registers_per_thread": 44,
+          "active_blocks_per_sm": 5,
+          "active_blocks_per_sm_zero_dynamic_shared": 5,
+          "threads_per_block": 256,
+          "dynamic_shared_bytes": 16416,
+          "n_spills": 0,
+          "theoretical_active_warps_per_sm": 40,
+          "theoretical_occupancy_fraction": 0.625
+        },
+        "compiler": {
+          "static_shared_bytes": 0,
+          "local_bytes": 0,
+          "registers_per_thread": 52,
+          "active_blocks_per_sm": 4,
+          "active_blocks_per_sm_zero_dynamic_shared": 4,
+          "threads_per_block": 256,
+          "dynamic_shared_bytes": 8224,
+          "n_spills": 0,
+          "theoretical_active_warps_per_sm": 32,
+          "theoretical_occupancy_fraction": 0.5
+        }
+      },
+      "work": {
+        "active_ctas": 2368,
+        "launched_ctas": 2368,
+        "nonempty_ctas_per_sm_average": 16.0,
+        "rows_per_nonempty_cta_mean": 1.7297297297297298,
+        "loop_trip_count_min": 1,
+        "loop_trip_count_max": 2,
+        "logical_input_output_bytes": 67125248,
+        "logical_gamma_bytes_original": 33554432,
+        "logical_gamma_bytes_compiler": 19398656,
+        "logical_gamma_bytes_saved": 14155776,
+        "note": "Logical element traffic, not measured DRAM/cache transactions; invariant gamma can be cached. Zero-trip CTAs excluded from gamma hoist.",
+        "original": {
+          "effective_average_cta_residency_upper_bound": 5,
+          "grid_waves_at_theoretical_residency": 3.2
+        },
+        "compiler": {
+          "effective_average_cta_residency_upper_bound": 4,
+          "grid_waves_at_theoretical_residency": 4.0
+        }
+      }
+    },
+    {
+      "split": "training",
+      "shape": [
+        4096,
+        4096
+      ],
+      "warps": 8,
+      "grid": 4736,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "seed_speedups": [
+        1.0634615075473821,
+        1.0650705050566882,
+        1.0662357196403216
+      ],
+      "median_speedup": 1.0650705050566882,
+      "guard_accept": false,
+      "guarded_speedup": 1.0,
+      "material_regression": false,
+      "missed_material_improvement": true,
+      "resources": {
+        "original": {
+          "static_shared_bytes": 0,
+          "local_bytes": 0,
+          "registers_per_thread": 44,
+          "active_blocks_per_sm": 5,
+          "active_blocks_per_sm_zero_dynamic_shared": 5,
+          "threads_per_block": 256,
+          "dynamic_shared_bytes": 16416,
+          "n_spills": 0,
+          "theoretical_active_warps_per_sm": 40,
+          "theoretical_occupancy_fraction": 0.625
+        },
+        "compiler": {
+          "static_shared_bytes": 0,
+          "local_bytes": 0,
+          "registers_per_thread": 52,
+          "active_blocks_per_sm": 4,
+          "active_blocks_per_sm_zero_dynamic_shared": 4,
+          "threads_per_block": 256,
+          "dynamic_shared_bytes": 8224,
+          "n_spills": 0,
+          "theoretical_active_warps_per_sm": 32,
+          "theoretical_occupancy_fraction": 0.5
+        }
+      },
+      "work": {
+        "active_ctas": 4096,
+        "launched_ctas": 4736,
+        "nonempty_ctas_per_sm_average": 27.675675675675677,
+        "rows_per_nonempty_cta_mean": 1.0,
+        "loop_trip_count_min": 0,
+        "loop_trip_count_max": 1,
+        "logical_input_output_bytes": 67125248,
+        "logical_gamma_bytes_original": 33554432,
+        "logical_gamma_bytes_compiler": 33554432,
+        "logical_gamma_bytes_saved": 0,
+        "note": "Logical element traffic, not measured DRAM/cache transactions; invariant gamma can be cached. Zero-trip CTAs excluded from gamma hoist.",
+        "original": {
+          "effective_average_cta_residency_upper_bound": 5,
+          "grid_waves_at_theoretical_residency": 6.4
+        },
+        "compiler": {
+          "effective_average_cta_residency_upper_bound": 4,
+          "grid_waves_at_theoretical_residency": 8.0
+        }
+      }
+    },
+    {
+      "split": "training",
+      "shape": [
+        16384,
+        4096
+      ],
+      "warps": 4,
+      "grid": 592,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "seed_speedups": [
+        1.0181412858268608,
+        1.0188708604890921,
+        1.0185760898955674
+      ],
+      "median_speedup": 1.0185760898955674,
+      "guard_accept": true,
+      "guarded_speedup": 1.0185760898955674,
+      "material_regression": false,
+      "missed_material_improvement": false,
+      "resources": {
+        "original": {
+          "static_shared_bytes": 0,
+          "local_bytes": 0,
+          "registers_per_thread": 68,
+          "active_blocks_per_sm": 7,
+          "active_blocks_per_sm_zero_dynamic_shared": 7,
+          "threads_per_block": 128,
+          "dynamic_shared_bytes": 16400,
+          "n_spills": 0,
+          "theoretical_active_warps_per_sm": 28,
+          "theoretical_occupancy_fraction": 0.4375
+        },
+        "compiler": {
+          "static_shared_bytes": 0,
+          "local_bytes": 0,
+          "registers_per_thread": 94,
+          "active_blocks_per_sm": 5,
+          "active_blocks_per_sm_zero_dynamic_shared": 5,
+          "threads_per_block": 128,
+          "dynamic_shared_bytes": 8208,
+          "n_spills": 0,
+          "theoretical_active_warps_per_sm": 20,
+          "theoretical_occupancy_fraction": 0.3125
+        }
+      },
+      "work": {
+        "active_ctas": 592,
+        "launched_ctas": 592,
+        "nonempty_ctas_per_sm_average": 4.0,
+        "rows_per_nonempty_cta_mean": 27.675675675675677,
+        "loop_trip_count_min": 27,
+        "loop_trip_count_max": 28,
+        "logical_input_output_bytes": 268500992,
+        "logical_gamma_bytes_original": 134217728,
+        "logical_gamma_bytes_compiler": 4849664,
+        "logical_gamma_bytes_saved": 129368064,
+        "note": "Logical element traffic, not measured DRAM/cache transactions; invariant gamma can be cached. Zero-trip CTAs excluded from gamma hoist.",
+        "original": {
+          "effective_average_cta_residency_upper_bound": 4.0,
+          "grid_waves_at_theoretical_residency": 0.5714285714285714
+        },
+        "compiler": {
+          "effective_average_cta_residency_upper_bound": 4.0,
+          "grid_waves_at_theoretical_residency": 0.8
+        }
+      }
+    },
+    {
+      "split": "training",
+      "shape": [
+        16384,
+        4096
+      ],
+      "warps": 4,
+      "grid": 2368,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "seed_speedups": [
+        0.9319253339325493,
+        0.9335492438014652,
+        0.931906746936561
+      ],
+      "median_speedup": 0.9319253339325493,
+      "guard_accept": false,
+      "guarded_speedup": 1.0,
+      "material_regression": true,
+      "missed_material_improvement": false,
+      "resources": {
+        "original": {
+          "static_shared_bytes": 0,
+          "local_bytes": 0,
+          "registers_per_thread": 68,
+          "active_blocks_per_sm": 7,
+          "active_blocks_per_sm_zero_dynamic_shared": 7,
+          "threads_per_block": 128,
+          "dynamic_shared_bytes": 16400,
+          "n_spills": 0,
+          "theoretical_active_warps_per_sm": 28,
+          "theoretical_occupancy_fraction": 0.4375
+        },
+        "compiler": {
+          "static_shared_bytes": 0,
+          "local_bytes": 0,
+          "registers_per_thread": 94,
+          "active_blocks_per_sm": 5,
+          "active_blocks_per_sm_zero_dynamic_shared": 5,
+          "threads_per_block": 128,
+          "dynamic_shared_bytes": 8208,
+          "n_spills": 0,
+          "theoretical_active_warps_per_sm": 20,
+          "theoretical_occupancy_fraction": 0.3125
+        }
+      },
+      "work": {
+        "active_ctas": 2368,
+        "launched_ctas": 2368,
+        "nonempty_ctas_per_sm_average": 16.0,
+        "rows_per_nonempty_cta_mean": 6.918918918918919,
+        "loop_trip_count_min": 6,
+        "loop_trip_count_max": 7,
+        "logical_input_output_bytes": 268500992,
+        "logical_gamma_bytes_original": 134217728,
+        "logical_gamma_bytes_compiler": 19398656,
+        "logical_gamma_bytes_saved": 114819072,
+        "note": "Logical element traffic, not measured DRAM/cache transactions; invariant gamma can be cached. Zero-trip CTAs excluded from gamma hoist.",
+        "original": {
+          "effective_average_cta_residency_upper_bound": 7,
+          "grid_waves_at_theoretical_residency": 2.2857142857142856
+        },
+        "compiler": {
+          "effective_average_cta_residency_upper_bound": 5,
+          "grid_waves_at_theoretical_residency": 3.2
+        }
+      }
+    },
+    {
+      "split": "training",
+      "shape": [
+        16384,
+        4096
+      ],
+      "warps": 4,
+      "grid": 4736,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "seed_speedups": [
+        0.9267965845447829,
+        0.9261448570238486,
+        0.9255666955080227
+      ],
+      "median_speedup": 0.9261448570238486,
+      "guard_accept": false,
+      "guarded_speedup": 1.0,
+      "material_regression": true,
+      "missed_material_improvement": false,
+      "resources": {
+        "original": {
+          "static_shared_bytes": 0,
+          "local_bytes": 0,
+          "registers_per_thread": 68,
+          "active_blocks_per_sm": 7,
+          "active_blocks_per_sm_zero_dynamic_shared": 7,
+          "threads_per_block": 128,
+          "dynamic_shared_bytes": 16400,
+          "n_spills": 0,
+          "theoretical_active_warps_per_sm": 28,
+          "theoretical_occupancy_fraction": 0.4375
+        },
+        "compiler": {
+          "static_shared_bytes": 0,
+          "local_bytes": 0,
+          "registers_per_thread": 94,
+          "active_blocks_per_sm": 5,
+          "active_blocks_per_sm_zero_dynamic_shared": 5,
+          "threads_per_block": 128,
+          "dynamic_shared_bytes": 8208,
+          "n_spills": 0,
+          "theoretical_active_warps_per_sm": 20,
+          "theoretical_occupancy_fraction": 0.3125
+        }
+      },
+      "work": {
+        "active_ctas": 4736,
+        "launched_ctas": 4736,
+        "nonempty_ctas_per_sm_average": 32.0,
+        "rows_per_nonempty_cta_mean": 3.4594594594594597,
+        "loop_trip_count_min": 3,
+        "loop_trip_count_max": 4,
+        "logical_input_output_bytes": 268500992,
+        "logical_gamma_bytes_original": 134217728,
+        "logical_gamma_bytes_compiler": 38797312,
+        "logical_gamma_bytes_saved": 95420416,
+        "note": "Logical element traffic, not measured DRAM/cache transactions; invariant gamma can be cached. Zero-trip CTAs excluded from gamma hoist.",
+        "original": {
+          "effective_average_cta_residency_upper_bound": 7,
+          "grid_waves_at_theoretical_residency": 4.571428571428571
+        },
+        "compiler": {
+          "effective_average_cta_residency_upper_bound": 5,
+          "grid_waves_at_theoretical_residency": 6.4
+        }
+      }
+    },
+    {
+      "split": "training",
+      "shape": [
+        16384,
+        4096
+      ],
+      "warps": 8,
+      "grid": 592,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "seed_speedups": [
+        1.0204790207903542,
+        1.0225530188000376,
+        1.0182153817971937
+      ],
+      "median_speedup": 1.0204790207903542,
+      "guard_accept": true,
+      "guarded_speedup": 1.0204790207903542,
+      "material_regression": false,
+      "missed_material_improvement": false,
+      "resources": {
+        "original": {
+          "static_shared_bytes": 0,
+          "local_bytes": 0,
+          "registers_per_thread": 44,
+          "active_blocks_per_sm": 5,
+          "active_blocks_per_sm_zero_dynamic_shared": 5,
+          "threads_per_block": 256,
+          "dynamic_shared_bytes": 16416,
+          "n_spills": 0,
+          "theoretical_active_warps_per_sm": 40,
+          "theoretical_occupancy_fraction": 0.625
+        },
+        "compiler": {
+          "static_shared_bytes": 0,
+          "local_bytes": 0,
+          "registers_per_thread": 52,
+          "active_blocks_per_sm": 4,
+          "active_blocks_per_sm_zero_dynamic_shared": 4,
+          "threads_per_block": 256,
+          "dynamic_shared_bytes": 8224,
+          "n_spills": 0,
+          "theoretical_active_warps_per_sm": 32,
+          "theoretical_occupancy_fraction": 0.5
+        }
+      },
+      "work": {
+        "active_ctas": 592,
+        "launched_ctas": 592,
+        "nonempty_ctas_per_sm_average": 4.0,
+        "rows_per_nonempty_cta_mean": 27.675675675675677,
+        "loop_trip_count_min": 27,
+        "loop_trip_count_max": 28,
+        "logical_input_output_bytes": 268500992,
+        "logical_gamma_bytes_original": 134217728,
+        "logical_gamma_bytes_compiler": 4849664,
+        "logical_gamma_bytes_saved": 129368064,
+        "note": "Logical element traffic, not measured DRAM/cache transactions; invariant gamma can be cached. Zero-trip CTAs excluded from gamma hoist.",
+        "original": {
+          "effective_average_cta_residency_upper_bound": 4.0,
+          "grid_waves_at_theoretical_residency": 0.8
+        },
+        "compiler": {
+          "effective_average_cta_residency_upper_bound": 4.0,
+          "grid_waves_at_theoretical_residency": 1.0
+        }
+      }
+    },
+    {
+      "split": "training",
+      "shape": [
+        16384,
+        4096
+      ],
+      "warps": 8,
+      "grid": 2368,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "seed_speedups": [
+        0.977532816824179,
+        0.9775420024897886,
+        0.9811362824864553
+      ],
+      "median_speedup": 0.9775420024897886,
+      "guard_accept": false,
+      "guarded_speedup": 1.0,
+      "material_regression": true,
+      "missed_material_improvement": false,
+      "resources": {
+        "original": {
+          "static_shared_bytes": 0,
+          "local_bytes": 0,
+          "registers_per_thread": 44,
+          "active_blocks_per_sm": 5,
+          "active_blocks_per_sm_zero_dynamic_shared": 5,
+          "threads_per_block": 256,
+          "dynamic_shared_bytes": 16416,
+          "n_spills": 0,
+          "theoretical_active_warps_per_sm": 40,
+          "theoretical_occupancy_fraction": 0.625
+        },
+        "compiler": {
+          "static_shared_bytes": 0,
+          "local_bytes": 0,
+          "registers_per_thread": 52,
+          "active_blocks_per_sm": 4,
+          "active_blocks_per_sm_zero_dynamic_shared": 4,
+          "threads_per_block": 256,
+          "dynamic_shared_bytes": 8224,
+          "n_spills": 0,
+          "theoretical_active_warps_per_sm": 32,
+          "theoretical_occupancy_fraction": 0.5
+        }
+      },
+      "work": {
+        "active_ctas": 2368,
+        "launched_ctas": 2368,
+        "nonempty_ctas_per_sm_average": 16.0,
+        "rows_per_nonempty_cta_mean": 6.918918918918919,
+        "loop_trip_count_min": 6,
+        "loop_trip_count_max": 7,
+        "logical_input_output_bytes": 268500992,
+        "logical_gamma_bytes_original": 134217728,
+        "logical_gamma_bytes_compiler": 19398656,
+        "logical_gamma_bytes_saved": 114819072,
+        "note": "Logical element traffic, not measured DRAM/cache transactions; invariant gamma can be cached. Zero-trip CTAs excluded from gamma hoist.",
+        "original": {
+          "effective_average_cta_residency_upper_bound": 5,
+          "grid_waves_at_theoretical_residency": 3.2
+        },
+        "compiler": {
+          "effective_average_cta_residency_upper_bound": 4,
+          "grid_waves_at_theoretical_residency": 4.0
+        }
+      }
+    },
+    {
+      "split": "training",
+      "shape": [
+        16384,
+        4096
+      ],
+      "warps": 8,
+      "grid": 4736,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "seed_speedups": [
+        0.9407406406957624,
+        0.9382780176084778,
+        0.9453647959993474
+      ],
+      "median_speedup": 0.9407406406957624,
+      "guard_accept": false,
+      "guarded_speedup": 1.0,
+      "material_regression": true,
+      "missed_material_improvement": false,
+      "resources": {
+        "original": {
+          "static_shared_bytes": 0,
+          "local_bytes": 0,
+          "registers_per_thread": 44,
+          "active_blocks_per_sm": 5,
+          "active_blocks_per_sm_zero_dynamic_shared": 5,
+          "threads_per_block": 256,
+          "dynamic_shared_bytes": 16416,
+          "n_spills": 0,
+          "theoretical_active_warps_per_sm": 40,
+          "theoretical_occupancy_fraction": 0.625
+        },
+        "compiler": {
+          "static_shared_bytes": 0,
+          "local_bytes": 0,
+          "registers_per_thread": 52,
+          "active_blocks_per_sm": 4,
+          "active_blocks_per_sm_zero_dynamic_shared": 4,
+          "threads_per_block": 256,
+          "dynamic_shared_bytes": 8224,
+          "n_spills": 0,
+          "theoretical_active_warps_per_sm": 32,
+          "theoretical_occupancy_fraction": 0.5
+        }
+      },
+      "work": {
+        "active_ctas": 4736,
+        "launched_ctas": 4736,
+        "nonempty_ctas_per_sm_average": 32.0,
+        "rows_per_nonempty_cta_mean": 3.4594594594594597,
+        "loop_trip_count_min": 3,
+        "loop_trip_count_max": 4,
+        "logical_input_output_bytes": 268500992,
+        "logical_gamma_bytes_original": 134217728,
+        "logical_gamma_bytes_compiler": 38797312,
+        "logical_gamma_bytes_saved": 95420416,
+        "note": "Logical element traffic, not measured DRAM/cache transactions; invariant gamma can be cached. Zero-trip CTAs excluded from gamma hoist.",
+        "original": {
+          "effective_average_cta_residency_upper_bound": 5,
+          "grid_waves_at_theoretical_residency": 6.4
+        },
+        "compiler": {
+          "effective_average_cta_residency_upper_bound": 4,
+          "grid_waves_at_theoretical_residency": 8.0
+        }
+      }
+    }
+  ],
+  "guard_definition": "accept iff no spills and (CUDA API blocks/SM does not decrease OR nonempty CTAs/SM <= transformed blocks/SM)",
+  "guard_predeclared": true,
+  "static_guard_limitation": "This resource/grid rule does not guarantee profitability. It requires compiling both variants and runtime launch/shape knowledge. Existing FX choose_hoist already measures a 2% timing margin.",
+  "split_totals": {
+    "training": {
+      "configurations": 12,
+      "accepted_regressions": 0,
+      "declined_gains": 4
+    },
+    "heldout": {
+      "configurations": 10,
+      "accepted_regressions": 0,
+      "declined_gains": 1
+    }
+  }
+}

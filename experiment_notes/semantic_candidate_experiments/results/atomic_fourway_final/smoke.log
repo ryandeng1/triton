@@ -1,0 +1,2 @@
+{"shape": [31, 137, 67], "frequency": false, "block": 128, "seed": 0, "device_us": {"acq_rel": 4.612000193446875, "acquire": 4.064000211656094, "release": 4.308000206947327, "relaxed": 3.776000114157796}}
+{"shape": [31, 137, 67], "frequency": true, "block": 128, "seed": 0, "device_us": {"acq_rel": 6.812000181525946, "acquire": 6.283999886363745, "release": 6.335999816656113, "relaxed": 6.023999769240618}}

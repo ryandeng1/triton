@@ -1,0 +1,150 @@
+{
+  "candidates": [
+    {
+      "project": "FlagGems",
+      "revision": "3f1f896fd90f5db42d167d64fcb9691326071bc2",
+      "path": "src/flag_gems/runtime/backend/_cambricon/ops/embedding_dense_backward.py",
+      "function": "_embedding_dense_backward_count_kernel",
+      "status": "priority atomic loop",
+      "source_url": "https://github.com/flagos-ai/FlagGems/blob/3f1f896fd90f5db42d167d64fcb9691326071bc2/src/flag_gems/runtime/backend/_cambricon/ops/embedding_dense_backward.py#L74-L79",
+      "source_sha256": "ade44798be3dc712db7a302b5bbe5641f388dda88a55c3ecf8aa82cef7ffe410",
+      "function_body_ast_sha256": "e6e39a61a4847c08e942c944bd3212c83c817d2ca9ec7d50b3823a91a47257da",
+      "snippet": "74:     for block_id in range(pid, total_blocks, num_jobs):\n75:         offs = block_id * BLOCK_N + tl.arange(0, BLOCK_N)\n76:         mask = offs < N\n77:         idx = tl.load(indices_ptr + offs, mask=mask, other=0).to(tl.int32)\n78:         valid = mask & (idx != padding_idx) & (idx >= 0) & (idx < num_weights)\n79:         tl.atomic_add(counts_ptr + idx, 1, mask=valid)",
+      "finding": "int32 confirmed by fresh torch.zeros allocation at line162. One unused-result atomic add in a persistent strided loop; ordinary disjoint index reads. Source lives in Cambricon backend, so target transplantation needs separate compilation/validation.",
+      "required_contract_or_validation": "Private initialized output, disjoint index allocation, valid bounds; integer modular addition avoids floating cross-location ordering correlations."
+    },
+    {
+      "project": "Liger",
+      "revision": "e44de705ecc9b43eb33aa35ad10ee9d59a054c3b",
+      "path": "src/liger_kernel/ops/backends/_ascend/ops/fused_moe_kernels.py",
+      "function": "_moe_router_histogram_kernel",
+      "status": "second atomic loop",
+      "source_url": "https://github.com/linkedin/Liger-Kernel/blob/e44de705ecc9b43eb33aa35ad10ee9d59a054c3b/src/liger_kernel/ops/backends/_ascend/ops/fused_moe_kernels.py#L31-L42",
+      "source_sha256": "0c52fe479006e8f4a6e6447f7586f5b080b3a6ffcd30920bd1ee4390749a4eb4",
+      "function_body_ast_sha256": "3922ea1f1f472bfddb6fd99d34cce34b1815e6ab3914f3bd9dc055b027c1c022",
+      "snippet": "31: def _moe_router_histogram_kernel(\n32:     topk_ptr,  # (TK,) int32, flat (token, k)\n33:     count_ptr,  # (E,) int32, zeroed by the host\n34:     TK,\n35:     E,\n36: ):\n37:     pid = tl.program_id(0)\n38:     nprog = tl.num_programs(0)\n39:     for i in tl.range(pid, TK, nprog):\n40:         expert = tl.load(topk_ptr + i)\n41:         if (expert >= 0) & (expert < E):\n42:             tl.atomic_add(count_ptr + expert, 1)",
+      "finding": "int32 count_ptr confirmed by fused_moe.py line53 allocation and line66 launch. Scalar expert-valid conditional nests the atomic; broader control flow than first native extension.",
+      "required_contract_or_validation": "Fresh count buffer, disjoint topk storage, invocation-private output; source-target portability untested."
+    },
+    {
+      "project": "Liger",
+      "revision": "e44de705ecc9b43eb33aa35ad10ee9d59a054c3b",
+      "path": "src/liger_kernel/ops/backends/_ascend/ops/cross_entropy.py",
+      "function": "liger_cross_entropy_backward_kernel",
+      "status": "compiled LICM win",
+      "source_url": "https://github.com/linkedin/Liger-Kernel/blob/e44de705ecc9b43eb33aa35ad10ee9d59a054c3b/src/liger_kernel/ops/backends/_ascend/ops/cross_entropy.py#L440-L448",
+      "source_sha256": "8160cd8bbe9d3cfe091a9cd899847b07397be47bf474992bac63f4ab495f4bb8",
+      "function_body_ast_sha256": "3fc1dc55cd61c50815a0f04ffcb9580645b6cfd1996848f260cd916aa77a7895",
+      "snippet": "440:     for row_idx in range(row_start, row_end):\n441:         row_i64 = row_idx.to(tl.int64)\n442:         y = tl.load(Y_ptr + row_i64)\n443:         X_ptr_offset = row_i64 * X_stride\n444:         dX_ptr_offset = row_i64 * dX_stride\n445:         # grad_output is a vector if reduction == \"none\"; otherwise, it is a scalar.\n446:         grad_scale = (\n447:             tl.load(grad_output_ptr + row_i64 * grad_output_stride) if reduction == \"none\" else tl.load(grad_output_ptr)\n448:         ).cast(tl.float32)",
+      "finding": "Baseline scalar gradient load remains in row loop; immutable and alias contracts both hoist in compiled CUDA sm90 specialization.",
+      "required_contract_or_validation": "reduction=sum; grad_output initialized immutable or disjoint from all stores. No launch/performance validation."
+    },
+    {
+      "project": "FlagGems",
+      "revision": "3f1f896fd90f5db42d167d64fcb9691326071bc2",
+      "path": "src/flag_gems/ops/ctc_loss.py",
+      "function": "_ctc_loss_forward_kernel",
+      "status": "compiled implementation limitation",
+      "source_url": "https://github.com/flagos-ai/FlagGems/blob/3f1f896fd90f5db42d167d64fcb9691326071bc2/src/flag_gems/ops/ctc_loss.py#L146-L156",
+      "source_sha256": "54ff130ab816ef2a610a083ae6239717f6d44d8e7dd3c79b3972454d092da91d",
+      "function_body_ast_sha256": "0c33561aa2eaa503813bc635c97429ab0bae934187e7aab72ed2b2a684e22ca1",
+      "snippet": "146:         ).to(tl.float32)\n147: \n148:         prev_target_index = tl.where(target_index > 0, target_index - 1, 0)\n149:         prev_target_value = tl.load(\n150:             targets + target_origin + prev_target_index,\n151:             mask=target_mask & (target_index > 0),\n152:             other=BLANK,\n153:         )\n154:         skip_allowed = (\n155:             (~is_blank_state) & (target_index > 0) & (target_value != prev_target_value)\n156:         )",
+      "finding": "Target-label address/mask/other invariant across timestep loop. Both explicit contracts retain the load. Existing barrier effects fall outside current ordinary-memory LICM guard.",
+      "required_contract_or_validation": "Immutable targets disjoint from recurrence outputs; barrier-aware legality remains unimplemented and untested."
+    },
+    {
+      "project": "AITER",
+      "revision": "ef0a5a26b8cb38ea1308f827985e36cde964a6ab",
+      "path": "aiter/ops/triton/_triton_kernels/gated_delta_net/decode/fused_sigmoid_gating_recurrent.py",
+      "function": "fused_sigmoid_gating_delta_rule_update_kernel",
+      "status": "compiled LICM win",
+      "source_url": "https://github.com/ROCm/aiter/blob/ef0a5a26b8cb38ea1308f827985e36cde964a6ab/aiter/ops/triton/_triton_kernels/gated_delta_net/decode/fused_sigmoid_gating_recurrent.py#L123-L135",
+      "source_sha256": "e58e6ad3347877239cc95cefdbaaf736704ee3d93f9bfcd62c83f5c3a0513238",
+      "function_body_ast_sha256": "58ea2477b0a549b30b64eb960fcf33416dae1ad335be19d5e09b4711681a492e",
+      "snippet": "123:     for _ in range(T):\n124:         # Load inputs\n125:         b_q = tl.load(p_q, mask=mask_k, other=0).to(tl.float32)\n126:         b_k = tl.load(p_k, mask=mask_k, other=0).to(tl.float32)\n127:         b_v = tl.load(p_v, mask=mask_v, other=0).to(tl.float32)\n128:         b_b = tl.load(p_b).to(tl.float32)\n129: \n130:         # Compute sigmoid gating\n131:         # Load gating parameters\n132:         b_A_log = tl.load(p_A_log).to(tl.float32)\n133:         b_a = tl.load(p_a).to(tl.float32)\n134:         b_dt_bias = tl.load(p_dt_bias).to(tl.float32)\n135: ",
+      "finding": "Baseline A_log/dt_bias scalar loads remain in timestep loop; immutable hoists both, alias-only does not. Alias analysis cannot trace loop-carried read/write pointers.",
+      "required_contract_or_validation": "Initialized immutable parameter arrays throughout call; explicit specialization recorded in compiled_shortlist/summary.json; no timings."
+    },
+    {
+      "project": "AITER",
+      "revision": "ef0a5a26b8cb38ea1308f827985e36cde964a6ab",
+      "path": "aiter/ops/triton/_triton_kernels/normalization/rmsnorm.py",
+      "function": "_rms_norm_kernel",
+      "status": "previously studied, not a new experiment",
+      "source_url": "https://github.com/ROCm/aiter/blob/ef0a5a26b8cb38ea1308f827985e36cde964a6ab/aiter/ops/triton/_triton_kernels/normalization/rmsnorm.py#L151-L162",
+      "source_sha256": "acfe1840a6ae0e0ff38d5f50fde8aeec6e63ad2b04d8e0e962207903c79194db",
+      "function_body_ast_sha256": "5112f06a192a1fd1fb1e08bd8363e64304015fe2ce9a3e6527577df1086671f2",
+      "snippet": "151:         for row_idx in tl.range(row_start, n_rows, program_stride, num_stages=2):\n152:             input_ptrs = input_ptr + row_idx * input_row_stride + col_offsets\n153:             input_ptrs = tl.multiple_of(input_ptrs, (16,))\n154:             row = tl.load(input_ptrs, mask=mask, other=0.0, cache_modifier=\".cg\").to(\n155:                 tl.float32\n156:             )\n157:             g = tl.load(g_ptr + col_offsets, mask=mask, other=0.0).to(tl.float32)\n158:             row_norm = row * row\n159:             row_norm = tl.sum(row_norm, axis=-1)\n160:             norm_factor = tl.math.rsqrt((row_norm / n_cols) + epsilon)\n161: \n162:             # Store rsigma (norm_factor)",
+      "finding": "Exact existing experiment pin and function matches the previous RMSNorm work; source screen rediscovers its gamma load.",
+      "required_contract_or_validation": "See previous rms_native_final_analysis and parent profitability experiment. This survey does not add these existing measurements to source prevalence."
+    },
+    {
+      "project": "TransformerEngine",
+      "revision": "c1c2d4d2fa008386f247c2fec56a998e27134e0a",
+      "path": "transformer_engine/common/triton/permutation.py",
+      "function": "_unpermute_bwd_with_merging_probs_kernel",
+      "status": "previously studied, not a new experiment",
+      "source_url": "https://github.com/NVIDIA/TransformerEngine/blob/c1c2d4d2fa008386f247c2fec56a998e27134e0a/transformer_engine/common/triton/permutation.py#L495-L509",
+      "source_sha256": "94465e2ef66d4b1683c42f1528d48961cd907b9dde8923f34ac86eec377a432c",
+      "function_body_ast_sha256": "4acea1084aacdca27636858b904b5070a5bc4ae3111210176b7bf7a4a883f716",
+      "snippet": "495:         while current_start < hidden_size:\n496:             current_offset = current_start + tl.arange(0, BLOCK_SIZE)\n497:             mask = current_offset < hidden_size\n498:             src_row = pid.to(tl.int64)\n499:             input_off = (\n500:                 src_row * stride_fwd_output_grad_token\n501:                 + current_offset * stride_fwd_output_grad_hidden\n502:             )\n503:             inp = tl.load(fwd_output_grad_ptr + input_off, mask=mask)\n504:             inp = inp.to(compute_type)\n505:             merging_prob_off = (\n506:                 pid * stride_merging_probs_token + expert_idx * stride_merging_probs_expert\n507:             )\n508:             merging_prob = tl.load(merging_probs_ptr + merging_prob_off).to(compute_type)\n509:             output = inp * merging_prob",
+      "finding": "Exact existing experiment pin and function matches prior TE probability-load work.",
+      "required_contract_or_validation": "See previous te_final_analysis. Current survey does not re-run or extrapolate that timing evidence."
+    },
+    {
+      "project": "TransformerEngine",
+      "revision": "c1c2d4d2fa008386f247c2fec56a998e27134e0a",
+      "path": "transformer_engine/common/triton/grouped_dbias_dscales.py",
+      "function": "_grouped_dbias_kernel",
+      "status": "future floating multi-atomic candidate",
+      "source_url": "https://github.com/NVIDIA/TransformerEngine/blob/c1c2d4d2fa008386f247c2fec56a998e27134e0a/transformer_engine/common/triton/grouped_dbias_dscales.py#L84-L100",
+      "source_sha256": "e3ac4bb49104f02141d01d199a0ff88e17fd9d606992db4d732433020baf7a76",
+      "function_body_ast_sha256": "7b194b2e2a1c5eb950ad5ed226b33c51feb9b70b20b35e589446f882e0e581f8",
+      "snippet": "84:             scales_vals = tl.load(scales_ptr + global_rows, mask=row_mask, other=0.0)\n85:             dbias_acc += tl.sum(dy_tile * scales_vals[:, None], axis=0)\n86: \n87:             dscales_partial = tl.sum(dy_tile * bias_vals[None, :], axis=1)\n88:             tl.atomic_add(\n89:                 dscales_ptr + global_rows,\n90:                 dscales_partial,\n91:                 mask=row_mask,\n92:             )\n93:         else:\n94:             dbias_acc += tl.sum(dy_tile, axis=0)\n95: \n96:     tl.atomic_add(\n97:         dbias_ptr + group_idx * hidden + col_offs,\n98:         dbias_acc,\n99:         mask=col_mask,\n100:     )",
+      "finding": "Two default-order unused-result atomic sites, one in a loop. Source pattern alone does not prove relaxing them preserves all observable floating outcomes.",
+      "required_contract_or_validation": "Requires floating numerical contract or proof of independent update domains/order-insensitive result; excluded from integer extension."
+    }
+  ],
+  "rejection_examples": [
+    {
+      "project": "Liger",
+      "path": "src/liger_kernel/ops/backends/_ascend/ops/fused_moe_kernels.py",
+      "function": "_moe_router_scatter_kernel",
+      "reason": "Atomic return supplies rank used by output stores. Not an unused-result update.",
+      "revision": "e44de705ecc9b43eb33aa35ad10ee9d59a054c3b",
+      "source_url": "https://github.com/linkedin/Liger-Kernel/blob/e44de705ecc9b43eb33aa35ad10ee9d59a054c3b/src/liger_kernel/ops/backends/_ascend/ops/fused_moe_kernels.py"
+    },
+    {
+      "project": "FlagGems",
+      "path": "src/flag_gems/runtime/backend/_iluvatar/ops/smm.py",
+      "function": "_prep_kernel",
+      "reason": "Counter loop has ordinary output initialization and subsequent readback plus debug barriers/helper call. Not the initial private-counter scope.",
+      "revision": "3f1f896fd90f5db42d167d64fcb9691326071bc2",
+      "source_url": "https://github.com/flagos-ai/FlagGems/blob/3f1f896fd90f5db42d167d64fcb9691326071bc2/src/flag_gems/runtime/backend/_iluvatar/ops/smm.py"
+    },
+    {
+      "project": "AITER",
+      "path": "aiter/ops/triton/_gluon_kernels/gfx1250/comms/all_reduce.py",
+      "function": "_receive",
+      "reason": "Default unused atomic increments a timeout/error counter in a communication helper, not a common compute reduction; the whole function polls peer state and has effectful inline assembly.",
+      "revision": "ef0a5a26b8cb38ea1308f827985e36cde964a6ab",
+      "source_url": "https://github.com/ROCm/aiter/blob/ef0a5a26b8cb38ea1308f827985e36cde964a6ab/aiter/ops/triton/_gluon_kernels/gfx1250/comms/all_reduce.py"
+    },
+    {
+      "project": "FlagGems",
+      "path": "src/flag_gems/fused/moe_load_balance_loss.py",
+      "function": "_topk_count_kernel",
+      "reason": "Multiple counters are float32, despite histogram/count naming. Integer-counter soundness argument cannot be applied from names alone.",
+      "revision": "3f1f896fd90f5db42d167d64fcb9691326071bc2",
+      "source_url": "https://github.com/flagos-ai/FlagGems/blob/3f1f896fd90f5db42d167d64fcb9691326071bc2/src/flag_gems/fused/moe_load_balance_loss.py"
+    },
+    {
+      "project": "FlagGems",
+      "path": "src/flag_gems/fused/top_k_per_row_decode.py",
+      "function": "_final_select_radix",
+      "reason": "Invariant-address source hit reads scratch state; immutability cannot be inferred from invariant address. Memory/content contract remains essential.",
+      "revision": "3f1f896fd90f5db42d167d64fcb9691326071bc2",
+      "source_url": "https://github.com/flagos-ai/FlagGems/blob/3f1f896fd90f5db42d167d64fcb9691326071bc2/src/flag_gems/fused/top_k_per_row_decode.py"
+    }
+  ]
+}

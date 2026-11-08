@@ -1,0 +1,139 @@
+{
+  "removed_redundant_artifacts": {
+    "kernels/2db7b16527b1fe30/kernel.cubin": {
+      "sha256": "2db7b16527b1fe30f3e6a71ce42418e7c5e5d0df25d6b49cc712efb7e9701982",
+      "size_bytes": 36344
+    },
+    "kernels/2db7b16527b1fe30/kernel.llir": {
+      "sha256": "21c8d3c563888223c16bdf4a7c1fffa65cb04640fd88b5fddb78168deaf26955",
+      "size_bytes": 42437
+    },
+    "kernels/2db7b16527b1fe30/kernel.sass": {
+      "sha256": "343070b732c12e090a697aa1e6ae9ec4784ac0233308ec7d4160613d5418a3d6",
+      "size_bytes": 166882
+    },
+    "kernels/2db7b16527b1fe30/kernel.ttgir": {
+      "sha256": "d3daa0326b610342041bfdaf21b6693ac26256664539c926e53a945aff8010fd",
+      "size_bytes": 12455
+    },
+    "kernels/9f50a88daa47606d/kernel.cubin": {
+      "sha256": "9f50a88daa47606d711272c5774643b6bb143188b88c472436b251e0fd609e27",
+      "size_bytes": 34808
+    },
+    "kernels/9f50a88daa47606d/kernel.llir": {
+      "sha256": "f42c359036e47a1c2bc5b8282ed8bdc549b57d376d2ca541ae7f5a2eb1d65ac9",
+      "size_bytes": 40278
+    },
+    "kernels/9f50a88daa47606d/kernel.sass": {
+      "sha256": "05d5e2cd56228709267a5d926abea352c6a61177781a3be15d0b24c9564eb591",
+      "size_bytes": 161079
+    },
+    "kernels/9f50a88daa47606d/kernel.ttgir": {
+      "sha256": "a38376d50a1fa09ecc98378d423d6ba68348929caa53d0c91bce4bed792c6d2c",
+      "size_bytes": 11343
+    },
+    "kernels/d7ac65dc3d3e5ecd/kernel.cubin": {
+      "sha256": "d7ac65dc3d3e5ecd04dea180287f2d3913df0c3e608ca56c1875e30f280d48a8",
+      "size_bytes": 26704
+    },
+    "kernels/d7ac65dc3d3e5ecd/kernel.llir": {
+      "sha256": "8bc4aa4a7c241c72ead820cce4c545017e193324b00b98c01788e5ac6d90eaa9",
+      "size_bytes": 26730
+    },
+    "kernels/d7ac65dc3d3e5ecd/kernel.sass": {
+      "sha256": "3e678f0377f626a2a5b0e0a16cccda15e4e471b3412028a4f0b5f3668e270bab",
+      "size_bytes": 112374
+    },
+    "kernels/d7ac65dc3d3e5ecd/kernel.ttgir": {
+      "sha256": "77430b5a42eb6662d191b830e9777de21ca6634703b665c4d26626c3cf537ecb",
+      "size_bytes": 12455
+    },
+    "kernels/ef94ea7758d06990/kernel.cubin": {
+      "sha256": "ef94ea7758d0699071d9d90e0c511fe6f900edaad8fc6c68042e3584e6f03d30",
+      "size_bytes": 26928
+    },
+    "kernels/ef94ea7758d06990/kernel.llir": {
+      "sha256": "4971ff0c8af416dc28bed869ab190ddf674d3b5664feaeb0cc56518eb873bb96",
+      "size_bytes": 26959
+    },
+    "kernels/ef94ea7758d06990/kernel.sass": {
+      "sha256": "a174433d0ae85a7950dad1f7586fc441353ce7e2adc2df7cfceab93365f40643",
+      "size_bytes": 113703
+    },
+    "kernels/ef94ea7758d06990/kernel.ttgir": {
+      "sha256": "deacc681706ce878614ea91ff7b3ee2991d77b0ae9b2f557f6b9588248286691",
+      "size_bytes": 12455
+    },
+    "kernels/f3cbeaed4aecf78c/kernel.cubin": {
+      "sha256": "f3cbeaed4aecf78c734a966117eb29c9291be43d7de6abd6ce53fd095980dc36",
+      "size_bytes": 26336
+    },
+    "kernels/f3cbeaed4aecf78c/kernel.llir": {
+      "sha256": "b15a480cf6a759758b6d47a762323bf3c313d7137d14fc73d3cfe75e023b0ecd",
+      "size_bytes": 25618
+    },
+    "kernels/f3cbeaed4aecf78c/kernel.sass": {
+      "sha256": "7493442c09884ef9813c6aa52db22a7821f5eac010d4662d879cd8a0a9b48be8",
+      "size_bytes": 110746
+    },
+    "kernels/f3cbeaed4aecf78c/kernel.ttgir": {
+      "sha256": "58d959c8ec1691f520faa5d0ba9a853109644733a9d0a804f406a1c873b67820",
+      "size_bytes": 11343
+    },
+    "kernels/fcf87b158f475ca3/kernel.cubin": {
+      "sha256": "fcf87b158f475ca3dbe6fcc1dbd1b72c0f3fc2de45312859dabcf2aa4a912925",
+      "size_bytes": 26512
+    },
+    "kernels/fcf87b158f475ca3/kernel.llir": {
+      "sha256": "ef06478df1e0047a483a29f495cb5567f5c6cf08a7f3e715fc6393da9bc462f0",
+      "size_bytes": 25845
+    },
+    "kernels/fcf87b158f475ca3/kernel.sass": {
+      "sha256": "6643ba64c74c8e82ac5c22d28840608b5bb358bb9b217fd2468f4dd36a26efb4",
+      "size_bytes": 111726
+    },
+    "kernels/fcf87b158f475ca3/kernel.ttgir": {
+      "sha256": "a729cf737320a82325dd380122d2e944acae61c8d586f9d13496c23c4094c9ca",
+      "size_bytes": 11343
+    }
+  },
+  "archives": {
+    "measurements.json.gz": {
+      "sha256": "9ac0b0c789b1f938146bacac07325553aa2bf5599f93f81c4f2511bdf1aa6a80",
+      "records": 66
+    },
+    "ncu-m16384-n4096-w4-grid32sm-compiler.csv.gz": {
+      "sha256": "1b9eb2830e6e3e5e78d8e4dcfc0cbaec7a8c62969623d52b2bf314e03f40f257",
+      "uncompressed_sha256": "ad01aab80b674f1928cce9013f52defcc8659756b4c383a07826cce55aa282dd"
+    },
+    "ncu-m16384-n4096-w4-grid32sm-original.csv.gz": {
+      "sha256": "81bedb436de095fc167b83fccbdedce65511e2ea0b1419b9bfd1ff1a6b7b5b4b",
+      "uncompressed_sha256": "867769d999f897a2dccf53555a8bac92386ec1e5be4a298a12fabecd68736f25"
+    },
+    "ncu-m16384-n4096-w4-grid4sm-compiler.csv.gz": {
+      "sha256": "da7129c3ab3a627be78a11481576425ac4788cbb01e516892e1be5b7dafc6237",
+      "uncompressed_sha256": "5ff1fdae8473a0a546953d859219486917c57ed0d92c14eeef9516165bdce3c4"
+    },
+    "ncu-m16384-n4096-w4-grid4sm-original.csv.gz": {
+      "sha256": "8b2c38a8bf05ae3da95235a624cb23d9ae00545fc839766c03fd3632c286c5d9",
+      "uncompressed_sha256": "7a3bd7317f4ba397a71a0412b762a2e9be098a25f09d03f0ac36948a1f4d5f6e"
+    },
+    "ncu-m4096-n4096-w4-grid32sm-compiler.csv.gz": {
+      "sha256": "0f1ab53d5514965db19c83e637e8fe7c41f97b81fb4a717ff6ea304a9207150e",
+      "uncompressed_sha256": "347c2ce2efd53fb30a6082b6a91fb36ded88fec4044cc88247ccb902aae5f11f"
+    },
+    "ncu-m4096-n4096-w4-grid32sm-original.csv.gz": {
+      "sha256": "761a4bf40816fb3a36f9b47160a948e3b3cef88b27f5f0e1097e85f06fb98b5b",
+      "uncompressed_sha256": "9cbc5397586d34c397197dd4f438b2953c418d1fb5e000f026d0b514fde74659"
+    },
+    "ncu-m4096-n4096-w4-grid4sm-compiler.csv.gz": {
+      "sha256": "7f40ff88d8b5db238a0c3471018b30763900e8b94604a8b77395ca1a8ca2fe85",
+      "uncompressed_sha256": "333326218ba44bfe8fd042b20b1322b818d202d9f0a20133e026c01edab6b898"
+    },
+    "ncu-m4096-n4096-w4-grid4sm-original.csv.gz": {
+      "sha256": "b6210d007527003b0eb23917f0af710491616f8cff49bdc47e71fefe7d647b44",
+      "uncompressed_sha256": "91da75b230c04d4f88b85d60ad7ca33a943736a846324fc34300d5d66e675546"
+    }
+  },
+  "note": "Raw measurements and NCU counters are retained losslessly in gzip archives. All kernel assembly hashes remain in metadata.json; representative TTIR/PTX retained for all six compiled binaries."
+}

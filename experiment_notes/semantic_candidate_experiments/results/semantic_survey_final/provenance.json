@@ -1,0 +1,49 @@
+{
+  "schema": 1,
+  "survey_date": "2026-11-08",
+  "sources": [
+    {
+      "name": "FlagGems",
+      "repository": "flagos-ai/FlagGems",
+      "revision": "3f1f896fd90f5db42d167d64fcb9691326071bc2",
+      "source_roots": [
+        "src/flag_gems/"
+      ],
+      "pin_reason": "existing irregular/segmented experiment pin"
+    },
+    {
+      "name": "Liger",
+      "repository": "linkedin/Liger-Kernel",
+      "revision": "e44de705ecc9b43eb33aa35ad10ee9d59a054c3b",
+      "source_roots": [
+        "src/liger_kernel/"
+      ],
+      "pin_reason": "GitHub default branch HEAD queried 2026-11-08"
+    },
+    {
+      "name": "AITER",
+      "repository": "ROCm/aiter",
+      "revision": "ef0a5a26b8cb38ea1308f827985e36cde964a6ab",
+      "source_roots": [
+        "aiter/ops/triton/"
+      ],
+      "pin_reason": "existing RMSNorm experiment pin"
+    },
+    {
+      "name": "TransformerEngine",
+      "repository": "NVIDIA/TransformerEngine",
+      "revision": "c1c2d4d2fa008386f247c2fec56a998e27134e0a",
+      "source_roots": [
+        "transformer_engine/"
+      ],
+      "pin_reason": "existing permutation experiment pin"
+    }
+  ],
+  "scanner_sha256": "39a5b251cbd9d47edf980ee0d57e3d28c97c6a008cc9c7e0e5e156de4f1b8a2c",
+  "cache": "/tmp/semantic-survey-cache",
+  "reproduction": "python3 experiment_notes/semantic_candidate_experiments/semantic_prevalence_survey.py --fetch",
+  "corpus_note": "Production package Python source at the listed roots, including backend forks and JIT helpers; no tests/benchmarks. Pins deliberately reuse previous experiments except Liger. This is not a synchronized current-release survey.",
+  "dedup_note": "Exact AST function body+signature equality after dropping name/decorators/docstring and normalizing imported Triton aliases. Parameter/local renaming, semantic clones, generated specializations and cross-file wrapper expansion are not deduplicated. Raw counts and exact-body counts both reported.",
+  "inference_note": "Source candidates only. JIT definitions include helpers. Return-use means syntactically consumed, not SSA liveness. Dtype is unknown absent manual host review. Invariant load address, mask and other are checked, but memory immutability, physical disjointness, execution safety, compiler misses and profitability are not established. Dynamic imports, rebinding, wrapper-generated kernels, descriptor loads and dynamic kwargs remain incomplete. Same-module calls to atomic helpers are audited separately; primitive source sites are not expanded per caller. All detected primitive sites in these pins resolve imported Triton/Gluon module calls. No explicit sem=None or forwarded-sem primitive was found; support is present in the scanner. Compiler followup is recorded separately with exact bodies and conditional specializations.",
+  "compile_reproduction": "/home/ryandeng/tpaa/.venv-semantic/bin/python experiment_notes/semantic_candidate_experiments/semantic_prevalence_survey.py --compile-shortlist-only"
+}

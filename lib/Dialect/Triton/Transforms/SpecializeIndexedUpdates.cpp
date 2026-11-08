@@ -1,4 +1,5 @@
 #include "mlir/Dialect/Arith/IR/Arith.h"
+#include "mlir/Dialect/SCF/IR/SCF.h"
 #include "mlir/IR/Matchers.h"
 #include "mlir/IR/SymbolTable.h"
 #include "mlir/Interfaces/SideEffectInterfaces.h"
@@ -332,9 +333,98 @@ bool isCompleteKernelBody(FuncOp function) {
   return uses && uses->empty();
 }
 
+// Integer addition modulo 2^32 has an order-independent final value. This
+// permits repeated updates across iterations and atomic sites, even when the
+// original acquire/release operations constrain their cross-location order.
+// Floating-point addition lacks this property and retains the separate,
+// single-site straight-line proof below.
+bool relaxPrivateIntegerAtomics(FuncOp function) {
+  SmallVector<AtomicRMWOp> candidates;
+  function.walk([&](AtomicRMWOp atomic) { candidates.push_back(atomic); });
+  if (candidates.empty())
+    return false;
+  auto destination = pointerRoot(candidates.front().getPtr());
+  if (!destination ||
+      cast<PointerType>(destination.getType()).getAddressSpace() !=
+          PtrAddrSpace::Global ||
+      !argumentFlag(destination, "tt.experimental_private") ||
+      !argumentFlag(destination, "tt.experimental_num_ctas"))
+    return false;
+  auto outputGroup =
+      argumentInteger(destination, "tt.experimental_alias_group");
+  if (!outputGroup || *outputGroup < 0)
+    return false;
+
+  bool changesOrdering = false;
+  for (AtomicRMWOp atomic : candidates) {
+    auto type = dyn_cast<RankedTensorType>(atomic.getType());
+    if (!type || type.getRank() != 1 || !type.getElementType().isInteger(32) ||
+        type.getDimSize(0) <= 0 || atomic.getAtomicRmwOp() != RMWOp::ADD ||
+        atomic.getScope() != MemSyncScope::GPU ||
+        !atomic.getResult().use_empty() ||
+        pointerRoot(atomic.getPtr()) != destination)
+      return false;
+    switch (atomic.getSem()) {
+    case MemSemantic::ACQUIRE:
+    case MemSemantic::RELEASE:
+    case MemSemantic::ACQUIRE_RELEASE:
+      changesOrdering = true;
+      break;
+    case MemSemantic::RELAXED:
+      break;
+    default:
+      return false;
+    }
+  }
+  if (!changesOrdering)
+    return false;
+
+  auto effects = function.walk([&](Operation *op) -> WalkResult {
+    if (op == function.getOperation() || isa<AtomicRMWOp>(op))
+      return WalkResult::advance();
+    // The induction variable may affect addresses, values, masks, and nested
+    // loop bounds. No atomic result or output load can affect this control
+    // flow. Restrict this initial extension to for loops without carried state;
+    // in particular, do not infer pointer roots through loop-carried arguments.
+    if (auto loop = dyn_cast<scf::ForOp>(op))
+      return loop.getNumRegionIterArgs() == 0 ? WalkResult::advance()
+                                              : WalkResult::interrupt();
+    if (op->getNumRegions() != 0 ||
+        isa<CallOp, ElementwiseInlineAsmOp, ExternElementwiseOp>(op))
+      return WalkResult::interrupt();
+    if (auto load = dyn_cast<LoadOp>(op)) {
+      auto root = pointerRoot(load.getPtr());
+      if (load.getIsVolatile() || !root)
+        return WalkResult::interrupt();
+      auto group = argumentInteger(root, "tt.experimental_alias_group");
+      return group && *group >= 0 && *group != *outputGroup
+                 ? WalkResult::advance()
+                 : WalkResult::interrupt();
+    }
+    return isMemoryEffectFree(op) ? WalkResult::advance()
+                                  : WalkResult::interrupt();
+  });
+  if (effects.wasInterrupted())
+    return false;
+
+  // Validate the entire invocation before changing any site. Output accesses
+  // consist exclusively of these unused-result additions; disjoint ordinary
+  // reads cannot observe them. The private contract excludes external partners.
+  // Removing ordering preserves the updates executed and their modular sum,
+  // including overflow. No operation is moved or removed.
+  for (AtomicRMWOp atomic : candidates)
+    atomic.setSem(MemSemantic::RELAXED);
+  function->setAttr(
+      "tt.experimental_private_atomic_relaxed",
+      IntegerAttr::get(IntegerType::get(function.getContext(), 32), 1));
+  return true;
+}
+
 bool relaxPrivateAtomic(FuncOp function) {
   if (!isCompleteKernelBody(function))
     return false;
+  if (relaxPrivateIntegerAtomics(function))
+    return true;
   AtomicRMWOp candidate;
   for (Operation &op : function.getBody().front()) {
     if (auto atomic = dyn_cast<AtomicRMWOp>(op)) {

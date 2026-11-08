@@ -1,0 +1,578 @@
+{
+  "status": "Compile only: no GPU driver initialization, allocation, kernel launch, correctness test, or timing.",
+  "compiler_files": {
+    "/home/ryandeng/tpaa/triton/lib/Dialect/Triton/Transforms/LoopInvariantCodeMotion.cpp": "1884127b12167fc8cd713d5302105dbc21972115cf2074b2896538ff3d40b923",
+    "/home/ryandeng/tpaa/triton/third_party/nvidia/backend/compiler.py": "d1eaf0482966046765543ba0fe705e32c2256f390a0f9678d4a3a92931308d4d",
+    "/home/ryandeng/tpaa/triton/python/triton/_C/libtriton.so": "7ce04279b259aa032acf62c9125a598adf5c20e66b828067d1c7ca458a9c0d19"
+  },
+  "extraction": "Bodies and helper bodies retain exact upstream ASTs; provider wrappers and unused imports are removed, explicit specialization is supplied, and _debug_barrier is bound to upstream-selected tl.debug_barrier. Liger HAS_SOFTCAPPING=False avoids its Ascend-only tanh import. Inspect TTGIR because the native LICM pass runs after TTIR.",
+  "cases": [
+    {
+      "id": "liger_scalar_cross_entropy",
+      "project": "Liger",
+      "path": "src/liger_kernel/ops/backends/_ascend/ops/cross_entropy.py",
+      "function": "liger_cross_entropy_backward_kernel",
+      "revision": "e44de705ecc9b43eb33aa35ad10ee9d59a054c3b",
+      "source_url": "https://github.com/linkedin/Liger-Kernel/blob/e44de705ecc9b43eb33aa35ad10ee9d59a054c3b/src/liger_kernel/ops/backends/_ascend/ops/cross_entropy.py#L378",
+      "source_sha256": "8160cd8bbe9d3cfe091a9cd899847b07397be47bf474992bac63f4ab495f4bb8",
+      "body_ast_sha256": "3fc1dc55cd61c50815a0f04ffcb9580645b6cfd1996848f260cd916aa77a7895",
+      "original_body_ast_equal": true,
+      "signature": {
+        "X_ptr": "*fp32",
+        "X_stride": "i32",
+        "Y_ptr": "*i64",
+        "weight_ptr": "*fp32",
+        "lse_ptr": "*fp32",
+        "grad_output_ptr": "*fp32",
+        "grad_output_stride": "i32",
+        "dX_ptr": "*fp32",
+        "dX_stride": "i32",
+        "n_cols": "i32",
+        "n_rows": "i32",
+        "ce_stats_ptr": "*fp32",
+        "ignore_index": "i32",
+        "lse_square_scale": "constexpr",
+        "label_smoothing": "constexpr",
+        "reduction": "constexpr",
+        "softcap": "fp32",
+        "BLOCK_SIZE": "constexpr",
+        "HAS_WEIGHT": "constexpr",
+        "HAS_SOFTCAPPING": "constexpr"
+      },
+      "constants": {
+        "lse_square_scale": 0.0,
+        "label_smoothing": 0.0,
+        "reduction": "sum",
+        "BLOCK_SIZE": 256,
+        "HAS_WEIGHT": false,
+        "HAS_SOFTCAPPING": false
+      },
+      "immutable_arguments": [
+        "grad_output_ptr"
+      ],
+      "output_arguments": [
+        "dX_ptr"
+      ],
+      "assumptions": "Runtime positive row/column counts and strides; reduction=sum uses scalar upstream gradient. No weight, softcap, smoothing or z-loss. The kernel still has its original dynamic row and column loops. grad_output storage must be initialized and unchanged throughout invocation; disjoint from dX for alias variant.",
+      "target": {
+        "backend": "cuda",
+        "arch": 90,
+        "warp_size": 32
+      },
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1
+      },
+      "variants": {
+        "baseline": {
+          "attributes": {},
+          "ttgir_path": "liger_scalar_cross_entropy.baseline.ttgir",
+          "ttgir_sha256": "555c64f67b530b9cff4740622c29ecfef611da0aa37a65e958b8b8d4448c88c2",
+          "selected_pointer_loads": [
+            {
+              "argument": "grad_output_ptr",
+              "ir_line": 43,
+              "loop_depth": 1,
+              "operation": "%grad_scale = tt.load %grad_output_ptr : !tt.ptr<f32> loc(#loc74)"
+            }
+          ],
+          "selected_loads_inside_loop": 1,
+          "selected_loads_outside_loop": 0,
+          "ttgir_barrier_sites": 0,
+          "shared_bytes": 0,
+          "ptx_sha256": "60646577f5677a9895502b28ee21182bbe03c6bef8a8811cfd72f3bae0f734c0"
+        },
+        "immutable": {
+          "attributes": {
+            "(5,)": [
+              [
+                "tt.experimental_immutable",
+                1
+              ]
+            ]
+          },
+          "ttgir_path": "liger_scalar_cross_entropy.immutable.ttgir",
+          "ttgir_sha256": "7bf3ccc085574fbfd8be88d10f152030a2640aa0b6e99b3b7fa935f7cd142a4a",
+          "selected_pointer_loads": [
+            {
+              "argument": "grad_output_ptr",
+              "ir_line": 37,
+              "loop_depth": 0,
+              "operation": "%grad_scale = tt.load %grad_output_ptr, %0 : !tt.ptr<f32> loc(#loc71)"
+            }
+          ],
+          "selected_loads_inside_loop": 0,
+          "selected_loads_outside_loop": 1,
+          "ttgir_barrier_sites": 0,
+          "shared_bytes": 0,
+          "ptx_sha256": "f2ca3cba3cbf90a1fe261c7d9cf1024110651d90a484d71cdc73628dba22ac1e"
+        },
+        "alias": {
+          "attributes": {
+            "(0,)": [
+              [
+                "tt.experimental_alias_group",
+                0
+              ]
+            ],
+            "(2,)": [
+              [
+                "tt.experimental_alias_group",
+                0
+              ]
+            ],
+            "(3,)": [
+              [
+                "tt.experimental_alias_group",
+                0
+              ]
+            ],
+            "(4,)": [
+              [
+                "tt.experimental_alias_group",
+                0
+              ]
+            ],
+            "(5,)": [
+              [
+                "tt.experimental_alias_group",
+                0
+              ]
+            ],
+            "(7,)": [
+              [
+                "tt.experimental_alias_group",
+                1
+              ]
+            ],
+            "(11,)": [
+              [
+                "tt.experimental_alias_group",
+                0
+              ]
+            ]
+          },
+          "ttgir_path": "liger_scalar_cross_entropy.alias.ttgir",
+          "ttgir_sha256": "4a9a4c8713b5a8184939bbbfaa10a10099a1cde1cb0937338654440a8feeee57",
+          "selected_pointer_loads": [
+            {
+              "argument": "grad_output_ptr",
+              "ir_line": 37,
+              "loop_depth": 0,
+              "operation": "%grad_scale = tt.load %grad_output_ptr, %0 : !tt.ptr<f32> loc(#loc71)"
+            }
+          ],
+          "selected_loads_inside_loop": 0,
+          "selected_loads_outside_loop": 1,
+          "ttgir_barrier_sites": 0,
+          "shared_bytes": 0,
+          "ptx_sha256": "f2ca3cba3cbf90a1fe261c7d9cf1024110651d90a484d71cdc73628dba22ac1e"
+        }
+      },
+      "finding": "The scalar gradient load stays in the baseline row loop and moves before it under either contract, with an entry mask preserving zero-trip behavior."
+    },
+    {
+      "id": "flaggems_ctc_targets",
+      "project": "FlagGems",
+      "path": "src/flag_gems/ops/ctc_loss.py",
+      "function": "_ctc_loss_forward_kernel",
+      "revision": "3f1f896fd90f5db42d167d64fcb9691326071bc2",
+      "source_url": "https://github.com/flagos-ai/FlagGems/blob/3f1f896fd90f5db42d167d64fcb9691326071bc2/src/flag_gems/ops/ctc_loss.py#L69",
+      "source_sha256": "54ff130ab816ef2a610a083ae6239717f6d44d8e7dd3c79b3972454d092da91d",
+      "body_ast_sha256": "0c33561aa2eaa503813bc635c97429ab0bae934187e7aab72ed2b2a684e22ca1",
+      "original_body_ast_equal": true,
+      "signature": {
+        "log_probs": "*fp32",
+        "targets": "*i32",
+        "input_lengths": "*i32",
+        "target_lengths": "*i32",
+        "target_offsets": "*i32",
+        "neg_log_likelihood": "*fp32",
+        "log_alpha": "*fp32",
+        "T": "constexpr",
+        "N": "constexpr",
+        "C": "constexpr",
+        "MAX_TARGET": "constexpr",
+        "STATE_COUNT_MAX": "constexpr",
+        "BLANK": "constexpr",
+        "TARGET_1D": "constexpr",
+        "BLOCK_S": "constexpr"
+      },
+      "constants": {
+        "T": 32,
+        "N": 4,
+        "C": 64,
+        "MAX_TARGET": 16,
+        "STATE_COUNT_MAX": 33,
+        "BLANK": 0,
+        "TARGET_1D": false,
+        "BLOCK_S": 64
+      },
+      "immutable_arguments": [
+        "targets"
+      ],
+      "output_arguments": [
+        "log_alpha",
+        "neg_log_likelihood"
+      ],
+      "assumptions": "Padded 2D int32 targets, N=4, T=32, C=64, max target length16 and state capacity33. Original debug barriers and log_alpha recurrence retained. Valid lengths and initialized targets are caller obligations; targets are disjoint from fresh log_alpha and neg_log_likelihood outputs.",
+      "target": {
+        "backend": "cuda",
+        "arch": 90,
+        "warp_size": 32
+      },
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1
+      },
+      "variants": {
+        "baseline": {
+          "attributes": {},
+          "ttgir_path": "flaggems_ctc_targets.baseline.ttgir",
+          "ttgir_sha256": "95bb65933f9a3095fdc1c731dff90ae610e82c15196e80544b71b969a34453fa",
+          "selected_pointer_loads": [
+            {
+              "argument": "targets",
+              "ir_line": 57,
+              "loop_depth": 0,
+              "operation": "%target_value = tt.load %target_ptrs_20, %target_mask_18, %cst_1 : tensor<64x!tt.ptr<i32>, #blocked> loc(#loc141)"
+            },
+            {
+              "argument": "targets",
+              "ir_line": 108,
+              "loop_depth": 1,
+              "operation": "%prev_target_value_52 = tt.load %prev_target_value_42, %prev_target_value, %cst_1 : tensor<64x!tt.ptr<i32>, #blocked> loc(#loc178)"
+            }
+          ],
+          "selected_loads_inside_loop": 1,
+          "selected_loads_outside_loop": 1,
+          "ttgir_barrier_sites": 3,
+          "shared_bytes": 4,
+          "ptx_sha256": "31da27cffe3612f4b5b2536e38ba6108e046a6fabbf609c675ed841fc448eab1"
+        },
+        "immutable": {
+          "attributes": {
+            "(1,)": [
+              [
+                "tt.experimental_immutable",
+                1
+              ]
+            ]
+          },
+          "ttgir_path": "flaggems_ctc_targets.immutable.ttgir",
+          "ttgir_sha256": "16da613dfeca5717ed610ec12dc601d1710beb6300ee6f0c1536f5de8bdc6e72",
+          "selected_pointer_loads": [
+            {
+              "argument": "targets",
+              "ir_line": 57,
+              "loop_depth": 0,
+              "operation": "%target_value = tt.load %target_ptrs_20, %target_mask_18, %cst_1 : tensor<64x!tt.ptr<i32>, #blocked> loc(#loc141)"
+            },
+            {
+              "argument": "targets",
+              "ir_line": 108,
+              "loop_depth": 1,
+              "operation": "%prev_target_value_52 = tt.load %prev_target_value_42, %prev_target_value, %cst_1 : tensor<64x!tt.ptr<i32>, #blocked> loc(#loc178)"
+            }
+          ],
+          "selected_loads_inside_loop": 1,
+          "selected_loads_outside_loop": 1,
+          "ttgir_barrier_sites": 3,
+          "shared_bytes": 4,
+          "ptx_sha256": "31da27cffe3612f4b5b2536e38ba6108e046a6fabbf609c675ed841fc448eab1"
+        },
+        "alias": {
+          "attributes": {
+            "(0,)": [
+              [
+                "tt.experimental_alias_group",
+                0
+              ]
+            ],
+            "(1,)": [
+              [
+                "tt.experimental_alias_group",
+                0
+              ]
+            ],
+            "(2,)": [
+              [
+                "tt.experimental_alias_group",
+                0
+              ]
+            ],
+            "(3,)": [
+              [
+                "tt.experimental_alias_group",
+                0
+              ]
+            ],
+            "(4,)": [
+              [
+                "tt.experimental_alias_group",
+                0
+              ]
+            ],
+            "(5,)": [
+              [
+                "tt.experimental_alias_group",
+                1
+              ]
+            ],
+            "(6,)": [
+              [
+                "tt.experimental_alias_group",
+                1
+              ]
+            ]
+          },
+          "ttgir_path": "flaggems_ctc_targets.alias.ttgir",
+          "ttgir_sha256": "4a0e37a99aa27dc9daa04fb9b2f3255e40fb9f124010cf94a18e59a6c27b9bf2",
+          "selected_pointer_loads": [
+            {
+              "argument": "targets",
+              "ir_line": 57,
+              "loop_depth": 0,
+              "operation": "%target_value = tt.load %target_ptrs_20, %target_mask_18, %cst_1 : tensor<64x!tt.ptr<i32>, #blocked> loc(#loc141)"
+            },
+            {
+              "argument": "targets",
+              "ir_line": 108,
+              "loop_depth": 1,
+              "operation": "%prev_target_value_52 = tt.load %prev_target_value_42, %prev_target_value, %cst_1 : tensor<64x!tt.ptr<i32>, #blocked> loc(#loc178)"
+            }
+          ],
+          "selected_loads_inside_loop": 1,
+          "selected_loads_outside_loop": 1,
+          "ttgir_barrier_sites": 3,
+          "shared_bytes": 4,
+          "ptx_sha256": "31da27cffe3612f4b5b2536e38ba6108e046a6fabbf609c675ed841fc448eab1"
+        }
+      },
+      "finding": "The timestep-invariant target load remains inside the loop with either contract. Original ttg.barrier appears in that loop. LoopInvariantCodeMotion.cpp::hasOnlyOrdinaryMemoryEffects rejects barriers, so the current implementation cannot use the contract here. Barrier-aware immutable-load motion needs separate legality work."
+    },
+    {
+      "id": "aiter_recurrent_gating",
+      "project": "AITER",
+      "path": "aiter/ops/triton/_triton_kernels/gated_delta_net/decode/fused_sigmoid_gating_recurrent.py",
+      "function": "fused_sigmoid_gating_delta_rule_update_kernel",
+      "revision": "ef0a5a26b8cb38ea1308f827985e36cde964a6ab",
+      "source_url": "https://github.com/ROCm/aiter/blob/ef0a5a26b8cb38ea1308f827985e36cde964a6ab/aiter/ops/triton/_triton_kernels/gated_delta_net/decode/fused_sigmoid_gating_recurrent.py#L47",
+      "source_sha256": "e58e6ad3347877239cc95cefdbaaf736704ee3d93f9bfcd62c83f5c3a0513238",
+      "body_ast_sha256": "58ea2477b0a549b30b64eb960fcf33416dae1ad335be19d5e09b4711681a492e",
+      "original_body_ast_equal": true,
+      "signature": {
+        "A_log": "*fp32",
+        "a": "*fp32",
+        "dt_bias": "*fp32",
+        "softplus_beta": "fp32",
+        "softplus_threshold": "fp32",
+        "q": "*fp32",
+        "k": "*fp32",
+        "v": "*fp32",
+        "b": "*fp32",
+        "o": "*fp32",
+        "h0_source": "*fp32",
+        "h0_indices": "*i32",
+        "cu_seqlens": "*i32",
+        "scale": "fp32",
+        "T": "i32",
+        "B": "constexpr",
+        "H": "constexpr",
+        "HV": "constexpr",
+        "K": "constexpr",
+        "V": "constexpr",
+        "BK": "constexpr",
+        "BV": "constexpr",
+        "USE_INITIAL_STATE": "constexpr",
+        "USE_QK_L2NORM_IN_KERNEL": "constexpr",
+        "IS_VARLEN": "constexpr"
+      },
+      "constants": {
+        "B": 4,
+        "H": 2,
+        "HV": 2,
+        "K": 32,
+        "V": 32,
+        "BK": 32,
+        "BV": 8,
+        "USE_INITIAL_STATE": false,
+        "USE_QK_L2NORM_IN_KERNEL": false,
+        "IS_VARLEN": false
+      },
+      "immutable_arguments": [
+        "A_log",
+        "dt_bias"
+      ],
+      "output_arguments": [
+        "o",
+        "h0_source"
+      ],
+      "assumptions": "Original recurrent body, runtime T, B=4,H=HV=2,K=V=32,BK=32,BV=8; initial state, varlen and L2 normalization disabled. Autotune/heuristic wrappers removed to bind this specialization explicitly. A_log/dt_bias initialized immutable parameters; output o disjoint. No measurements or runtime correctness claims.",
+      "target": {
+        "backend": "cuda",
+        "arch": 90,
+        "warp_size": 32
+      },
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1
+      },
+      "variants": {
+        "baseline": {
+          "attributes": {},
+          "ttgir_path": "aiter_recurrent_gating.baseline.ttgir",
+          "ttgir_sha256": "61afc7265bbae79f22da04863aea86dd59915a408260e31d624eb8a57570d41f",
+          "selected_pointer_loads": [
+            {
+              "argument": "A_log",
+              "ir_line": 93,
+              "loop_depth": 1,
+              "operation": "%b_A_log = tt.load %p_A_log : !tt.ptr<f32> loc(#loc115)"
+            },
+            {
+              "argument": "dt_bias",
+              "ir_line": 95,
+              "loop_depth": 1,
+              "operation": "%b_dt_bias = tt.load %p_dt_bias : !tt.ptr<f32> loc(#loc117)"
+            }
+          ],
+          "selected_loads_inside_loop": 2,
+          "selected_loads_outside_loop": 0,
+          "ttgir_barrier_sites": 0,
+          "shared_bytes": 128,
+          "ptx_sha256": "e41afb6cb0bb4b9cd427755139dca5576ee7d9714e4ac707d3779d06c27a9a05"
+        },
+        "immutable": {
+          "attributes": {
+            "(0,)": [
+              [
+                "tt.experimental_immutable",
+                1
+              ]
+            ],
+            "(2,)": [
+              [
+                "tt.experimental_immutable",
+                1
+              ]
+            ]
+          },
+          "ttgir_path": "aiter_recurrent_gating.immutable.ttgir",
+          "ttgir_sha256": "3c135443db83c850632269821e1fe087eaf7018f4dc9d2c4eff9e65bc9e65d61",
+          "selected_pointer_loads": [
+            {
+              "argument": "A_log",
+              "ir_line": 87,
+              "loop_depth": 0,
+              "operation": "%b_A_log = tt.load %p_A_log, %b_h : !tt.ptr<f32> loc(#loc109)"
+            },
+            {
+              "argument": "dt_bias",
+              "ir_line": 88,
+              "loop_depth": 0,
+              "operation": "%b_dt_bias = tt.load %p_dt_bias, %b_h : !tt.ptr<f32> loc(#loc110)"
+            }
+          ],
+          "selected_loads_inside_loop": 0,
+          "selected_loads_outside_loop": 2,
+          "ttgir_barrier_sites": 0,
+          "shared_bytes": 128,
+          "ptx_sha256": "5cdb96559058d6730c378ad60805feaa7f75bfa2e6e359ee1f010e0a4eceb97d"
+        },
+        "alias": {
+          "attributes": {
+            "(0,)": [
+              [
+                "tt.experimental_alias_group",
+                0
+              ]
+            ],
+            "(1,)": [
+              [
+                "tt.experimental_alias_group",
+                0
+              ]
+            ],
+            "(2,)": [
+              [
+                "tt.experimental_alias_group",
+                0
+              ]
+            ],
+            "(5,)": [
+              [
+                "tt.experimental_alias_group",
+                0
+              ]
+            ],
+            "(6,)": [
+              [
+                "tt.experimental_alias_group",
+                0
+              ]
+            ],
+            "(7,)": [
+              [
+                "tt.experimental_alias_group",
+                0
+              ]
+            ],
+            "(8,)": [
+              [
+                "tt.experimental_alias_group",
+                0
+              ]
+            ],
+            "(9,)": [
+              [
+                "tt.experimental_alias_group",
+                1
+              ]
+            ],
+            "(10,)": [
+              [
+                "tt.experimental_alias_group",
+                1
+              ]
+            ],
+            "(11,)": [
+              [
+                "tt.experimental_alias_group",
+                0
+              ]
+            ],
+            "(12,)": [
+              [
+                "tt.experimental_alias_group",
+                0
+              ]
+            ]
+          },
+          "ttgir_path": "aiter_recurrent_gating.alias.ttgir",
+          "ttgir_sha256": "44755bc7697a9738eac7c96794d0f30abdbe6fd98dc28d071f3d2da8d0a9fd22",
+          "selected_pointer_loads": [
+            {
+              "argument": "A_log",
+              "ir_line": 93,
+              "loop_depth": 1,
+              "operation": "%b_A_log = tt.load %p_A_log : !tt.ptr<f32> loc(#loc115)"
+            },
+            {
+              "argument": "dt_bias",
+              "ir_line": 95,
+              "loop_depth": 1,
+              "operation": "%b_dt_bias = tt.load %p_dt_bias : !tt.ptr<f32> loc(#loc117)"
+            }
+          ],
+          "selected_loads_inside_loop": 2,
+          "selected_loads_outside_loop": 0,
+          "ttgir_barrier_sites": 0,
+          "shared_bytes": 128,
+          "ptx_sha256": "e41afb6cb0bb4b9cd427755139dca5576ee7d9714e4ac707d3779d06c27a9a05"
+        }
+      },
+      "finding": "Both selected scalar loads move before the loop under immutable contracts, with a T>0 entry mask. Alias-only does not move them: function effects include loop-carried read/write pointers, which getEntryArgument deliberately does not trace."
+    }
+  ]
+}

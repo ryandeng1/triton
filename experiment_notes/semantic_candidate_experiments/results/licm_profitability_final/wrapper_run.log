@@ -1,0 +1,5 @@
+{"wrapper_shape": [4096, 4096], "grid": [592], "selected": "optimized", "timing_us": {"original": 12.002999894320965, "compiler": 8.642000146210194, "selected": 8.63800011575222}}
+{"wrapper_shape": [16384, 4096], "grid": [4736], "selected": "baseline", "timing_us": {"original": 42.72549971938133, "compiler": 46.16149887442589, "selected": 42.7124984562397}}
+{"wrapper_shape": [8192, 4096], "grid": [592], "selected": "optimized", "timing_us": {"original": 27.458999305963516, "compiler": 27.065500617027283, "selected": 27.04799920320511}}
+{"wrapper_shape": [32768, 4096], "grid": [4736], "selected": "baseline", "timing_us": {"original": 82.6990008354187, "compiler": 90.38899838924408, "selected": 82.67150074243546}}
+{"wrapper_shape": [4096, 2048], "grid": [4736], "selected": "baseline", "timing_us": {"original": 6.17949990555644, "compiler": 5.289500113576651, "selected": 6.190000101923943}}

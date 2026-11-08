@@ -1,0 +1,742 @@
+{
+  "ncu_version": "2025.3.1.0",
+  "protocol": "Sixth launch after five warm launches; --cache-control none --clock-control none; section replay. NCU timings are diagnostic and not interchangeable with graph benchmark timings. Six inaccessible C2C link metrics are unrelated to this single-GPU kernel.",
+  "profiles": [
+    {
+      "file": "ncu-m16384-n4096-w4-grid32sm-compiler.csv.gz",
+      "sha256": "ad01aab80b674f1928cce9013f52defcc8659756b4c383a07826cce55aa282dd",
+      "metrics": {
+        "duration_ns": {
+          "value": 48288.0,
+          "unit": "ns",
+          "ncu_metric": "gpu__time_duration.sum"
+        },
+        "achieved_occupancy_pct": {
+          "value": 29.04,
+          "unit": "%",
+          "ncu_metric": "sm__warps_active.avg.pct_of_peak_sustained_active"
+        },
+        "eligible_warps_per_scheduler": {
+          "value": 0.38,
+          "unit": "warp",
+          "ncu_metric": "smsp__warps_eligible.avg.per_cycle_active"
+        },
+        "active_warps_per_scheduler": {
+          "value": 4.71,
+          "unit": "warp",
+          "ncu_metric": "smsp__warps_active.avg.per_cycle_active"
+        },
+        "dram_read_bytes": {
+          "value": 134232064.0,
+          "unit": "byte",
+          "ncu_metric": "dram__bytes_read.sum"
+        },
+        "dram_write_bytes": {
+          "value": 132060928.0,
+          "unit": "byte",
+          "ncu_metric": "dram__bytes_write.sum"
+        },
+        "global_load_sectors": {
+          "value": 5406720.0,
+          "unit": "sector",
+          "ncu_metric": "l1tex__t_sectors_pipe_lsu_mem_global_op_ld.sum"
+        },
+        "shared_load_wavefronts": {
+          "value": 1135020.0,
+          "unit": "",
+          "ncu_metric": "l1tex__data_pipe_lsu_wavefronts_mem_shared_op_ld.sum"
+        },
+        "l2_hit_pct": {
+          "value": 0.44,
+          "unit": "%",
+          "ncu_metric": "lts__t_sector_hit_rate.pct"
+        },
+        "barrier_stall_per_issued_instruction": {
+          "value": 1.28,
+          "unit": "inst",
+          "ncu_metric": "smsp__average_warps_issue_stalled_barrier_per_issue_active.ratio"
+        },
+        "long_scoreboard_stall_per_issued_instruction": {
+          "value": 10.27,
+          "unit": "inst",
+          "ncu_metric": "smsp__average_warps_issue_stalled_long_scoreboard_per_issue_active.ratio"
+        },
+        "register_limited_blocks_per_sm": {
+          "value": 5.0,
+          "unit": "block",
+          "ncu_metric": "launch__occupancy_limit_registers"
+        },
+        "shared_memory_limited_blocks_per_sm": {
+          "value": 10.0,
+          "unit": "block",
+          "ncu_metric": "launch__occupancy_limit_shared_mem"
+        },
+        "registers_per_thread": {
+          "value": 94.0,
+          "unit": "register/thread",
+          "ncu_metric": "launch__registers_per_thread"
+        },
+        "allocated_registers_per_thread": {
+          "value": 96.0,
+          "unit": "register/thread",
+          "ncu_metric": "launch__registers_per_thread_allocated"
+        },
+        "l2_cache_bytes": {
+          "value": 132644864.0,
+          "unit": "",
+          "ncu_metric": "device__attribute_l2_cache_size"
+        }
+      },
+      "warnings": [
+        "==WARNING== Note: Running with uncontrolled GPU caches. Profiling results may be inconsistent.",
+        "==WARNING== Note: Running with unmodified GPU clocks. If not controlled otherwise, profiling results may be inconsistent.",
+        "==WARNING== Unable to access the following 6 metrics: ctc__rx_bytes_data_user.sum, ctc__rx_bytes_data_user.sum.pct_of_peak_sustained_elapsed, ctc__rx_bytes_data_user.sum.per_second, ctc__tx_bytes_data_user.sum, ctc__tx_bytes_data_user.sum.pct_of_peak_sustained_elapsed, ctc__tx_bytes_data_user.sum.per_second."
+      ],
+      "compressed_sha256": "1b9eb2830e6e3e5e78d8e4dcfc0cbaec7a8c62969623d52b2bf314e03f40f257"
+    },
+    {
+      "file": "ncu-m16384-n4096-w4-grid32sm-original.csv.gz",
+      "sha256": "867769d999f897a2dccf53555a8bac92386ec1e5be4a298a12fabecd68736f25",
+      "metrics": {
+        "duration_ns": {
+          "value": 44736.0,
+          "unit": "ns",
+          "ncu_metric": "gpu__time_duration.sum"
+        },
+        "achieved_occupancy_pct": {
+          "value": 40.51,
+          "unit": "%",
+          "ncu_metric": "sm__warps_active.avg.pct_of_peak_sustained_active"
+        },
+        "eligible_warps_per_scheduler": {
+          "value": 0.65,
+          "unit": "warp",
+          "ncu_metric": "smsp__warps_eligible.avg.per_cycle_active"
+        },
+        "active_warps_per_scheduler": {
+          "value": 6.49,
+          "unit": "warp",
+          "ncu_metric": "smsp__warps_active.avg.per_cycle_active"
+        },
+        "dram_read_bytes": {
+          "value": 134226944.0,
+          "unit": "byte",
+          "ncu_metric": "dram__bytes_read.sum"
+        },
+        "dram_write_bytes": {
+          "value": 131626752.0,
+          "unit": "byte",
+          "ncu_metric": "dram__bytes_write.sum"
+        },
+        "global_load_sectors": {
+          "value": 8388608.0,
+          "unit": "sector",
+          "ncu_metric": "l1tex__t_sectors_pipe_lsu_mem_global_op_ld.sum"
+        },
+        "shared_load_wavefronts": {
+          "value": 2173099.0,
+          "unit": "",
+          "ncu_metric": "l1tex__data_pipe_lsu_wavefronts_mem_shared_op_ld.sum"
+        },
+        "l2_hit_pct": {
+          "value": 10.1,
+          "unit": "%",
+          "ncu_metric": "lts__t_sector_hit_rate.pct"
+        },
+        "barrier_stall_per_issued_instruction": {
+          "value": 1.26,
+          "unit": "inst",
+          "ncu_metric": "smsp__average_warps_issue_stalled_barrier_per_issue_active.ratio"
+        },
+        "long_scoreboard_stall_per_issued_instruction": {
+          "value": 9.92,
+          "unit": "inst",
+          "ncu_metric": "smsp__average_warps_issue_stalled_long_scoreboard_per_issue_active.ratio"
+        },
+        "register_limited_blocks_per_sm": {
+          "value": 7.0,
+          "unit": "block",
+          "ncu_metric": "launch__occupancy_limit_registers"
+        },
+        "shared_memory_limited_blocks_per_sm": {
+          "value": 7.0,
+          "unit": "block",
+          "ncu_metric": "launch__occupancy_limit_shared_mem"
+        },
+        "registers_per_thread": {
+          "value": 68.0,
+          "unit": "register/thread",
+          "ncu_metric": "launch__registers_per_thread"
+        },
+        "allocated_registers_per_thread": {
+          "value": 72.0,
+          "unit": "register/thread",
+          "ncu_metric": "launch__registers_per_thread_allocated"
+        },
+        "l2_cache_bytes": {
+          "value": 132644864.0,
+          "unit": "",
+          "ncu_metric": "device__attribute_l2_cache_size"
+        }
+      },
+      "warnings": [
+        "==WARNING== Note: Running with uncontrolled GPU caches. Profiling results may be inconsistent.",
+        "==WARNING== Note: Running with unmodified GPU clocks. If not controlled otherwise, profiling results may be inconsistent.",
+        "==WARNING== Unable to access the following 6 metrics: ctc__rx_bytes_data_user.sum, ctc__rx_bytes_data_user.sum.pct_of_peak_sustained_elapsed, ctc__rx_bytes_data_user.sum.per_second, ctc__tx_bytes_data_user.sum, ctc__tx_bytes_data_user.sum.pct_of_peak_sustained_elapsed, ctc__tx_bytes_data_user.sum.per_second."
+      ],
+      "compressed_sha256": "81bedb436de095fc167b83fccbdedce65511e2ea0b1419b9bfd1ff1a6b7b5b4b"
+    },
+    {
+      "file": "ncu-m16384-n4096-w4-grid4sm-compiler.csv.gz",
+      "sha256": "5ff1fdae8473a0a546953d859219486917c57ed0d92c14eeef9516165bdce3c4",
+      "metrics": {
+        "duration_ns": {
+          "value": 53056.0,
+          "unit": "ns",
+          "ncu_metric": "gpu__time_duration.sum"
+        },
+        "achieved_occupancy_pct": {
+          "value": 24.57,
+          "unit": "%",
+          "ncu_metric": "sm__warps_active.avg.pct_of_peak_sustained_active"
+        },
+        "eligible_warps_per_scheduler": {
+          "value": 0.28,
+          "unit": "warp",
+          "ncu_metric": "smsp__warps_eligible.avg.per_cycle_active"
+        },
+        "active_warps_per_scheduler": {
+          "value": 3.91,
+          "unit": "warp",
+          "ncu_metric": "smsp__warps_active.avg.per_cycle_active"
+        },
+        "dram_read_bytes": {
+          "value": 134224384.0,
+          "unit": "byte",
+          "ncu_metric": "dram__bytes_read.sum"
+        },
+        "dram_write_bytes": {
+          "value": 133825792.0,
+          "unit": "byte",
+          "ncu_metric": "dram__bytes_write.sum"
+        },
+        "global_load_sectors": {
+          "value": 4345856.0,
+          "unit": "sector",
+          "ncu_metric": "l1tex__t_sectors_pipe_lsu_mem_global_op_ld.sum"
+        },
+        "shared_load_wavefronts": {
+          "value": 1130296.0,
+          "unit": "",
+          "ncu_metric": "l1tex__data_pipe_lsu_wavefronts_mem_shared_op_ld.sum"
+        },
+        "l2_hit_pct": {
+          "value": 0.23,
+          "unit": "%",
+          "ncu_metric": "lts__t_sector_hit_rate.pct"
+        },
+        "barrier_stall_per_issued_instruction": {
+          "value": 1.26,
+          "unit": "inst",
+          "ncu_metric": "smsp__average_warps_issue_stalled_barrier_per_issue_active.ratio"
+        },
+        "long_scoreboard_stall_per_issued_instruction": {
+          "value": 11.26,
+          "unit": "inst",
+          "ncu_metric": "smsp__average_warps_issue_stalled_long_scoreboard_per_issue_active.ratio"
+        },
+        "register_limited_blocks_per_sm": {
+          "value": 5.0,
+          "unit": "block",
+          "ncu_metric": "launch__occupancy_limit_registers"
+        },
+        "shared_memory_limited_blocks_per_sm": {
+          "value": 10.0,
+          "unit": "block",
+          "ncu_metric": "launch__occupancy_limit_shared_mem"
+        },
+        "registers_per_thread": {
+          "value": 94.0,
+          "unit": "register/thread",
+          "ncu_metric": "launch__registers_per_thread"
+        },
+        "allocated_registers_per_thread": {
+          "value": 96.0,
+          "unit": "register/thread",
+          "ncu_metric": "launch__registers_per_thread_allocated"
+        },
+        "l2_cache_bytes": {
+          "value": 132644864.0,
+          "unit": "",
+          "ncu_metric": "device__attribute_l2_cache_size"
+        }
+      },
+      "warnings": [
+        "==WARNING== Note: Running with uncontrolled GPU caches. Profiling results may be inconsistent.",
+        "==WARNING== Note: Running with unmodified GPU clocks. If not controlled otherwise, profiling results may be inconsistent.",
+        "==WARNING== Unable to access the following 6 metrics: ctc__rx_bytes_data_user.sum, ctc__rx_bytes_data_user.sum.pct_of_peak_sustained_elapsed, ctc__rx_bytes_data_user.sum.per_second, ctc__tx_bytes_data_user.sum, ctc__tx_bytes_data_user.sum.pct_of_peak_sustained_elapsed, ctc__tx_bytes_data_user.sum.per_second."
+      ],
+      "compressed_sha256": "da7129c3ab3a627be78a11481576425ac4788cbb01e516892e1be5b7dafc6237"
+    },
+    {
+      "file": "ncu-m16384-n4096-w4-grid4sm-original.csv.gz",
+      "sha256": "7a3bd7317f4ba397a71a0412b762a2e9be098a25f09d03f0ac36948a1f4d5f6e",
+      "metrics": {
+        "duration_ns": {
+          "value": 53696.0,
+          "unit": "ns",
+          "ncu_metric": "gpu__time_duration.sum"
+        },
+        "achieved_occupancy_pct": {
+          "value": 24.63,
+          "unit": "%",
+          "ncu_metric": "sm__warps_active.avg.pct_of_peak_sustained_active"
+        },
+        "eligible_warps_per_scheduler": {
+          "value": 0.4,
+          "unit": "warp",
+          "ncu_metric": "smsp__warps_eligible.avg.per_cycle_active"
+        },
+        "active_warps_per_scheduler": {
+          "value": 3.93,
+          "unit": "warp",
+          "ncu_metric": "smsp__warps_active.avg.per_cycle_active"
+        },
+        "dram_read_bytes": {
+          "value": 134235136.0,
+          "unit": "byte",
+          "ncu_metric": "dram__bytes_read.sum"
+        },
+        "dram_write_bytes": {
+          "value": 133918720.0,
+          "unit": "byte",
+          "ncu_metric": "dram__bytes_write.sum"
+        },
+        "global_load_sectors": {
+          "value": 8388608.0,
+          "unit": "sector",
+          "ncu_metric": "l1tex__t_sectors_pipe_lsu_mem_global_op_ld.sum"
+        },
+        "shared_load_wavefronts": {
+          "value": 2162688.0,
+          "unit": "",
+          "ncu_metric": "l1tex__data_pipe_lsu_wavefronts_mem_shared_op_ld.sum"
+        },
+        "l2_hit_pct": {
+          "value": 12.0,
+          "unit": "%",
+          "ncu_metric": "lts__t_sector_hit_rate.pct"
+        },
+        "barrier_stall_per_issued_instruction": {
+          "value": 0.85,
+          "unit": "inst",
+          "ncu_metric": "smsp__average_warps_issue_stalled_barrier_per_issue_active.ratio"
+        },
+        "long_scoreboard_stall_per_issued_instruction": {
+          "value": 7.81,
+          "unit": "inst",
+          "ncu_metric": "smsp__average_warps_issue_stalled_long_scoreboard_per_issue_active.ratio"
+        },
+        "register_limited_blocks_per_sm": {
+          "value": 7.0,
+          "unit": "block",
+          "ncu_metric": "launch__occupancy_limit_registers"
+        },
+        "shared_memory_limited_blocks_per_sm": {
+          "value": 7.0,
+          "unit": "block",
+          "ncu_metric": "launch__occupancy_limit_shared_mem"
+        },
+        "registers_per_thread": {
+          "value": 68.0,
+          "unit": "register/thread",
+          "ncu_metric": "launch__registers_per_thread"
+        },
+        "allocated_registers_per_thread": {
+          "value": 72.0,
+          "unit": "register/thread",
+          "ncu_metric": "launch__registers_per_thread_allocated"
+        },
+        "l2_cache_bytes": {
+          "value": 132644864.0,
+          "unit": "",
+          "ncu_metric": "device__attribute_l2_cache_size"
+        }
+      },
+      "warnings": [
+        "==WARNING== Note: Running with uncontrolled GPU caches. Profiling results may be inconsistent.",
+        "==WARNING== Note: Running with unmodified GPU clocks. If not controlled otherwise, profiling results may be inconsistent.",
+        "==WARNING== Unable to access the following 6 metrics: ctc__rx_bytes_data_user.sum, ctc__rx_bytes_data_user.sum.pct_of_peak_sustained_elapsed, ctc__rx_bytes_data_user.sum.per_second, ctc__tx_bytes_data_user.sum, ctc__tx_bytes_data_user.sum.pct_of_peak_sustained_elapsed, ctc__tx_bytes_data_user.sum.per_second."
+      ],
+      "compressed_sha256": "8b2c38a8bf05ae3da95235a624cb23d9ae00545fc839766c03fd3632c286c5d9"
+    },
+    {
+      "file": "ncu-m4096-n4096-w4-grid32sm-compiler.csv.gz",
+      "sha256": "347c2ce2efd53fb30a6082b6a91fb36ded88fec4044cc88247ccb902aae5f11f",
+      "metrics": {
+        "duration_ns": {
+          "value": 12096.0,
+          "unit": "ns",
+          "ncu_metric": "gpu__time_duration.sum"
+        },
+        "achieved_occupancy_pct": {
+          "value": 26.38,
+          "unit": "%",
+          "ncu_metric": "sm__warps_active.avg.pct_of_peak_sustained_active"
+        },
+        "eligible_warps_per_scheduler": {
+          "value": 1.03,
+          "unit": "warp",
+          "ncu_metric": "smsp__warps_eligible.avg.per_cycle_active"
+        },
+        "active_warps_per_scheduler": {
+          "value": 4.22,
+          "unit": "warp",
+          "ncu_metric": "smsp__warps_active.avg.per_cycle_active"
+        },
+        "dram_read_bytes": {
+          "value": 4305920.0,
+          "unit": "byte",
+          "ncu_metric": "dram__bytes_read.sum"
+        },
+        "dram_write_bytes": {
+          "value": 4880896.0,
+          "unit": "byte",
+          "ncu_metric": "dram__bytes_write.sum"
+        },
+        "global_load_sectors": {
+          "value": 2097152.0,
+          "unit": "sector",
+          "ncu_metric": "l1tex__t_sectors_pipe_lsu_mem_global_op_ld.sum"
+        },
+        "shared_load_wavefronts": {
+          "value": 285304.0,
+          "unit": "",
+          "ncu_metric": "l1tex__data_pipe_lsu_wavefronts_mem_shared_op_ld.sum"
+        },
+        "l2_hit_pct": {
+          "value": 86.01,
+          "unit": "%",
+          "ncu_metric": "lts__t_sector_hit_rate.pct"
+        },
+        "barrier_stall_per_issued_instruction": {
+          "value": 0.61,
+          "unit": "inst",
+          "ncu_metric": "smsp__average_warps_issue_stalled_barrier_per_issue_active.ratio"
+        },
+        "long_scoreboard_stall_per_issued_instruction": {
+          "value": 1.93,
+          "unit": "inst",
+          "ncu_metric": "smsp__average_warps_issue_stalled_long_scoreboard_per_issue_active.ratio"
+        },
+        "register_limited_blocks_per_sm": {
+          "value": 5.0,
+          "unit": "block",
+          "ncu_metric": "launch__occupancy_limit_registers"
+        },
+        "shared_memory_limited_blocks_per_sm": {
+          "value": 10.0,
+          "unit": "block",
+          "ncu_metric": "launch__occupancy_limit_shared_mem"
+        },
+        "registers_per_thread": {
+          "value": 94.0,
+          "unit": "register/thread",
+          "ncu_metric": "launch__registers_per_thread"
+        },
+        "allocated_registers_per_thread": {
+          "value": 96.0,
+          "unit": "register/thread",
+          "ncu_metric": "launch__registers_per_thread_allocated"
+        },
+        "l2_cache_bytes": {
+          "value": 132644864.0,
+          "unit": "",
+          "ncu_metric": "device__attribute_l2_cache_size"
+        }
+      },
+      "warnings": [
+        "==WARNING== Note: Running with uncontrolled GPU caches. Profiling results may be inconsistent.",
+        "==WARNING== Note: Running with unmodified GPU clocks. If not controlled otherwise, profiling results may be inconsistent.",
+        "==WARNING== Unable to access the following 6 metrics: ctc__rx_bytes_data_user.sum, ctc__rx_bytes_data_user.sum.pct_of_peak_sustained_elapsed, ctc__rx_bytes_data_user.sum.per_second, ctc__tx_bytes_data_user.sum, ctc__tx_bytes_data_user.sum.pct_of_peak_sustained_elapsed, ctc__tx_bytes_data_user.sum.per_second."
+      ],
+      "compressed_sha256": "0f1ab53d5514965db19c83e637e8fe7c41f97b81fb4a717ff6ea304a9207150e"
+    },
+    {
+      "file": "ncu-m4096-n4096-w4-grid32sm-original.csv.gz",
+      "sha256": "9cbc5397586d34c397197dd4f438b2953c418d1fb5e000f026d0b514fde74659",
+      "metrics": {
+        "duration_ns": {
+          "value": 12128.0,
+          "unit": "ns",
+          "ncu_metric": "gpu__time_duration.sum"
+        },
+        "achieved_occupancy_pct": {
+          "value": 38.27,
+          "unit": "%",
+          "ncu_metric": "sm__warps_active.avg.pct_of_peak_sustained_active"
+        },
+        "eligible_warps_per_scheduler": {
+          "value": 1.43,
+          "unit": "warp",
+          "ncu_metric": "smsp__warps_eligible.avg.per_cycle_active"
+        },
+        "active_warps_per_scheduler": {
+          "value": 6.08,
+          "unit": "warp",
+          "ncu_metric": "smsp__warps_active.avg.per_cycle_active"
+        },
+        "dram_read_bytes": {
+          "value": 5408512.0,
+          "unit": "byte",
+          "ncu_metric": "dram__bytes_read.sum"
+        },
+        "dram_write_bytes": {
+          "value": 6683648.0,
+          "unit": "byte",
+          "ncu_metric": "dram__bytes_write.sum"
+        },
+        "global_load_sectors": {
+          "value": 2097152.0,
+          "unit": "sector",
+          "ncu_metric": "l1tex__t_sectors_pipe_lsu_mem_global_op_ld.sum"
+        },
+        "shared_load_wavefronts": {
+          "value": 547218.0,
+          "unit": "",
+          "ncu_metric": "l1tex__data_pipe_lsu_wavefronts_mem_shared_op_ld.sum"
+        },
+        "l2_hit_pct": {
+          "value": 87.67,
+          "unit": "%",
+          "ncu_metric": "lts__t_sector_hit_rate.pct"
+        },
+        "barrier_stall_per_issued_instruction": {
+          "value": 0.83,
+          "unit": "inst",
+          "ncu_metric": "smsp__average_warps_issue_stalled_barrier_per_issue_active.ratio"
+        },
+        "long_scoreboard_stall_per_issued_instruction": {
+          "value": 2.46,
+          "unit": "inst",
+          "ncu_metric": "smsp__average_warps_issue_stalled_long_scoreboard_per_issue_active.ratio"
+        },
+        "register_limited_blocks_per_sm": {
+          "value": 7.0,
+          "unit": "block",
+          "ncu_metric": "launch__occupancy_limit_registers"
+        },
+        "shared_memory_limited_blocks_per_sm": {
+          "value": 7.0,
+          "unit": "block",
+          "ncu_metric": "launch__occupancy_limit_shared_mem"
+        },
+        "registers_per_thread": {
+          "value": 68.0,
+          "unit": "register/thread",
+          "ncu_metric": "launch__registers_per_thread"
+        },
+        "allocated_registers_per_thread": {
+          "value": 72.0,
+          "unit": "register/thread",
+          "ncu_metric": "launch__registers_per_thread_allocated"
+        },
+        "l2_cache_bytes": {
+          "value": 132644864.0,
+          "unit": "",
+          "ncu_metric": "device__attribute_l2_cache_size"
+        }
+      },
+      "warnings": [
+        "==WARNING== Note: Running with uncontrolled GPU caches. Profiling results may be inconsistent.",
+        "==WARNING== Note: Running with unmodified GPU clocks. If not controlled otherwise, profiling results may be inconsistent.",
+        "==WARNING== Unable to access the following 6 metrics: ctc__rx_bytes_data_user.sum, ctc__rx_bytes_data_user.sum.pct_of_peak_sustained_elapsed, ctc__rx_bytes_data_user.sum.per_second, ctc__tx_bytes_data_user.sum, ctc__tx_bytes_data_user.sum.pct_of_peak_sustained_elapsed, ctc__tx_bytes_data_user.sum.per_second."
+      ],
+      "compressed_sha256": "761a4bf40816fb3a36f9b47160a948e3b3cef88b27f5f0e1097e85f06fb98b5b"
+    },
+    {
+      "file": "ncu-m4096-n4096-w4-grid4sm-compiler.csv.gz",
+      "sha256": "333326218ba44bfe8fd042b20b1322b818d202d9f0a20133e026c01edab6b898",
+      "metrics": {
+        "duration_ns": {
+          "value": 11424.0,
+          "unit": "ns",
+          "ncu_metric": "gpu__time_duration.sum"
+        },
+        "achieved_occupancy_pct": {
+          "value": 23.82,
+          "unit": "%",
+          "ncu_metric": "sm__warps_active.avg.pct_of_peak_sustained_active"
+        },
+        "eligible_warps_per_scheduler": {
+          "value": 0.61,
+          "unit": "warp",
+          "ncu_metric": "smsp__warps_eligible.avg.per_cycle_active"
+        },
+        "active_warps_per_scheduler": {
+          "value": 3.8,
+          "unit": "warp",
+          "ncu_metric": "smsp__warps_active.avg.per_cycle_active"
+        },
+        "dram_read_bytes": {
+          "value": 2181120.0,
+          "unit": "byte",
+          "ncu_metric": "dram__bytes_read.sum"
+        },
+        "dram_write_bytes": {
+          "value": 3568896.0,
+          "unit": "byte",
+          "ncu_metric": "dram__bytes_write.sum"
+        },
+        "global_load_sectors": {
+          "value": 1200128.0,
+          "unit": "sector",
+          "ncu_metric": "l1tex__t_sectors_pipe_lsu_mem_global_op_ld.sum"
+        },
+        "shared_load_wavefronts": {
+          "value": 289359.0,
+          "unit": "",
+          "ncu_metric": "l1tex__data_pipe_lsu_wavefronts_mem_shared_op_ld.sum"
+        },
+        "l2_hit_pct": {
+          "value": 97.08,
+          "unit": "%",
+          "ncu_metric": "lts__t_sector_hit_rate.pct"
+        },
+        "barrier_stall_per_issued_instruction": {
+          "value": 0.56,
+          "unit": "inst",
+          "ncu_metric": "smsp__average_warps_issue_stalled_barrier_per_issue_active.ratio"
+        },
+        "long_scoreboard_stall_per_issued_instruction": {
+          "value": 3.09,
+          "unit": "inst",
+          "ncu_metric": "smsp__average_warps_issue_stalled_long_scoreboard_per_issue_active.ratio"
+        },
+        "register_limited_blocks_per_sm": {
+          "value": 5.0,
+          "unit": "block",
+          "ncu_metric": "launch__occupancy_limit_registers"
+        },
+        "shared_memory_limited_blocks_per_sm": {
+          "value": 10.0,
+          "unit": "block",
+          "ncu_metric": "launch__occupancy_limit_shared_mem"
+        },
+        "registers_per_thread": {
+          "value": 94.0,
+          "unit": "register/thread",
+          "ncu_metric": "launch__registers_per_thread"
+        },
+        "allocated_registers_per_thread": {
+          "value": 96.0,
+          "unit": "register/thread",
+          "ncu_metric": "launch__registers_per_thread_allocated"
+        },
+        "l2_cache_bytes": {
+          "value": 132644864.0,
+          "unit": "",
+          "ncu_metric": "device__attribute_l2_cache_size"
+        }
+      },
+      "warnings": [
+        "==WARNING== Note: Running with uncontrolled GPU caches. Profiling results may be inconsistent.",
+        "==WARNING== Note: Running with unmodified GPU clocks. If not controlled otherwise, profiling results may be inconsistent.",
+        "==WARNING== Unable to access the following 6 metrics: ctc__rx_bytes_data_user.sum, ctc__rx_bytes_data_user.sum.pct_of_peak_sustained_elapsed, ctc__rx_bytes_data_user.sum.per_second, ctc__tx_bytes_data_user.sum, ctc__tx_bytes_data_user.sum.pct_of_peak_sustained_elapsed, ctc__tx_bytes_data_user.sum.per_second."
+      ],
+      "compressed_sha256": "7f40ff88d8b5db238a0c3471018b30763900e8b94604a8b77395ca1a8ca2fe85"
+    },
+    {
+      "file": "ncu-m4096-n4096-w4-grid4sm-original.csv.gz",
+      "sha256": "91da75b230c04d4f88b85d60ad7ca33a943736a846324fc34300d5d66e675546",
+      "metrics": {
+        "duration_ns": {
+          "value": 13120.0,
+          "unit": "ns",
+          "ncu_metric": "gpu__time_duration.sum"
+        },
+        "achieved_occupancy_pct": {
+          "value": 23.53,
+          "unit": "%",
+          "ncu_metric": "sm__warps_active.avg.pct_of_peak_sustained_active"
+        },
+        "eligible_warps_per_scheduler": {
+          "value": 0.72,
+          "unit": "warp",
+          "ncu_metric": "smsp__warps_eligible.avg.per_cycle_active"
+        },
+        "active_warps_per_scheduler": {
+          "value": 3.75,
+          "unit": "warp",
+          "ncu_metric": "smsp__warps_active.avg.per_cycle_active"
+        },
+        "dram_read_bytes": {
+          "value": 2109184.0,
+          "unit": "byte",
+          "ncu_metric": "dram__bytes_read.sum"
+        },
+        "dram_write_bytes": {
+          "value": 3514880.0,
+          "unit": "byte",
+          "ncu_metric": "dram__bytes_write.sum"
+        },
+        "global_load_sectors": {
+          "value": 2097152.0,
+          "unit": "sector",
+          "ncu_metric": "l1tex__t_sectors_pipe_lsu_mem_global_op_ld.sum"
+        },
+        "shared_load_wavefronts": {
+          "value": 540672.0,
+          "unit": "",
+          "ncu_metric": "l1tex__data_pipe_lsu_wavefronts_mem_shared_op_ld.sum"
+        },
+        "l2_hit_pct": {
+          "value": 97.42,
+          "unit": "%",
+          "ncu_metric": "lts__t_sector_hit_rate.pct"
+        },
+        "barrier_stall_per_issued_instruction": {
+          "value": 0.52,
+          "unit": "inst",
+          "ncu_metric": "smsp__average_warps_issue_stalled_barrier_per_issue_active.ratio"
+        },
+        "long_scoreboard_stall_per_issued_instruction": {
+          "value": 2.36,
+          "unit": "inst",
+          "ncu_metric": "smsp__average_warps_issue_stalled_long_scoreboard_per_issue_active.ratio"
+        },
+        "register_limited_blocks_per_sm": {
+          "value": 7.0,
+          "unit": "block",
+          "ncu_metric": "launch__occupancy_limit_registers"
+        },
+        "shared_memory_limited_blocks_per_sm": {
+          "value": 7.0,
+          "unit": "block",
+          "ncu_metric": "launch__occupancy_limit_shared_mem"
+        },
+        "registers_per_thread": {
+          "value": 68.0,
+          "unit": "register/thread",
+          "ncu_metric": "launch__registers_per_thread"
+        },
+        "allocated_registers_per_thread": {
+          "value": 72.0,
+          "unit": "register/thread",
+          "ncu_metric": "launch__registers_per_thread_allocated"
+        },
+        "l2_cache_bytes": {
+          "value": 132644864.0,
+          "unit": "",
+          "ncu_metric": "device__attribute_l2_cache_size"
+        }
+      },
+      "warnings": [
+        "==WARNING== Note: Running with uncontrolled GPU caches. Profiling results may be inconsistent.",
+        "==WARNING== Note: Running with unmodified GPU clocks. If not controlled otherwise, profiling results may be inconsistent.",
+        "==WARNING== Unable to access the following 6 metrics: ctc__rx_bytes_data_user.sum, ctc__rx_bytes_data_user.sum.pct_of_peak_sustained_elapsed, ctc__rx_bytes_data_user.sum.per_second, ctc__tx_bytes_data_user.sum, ctc__tx_bytes_data_user.sum.pct_of_peak_sustained_elapsed, ctc__tx_bytes_data_user.sum.per_second."
+      ],
+      "compressed_sha256": "b6210d007527003b0eb23917f0af710491616f8cff49bdc47e71fefe7d647b44"
+    }
+  ]
+}

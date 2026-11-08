@@ -1,0 +1,285 @@
+{
+  "projects": [
+    {
+      "project": "FlagGems",
+      "counts": {
+        "python_files": 4111,
+        "jit_definitions_including_helpers": 11280,
+        "loops_in_jit_definitions": 7583,
+        "loops_containing_direct_store": 2838,
+        "load_loop_pairs_with_direct_store": 7612,
+        "address_invariant_load_loop_pairs": 214,
+        "address_mask_other_invariant_load_loop_pairs": 192,
+        "volatile_or_unknown_volatile_rejections": 6,
+        "exact_unique_python_files": 4051,
+        "exact_unique_jit_bodies": 8629,
+        "parse_failures": 0,
+        "atomic_add_sites": 686,
+        "exact_unique_body_atomic_sites": 608,
+        "functions_with_atomic_add": 401,
+        "exact_unique_bodies_with_atomic_add": 345,
+        "licm_source_candidate_pairs": 183,
+        "licm_source_candidate_load_sites": 180,
+        "licm_source_candidate_functions": 110,
+        "exact_unique_licm_candidate_pairs": 166,
+        "exact_unique_licm_candidate_bodies": 96,
+        "atomic_add_non_triton_or_unresolved": 0,
+        "default_sem_unused_result_sites": 269,
+        "default_sem_unused_result_inside_loop_sites": 58,
+        "default_sem_unused_result_in_multiple_atomic_functions": 114,
+        "exact_unique_default_unused_sites": 235,
+        "same_module_calls_to_atomic_helpers": 48,
+        "same_module_calls_to_atomic_helpers_inside_loop": 33
+      },
+      "sem_categories": {
+        "explicit:relaxed": 333,
+        "omitted": 297,
+        "explicit:acq_rel": 22,
+        "explicit:acquire": 17,
+        "explicit:release": 17
+      },
+      "origin_categories": {
+        "resolved_module": 686
+      },
+      "return_categories": {
+        "unused_expression": 568,
+        "consumed_syntactically": 118
+      },
+      "region_atomic_counts": {
+        "generic": 215,
+        "backend:_arm": 1,
+        "backend:_ascend": 35,
+        "backend:_cambricon": 67,
+        "backend:_enflame": 64,
+        "backend:_hygon": 29,
+        "backend:_iluvatar": 57,
+        "backend:_kunlunxin": 24,
+        "backend:_metax": 28,
+        "backend:_mthreads": 54,
+        "backend:_nvidia": 8,
+        "backend:_sunrise": 39,
+        "backend:_thead": 53,
+        "backend:_tsingmicro": 12
+      },
+      "scope_categories": {
+        "explicit:cta": 69,
+        "omitted": 611,
+        "explicit:gpu": 6
+      },
+      "default_unused_atomic_region_counts": {
+        "generic": 91,
+        "backend:_arm": 1,
+        "backend:_ascend": 18,
+        "backend:_cambricon": 23,
+        "backend:_enflame": 19,
+        "backend:_hygon": 11,
+        "backend:_iluvatar": 23,
+        "backend:_kunlunxin": 20,
+        "backend:_metax": 14,
+        "backend:_mthreads": 12,
+        "backend:_nvidia": 7,
+        "backend:_sunrise": 10,
+        "backend:_thead": 13,
+        "backend:_tsingmicro": 7
+      },
+      "licm_candidate_region_counts": {
+        "generic": 62,
+        "backend:_ascend": 41,
+        "backend:_cambricon": 16,
+        "backend:_enflame": 11,
+        "backend:_hygon": 3,
+        "backend:_iluvatar": 5,
+        "backend:_kunlunxin": 18,
+        "backend:_metax": 5,
+        "backend:_mthreads": 3,
+        "backend:_sunrise": 7,
+        "backend:_thead": 11,
+        "backend:_tsingmicro": 1
+      },
+      "dtype_status": "Destination dtype unknown globally; manually reviewed integer destinations are identified in shortlist.json."
+    },
+    {
+      "project": "Liger",
+      "counts": {
+        "python_files": 286,
+        "jit_definitions_including_helpers": 200,
+        "loops_in_jit_definitions": 279,
+        "loops_containing_direct_store": 165,
+        "load_loop_pairs_with_direct_store": 423,
+        "address_invariant_load_loop_pairs": 11,
+        "address_mask_other_invariant_load_loop_pairs": 11,
+        "exact_unique_python_files": 286,
+        "exact_unique_jit_bodies": 196,
+        "parse_failures": 0,
+        "atomic_add_sites": 37,
+        "exact_unique_body_atomic_sites": 34,
+        "functions_with_atomic_add": 23,
+        "exact_unique_bodies_with_atomic_add": 21,
+        "licm_source_candidate_pairs": 11,
+        "licm_source_candidate_load_sites": 11,
+        "licm_source_candidate_functions": 7,
+        "exact_unique_licm_candidate_pairs": 11,
+        "exact_unique_licm_candidate_bodies": 7,
+        "atomic_add_non_triton_or_unresolved": 6,
+        "default_sem_unused_result_sites": 34,
+        "default_sem_unused_result_inside_loop_sites": 16,
+        "default_sem_unused_result_in_multiple_atomic_functions": 22,
+        "exact_unique_default_unused_sites": 31,
+        "same_module_calls_to_atomic_helpers": 0,
+        "same_module_calls_to_atomic_helpers_inside_loop": 0
+      },
+      "sem_categories": {
+        "omitted": 35,
+        "explicit:relaxed": 2
+      },
+      "origin_categories": {
+        "resolved_module": 37
+      },
+      "return_categories": {
+        "unused_expression": 36,
+        "consumed_syntactically": 1
+      },
+      "region_atomic_counts": {
+        "generic": 13,
+        "backend:_ascend": 24
+      },
+      "scope_categories": {
+        "omitted": 37
+      },
+      "default_unused_atomic_region_counts": {
+        "generic": 11,
+        "backend:_ascend": 23
+      },
+      "licm_candidate_region_counts": {
+        "backend:_ascend": 11
+      },
+      "dtype_status": "Destination dtype unknown globally; manually reviewed integer destinations are identified in shortlist.json."
+    },
+    {
+      "project": "AITER",
+      "counts": {
+        "python_files": 481,
+        "jit_definitions_including_helpers": 1376,
+        "loops_in_jit_definitions": 752,
+        "loops_containing_direct_store": 188,
+        "load_loop_pairs_with_direct_store": 684,
+        "address_invariant_load_loop_pairs": 55,
+        "address_mask_other_invariant_load_loop_pairs": 55,
+        "exact_unique_python_files": 455,
+        "exact_unique_jit_bodies": 1305,
+        "parse_failures": 0,
+        "atomic_add_sites": 30,
+        "exact_unique_body_atomic_sites": 30,
+        "functions_with_atomic_add": 25,
+        "exact_unique_bodies_with_atomic_add": 25,
+        "licm_source_candidate_pairs": 55,
+        "licm_source_candidate_load_sites": 55,
+        "licm_source_candidate_functions": 19,
+        "exact_unique_licm_candidate_pairs": 55,
+        "exact_unique_licm_candidate_bodies": 19,
+        "atomic_add_non_triton_or_unresolved": 0,
+        "default_sem_unused_result_sites": 4,
+        "default_sem_unused_result_inside_loop_sites": 0,
+        "default_sem_unused_result_in_multiple_atomic_functions": 0,
+        "exact_unique_default_unused_sites": 4,
+        "same_module_calls_to_atomic_helpers": 10,
+        "same_module_calls_to_atomic_helpers_inside_loop": 5
+      },
+      "sem_categories": {
+        "omitted": 6,
+        "explicit:relaxed": 21,
+        "explicit:acq_rel": 2,
+        "explicit:release": 1
+      },
+      "origin_categories": {
+        "resolved_module": 30
+      },
+      "return_categories": {
+        "unused_expression": 24,
+        "consumed_syntactically": 6
+      },
+      "region_atomic_counts": {
+        "gluon": 1,
+        "generic": 29
+      },
+      "scope_categories": {
+        "omitted": 24,
+        "explicit:cta": 1,
+        "explicit:gpu": 5
+      },
+      "default_unused_atomic_region_counts": {
+        "gluon": 1,
+        "generic": 3
+      },
+      "licm_candidate_region_counts": {
+        "generic": 55
+      },
+      "dtype_status": "Destination dtype unknown globally; manually reviewed integer destinations are identified in shortlist.json."
+    },
+    {
+      "project": "TransformerEngine",
+      "counts": {
+        "python_files": 232,
+        "jit_definitions_including_helpers": 34,
+        "loops_in_jit_definitions": 22,
+        "loops_containing_direct_store": 12,
+        "load_loop_pairs_with_direct_store": 30,
+        "address_invariant_load_loop_pairs": 1,
+        "address_mask_other_invariant_load_loop_pairs": 1,
+        "exact_unique_python_files": 232,
+        "exact_unique_jit_bodies": 34,
+        "parse_failures": 0,
+        "atomic_add_sites": 13,
+        "exact_unique_body_atomic_sites": 13,
+        "functions_with_atomic_add": 7,
+        "exact_unique_bodies_with_atomic_add": 7,
+        "licm_source_candidate_pairs": 1,
+        "licm_source_candidate_load_sites": 1,
+        "licm_source_candidate_functions": 1,
+        "exact_unique_licm_candidate_pairs": 1,
+        "exact_unique_licm_candidate_bodies": 1,
+        "atomic_add_non_triton_or_unresolved": 0,
+        "default_sem_unused_result_sites": 4,
+        "default_sem_unused_result_inside_loop_sites": 1,
+        "default_sem_unused_result_in_multiple_atomic_functions": 2,
+        "exact_unique_default_unused_sites": 4,
+        "same_module_calls_to_atomic_helpers": 0,
+        "same_module_calls_to_atomic_helpers_inside_loop": 0
+      },
+      "sem_categories": {
+        "omitted": 4,
+        "explicit:relaxed": 9
+      },
+      "origin_categories": {
+        "resolved_module": 13
+      },
+      "return_categories": {
+        "unused_expression": 13
+      },
+      "region_atomic_counts": {
+        "generic": 13
+      },
+      "scope_categories": {
+        "omitted": 13
+      },
+      "default_unused_atomic_region_counts": {
+        "generic": 4
+      },
+      "licm_candidate_region_counts": {
+        "generic": 1
+      },
+      "dtype_status": "Destination dtype unknown globally; manually reviewed integer destinations are identified in shortlist.json."
+    }
+  ],
+  "funnel": {
+    "source_atomic_default_unused_sites": 311,
+    "source_licm_candidate_pairs": 250,
+    "contracts_established": null,
+    "profitable_cases": null,
+    "status": "Three selected LICM bodies compiled for explicit CUDA sm90 specializations. Contracts are stated preconditions, not runtime-validated allocation/immutability proofs. No followup kernel launches or timings. Atomic-loop validation belongs to the separate parent experiment.",
+    "compiled_candidates_checked": 3,
+    "compiled_kernels_with_selected_loads_remaining_in_loop": 3,
+    "compiled_invariant_load_sites_remaining_in_loop": 4,
+    "compiled_kernels_improved_under_explicit_immutable_contract": 2
+  }
+}

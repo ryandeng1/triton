@@ -1,0 +1,36 @@
+{
+  "scope": "AITER pinned forward RMSNorm, BF16, persistent nonblocked path; B300 SM103. 22 configs x 3 seeds, 15 shuffled paired graph rounds/seed, 64 repetitions/graph. Full FP64 oracle and bitwise equivalence, guards, unchanged inputs, shared timed output addresses all passed.",
+  "baseline_and_transformed_source": "Same extracted source; gamma pointer marked tt.experimental_immutable only in transformed compilation. No native compiler edits.",
+  "mechanism": {
+    "resource_effect": "Width4096/4warps:68->94 registers (72->96 physically allocated), dynamic shared16400->8208 bytes, zero spills, CUDA residency7->5 CTAs/SM. Both variants still have3static bar.sync sites and2cp.async.wait sites. Static async-copy sites16->8; shared-load work approximately halves.",
+    "losing_case": "16384x4096/grid4736: graph baseline/native ratio0.9261; achieved occupancy40.51%->29.04%, eligible warps/scheduler0.65->0.38. DRAM reads134226944->134232064 bytes, while global-load sectors8388608->5406720. This supports an occupancy/latency-hiding tradeoff: removed gamma traffic was already cached.",
+    "controlled_grid_case": "16384x4096/grid592: same compiled kernels and resource limits, but both achieved occupancies about24.6%; ratio1.0186. Grid limits active residency to4CTAs/SM, so register-induced theoretical drop7->5 no longer lowers achieved occupancy.",
+    "small_winning_case": "4096x4096/grid592: graph ratio1.3676; achieved occupancy23.53%->23.82%; L2hit97.42%->97.08%. On-chip work reduction matters while effective occupancy is unchanged.",
+    "limitations": "Evidence supports this mechanism but does not establish a universal causal model. Cache residency, issue behavior and software pipelining interact. A register threshold alone cannot distinguish profitable and losing shapes."
+  },
+  "guard": {
+    "definition": "accept iff no spills and (CUDA API blocks/SM does not decrease OR nonempty CTAs/SM <= transformed blocks/SM)",
+    "training": {
+      "configurations": 12,
+      "accepted_regressions": 0,
+      "declined_gains": 4
+    },
+    "heldout": {
+      "configurations": 10,
+      "accepted_regressions": 0,
+      "declined_gains": 1
+    },
+    "heldout_declined_gain": "4096x2048/grid4736:1.172x native speedup rejected because occupancy10->9CTAs/SM despite other savings.",
+    "placement": "Host/native compile plan after both variants compile, with CUDA occupancy API and exact launch geometry. TTIR LICM lacks final register/occupancy information. For generic kernels use launched CTAs unless an independent proof supplies nonempty CTA count.",
+    "limitation": "This is a conservative measured heuristic, not a no-regression proof. It was predeclared before timing and validated on held-out shapes, but still rejects useful transformations. Existing FX choose_hoist already benchmarks a2% margin; that is distinct.",
+    "implementation": "python/triton/experimental/semantic_contracts/native.py::compile_immutable_licm; uses total launched CTAs, not inferred nonempty CTAs; immutable backing allocations checked against all other tensor arguments on every launch; permits new tensor values between invocations.",
+    "integration": "14 targeted Triton/Gluon runtime tests passed. Five real-wrapper cases preserved bitwise outputs and chose expected kernels. All ten baseline/optimized cubin hashes match the original profiling binaries despite unrelated compiler rebuild. See wrapper_validation.json and wrapper_tests.log."
+  },
+  "interpretation": "Semantic contracts unlock legal transformations; target/launch-specific profitability selection is still required. Persistent trip count alone is insufficient: longer-lived gamma can coexist with occupancy and cache penalties.",
+  "sources": {
+    "benchmark_harness": "benchmark_harness.py matches environment.json harness hash. Current source additionally supports repeated profiling, guarded-wrapper integration, and rejects resumes across changed fingerprints; main measurement body is unchanged.",
+    "profile_commands": "profile_commands.json",
+    "raw_cases": "measurements.json.gz (66 original records with original filenames and SHA256s)",
+    "compiled_artifacts": "kernels/*/{kernel.ttir,kernel.ptx,metadata.json}; removed redundant binaries/SASS/intermediate IR hashes recorded in compaction.json"
+  }
+}

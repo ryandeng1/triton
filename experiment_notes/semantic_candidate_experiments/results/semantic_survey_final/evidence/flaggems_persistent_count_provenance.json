@@ -1,0 +1,15 @@
+{
+  "repository": "flagos-ai/FlagGems",
+  "revision": "3f1f896fd90f5db42d167d64fcb9691326071bc2",
+  "path": "src/flag_gems/runtime/backend/_cambricon/ops/embedding_dense_backward.py",
+  "function": "_embedding_dense_backward_count_kernel",
+  "function_lines": [
+    61,
+    79
+  ],
+  "source_sha256": "ade44798be3dc712db7a302b5bbe5641f388dda88a55c3ecf8aa82cef7ffe410",
+  "function_ast_sha256": "ecbbca9656eb0fcc71fd54da7e95bab28e6d728b7c1171efabf0e333f443b9d5",
+  "license": "Apache-2.0; original header retained",
+  "link": "https://github.com/flagos-ai/FlagGems/blob/3f1f896fd90f5db42d167d64fcb9691326071bc2/src/flag_gems/runtime/backend/_cambricon/ops/embedding_dense_backward.py#L62-L79",
+  "host_contract_evidence": "Line162 creates a fresh torch.int32 zero tensor; lines166\u2013176 pass it as counts_ptr. Original indices come from separate input storage. The count kernel only loads indices and atomically adds one; old atomic values are discarded. Integer addition is order-insensitive modulo the destination width. Benchmark transplantation must separately establish target/compiler support and valid launch choices."
+}

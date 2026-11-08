@@ -18,12 +18,14 @@ inserted. Only NVIDIA CUDA and one CTA per program are currently supported.
 
 ``compile_private_atomic`` uses only private-output and disjoint-allocation
 contracts. It preserves atomic updates and relaxes ordering after the compiler
-rules out internal synchronization partners. Inputs need not be unique or immutable
-between invocations, and the output need not start at zero. Initialized output,
+proves that weakening internal ordering preserves observable results. Inputs need
+not be unique or immutable between invocations, and the output need not start at
+zero. Initialized output,
 in-allocation accesses and absence of external observers remain caller promises.
 """
 
 import copy
+import ctypes
 import re
 
 import torch
@@ -288,8 +290,8 @@ def compile_private_atomic(kernel, args, *, grid, output_arg, options=None):
     """Compile an unchanged kernel with a private initialized output allocation.
 
     The caller promises initialized output ready at invocation entry and that
-    no external code accesses it until kernel completion. Internal publication
-    or synchronization is ruled out by the compiler's memory-effect analysis,
+    no external code accesses it until kernel completion. Observable effects of
+    weakening internal ordering are ruled out by the compiler's analysis,
     not by a direct caller assertion that the atomic may be relaxed.
     Every argument access must stay within its backing allocation. The wrapper
     checks disjoint output/input backing allocations; the compiler examines the
@@ -331,3 +333,179 @@ def compile_private_atomic(kernel, args, *, grid, output_arg, options=None):
     optimized = triton.compile(source, target=baseline.metadata.target,
                                options=dict(baseline_options, enable_private_atomic_relaxation=True))
     return NativePrivateAtomic(baseline, optimized, args, grid, output_arg, attrs)
+
+
+def _check_immutable_storage(args, immutable_args):
+    first_tensor = args[immutable_args[0]]
+    if not isinstance(first_tensor, torch.Tensor):
+        raise TypeError("immutable arguments must be tensors")
+    for value in args:
+        if not isinstance(value, torch.Tensor):
+            continue
+        if value.device.type != "cuda" or torch.version.hip is not None or value.device != first_tensor.device:
+            raise ValueError("all tensor arguments must be on the same NVIDIA CUDA device")
+        if value.layout != torch.strided or not value.is_contiguous() or value.is_neg() or value.is_conj():
+            raise ValueError("native contract tensors must be contiguous with resolved lazy views")
+        if value.numel() > _I32_MAX:
+            raise ValueError("tensor size exceeds the supported int32 footprint")
+    if torch.cuda.current_device() != first_tensor.device.index:
+        raise ValueError("make the tensor's CUDA device current before compiling or launching")
+    for number in immutable_args:
+        value = args[number]
+        if not isinstance(value, torch.Tensor):
+            raise TypeError("immutable arguments must be tensors")
+        first, last = _storage_span(value)
+        if first == last:
+            raise ValueError("immutable arguments must have nonempty backing storage")
+        for other_number, other in enumerate(args):
+            if other_number == number or not isinstance(other, torch.Tensor):
+                continue
+            other_first, other_last = _storage_span(other)
+            if first < other_last and other_first < last:
+                raise ValueError("immutable input backing storage overlaps another tensor argument")
+
+
+def _cuda_kernel_residency(kernel, device):
+    """Query the loaded function with its actual launch threads/shared memory."""
+    kernel._init_handles()
+    cuda = ctypes.CDLL("libcuda.so.1")
+    cuda.cuDeviceGetAttribute.argtypes = [ctypes.POINTER(ctypes.c_int), ctypes.c_int, ctypes.c_int]
+    cuda.cuDeviceGetAttribute.restype = ctypes.c_int
+    cuda.cuOccupancyMaxActiveBlocksPerMultiprocessor.argtypes = [
+        ctypes.POINTER(ctypes.c_int), ctypes.c_void_p, ctypes.c_int, ctypes.c_size_t
+    ]
+    cuda.cuOccupancyMaxActiveBlocksPerMultiprocessor.restype = ctypes.c_int
+    sms = ctypes.c_int()
+    status = cuda.cuDeviceGetAttribute(ctypes.byref(sms), 16, device)
+    if status:
+        raise RuntimeError(f"cuDeviceGetAttribute(MULTIPROCESSOR_COUNT) failed with CUDA status {status}")
+    blocks = ctypes.c_int()
+    threads = kernel.metadata.num_warps * 32
+    status = cuda.cuOccupancyMaxActiveBlocksPerMultiprocessor(ctypes.byref(blocks), ctypes.c_void_p(kernel.function),
+                                                              threads, kernel.metadata.shared)
+    if status:
+        raise RuntimeError(f"cuOccupancyMaxActiveBlocksPerMultiprocessor failed with CUDA status {status}")
+    if blocks.value <= 0 or sms.value <= 0:
+        raise RuntimeError("CUDA reported no resident capacity for the compiled kernel")
+    return {
+        "blocks_per_sm": blocks.value, "sm_count": sms.value, "threads_per_block": threads, "registers": kernel.n_regs,
+        "spills": kernel.n_spills, "shared_bytes": kernel.metadata.shared
+    }
+
+
+class NativeImmutableLICM:
+    """Immutable-load variants with an experimental resource profitability guard.
+
+    The guard is a heuristic, not a guarantee against regressions. It can reject
+    profitable hoists. Both compiled kernels are exposed for controlled analysis;
+    launching them directly bypasses this class's binding and alias checks.
+    """
+
+    def __init__(self, baseline, optimized, args, grid, immutable_args, attrs):
+        self.baseline, self.optimized = baseline, optimized
+        self.grid, self.immutable_args, self.attrs = grid, immutable_args, attrs
+        self.signatures = tuple(_signature(value) for value in args)
+        self.device = args[immutable_args[0]].device.index
+        self.resources = {
+            name: _cuda_kernel_residency(compiled, self.device)
+            for name, compiled in (("baseline", baseline), ("optimized", optimized))
+        }
+        base, opt = self.resources["baseline"], self.resources["optimized"]
+        self.launched_ctas = grid[0] * grid[1] * grid[2]
+        self.no_residency_loss = opt["blocks_per_sm"] >= base["blocks_per_sm"]
+        self.grid_limited = self.launched_ctas <= opt["sm_count"] * opt["blocks_per_sm"]
+        self.accepted = opt["spills"] == 0 and (self.no_residency_loss or self.grid_limited)
+        self.selected = optimized if self.accepted else baseline
+
+    def __call__(self, *args, grid=None):
+        actual_grid = self.grid if grid is None else _grid_tuple(grid)
+        if actual_grid != self.grid:
+            raise ValueError("launch grid differs from the immutable LICM profitability decision")
+        if tuple(_signature(value) for value in args) != self.signatures:
+            raise ValueError("argument metadata or scalar specialization changed")
+        _check_immutable_storage(args, self.immutable_args)
+        return self.selected[self.grid](*args)
+
+    run = __call__
+
+    def report(self):
+        return {
+            "selected": "optimized" if self.accepted else "baseline",
+            "binary_changed": self.baseline.asm["cubin"] != self.optimized.asm["cubin"],
+            "grid": self.grid,
+            "launched_ctas": self.launched_ctas,
+            "immutable_args": self.immutable_args,
+            "native_attributes": {str(key): value
+                                  for key, value in self.attrs.items()},
+            "variants": copy.deepcopy(self.resources),
+            "guard": {
+                "no_residency_loss": self.no_residency_loss, "grid_limited": self.grid_limited, "definition":
+                "no spills and (no blocks/SM loss or total launched CTAs fit optimized residency)", "limitation":
+                "profitability heuristic; can miss gains and cannot guarantee no regressions"
+            },
+            "contract":
+            "initialized immutable inputs remain unchanged through invocation completion, including aliases",
+            "scope": "same source and launch; both atomic specialization passes disabled; no timing calibration",
+        }
+
+
+def compile_immutable_licm(kernel, args, *, grid, immutable_args, options=None):
+    """Compile immutable-input LICM and select a resource-guarded variant.
+
+    Pass every argument, including constexprs, positionally in ``args``.
+    ``immutable_args`` is a nonempty tuple of parameter names or positions. Each
+    named tensor must contain initialized values; neither this kernel nor any
+    concurrent work may write its backing allocation until invocation completion.
+    Every argument access must stay within its allocation. Full backing storage
+    of each immutable argument must be disjoint from every other tensor argument.
+    This intentionally conservative check rejects shared read-only allocations.
+
+    Tensor contents and tensor objects may change between completed invocations.
+    Exact tensor metadata, scalar values, current CUDA device and launch grid are
+    bound to the plan and rechecked on every call. No payload or version-counter
+    check establishes immutability: it is a caller semantic contract.
+
+    The compiler proves whether loads can move. After compiling both variants,
+    a CUDA occupancy query selects the optimized version only when it has no
+    spills and either loses no resident blocks/SM or all launched CTAs fit its
+    resident capacity. This heuristic can decline gains and cannot guarantee no
+    regressions. It is separate from the FX backend's timing calibration.
+    Only NVIDIA CUDA with num_ctas=1 is supported.
+    """
+    if not isinstance(args, tuple) or len(args) != len(kernel.arg_names):
+        raise ValueError("args must provide every kernel argument positionally, including constexprs")
+    if not isinstance(immutable_args, tuple) or not immutable_args:
+        raise ValueError("immutable_args must be a nonempty tuple of argument names or positions")
+    positions = []
+    for number in immutable_args:
+        if isinstance(number, str):
+            number = kernel.arg_names.index(number)
+        if type(number) is not int or not 0 <= number < len(args):
+            raise ValueError("invalid immutable argument position")
+        if number in positions:
+            raise ValueError("immutable arguments must be distinct")
+        positions.append(number)
+    immutable_args = tuple(positions)
+    grid = _grid_tuple(grid)
+    options = dict(options or {})
+    if options.get("num_ctas", 1) != 1:
+        raise ValueError("native immutable LICM currently requires num_ctas=1")
+    options.update(enable_indexed_update_specialization=False, enable_private_atomic_relaxation=False)
+    _check_immutable_storage(args, immutable_args)
+    for value in args:
+        _signature(value)
+    template = kernel.warmup(*args, grid=grid, **options)
+    attrs = {
+        key: [(name, value)
+              for name, value in values
+              if not name.startswith("tt.experimental_")]
+        for key, values in template.src.attrs.items()
+    }
+    source = type(template.src)(template.src.fn, template.src.signature, constexprs=template.src.constants, attrs=attrs)
+    baseline = triton.compile(source, target=template.metadata.target, options=options)
+    attrs = copy.deepcopy(attrs)
+    for number in immutable_args:
+        attrs.setdefault((number, ), []).append(("tt.experimental_immutable", 1))
+    source = type(template.src)(template.src.fn, template.src.signature, constexprs=template.src.constants, attrs=attrs)
+    optimized = triton.compile(source, target=template.metadata.target, options=options)
+    return NativeImmutableLICM(baseline, optimized, args, grid, immutable_args, attrs)

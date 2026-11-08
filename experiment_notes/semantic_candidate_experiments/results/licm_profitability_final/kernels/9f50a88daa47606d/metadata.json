@@ -1,0 +1,112 @@
+{
+  "metadata": {
+    "allowed_dot_input_precisions": [
+      "tf32",
+      "tf32x3",
+      "ieee",
+      "bf16x3",
+      "bf16x6"
+    ],
+    "arch": "sm103",
+    "backend_name": "cuda",
+    "clc": false,
+    "debug": false,
+    "default_dot_input_precision": "tf32",
+    "deprecated_fp8_dot_operand_dtypes": [
+      "fp8e4b15"
+    ],
+    "disable_lsr": false,
+    "enable_aref_release_scheduling": false,
+    "enable_fp_fusion": false,
+    "enable_indexed_update_specialization": false,
+    "enable_private_atomic_relaxation": false,
+    "enable_reflect_ftz": true,
+    "enable_tmem_packing": false,
+    "enable_tmem_release_scheduling": false,
+    "enable_tmem_single_buffer": false,
+    "extern_libs": [
+      [
+        "libdevice",
+        "/home/ryandeng/tpaa/triton/python/triton/backends/nvidia/lib/libdevice.10.bc"
+      ]
+    ],
+    "fpsan_homomorphic_casts": false,
+    "global_scratch_align": 1,
+    "global_scratch_size": 0,
+    "hash": "5053b18b2cf1e735d2096a62693ca301dcef9f5879443537b4cd1c0b346c8943",
+    "instrumentation_mode": "",
+    "ir_override": null,
+    "launch_cooperative_grid": false,
+    "launch_pdl": false,
+    "max_num_imprecise_acc_default": 0,
+    "max_occupancy": null,
+    "maxnreg": null,
+    "name": "rmsnorm_forward_original",
+    "num_ctas": 1,
+    "num_stages": 3,
+    "num_warps": 4,
+    "profile_scratch_align": 1,
+    "profile_scratch_size": 0,
+    "ptx_options": null,
+    "ptx_version": null,
+    "sanitize_overflow": true,
+    "sched4reg": false,
+    "shared": 8208,
+    "supported_fp8_dtypes": [
+      "fp8e4b15",
+      "fp8e4nv",
+      "fp8e5"
+    ],
+    "target": "GPUTarget(backend='cuda', arch=103, warp_size=32)",
+    "tensordesc_meta": [],
+    "tmem_size": 0,
+    "triton_version": "3.9.0",
+    "warp_size": 32
+  },
+  "n_regs": 94,
+  "n_spills": 0,
+  "assembly": {
+    "ttir": {
+      "sha256": "bd27ce394648fa7d4851615f31d36e2191c1283f7fe3a1f7ecaaa804ef64e2de",
+      "size_bytes": 7984
+    },
+    "ttgir": {
+      "sha256": "a38376d50a1fa09ecc98378d423d6ba68348929caa53d0c91bce4bed792c6d2c",
+      "size_bytes": 11343
+    },
+    "llir": {
+      "sha256": "f42c359036e47a1c2bc5b8282ed8bdc549b57d376d2ca541ae7f5a2eb1d65ac9",
+      "size_bytes": 40278
+    },
+    "ptx": {
+      "sha256": "e99c366953600171e31ed367e910b1c213cef2a5287e4e24b7c2de413819170a",
+      "size_bytes": 28023
+    },
+    "cubin": {
+      "sha256": "9f50a88daa47606d711272c5774643b6bb143188b88c472436b251e0fd609e27",
+      "size_bytes": 34808
+    }
+  },
+  "static_ptx_global_load_sites": 4,
+  "static_ptx_global_store_sites": 5,
+  "static_ptx_global_async_copy_sites": 8,
+  "note": "Static instruction sites are not dynamic instruction counts; inspect loop placement in saved IR/PTX.",
+  "residency": {
+    "static_shared_bytes": 0,
+    "local_bytes": 0,
+    "registers_per_thread": 94,
+    "active_blocks_per_sm": 5,
+    "active_blocks_per_sm_zero_dynamic_shared": 5,
+    "threads_per_block": 128,
+    "dynamic_shared_bytes": 8208,
+    "n_spills": 0,
+    "theoretical_active_warps_per_sm": 20,
+    "theoretical_occupancy_fraction": 0.3125
+  },
+  "sass_sha256": "05d5e2cd56228709267a5d926abea352c6a61177781a3be15d0b24c9564eb591",
+  "static_ptx_bar_sync_sites": 3,
+  "static_ptx_cp_async_wait_sites": 2,
+  "static_sass_barrier_sites": 3,
+  "static_sass_ldgsts_sites": 8,
+  "static_sass_ldg_sites": 4
+}
