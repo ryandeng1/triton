@@ -1,0 +1,151 @@
+{
+  "case": "upstream500",
+  "seed": 55031,
+  "selected_configurations": {
+    "original": [
+      32,
+      2,
+      2
+    ],
+    "immutable": [
+      32,
+      2,
+      2
+    ],
+    "alias": [
+      32,
+      2,
+      2
+    ]
+  },
+  "state_reset_included_every_invocation": true,
+  "alias_has_no_immutable_attribute": true,
+  "alias_allocation_disjointness_checked": true,
+  "selected_alias_parameter_loads": [
+    {
+      "ir_line": 136,
+      "operation": "%b_A_log = tt.load %p_A_log, %b_h : !tt.ptr<f32> loc(#loc150)"
+    },
+    {
+      "ir_line": 137,
+      "operation": "%b_dt_bias = tt.load %p_dt_bias, %b_h : !tt.ptr<f32> loc(#loc151)"
+    }
+  ],
+  "alias_timestep_loop_line": 142,
+  "alias_and_immutable_ptx_exact_equal": true,
+  "alias_and_immutable_resources_equal": true,
+  "resources": {
+    "original": {
+      "registers": 114,
+      "spills": 0,
+      "shared": 256,
+      "ptx_sha256": "7798a334167a19b5693482912fdf97d4b633fa0963d339567e3302629eb8392c",
+      "cubin_sha256": "60c1c3b364693be150811c02b3293a92b9709e1ed093e1ad0ab9178ecd1d8062"
+    },
+    "immutable": {
+      "registers": 116,
+      "spills": 0,
+      "shared": 256,
+      "ptx_sha256": "c75d963cd727ee915050d1c18723abe66402fd1768912f278d1a2933debf9f10",
+      "cubin_sha256": "b64f2d6ec139a98496dfab80a690df21f4fad4f927691b43dcc6ff27735607bb"
+    },
+    "alias": {
+      "registers": 116,
+      "spills": 0,
+      "shared": 256,
+      "ptx_sha256": "c75d963cd727ee915050d1c18723abe66402fd1768912f278d1a2933debf9f10",
+      "cubin_sha256": "b64f2d6ec139a98496dfab80a690df21f4fad4f927691b43dcc6ff27735607bb"
+    },
+    "manual": {
+      "registers": 116,
+      "spills": 0,
+      "shared": 256,
+      "ptx_sha256": "967381aea9dc06d75c479cff31f2e69c4d551a5ce9627992db50f5aad71cb18b",
+      "cubin_sha256": "bfdb4a0dd2ddf73cadb6ff93e2eddc48305e178c4bb28710ff0ffa79adac716a"
+    }
+  },
+  "validation": {
+    "2": {
+      "original": {
+        "max_output_error": 1.929868735928153e-07,
+        "max_state_error": 1.059790045165876e-07,
+        "same_config_bitwise_equal_to_original": true,
+        "guards_passed": true
+      },
+      "immutable": {
+        "max_output_error": 1.929868735928153e-07,
+        "max_state_error": 1.059790045165876e-07,
+        "same_config_bitwise_equal_to_original": true,
+        "guards_passed": true
+      },
+      "alias": {
+        "max_output_error": 1.929868735928153e-07,
+        "max_state_error": 1.059790045165876e-07,
+        "same_config_bitwise_equal_to_original": true,
+        "guards_passed": true
+      },
+      "manual": {
+        "max_output_error": 1.929868735928153e-07,
+        "max_state_error": 1.059790045165876e-07,
+        "same_config_bitwise_equal_to_original": true,
+        "guards_passed": true
+      }
+    }
+  },
+  "times_us": {
+    "original": [
+      421.55998945236206,
+      419.1319942474365,
+      419.2720055580139,
+      419.2039966583252,
+      419.18399930000305,
+      419.3679988384247,
+      419.27599906921387,
+      419.21600699424744,
+      419.23201084136963,
+      419.2799925804138,
+      419.1719889640808,
+      419.20799016952515,
+      419.1559851169586
+    ],
+    "immutable": [
+      399.6320068836212,
+      396.63198590278625,
+      396.73200249671936,
+      396.67999744415283,
+      396.67999744415283,
+      396.807998418808,
+      396.7840075492859,
+      396.76401019096375,
+      396.81199193000793,
+      396.91999554634094,
+      396.76401019096375,
+      396.8439996242523,
+      396.7120051383972
+    ],
+    "alias": [
+      400.6440043449402,
+      396.84000611305237,
+      396.7359960079193,
+      396.73998951911926,
+      397.1880078315735,
+      397.58801460266113,
+      397.15999364852905,
+      396.6600000858307,
+      396.92801237106323,
+      396.7840075492859,
+      396.73200249671936,
+      396.9399929046631,
+      396.97200059890747
+    ]
+  },
+  "median_us": {
+    "original": 419.21600699424744,
+    "immutable": 396.76401019096375,
+    "alias": 396.92801237106323
+  },
+  "paired_alias_speedup_vs_original": 1.0561737420395907,
+  "paired_alias_over_immutable_time": 1.000292381388201,
+  "native_library_sha256": "6be58f8451548d939876f4848a62a9dc8c504a41200e759781a12ba63e3661f0",
+  "harness_sha256": "362500d747e8f81a3966574a309f7d1cf8d4989f02db308fa7bc01b942b32d86"
+}

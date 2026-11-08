@@ -691,6 +691,169 @@ tt.func @alias_groups_nonterminating_after_prefix_stays(%weights: !tt.ptr<f32> {
 
 // -----
 
+// A disjoint parameter can hoist past advancing read/write streams. The stream
+// load itself remains in the loop even though its allocation root is known.
+// CHECK-LABEL: @alias_groups_pointer_streams
+// CHECK: %[[ENTRY:.*]] = arith.cmpi slt
+// CHECK: %[[WEIGHT:.*]] = tt.load %{{.*}}, %[[ENTRY]]
+// CHECK: scf.for
+// CHECK: %[[ELEMENT:.*]] = tt.load
+// CHECK: arith.addf %[[ELEMENT]], %[[WEIGHT]]
+// CHECK: tt.store
+// CHECK: tt.addptr
+// CHECK: scf.yield
+tt.func @alias_groups_pointer_streams(%weights: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32}, %input: !tt.ptr<f32> {tt.experimental_alias_group = 2 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32}, %n: i32) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %ends:2 = scf.for %i = %c0 to %n step %c1 iter_args(%r = %input, %w = %out) -> (!tt.ptr<f32>, !tt.ptr<f32>) : i32 {
+    %element = tt.load %r : !tt.ptr<f32>
+    %weight = tt.load %weights : !tt.ptr<f32>
+    %value = arith.addf %element, %weight : f32
+    tt.store %w, %value : !tt.ptr<f32>
+    %rn = tt.addptr %r, %c1 : !tt.ptr<f32>, i32
+    %wn = tt.addptr %w, %c1 : !tt.ptr<f32>, i32
+    scf.yield %rn, %wn : !tt.ptr<f32>, !tt.ptr<f32>
+  }
+  tt.return
+}
+
+// -----
+
+// Same-root proof does not override an actual alias with the written stream.
+// CHECK-LABEL: @alias_groups_pointer_stream_alias_stays
+// CHECK-NOT: tt.load
+// CHECK: scf.for
+// CHECK: tt.load
+// CHECK: tt.store
+tt.func @alias_groups_pointer_stream_alias_stays(%weights: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32}, %n: i32) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %end = scf.for %i = %c0 to %n step %c1 iter_args(%w = %out) -> (!tt.ptr<f32>) : i32 {
+    %value = tt.load %weights : !tt.ptr<f32>
+    tt.store %w, %value : !tt.ptr<f32>
+    %next = tt.addptr %w, %c1 : !tt.ptr<f32>, i32
+    scf.yield %next : !tt.ptr<f32>
+  }
+  tt.return
+}
+
+// -----
+
+// The initial pointer's disjointness is insufficient when a later iteration
+// writes to a pointer derived from the parameter allocation.
+// CHECK-LABEL: @alias_groups_pointer_root_change_stays
+// CHECK-NOT: tt.load
+// CHECK: scf.for
+// CHECK: tt.load
+// CHECK: tt.store
+tt.func @alias_groups_pointer_root_change_stays(%weights: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32}, %n: i32) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %end = scf.for %i = %c0 to %n step %c1 iter_args(%w = %out) -> (!tt.ptr<f32>) : i32 {
+    %value = tt.load %weights : !tt.ptr<f32>
+    tt.store %w, %value : !tt.ptr<f32>
+    %changed = tt.addptr %weights, %c1 : !tt.ptr<f32>, i32
+    scf.yield %changed : !tt.ptr<f32>
+  }
+  tt.return
+}
+
+// -----
+
+// Cross-carried pointers can exchange allocation roots. Do not confuse the
+// presence of a recurrence with preservation of each individual root.
+// CHECK-LABEL: @alias_groups_pointer_cross_carry_stays
+// CHECK-NOT: tt.load
+// CHECK: scf.for
+// CHECK: tt.load
+// CHECK: tt.store
+tt.func @alias_groups_pointer_cross_carry_stays(%weights: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32}, %n: i32) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %ends:2 = scf.for %i = %c0 to %n step %c1 iter_args(%w = %out, %other = %weights) -> (!tt.ptr<f32>, !tt.ptr<f32>) : i32 {
+    %value = tt.load %weights : !tt.ptr<f32>
+    tt.store %w, %value : !tt.ptr<f32>
+    scf.yield %other, %w : !tt.ptr<f32>, !tt.ptr<f32>
+  }
+  tt.return
+}
+
+// -----
+
+// Conditional root changes remain unsupported, even if an initial pointer has
+// a declared disjoint region.
+// CHECK-LABEL: @alias_groups_pointer_select_stays
+// CHECK-NOT: tt.load
+// CHECK: scf.for
+// CHECK: tt.load
+// CHECK: tt.store
+tt.func @alias_groups_pointer_select_stays(%weights: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32}, %n: i32, %cond: i1) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %end = scf.for %i = %c0 to %n step %c1 iter_args(%w = %out) -> (!tt.ptr<f32>) : i32 {
+    %value = tt.load %weights : !tt.ptr<f32>
+    tt.store %w, %value : !tt.ptr<f32>
+    %next = tt.addptr %w, %c1 : !tt.ptr<f32>, i32
+    %selected = arith.select %cond, %next, %weights : !tt.ptr<f32>
+    scf.yield %selected : !tt.ptr<f32>
+  }
+  tt.return
+}
+
+// -----
+
+// A validated loop result keeps its root for subsequent memory-effect analysis.
+// CHECK-LABEL: @alias_groups_pointer_result
+// CHECK: scf.for
+// CHECK: scf.yield
+// CHECK: arith.cmpi slt
+// CHECK: tt.load
+// CHECK: scf.for
+// CHECK-NOT: tt.load
+// CHECK: tt.store
+tt.func @alias_groups_pointer_result(%weights: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32}, %n: i32) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %end = scf.for %i = %c0 to %n step %c1 iter_args(%w = %out) -> (!tt.ptr<f32>) : i32 {
+    %next = tt.addptr %w, %c1 : !tt.ptr<f32>, i32
+    scf.yield %next : !tt.ptr<f32>
+  }
+  scf.for %j = %c0 to %n step %c1 : i32 {
+    %value = tt.load %weights : !tt.ptr<f32>
+    %dst = tt.addptr %end, %j : !tt.ptr<f32>, i32
+    tt.store %dst, %value : !tt.ptr<f32>
+  }
+  tt.return
+}
+
+// -----
+
+// A nested result may advance the outer pointer, provided each inner backedge
+// derives only from its own carried pointer and its init derives from the outer.
+// CHECK-LABEL: @alias_groups_nested_pointer_stream
+// CHECK: tt.load
+// CHECK: scf.for
+// CHECK-NOT: tt.load
+// CHECK: scf.for
+// CHECK-NOT: tt.load
+// CHECK: tt.store
+tt.func @alias_groups_nested_pointer_stream(%weights: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32}, %n: i32) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %end = scf.for %i = %c0 to %n step %c1 iter_args(%outer = %out) -> (!tt.ptr<f32>) : i32 {
+    %inner_end = scf.for %j = %c0 to %n step %c1 iter_args(%inner = %outer) -> (!tt.ptr<f32>) : i32 {
+      %value = tt.load %weights : !tt.ptr<f32>
+      tt.store %inner, %value : !tt.ptr<f32>
+      %next = tt.addptr %inner, %c1 : !tt.ptr<f32>, i32
+      scf.yield %next : !tt.ptr<f32>
+    }
+    scf.yield %inner_end : !tt.ptr<f32>
+  }
+  tt.return
+}
+
+// -----
+
 // Signed -1 < 1 would incorrectly enable a load on this unsigned zero-trip path.
 // CHECK-LABEL: @alias_groups_unsigned_entry_guard
 // CHECK: %[[ENTRY:.*]] = arith.cmpi ult
@@ -702,6 +865,250 @@ tt.func @alias_groups_unsigned_entry_guard(%weights: !tt.ptr<f32> {tt.experiment
   %cneg1 = arith.constant -1 : i32
   %c1 = arith.constant 1 : i32
   scf.for unsigned %i = %cneg1 to %c1 step %c1 : i32 {
+    %value = tt.load %weights : !tt.ptr<f32>
+    tt.store %out, %value : !tt.ptr<f32>
+  }
+  tt.return
+}
+
+// -----
+
+// Initialized immutable global memory is independent of the CTA publication
+// protocol. Keep both barriers and combine the original mask with loop entry.
+// CHECK-LABEL: @immutable_cta_barrier_tensor_mask
+// CHECK: %[[ENTRY:.*]] = arith.cmpi slt
+// CHECK: %[[SPLAT:.*]] = tt.splat %[[ENTRY]]
+// CHECK: %[[MASK:.*]] = arith.andi %[[SPLAT]], %{{.*}}
+// CHECK: %[[LOAD:.*]] = tt.load %{{.*}}, %[[MASK]]
+// CHECK: arith.addf %[[LOAD]], %[[LOAD]]
+// CHECK: scf.for
+// CHECK: ttg.barrier all
+// CHECK-NOT: tt.load
+// CHECK: tt.store
+// CHECK: ttg.barrier all
+// CHECK-NOT: tt.load
+// CHECK: tt.return
+tt.func @immutable_cta_barrier_tensor_mask(%weights: !tt.ptr<f32> {tt.experimental_immutable = 1 : i32}, %out: tensor<32x!tt.ptr<f32>>, %n: i32, %mask: tensor<32xi1>) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %offset = tt.make_range {start = 0 : i32, end = 32 : i32} : tensor<32xi32>
+  %base = tt.splat %weights : !tt.ptr<f32> -> tensor<32x!tt.ptr<f32>>
+  %ptr = tt.addptr %base, %offset : tensor<32x!tt.ptr<f32>>, tensor<32xi32>
+  scf.for %i = %c0 to %n step %c1 : i32 {
+    ttg.barrier all
+    %value = tt.load %ptr, %mask : tensor<32x!tt.ptr<f32>>
+    %twice = arith.addf %value, %value : tensor<32xf32>
+    tt.store %out, %twice : tensor<32x!tt.ptr<f32>>
+    ttg.barrier all
+  }
+  tt.return
+}
+
+// -----
+
+// Even an immutable input must not be accessed on a zero-trip path.
+// CHECK-LABEL: @immutable_cta_barrier_zero_trip_while
+// CHECK: %[[FALSE:.*]] = arith.constant false
+// CHECK: tt.load %{{.*}}, %[[FALSE]]
+// CHECK: scf.while
+// CHECK: do
+// CHECK: ttg.barrier all
+// CHECK-NOT: tt.load
+// CHECK: tt.store
+// CHECK: ttg.barrier all
+tt.func @immutable_cta_barrier_zero_trip_while(%weights: !tt.ptr<f32> {tt.experimental_immutable = 1 : i32}, %out: !tt.ptr<f32>) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %end = scf.while (%i = %c0) : (i32) -> i32 {
+    %cond = arith.cmpi slt, %i, %c0 : i32
+    scf.condition(%cond) %i : i32
+  } do {
+  ^bb0(%i: i32):
+    ttg.barrier all
+    %value = tt.load %weights : !tt.ptr<f32>
+    tt.store %out, %value : !tt.ptr<f32>
+    ttg.barrier all
+    %next = arith.addi %i, %c1 : i32
+    scf.yield %next : i32
+  }
+  tt.return
+}
+
+// -----
+
+// Disjointness alone does not promise initialized-at-entry contents.
+// CHECK-LABEL: @alias_only_cta_barrier_stays
+// CHECK-NOT: tt.load
+// CHECK: scf.for
+// CHECK: ttg.barrier all
+// CHECK: tt.load
+tt.func @alias_only_cta_barrier_stays(%weights: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32}, %out: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32}, %n: i32) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  scf.for %i = %c0 to %n step %c1 : i32 {
+    ttg.barrier all
+    %value = tt.load %weights : !tt.ptr<f32>
+    tt.store %out, %value : !tt.ptr<f32>
+  }
+  tt.return
+}
+
+// -----
+
+// CHECK-LABEL: @mutable_cta_barrier_stays
+// CHECK-NOT: tt.load
+// CHECK: scf.for
+// CHECK: ttg.barrier all
+// CHECK: tt.load
+tt.func @mutable_cta_barrier_stays(%weights: !tt.ptr<f32>, %out: !tt.ptr<f32>, %n: i32) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  scf.for %i = %c0 to %n step %c1 : i32 {
+    ttg.barrier all
+    %value = tt.load %weights : !tt.ptr<f32>
+    tt.store %out, %value : !tt.ptr<f32>
+  }
+  tt.return
+}
+
+// -----
+
+// The new exception is restricted to global pointer arguments.
+// CHECK-LABEL: @immutable_nonglobal_pointer_barrier_stays
+// CHECK-NOT: tt.load
+// CHECK: scf.for
+// CHECK: ttg.barrier all
+// CHECK: tt.load
+tt.func @immutable_nonglobal_pointer_barrier_stays(%weights: !tt.ptr<f32, "constant"> {tt.experimental_immutable = 1 : i32}, %out: !tt.ptr<f32>, %n: i32) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  scf.for %i = %c0 to %n step %c1 : i32 {
+    ttg.barrier all
+    %value = tt.load %weights : !tt.ptr<f32, "constant">
+    tt.store %out, %value : !tt.ptr<f32>
+  }
+  tt.return
+}
+
+// -----
+
+// CHECK-LABEL: @immutable_warp_barrier_stays
+// CHECK-NOT: tt.load
+// CHECK: scf.for
+// CHECK: ttg.barrier warp local
+// CHECK: tt.load
+tt.func @immutable_warp_barrier_stays(%weights: !tt.ptr<f32> {tt.experimental_immutable = 1 : i32}, %out: !tt.ptr<f32>, %n: i32) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  scf.for %i = %c0 to %n step %c1 : i32 {
+    ttg.barrier warp local
+    %value = tt.load %weights : !tt.ptr<f32>
+    tt.store %out, %value : !tt.ptr<f32>
+  }
+  tt.return
+}
+
+// -----
+
+// CHECK-LABEL: @immutable_cta_barrier_volatile_stays
+// CHECK-NOT: tt.load
+// CHECK: scf.for
+// CHECK: ttg.barrier all
+// CHECK: tt.load %{{.*}} {isVolatile = true}
+tt.func @immutable_cta_barrier_volatile_stays(%weights: !tt.ptr<f32> {tt.experimental_immutable = 1 : i32}, %out: !tt.ptr<f32>, %n: i32) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  scf.for %i = %c0 to %n step %c1 : i32 {
+    ttg.barrier all
+    %value = tt.load %weights {isVolatile = true} : !tt.ptr<f32>
+    tt.store %out, %value : !tt.ptr<f32>
+  }
+  tt.return
+}
+
+// -----
+
+// Async completion protocols remain outside the ordinary-effect model.
+// CHECK-LABEL: @immutable_cta_barrier_async_wait_stays
+// CHECK-NOT: tt.load
+// CHECK: scf.for
+// CHECK: ttg.async_wait
+// CHECK: ttg.barrier all
+// CHECK: tt.load
+tt.func @immutable_cta_barrier_async_wait_stays(%weights: !tt.ptr<f32> {tt.experimental_immutable = 1 : i32}, %out: !tt.ptr<f32>, %n: i32) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  scf.for %i = %c0 to %n step %c1 : i32 {
+    ttg.async_wait {num = 0 : i32}
+    ttg.barrier all
+    %value = tt.load %weights : !tt.ptr<f32>
+    tt.store %out, %value : !tt.ptr<f32>
+  }
+  tt.return
+}
+
+// -----
+
+tt.func private @barrier_unknown_effect(!tt.ptr<f32>)
+
+// CHECK-LABEL: @immutable_cta_barrier_call_stays
+// CHECK-NOT: tt.load
+// CHECK: scf.for
+// CHECK: tt.call
+// CHECK: ttg.barrier all
+// CHECK: tt.load
+tt.func @immutable_cta_barrier_call_stays(%weights: !tt.ptr<f32> {tt.experimental_immutable = 1 : i32}, %out: !tt.ptr<f32>, %n: i32) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  scf.for %i = %c0 to %n step %c1 : i32 {
+    tt.call @barrier_unknown_effect(%out) : (!tt.ptr<f32>) -> ()
+    ttg.barrier all
+    %value = tt.load %weights : !tt.ptr<f32>
+    tt.store %out, %value : !tt.ptr<f32>
+  }
+  tt.return
+}
+
+// -----
+
+// CHECK-LABEL: @immutable_cta_barrier_assert_stays
+// CHECK-NOT: tt.load
+// CHECK: scf.for
+// CHECK: tt.assert
+// CHECK: ttg.barrier all
+// CHECK: tt.load
+tt.func @immutable_cta_barrier_assert_stays(%weights: !tt.ptr<f32> {tt.experimental_immutable = 1 : i32}, %out: !tt.ptr<f32>, %n: i32, %valid: i1) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  scf.for %i = %c0 to %n step %c1 : i32 {
+    tt.assert %valid, "read must be reachable" : i1
+    ttg.barrier all
+    %value = tt.load %weights : !tt.ptr<f32>
+    tt.store %out, %value : !tt.ptr<f32>
+  }
+  tt.return
+}
+
+// -----
+
+// A barrier does not make the later load reachable after a divergent region.
+// CHECK-LABEL: @immutable_cta_barrier_nonreached_prefix_stays
+// CHECK-NOT: tt.load
+// CHECK: scf.for
+// CHECK: scf.while
+// CHECK: ttg.barrier all
+// CHECK: tt.load
+tt.func @immutable_cta_barrier_nonreached_prefix_stays(%weights: !tt.ptr<f32> {tt.experimental_immutable = 1 : i32}, %out: !tt.ptr<f32>, %n: i32) {
+  %c0 = arith.constant 0 : i32
+  %c1 = arith.constant 1 : i32
+  %true = arith.constant true
+  scf.for %i = %c0 to %n step %c1 : i32 {
+    scf.while : () -> () {
+      scf.condition(%true)
+    } do {
+      scf.yield
+    }
+    ttg.barrier all
     %value = tt.load %weights : !tt.ptr<f32>
     tt.store %out, %value : !tt.ptr<f32>
   }

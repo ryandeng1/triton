@@ -1,0 +1,1503 @@
+{
+  "rows": [
+    {
+      "case": {
+        "split": "edge",
+        "T": 1,
+        "N": 4,
+        "C": 8,
+        "U": 1,
+        "dtype": "bfloat16",
+        "target_dtype": "int64",
+        "target_1d": true,
+        "reduction": "mean",
+        "zero_infinity": true,
+        "id": "edge-T1-N4-U1-bfloat16-1d"
+      },
+      "best_confirmed": {
+        "original": {
+          "multiplier": 1,
+          "warps": 1,
+          "median_us": 14.21200018376112,
+          "seed_medians_us": [
+            14.21200018376112,
+            14.193999581038952,
+            15.111999586224556
+          ],
+          "resources": {
+            "registers": 26,
+            "spills": 0,
+            "shared_bytes": 0,
+            "ptx_sha256": "c9451ffc0012f5e42bca515d3bba38a492f1e2161640cd8f641e5e95d18d6d94",
+            "cubin_sha256": "113133f39db31fa845942e4379de32f64351e4161ba0cb419b9c49c0b938987b",
+            "ttgir_sha256": "49529876b6832edc5ac82f1a797f087ae8fd6330187f5f6d0d3c1d27f2293a87",
+            "bar_sync_static_sites": 3,
+            "global_load_static_sites": 10,
+            "target_loads": [
+              {
+                "ir_line": 66,
+                "loop_depth": 0,
+                "operation": "%target_value = tt.load %target_ptrs_22, %target_mask_20, %cst_5 : tensor<4x!tt.ptr<i64>, #blocked> loc(#loc98)"
+              }
+            ],
+            "target_loads_inside_loop": 0
+          }
+        },
+        "immutable": {
+          "multiplier": 2,
+          "warps": 2,
+          "median_us": 14.313999563455582,
+          "seed_medians_us": [
+            15.13999979943037,
+            14.312000013887882,
+            14.313999563455582
+          ],
+          "resources": {
+            "registers": 25,
+            "spills": 0,
+            "shared_bytes": 4,
+            "ptx_sha256": "e54b8c0520bffb92c73e5d085ba2ed3b0fae4db5b36935b8c0fe2a848198d6b8",
+            "cubin_sha256": "3d166a08eae0d28582cd57a8b8057402c76dd482eacb9c5d5be682550c98c96f",
+            "ttgir_sha256": "28292030fa3ea8c4ef35e3039520cf09331cfdf904f212cf6b57f9c46e3364f2",
+            "bar_sync_static_sites": 8,
+            "global_load_static_sites": 10,
+            "target_loads": [
+              {
+                "ir_line": 66,
+                "loop_depth": 0,
+                "operation": "%target_value = tt.load %target_ptrs_22, %target_mask_20, %cst_5 : tensor<8x!tt.ptr<i64>, #blocked> loc(#loc98)"
+              }
+            ],
+            "target_loads_inside_loop": 0
+          }
+        },
+        "manual": {
+          "multiplier": 1,
+          "warps": 2,
+          "median_us": 14.32000007480383,
+          "seed_medians_us": [
+            14.32000007480383,
+            14.313999563455582,
+            15.10199997574091
+          ],
+          "resources": {
+            "registers": 25,
+            "spills": 0,
+            "shared_bytes": 4,
+            "ptx_sha256": "b72936ab6d9c6b1bd9a530878f9923ebdb2d956be03c3cabd8f9dec8ff8ab173",
+            "cubin_sha256": "61df182c8b467483ad9705cd72c16545d5e131cc64a20ddf059370b7d8bebc7c",
+            "ttgir_sha256": "609b318d5e39d6f809b815e726653536d5517b909af6299ce7680a8dcb4eadef",
+            "bar_sync_static_sites": 8,
+            "global_load_static_sites": 10,
+            "target_loads": [
+              {
+                "ir_line": 66,
+                "loop_depth": 0,
+                "operation": "%target_value = tt.load %target_ptrs_22, %target_mask_20, %cst_5 : tensor<4x!tt.ptr<i64>, #blocked> loc(#loc98)"
+              }
+            ],
+            "target_loads_inside_loop": 0
+          }
+        }
+      },
+      "manual_speedup_best_to_best": 0.9924581082068054,
+      "native_speedup_best_to_best": 0.992874152381919,
+      "confirmed_configurations": [
+        {
+          "multiplier": 1,
+          "warps": 1,
+          "full_forward_seed_speedups": [
+            0.9431908688359371,
+            0.9427470440436522,
+            1.0037194138383425
+          ],
+          "kernel_seed_speedups": [
+            0.9888888761135449,
+            0.9987638966295246,
+            0.9889975423985526
+          ]
+        },
+        {
+          "multiplier": 1,
+          "warps": 2,
+          "full_forward_seed_speedups": [
+            1.0532122726722577,
+            1.0549113376197337,
+            0.9482187854460836
+          ],
+          "kernel_seed_speedups": [
+            1.0023228981169179,
+            0.9833926572728848,
+            1.02895048150162
+          ]
+        },
+        {
+          "multiplier": 2,
+          "warps": 2,
+          "full_forward_seed_speedups": [
+            1.0554237059501346,
+            1.000529735195921,
+            1.0002650782298625
+          ],
+          "kernel_seed_speedups": [
+            0.9849362889155818,
+            0.9965197625478533,
+            1.0420673486431145
+          ]
+        }
+      ]
+    },
+    {
+      "case": {
+        "split": "edge",
+        "T": 1,
+        "N": 4,
+        "C": 8,
+        "U": 1,
+        "dtype": "float32",
+        "target_dtype": "int32",
+        "target_1d": false,
+        "reduction": "none",
+        "zero_infinity": false,
+        "id": "edge-T1-N4-U1-float32-2d"
+      },
+      "best_confirmed": {
+        "original": {
+          "multiplier": 2,
+          "warps": 1,
+          "median_us": 1.5320000238716602,
+          "seed_medians_us": [
+            1.5320000238716602,
+            1.541999983601272,
+            1.491999952122569
+          ],
+          "resources": {
+            "registers": 20,
+            "spills": 0,
+            "shared_bytes": 0,
+            "ptx_sha256": "bd564862fe7e3eeb4d9bca6136fa15838139fd7dc3988784167ffad464cea61f",
+            "cubin_sha256": "0fcb669ba4a9de18039a3263c4fd2f3e688f673b92286d894d6d0dd72b435239",
+            "ttgir_sha256": "071ac0f83b86978724ff3b73b6d47b1b12a278361774ac805ea5a8289652ed50",
+            "bar_sync_static_sites": 3,
+            "global_load_static_sites": 6,
+            "target_loads": [
+              {
+                "ir_line": 55,
+                "loop_depth": 0,
+                "operation": "%target_value = tt.load %target_ptrs_21, %target_mask_19, %cst_6 : tensor<8x!tt.ptr<i32>, #blocked> loc(#loc88)"
+              }
+            ],
+            "target_loads_inside_loop": 0
+          }
+        },
+        "immutable": {
+          "multiplier": 2,
+          "warps": 1,
+          "median_us": 1.5839999541640282,
+          "seed_medians_us": [
+            1.5899999998509884,
+            1.576000009663403,
+            1.5839999541640282
+          ],
+          "resources": {
+            "registers": 20,
+            "spills": 0,
+            "shared_bytes": 0,
+            "ptx_sha256": "bd564862fe7e3eeb4d9bca6136fa15838139fd7dc3988784167ffad464cea61f",
+            "cubin_sha256": "0fcb669ba4a9de18039a3263c4fd2f3e688f673b92286d894d6d0dd72b435239",
+            "ttgir_sha256": "a662f88d938c150e1d2d2e92b40d84b4ba4e3e3b6d7fab825c409af508b67587",
+            "bar_sync_static_sites": 3,
+            "global_load_static_sites": 6,
+            "target_loads": [
+              {
+                "ir_line": 55,
+                "loop_depth": 0,
+                "operation": "%target_value = tt.load %target_ptrs_21, %target_mask_19, %cst_6 : tensor<8x!tt.ptr<i32>, #blocked> loc(#loc88)"
+              }
+            ],
+            "target_loads_inside_loop": 0
+          }
+        },
+        "manual": {
+          "multiplier": 1,
+          "warps": 1,
+          "median_us": 1.5439999988302588,
+          "seed_medians_us": [
+            1.601999974809587,
+            1.5439999988302588,
+            1.5379999531432986
+          ],
+          "resources": {
+            "registers": 20,
+            "spills": 0,
+            "shared_bytes": 0,
+            "ptx_sha256": "af10b84212ba3ee30592d629485e94c85e2023b73c61b319b31881bf88c05d6a",
+            "cubin_sha256": "03c31bb83109190ad8f17014cdf71edbc2376180982373ddd469e1e8ddfc59b5",
+            "ttgir_sha256": "51716eb6122d17a2002f696737155d7209f0b0e577d615bf7e1bfd6dc2048168",
+            "bar_sync_static_sites": 3,
+            "global_load_static_sites": 6,
+            "target_loads": [
+              {
+                "ir_line": 55,
+                "loop_depth": 0,
+                "operation": "%target_value = tt.load %target_ptrs_21, %target_mask_19, %cst_6 : tensor<4x!tt.ptr<i32>, #blocked> loc(#loc88)"
+              }
+            ],
+            "target_loads_inside_loop": 0
+          }
+        }
+      },
+      "manual_speedup_best_to_best": 0.9922279954872475,
+      "native_speedup_best_to_best": 0.9671717602291148,
+      "confirmed_configurations": [
+        {
+          "multiplier": 1,
+          "warps": 1,
+          "full_forward_seed_speedups": [
+            1.003745346929655,
+            0.9870466088797295,
+            1.0312093743251525
+          ],
+          "kernel_seed_speedups": [
+            1.021573620465518,
+            0.9782330181573616,
+            0.9962405729851105
+          ]
+        },
+        {
+          "multiplier": 2,
+          "warps": 1,
+          "full_forward_seed_speedups": [
+            0.950372193204653,
+            0.9637500140971682,
+            0.9527457883450574
+          ],
+          "kernel_seed_speedups": [
+            0.9912170703128081,
+            1.0338541200866445,
+            1.0630871795248427
+          ]
+        }
+      ]
+    },
+    {
+      "case": {
+        "split": "edge",
+        "T": 16,
+        "N": 4,
+        "C": 8,
+        "U": 0,
+        "dtype": "float32",
+        "target_dtype": "int64",
+        "target_1d": false,
+        "reduction": "mean",
+        "zero_infinity": true,
+        "id": "edge-T16-N4-U0-float32-2d"
+      },
+      "best_confirmed": {
+        "original": {
+          "multiplier": 1,
+          "warps": 4,
+          "median_us": 12.028000317513943,
+          "seed_medians_us": [
+            12.028000317513943,
+            11.908000335097313,
+            12.662000022828579
+          ],
+          "resources": {
+            "registers": 25,
+            "spills": 0,
+            "shared_bytes": 4,
+            "ptx_sha256": "c033a38030d84e9dfd1244d2736ab4f26b7dcc2115596800747054eaf146fab0",
+            "cubin_sha256": "97c6f29536c40da48f0ca4cebf5ad14f6d4b1f9b2143d68f17b45adfd476bbcf",
+            "ttgir_sha256": "095ded6846094161b86aa3bca7b0ef0074adb034ef96cfa56666a4bda40f7254",
+            "bar_sync_static_sites": 9,
+            "global_load_static_sites": 7,
+            "target_loads": [],
+            "target_loads_inside_loop": 0
+          }
+        },
+        "immutable": {
+          "multiplier": 1,
+          "warps": 1,
+          "median_us": 11.781999841332436,
+          "seed_medians_us": [
+            12.671999633312225,
+            11.781999841332436,
+            11.749999597668648
+          ],
+          "resources": {
+            "registers": 26,
+            "spills": 0,
+            "shared_bytes": 0,
+            "ptx_sha256": "72caeee85fa836e569efdf4f79c50d9c3a05996691e9db6c0cefb003a890fcb3",
+            "cubin_sha256": "0a89154aa39cc9ea0eb827060d744484f08f83841199f9a0e0b728811120b776",
+            "ttgir_sha256": "1f332868667e80931895b06c9af1ed0ff33bf438e44d44fe4d9bada228e99747",
+            "bar_sync_static_sites": 4,
+            "global_load_static_sites": 7,
+            "target_loads": [],
+            "target_loads_inside_loop": 0
+          }
+        },
+        "manual": {
+          "multiplier": 1,
+          "warps": 1,
+          "median_us": 12.56600022315979,
+          "seed_medians_us": [
+            11.884000152349472,
+            12.56600022315979,
+            12.56600022315979
+          ],
+          "resources": {
+            "registers": 26,
+            "spills": 0,
+            "shared_bytes": 0,
+            "ptx_sha256": "3ed63bd6f707e62666cc896b94a9d5bc20db677652b5bd0915756b40fe2f3b98",
+            "cubin_sha256": "8e575c26836a1e7fd1008708094f61a68ab08aa192c33accb63fdbbe502698dd",
+            "ttgir_sha256": "f553ed3c3e3a4f54354dff04a8861f4265ad6c6ed47a24e39fd4c6f3eef74023",
+            "bar_sync_static_sites": 4,
+            "global_load_static_sites": 7,
+            "target_loads": [],
+            "target_loads_inside_loop": 0
+          }
+        }
+      },
+      "manual_speedup_best_to_best": 0.9571860658848083,
+      "native_speedup_best_to_best": 1.0208793481152931,
+      "confirmed_configurations": [
+        {
+          "multiplier": 1,
+          "warps": 1,
+          "full_forward_seed_speedups": [
+            1.0664759299668003,
+            0.9961801396909723,
+            0.9942702095364584
+          ],
+          "kernel_seed_speedups": [
+            1.0231335355932187,
+            0.9936808979440405,
+            1.002699804551751
+          ]
+        },
+        {
+          "multiplier": 1,
+          "warps": 4,
+          "full_forward_seed_speedups": [
+            0.9442613148786498,
+            0.9320601079185306,
+            1.0007903580586268
+          ],
+          "kernel_seed_speedups": [
+            0.9855649631706875,
+            0.995419812595628,
+            0.9788003732513474
+          ]
+        }
+      ]
+    },
+    {
+      "case": {
+        "split": "heldout",
+        "T": 1024,
+        "N": 64,
+        "C": 128,
+        "U": 128,
+        "dtype": "bfloat16",
+        "target_dtype": "int32",
+        "target_1d": false,
+        "reduction": "mean",
+        "zero_infinity": true,
+        "id": "heldout-T1024-N64-U128-bfloat16-2d"
+      },
+      "best_confirmed": {
+        "original": {
+          "multiplier": 1,
+          "warps": 8,
+          "median_us": 930.8599829673767,
+          "seed_medians_us": [
+            942.6419734954834,
+            930.8599829673767,
+            917.9660081863403
+          ],
+          "resources": {
+            "registers": 38,
+            "spills": 0,
+            "shared_bytes": 2048,
+            "ptx_sha256": "a44ea11028e7038fa5a1c7c0bda43049f22c3461e2be4057f817bb27cc547049",
+            "cubin_sha256": "4031156e55483cfe6561e8bed2c0bf9a51f83007d3b2d849319d6b5b9ee6212b",
+            "ttgir_sha256": "c6ab90299c41d6283b9fd0e9f4124b46ed9cfd3fc881e00af6b6f6dca1e79a56",
+            "bar_sync_static_sites": 10,
+            "global_load_static_sites": 18,
+            "target_loads": [
+              {
+                "ir_line": 65,
+                "loop_depth": 0,
+                "operation": "%target_value = tt.load %target_ptrs_25, %target_mask_23, %cst_2 : tensor<512x!tt.ptr<i32>, #blocked> loc(#loc140)"
+              },
+              {
+                "ir_line": 115,
+                "loop_depth": 1,
+                "operation": "%prev_target_value_56 = tt.load %prev_target_value_46, %prev_target_value, %cst_2 : tensor<512x!tt.ptr<i32>, #blocked> loc(#loc176)"
+              }
+            ],
+            "target_loads_inside_loop": 1
+          }
+        },
+        "immutable": {
+          "multiplier": 1,
+          "warps": 8,
+          "median_us": 908.8259935379028,
+          "seed_medians_us": [
+            922.9959845542908,
+            908.8259935379028,
+            898.9179730415344
+          ],
+          "resources": {
+            "registers": 36,
+            "spills": 0,
+            "shared_bytes": 2048,
+            "ptx_sha256": "d7f1addd4a56797a511812156133cf4cb8ddf0b9d453b86e94867da10e89d0b6",
+            "cubin_sha256": "dd4c7e22614d4f0d9407319f288add9e94f3ca4443534af6100db67e39a32490",
+            "ttgir_sha256": "dfe26e6d4143fe9cac76af12566c9f5dca0dcb0b6fa96586f18bb220c1d28af7",
+            "bar_sync_static_sites": 10,
+            "global_load_static_sites": 18,
+            "target_loads": [
+              {
+                "ir_line": 65,
+                "loop_depth": 0,
+                "operation": "%target_value = tt.load %target_ptrs_25, %target_mask_23, %cst_2 : tensor<512x!tt.ptr<i32>, #blocked> loc(#loc140)"
+              },
+              {
+                "ir_line": 102,
+                "loop_depth": 0,
+                "operation": "%prev_target_value_47 = tt.load %prev_target_value_46, %prev_target_value, %cst_2 : tensor<512x!tt.ptr<i32>, #blocked> loc(#loc165)"
+              }
+            ],
+            "target_loads_inside_loop": 0
+          }
+        },
+        "manual": {
+          "multiplier": 1,
+          "warps": 8,
+          "median_us": 907.3579907417297,
+          "seed_medians_us": [
+            920.881986618042,
+            907.3579907417297,
+            897.6799845695496
+          ],
+          "resources": {
+            "registers": 36,
+            "spills": 0,
+            "shared_bytes": 2048,
+            "ptx_sha256": "69eba4391ca571371aaae084fccd4368539b3b4eca58a40375aeb92d4a96aa1d",
+            "cubin_sha256": "81b4a8c2ae837f97de9deea7625ab18a15237c8268222a123af5f7bc1c44ad7b",
+            "ttgir_sha256": "8719c70a86a0f575702971f576ca80abacd54f05828d57b0b3ee007e28362740",
+            "bar_sync_static_sites": 10,
+            "global_load_static_sites": 18,
+            "target_loads": [
+              {
+                "ir_line": 65,
+                "loop_depth": 0,
+                "operation": "%target_value = tt.load %target_ptrs_25, %target_mask_23, %cst_2 : tensor<512x!tt.ptr<i32>, #blocked> loc(#loc140)"
+              },
+              {
+                "ir_line": 95,
+                "loop_depth": 0,
+                "operation": "%prev_target_value_42 = tt.load %prev_target_value_41, %prev_target_value, %cst_2 : tensor<512x!tt.ptr<i32>, #blocked> loc(#loc158)"
+              }
+            ],
+            "target_loads_inside_loop": 0
+          }
+        }
+      },
+      "manual_speedup_best_to_best": 1.0259015652757244,
+      "native_speedup_best_to_best": 1.0242444533784727,
+      "confirmed_configurations": [
+        {
+          "multiplier": 1,
+          "warps": 8,
+          "full_forward_seed_speedups": [
+            1.0236295064879652,
+            1.0259015652757244,
+            1.0225982799722533
+          ],
+          "kernel_seed_speedups": [
+            1.0203805949778257,
+            1.0201494295113698,
+            1.022739348139658
+          ]
+        }
+      ]
+    },
+    {
+      "case": {
+        "split": "heldout",
+        "T": 128,
+        "N": 512,
+        "C": 32,
+        "U": 24,
+        "dtype": "float32",
+        "target_dtype": "int64",
+        "target_1d": false,
+        "reduction": "none",
+        "zero_infinity": false,
+        "id": "heldout-T128-N512-U24-float32-2d"
+      },
+      "best_confirmed": {
+        "original": {
+          "multiplier": 1,
+          "warps": 2,
+          "median_us": 47.48399928212166,
+          "seed_medians_us": [
+            47.48399928212166,
+            46.81000113487244,
+            49.428001046180725
+          ],
+          "resources": {
+            "registers": 28,
+            "spills": 0,
+            "shared_bytes": 4,
+            "ptx_sha256": "a43c700e11b64f74d87f93577771eaf9aeb03107b7b49e0af68c7299b116f502",
+            "cubin_sha256": "b9747fef85d046a9f9c3bd046cbc741783779a9efb1ed3d5a065b4e54f9f0526",
+            "ttgir_sha256": "f3d92f993ec55c778ab9a39cd5f9f0dd9ca62339f054d06dce2245f8f08d6daa",
+            "bar_sync_static_sites": 9,
+            "global_load_static_sites": 11,
+            "target_loads": [
+              {
+                "ir_line": 63,
+                "loop_depth": 0,
+                "operation": "%target_value = tt.load %target_ptrs_23, %target_mask_21, %cst_6 : tensor<64x!tt.ptr<i64>, #blocked> loc(#loc141)"
+              },
+              {
+                "ir_line": 114,
+                "loop_depth": 1,
+                "operation": "%prev_target_value_55 = tt.load %prev_target_value_45, %prev_target_value, %cst_6 : tensor<64x!tt.ptr<i64>, #blocked> loc(#loc178)"
+              }
+            ],
+            "target_loads_inside_loop": 1
+          }
+        },
+        "immutable": {
+          "multiplier": 1,
+          "warps": 2,
+          "median_us": 46.73999920487404,
+          "seed_medians_us": [
+            46.73999920487404,
+            45.85999995470047,
+            48.66199940443039
+          ],
+          "resources": {
+            "registers": 28,
+            "spills": 0,
+            "shared_bytes": 4,
+            "ptx_sha256": "074ee19a49283acfbdc72d165d84d4d1714b2fc24f6a14402f6e9dae38a06332",
+            "cubin_sha256": "032e073a4429468ede2bb8a5752cec508b952f841bdd0ddc9c73914ad3fb74b1",
+            "ttgir_sha256": "9d178c251f8217f0dcf335fda6f2a6b04be0959bc884d5e4ff19d9a8bac4e8a6",
+            "bar_sync_static_sites": 9,
+            "global_load_static_sites": 11,
+            "target_loads": [
+              {
+                "ir_line": 63,
+                "loop_depth": 0,
+                "operation": "%target_value = tt.load %target_ptrs_23, %target_mask_21, %cst_6 : tensor<64x!tt.ptr<i64>, #blocked> loc(#loc141)"
+              },
+              {
+                "ir_line": 101,
+                "loop_depth": 0,
+                "operation": "%prev_target_value_46 = tt.load %prev_target_value_45, %prev_target_value, %cst_6 : tensor<64x!tt.ptr<i64>, #blocked> loc(#loc167)"
+              }
+            ],
+            "target_loads_inside_loop": 0
+          }
+        },
+        "manual": {
+          "multiplier": 1,
+          "warps": 2,
+          "median_us": 46.77199944853783,
+          "seed_medians_us": [
+            46.77199944853783,
+            46.27799987792969,
+            48.75199869275093
+          ],
+          "resources": {
+            "registers": 32,
+            "spills": 0,
+            "shared_bytes": 4,
+            "ptx_sha256": "bb22ec17798a46f9aefb26e1e1d6f1e054f4a331108c282705f5c00516a58775",
+            "cubin_sha256": "77a43659bacf39507346e13d493eb117a7ce503b143a33288d937957a3ccb92d",
+            "ttgir_sha256": "980d1a1691bb80bc0059add144e6b2ddb3e44a3bacc09b2ad50f481d1de10406",
+            "bar_sync_static_sites": 9,
+            "global_load_static_sites": 11,
+            "target_loads": [
+              {
+                "ir_line": 63,
+                "loop_depth": 0,
+                "operation": "%target_value = tt.load %target_ptrs_23, %target_mask_21, %cst_6 : tensor<64x!tt.ptr<i64>, #blocked> loc(#loc141)"
+              },
+              {
+                "ir_line": 94,
+                "loop_depth": 0,
+                "operation": "%prev_target_value_41 = tt.load %prev_target_value_40, %prev_target_value, %cst_6 : tensor<64x!tt.ptr<i64>, #blocked> loc(#loc160)"
+              }
+            ],
+            "target_loads_inside_loop": 0
+          }
+        }
+      },
+      "manual_speedup_best_to_best": 1.0152227794829944,
+      "native_speedup_best_to_best": 1.0159178453124584,
+      "confirmed_configurations": [
+        {
+          "multiplier": 1,
+          "warps": 2,
+          "full_forward_seed_speedups": [
+            1.0152227794829944,
+            1.0114957703087004,
+            1.013866146446429
+          ],
+          "kernel_seed_speedups": [
+            1.0152583728473044,
+            1.0133031503092733,
+            1.0161104414152091
+          ]
+        }
+      ]
+    },
+    {
+      "case": {
+        "split": "heldout",
+        "T": 256,
+        "N": 128,
+        "C": 64,
+        "U": 48,
+        "dtype": "float32",
+        "target_dtype": "int32",
+        "target_1d": true,
+        "reduction": "mean",
+        "zero_infinity": true,
+        "id": "heldout-T256-N128-U48-float32-1d"
+      },
+      "best_confirmed": {
+        "original": {
+          "multiplier": 1,
+          "warps": 4,
+          "median_us": 107.06599801778793,
+          "seed_medians_us": [
+            115.9840002655983,
+            107.06599801778793,
+            104.16600108146667
+          ],
+          "resources": {
+            "registers": 32,
+            "spills": 0,
+            "shared_bytes": 4,
+            "ptx_sha256": "ecceb8b34c7b7e953c0e96beeccc3885cf1da2a51a8634d027e2671e4e24d34c",
+            "cubin_sha256": "a960f465b913ac1fff1a05aa96918af592018cc9c8780cafd037293fb11d097d",
+            "ttgir_sha256": "465837675ad8b4380d5a21075165efd98baea200cc44fbcdc1295a534b2609d1",
+            "bar_sync_static_sites": 9,
+            "global_load_static_sites": 12,
+            "target_loads": [
+              {
+                "ir_line": 69,
+                "loop_depth": 0,
+                "operation": "%target_value = tt.load %target_ptrs_22, %target_mask_20, %cst_7 : tensor<128x!tt.ptr<i32>, #blocked> loc(#loc149)"
+              },
+              {
+                "ir_line": 120,
+                "loop_depth": 1,
+                "operation": "%prev_target_value_54 = tt.load %prev_target_value_44, %prev_target_value, %cst_7 : tensor<128x!tt.ptr<i32>, #blocked> loc(#loc186)"
+              }
+            ],
+            "target_loads_inside_loop": 1
+          }
+        },
+        "immutable": {
+          "multiplier": 1,
+          "warps": 4,
+          "median_us": 104.2179986834526,
+          "seed_medians_us": [
+            113.95200341939926,
+            104.2179986834526,
+            101.92800313234329
+          ],
+          "resources": {
+            "registers": 31,
+            "spills": 0,
+            "shared_bytes": 4,
+            "ptx_sha256": "f0c942da1b617598ba726240e6cd9a7eea2e626e12764d7b3a38a51ab5a38a38",
+            "cubin_sha256": "2524456b8ed7fe761f34f83d3c64b2c69e6a991d8b6f6e4e24c1b19b7c2a7779",
+            "ttgir_sha256": "bdc65844ed878581735e5c301dd4844519119b6b26440a43adbb8cd100bd1a2a",
+            "bar_sync_static_sites": 9,
+            "global_load_static_sites": 12,
+            "target_loads": [
+              {
+                "ir_line": 69,
+                "loop_depth": 0,
+                "operation": "%target_value = tt.load %target_ptrs_22, %target_mask_20, %cst_7 : tensor<128x!tt.ptr<i32>, #blocked> loc(#loc149)"
+              },
+              {
+                "ir_line": 107,
+                "loop_depth": 0,
+                "operation": "%prev_target_value_45 = tt.load %prev_target_value_44, %prev_target_value, %cst_7 : tensor<128x!tt.ptr<i32>, #blocked> loc(#loc175)"
+              }
+            ],
+            "target_loads_inside_loop": 0
+          }
+        },
+        "manual": {
+          "multiplier": 1,
+          "warps": 4,
+          "median_us": 104.69599813222885,
+          "seed_medians_us": [
+            113.21999877691269,
+            104.69599813222885,
+            101.8960028886795
+          ],
+          "resources": {
+            "registers": 31,
+            "spills": 0,
+            "shared_bytes": 4,
+            "ptx_sha256": "fc2abdba3ddb39e03a0c70d6e9e0e8b63e1a75bf0c89ffb93453737b718eff64",
+            "cubin_sha256": "9c876a969a04bddf8534bf170aed7186da517d9c64d72e25e03228de44b43d49",
+            "ttgir_sha256": "ed6b2aaac66cf09336baef04b8b98e407dc4d888fddf68292a6f8e6dc65ccc7b",
+            "bar_sync_static_sites": 9,
+            "global_load_static_sites": 12,
+            "target_loads": [
+              {
+                "ir_line": 69,
+                "loop_depth": 0,
+                "operation": "%target_value = tt.load %target_ptrs_22, %target_mask_20, %cst_7 : tensor<128x!tt.ptr<i32>, #blocked> loc(#loc149)"
+              },
+              {
+                "ir_line": 100,
+                "loop_depth": 0,
+                "operation": "%prev_target_value_40 = tt.load %prev_target_value_39, %prev_target_value, %cst_7 : tensor<128x!tt.ptr<i32>, #blocked> loc(#loc168)"
+              }
+            ],
+            "target_loads_inside_loop": 0
+          }
+        }
+      },
+      "manual_speedup_best_to_best": 1.0226369672942592,
+      "native_speedup_best_to_best": 1.027327327048236,
+      "confirmed_configurations": [
+        {
+          "multiplier": 1,
+          "warps": 4,
+          "full_forward_seed_speedups": [
+            1.0244126613543934,
+            1.0226369672942592,
+            1.0222775980257746
+          ],
+          "kernel_seed_speedups": [
+            1.0183207789565674,
+            1.027386357080392,
+            1.020586311051536
+          ]
+        }
+      ]
+    },
+    {
+      "case": {
+        "split": "heldout",
+        "T": 64,
+        "N": 32,
+        "C": 128,
+        "U": 24,
+        "dtype": "float32",
+        "target_dtype": "int64",
+        "target_1d": false,
+        "reduction": "sum",
+        "zero_infinity": false,
+        "id": "heldout-T64-N32-U24-float32-2d"
+      },
+      "best_confirmed": {
+        "original": {
+          "multiplier": 1,
+          "warps": 2,
+          "median_us": 27.038000524044037,
+          "seed_medians_us": [
+            27.796000242233276,
+            25.019999593496323,
+            27.038000524044037
+          ],
+          "resources": {
+            "registers": 28,
+            "spills": 0,
+            "shared_bytes": 4,
+            "ptx_sha256": "30199dd0e81c03874b2f3de0e06554c372ec49133ce95549a658894c70310fc2",
+            "cubin_sha256": "dd8d529833d6bcea955a174d058635cc98cc49af0cfe17bc29292668ccf5c89e",
+            "ttgir_sha256": "3f63e8cf126ed10ccca7883208acdb85146e42bf245659b614c9f39538c2b1e5",
+            "bar_sync_static_sites": 9,
+            "global_load_static_sites": 11,
+            "target_loads": [
+              {
+                "ir_line": 63,
+                "loop_depth": 0,
+                "operation": "%target_value = tt.load %target_ptrs_23, %target_mask_21, %cst_6 : tensor<64x!tt.ptr<i64>, #blocked> loc(#loc141)"
+              },
+              {
+                "ir_line": 114,
+                "loop_depth": 1,
+                "operation": "%prev_target_value_55 = tt.load %prev_target_value_45, %prev_target_value, %cst_6 : tensor<64x!tt.ptr<i64>, #blocked> loc(#loc178)"
+              }
+            ],
+            "target_loads_inside_loop": 1
+          }
+        },
+        "immutable": {
+          "multiplier": 1,
+          "warps": 2,
+          "median_us": 27.003999799489975,
+          "seed_medians_us": [
+            27.31800079345703,
+            25.12199990451336,
+            27.003999799489975
+          ],
+          "resources": {
+            "registers": 28,
+            "spills": 0,
+            "shared_bytes": 4,
+            "ptx_sha256": "a6955648865a8f35c8e353cc4648c42f2faef3f92555217beeb62ea682401299",
+            "cubin_sha256": "0fb75ec91c9ed52355ac57fc3945cee4bbb058116d3a56f5b230a8732ed0146d",
+            "ttgir_sha256": "0daa40a66c559f96d48592af6b85a9cbbb79c3b8d56c25278cb43c1f244a4691",
+            "bar_sync_static_sites": 9,
+            "global_load_static_sites": 11,
+            "target_loads": [
+              {
+                "ir_line": 63,
+                "loop_depth": 0,
+                "operation": "%target_value = tt.load %target_ptrs_23, %target_mask_21, %cst_6 : tensor<64x!tt.ptr<i64>, #blocked> loc(#loc141)"
+              },
+              {
+                "ir_line": 101,
+                "loop_depth": 0,
+                "operation": "%prev_target_value_46 = tt.load %prev_target_value_45, %prev_target_value, %cst_6 : tensor<64x!tt.ptr<i64>, #blocked> loc(#loc167)"
+              }
+            ],
+            "target_loads_inside_loop": 0
+          }
+        },
+        "manual": {
+          "multiplier": 1,
+          "warps": 2,
+          "median_us": 26.920000091195107,
+          "seed_medians_us": [
+            27.465999126434326,
+            24.884000420570374,
+            26.920000091195107
+          ],
+          "resources": {
+            "registers": 32,
+            "spills": 0,
+            "shared_bytes": 4,
+            "ptx_sha256": "37b4b319824caec8a37daf0a99477d578959a2b14d7903ef579066f627a7c76a",
+            "cubin_sha256": "d5caba9525bac9c542f7cc3b0c93cebbe9a3889e80d125adb5345d0a71c6918f",
+            "ttgir_sha256": "f4423d6482973ce4ea40c4dfc69d42c48d498a90f684e8d8f71b3b266c29b941",
+            "bar_sync_static_sites": 9,
+            "global_load_static_sites": 11,
+            "target_loads": [
+              {
+                "ir_line": 63,
+                "loop_depth": 0,
+                "operation": "%target_value = tt.load %target_ptrs_23, %target_mask_21, %cst_6 : tensor<64x!tt.ptr<i64>, #blocked> loc(#loc141)"
+              },
+              {
+                "ir_line": 94,
+                "loop_depth": 0,
+                "operation": "%prev_target_value_41 = tt.load %prev_target_value_40, %prev_target_value, %cst_6 : tensor<64x!tt.ptr<i64>, #blocked> loc(#loc160)"
+              }
+            ],
+            "target_loads_inside_loop": 0
+          }
+        }
+      },
+      "manual_speedup_best_to_best": 1.0043833741623027,
+      "native_speedup_best_to_best": 1.0012590995706756,
+      "confirmed_configurations": [
+        {
+          "multiplier": 1,
+          "warps": 2,
+          "full_forward_seed_speedups": [
+            1.012014895736356,
+            1.0054653259374455,
+            1.0043833741623027
+          ],
+          "kernel_seed_speedups": [
+            1.0158133236962503,
+            1.0070653297421523,
+            1.013413879438439
+          ]
+        }
+      ]
+    },
+    {
+      "case": {
+        "split": "training",
+        "T": 128,
+        "N": 32,
+        "C": 64,
+        "U": 32,
+        "dtype": "float32",
+        "target_dtype": "int64",
+        "target_1d": false,
+        "reduction": "mean",
+        "zero_infinity": true,
+        "id": "training-T128-N32-U32-float32-2d"
+      },
+      "best_confirmed": {
+        "original": {
+          "multiplier": 1,
+          "warps": 4,
+          "median_us": 55.955998599529266,
+          "seed_medians_us": [
+            56.102000176906586,
+            55.955998599529266,
+            52.9399998486042
+          ],
+          "resources": {
+            "registers": 28,
+            "spills": 0,
+            "shared_bytes": 4,
+            "ptx_sha256": "4a5a053b5f4a8ff008eb5b1d2e36d7608aff3247295531f810003c53ffd18e66",
+            "cubin_sha256": "9a098dc17794df1eaadd2dd7548830fe5c7095768002bdf8b8e7606d2f5c65b8",
+            "ttgir_sha256": "ce58fde8dfd643d7a7db5a22d539a2beba9d417ca0b1a6ca9e8c8d6c8d2743db",
+            "bar_sync_static_sites": 9,
+            "global_load_static_sites": 11,
+            "target_loads": [
+              {
+                "ir_line": 63,
+                "loop_depth": 0,
+                "operation": "%target_value = tt.load %target_ptrs_23, %target_mask_21, %cst_6 : tensor<128x!tt.ptr<i64>, #blocked> loc(#loc141)"
+              },
+              {
+                "ir_line": 114,
+                "loop_depth": 1,
+                "operation": "%prev_target_value_55 = tt.load %prev_target_value_45, %prev_target_value, %cst_6 : tensor<128x!tt.ptr<i64>, #blocked> loc(#loc178)"
+              }
+            ],
+            "target_loads_inside_loop": 1
+          }
+        },
+        "immutable": {
+          "multiplier": 1,
+          "warps": 4,
+          "median_us": 55.521998554468155,
+          "seed_medians_us": [
+            55.521998554468155,
+            55.94399943947792,
+            52.06400156021118
+          ],
+          "resources": {
+            "registers": 28,
+            "spills": 0,
+            "shared_bytes": 4,
+            "ptx_sha256": "1585896de7c2ba5a1a5e2709839d08fe167b1cf5fc8a3f6e05ce7ef6d2050156",
+            "cubin_sha256": "6d723bbc47a96c2d41675406eeeed8911cc10bb07a7a735b9acfeed05460014a",
+            "ttgir_sha256": "ea288167dd664ad6e295f4c780c9bc9f85fb6b33488428752a77b09bd4c2f08f",
+            "bar_sync_static_sites": 9,
+            "global_load_static_sites": 11,
+            "target_loads": [
+              {
+                "ir_line": 63,
+                "loop_depth": 0,
+                "operation": "%target_value = tt.load %target_ptrs_23, %target_mask_21, %cst_6 : tensor<128x!tt.ptr<i64>, #blocked> loc(#loc141)"
+              },
+              {
+                "ir_line": 101,
+                "loop_depth": 0,
+                "operation": "%prev_target_value_46 = tt.load %prev_target_value_45, %prev_target_value, %cst_6 : tensor<128x!tt.ptr<i64>, #blocked> loc(#loc167)"
+              }
+            ],
+            "target_loads_inside_loop": 0
+          }
+        },
+        "manual": {
+          "multiplier": 1,
+          "warps": 4,
+          "median_us": 55.257998406887054,
+          "seed_medians_us": [
+            55.257998406887054,
+            55.90000003576279,
+            52.361998707056046
+          ],
+          "resources": {
+            "registers": 32,
+            "spills": 0,
+            "shared_bytes": 4,
+            "ptx_sha256": "d17fed24ff586649999bac58c49ce32f9072bc44762cc924c1b21fca6a729f5b",
+            "cubin_sha256": "5ac22e9147e9341e42f4ca1e19dc74e171e8cb6ac0b6c3e13f540af9f53dd5a3",
+            "ttgir_sha256": "41f1eb3d31bf2aed61ee348b3317ca003f1baa74699dc63d5bad6d200a9acc91",
+            "bar_sync_static_sites": 9,
+            "global_load_static_sites": 11,
+            "target_loads": [
+              {
+                "ir_line": 63,
+                "loop_depth": 0,
+                "operation": "%target_value = tt.load %target_ptrs_23, %target_mask_21, %cst_6 : tensor<128x!tt.ptr<i64>, #blocked> loc(#loc141)"
+              },
+              {
+                "ir_line": 94,
+                "loop_depth": 0,
+                "operation": "%prev_target_value_41 = tt.load %prev_target_value_40, %prev_target_value, %cst_6 : tensor<128x!tt.ptr<i64>, #blocked> loc(#loc160)"
+              }
+            ],
+            "target_loads_inside_loop": 0
+          }
+        }
+      },
+      "manual_speedup_best_to_best": 1.0126316589953648,
+      "native_speedup_best_to_best": 1.0078167223147658,
+      "confirmed_configurations": [
+        {
+          "multiplier": 1,
+          "warps": 4,
+          "full_forward_seed_speedups": [
+            1.0152738389799212,
+            1.0010017632152175,
+            1.0110385614724495
+          ],
+          "kernel_seed_speedups": [
+            1.0043705947384618,
+            1.0070018107914622,
+            0.9998705994052556
+          ]
+        }
+      ]
+    },
+    {
+      "case": {
+        "split": "training",
+        "T": 256,
+        "N": 256,
+        "C": 64,
+        "U": 64,
+        "dtype": "bfloat16",
+        "target_dtype": "int64",
+        "target_1d": true,
+        "reduction": "mean",
+        "zero_infinity": true,
+        "id": "training-T256-N256-U64-bfloat16-1d"
+      },
+      "best_confirmed": {
+        "original": {
+          "multiplier": 1,
+          "warps": 8,
+          "median_us": 146.83400094509125,
+          "seed_medians_us": [
+            146.83400094509125,
+            146.7600017786026,
+            149.1439938545227
+          ],
+          "resources": {
+            "registers": 32,
+            "spills": 0,
+            "shared_bytes": 4,
+            "ptx_sha256": "af0c0444ebdf25d8ebc3c77ea12cbb274aa8c68ac0cfe9fcb8ad99739394b4c0",
+            "cubin_sha256": "3cc1801b3f4053a79c31d328789a50f52a3d76b5ee5cefd8fd0b22dd42babb5f",
+            "ttgir_sha256": "9905817d9a3d32d8f463011d762cf068c4f8f9ca34deb0ad06e09efe4408a8c6",
+            "bar_sync_static_sites": 9,
+            "global_load_static_sites": 12,
+            "target_loads": [
+              {
+                "ir_line": 69,
+                "loop_depth": 0,
+                "operation": "%target_value = tt.load %target_ptrs_23, %target_mask_21, %cst_6 : tensor<256x!tt.ptr<i64>, #blocked> loc(#loc149)"
+              },
+              {
+                "ir_line": 120,
+                "loop_depth": 1,
+                "operation": "%prev_target_value_55 = tt.load %prev_target_value_45, %prev_target_value, %cst_6 : tensor<256x!tt.ptr<i64>, #blocked> loc(#loc186)"
+              }
+            ],
+            "target_loads_inside_loop": 1
+          }
+        },
+        "immutable": {
+          "multiplier": 1,
+          "warps": 8,
+          "median_us": 139.9800032377243,
+          "seed_medians_us": [
+            139.9800032377243,
+            139.44199681282043,
+            142.40999519824982
+          ],
+          "resources": {
+            "registers": 30,
+            "spills": 0,
+            "shared_bytes": 4,
+            "ptx_sha256": "49b405fd877197d27ec869b92654a57bb5134c02117b619ddbc97cf8152e941d",
+            "cubin_sha256": "f1f3d5b62e59fae5ef95b5733af500ea3d306cfd5abb6aa93eb571cea885543d",
+            "ttgir_sha256": "e6bb43a1a7a0e59c9172491ace3fee4787f285f22d43943fb6d853cf71e8469e",
+            "bar_sync_static_sites": 9,
+            "global_load_static_sites": 12,
+            "target_loads": [
+              {
+                "ir_line": 69,
+                "loop_depth": 0,
+                "operation": "%target_value = tt.load %target_ptrs_23, %target_mask_21, %cst_6 : tensor<256x!tt.ptr<i64>, #blocked> loc(#loc149)"
+              },
+              {
+                "ir_line": 107,
+                "loop_depth": 0,
+                "operation": "%prev_target_value_46 = tt.load %prev_target_value_45, %prev_target_value, %cst_6 : tensor<256x!tt.ptr<i64>, #blocked> loc(#loc175)"
+              }
+            ],
+            "target_loads_inside_loop": 0
+          }
+        },
+        "manual": {
+          "multiplier": 1,
+          "warps": 8,
+          "median_us": 139.26200568675995,
+          "seed_medians_us": [
+            139.26200568675995,
+            139.12400603294373,
+            143.19999516010284
+          ],
+          "resources": {
+            "registers": 32,
+            "spills": 0,
+            "shared_bytes": 4,
+            "ptx_sha256": "666224a285de47a4dd3cb62e48e5a8ede9cfdb26cdcf5b9767f3e55a81266226",
+            "cubin_sha256": "00819428bb7e28b7a81f3a67ad3131f4ccce54207cb3bab7ab28df2c611340c8",
+            "ttgir_sha256": "307e40a8167c6348701961d18e4a0fa1fadf9f8afc3275869e24e0a887bf01ab",
+            "bar_sync_static_sites": 9,
+            "global_load_static_sites": 12,
+            "target_loads": [
+              {
+                "ir_line": 69,
+                "loop_depth": 0,
+                "operation": "%target_value = tt.load %target_ptrs_23, %target_mask_21, %cst_6 : tensor<256x!tt.ptr<i64>, #blocked> loc(#loc149)"
+              },
+              {
+                "ir_line": 100,
+                "loop_depth": 0,
+                "operation": "%prev_target_value_41 = tt.load %prev_target_value_40, %prev_target_value, %cst_6 : tensor<256x!tt.ptr<i64>, #blocked> loc(#loc168)"
+              }
+            ],
+            "target_loads_inside_loop": 0
+          }
+        }
+      },
+      "manual_speedup_best_to_best": 1.0543722978926706,
+      "native_speedup_best_to_best": 1.0489641202231363,
+      "confirmed_configurations": [
+        {
+          "multiplier": 1,
+          "warps": 8,
+          "full_forward_seed_speedups": [
+            1.0543722978926706,
+            1.0548862555312757,
+            1.0415083721739953
+          ],
+          "kernel_seed_speedups": [
+            1.0792418971276254,
+            1.0826872254823292,
+            1.0626148192288718
+          ]
+        }
+      ]
+    },
+    {
+      "case": {
+        "split": "training",
+        "T": 32,
+        "N": 4,
+        "C": 64,
+        "U": 16,
+        "dtype": "float32",
+        "target_dtype": "int32",
+        "target_1d": false,
+        "reduction": "mean",
+        "zero_infinity": true,
+        "id": "training-T32-N4-U16-float32-2d"
+      },
+      "best_confirmed": {
+        "original": {
+          "multiplier": 1,
+          "warps": 4,
+          "median_us": 19.217999652028084,
+          "seed_medians_us": [
+            19.217999652028084,
+            18.998000770807266,
+            19.55600082874298
+          ],
+          "resources": {
+            "registers": 30,
+            "spills": 0,
+            "shared_bytes": 4,
+            "ptx_sha256": "a000df562262be5c2fcaa7436d7d00ee9d7eb37653a4d58e97ab9e184bc64c97",
+            "cubin_sha256": "52137153f6ec86b1705edf2a809022ce0d08e3356b955c8e87de9da65e8e97c9",
+            "ttgir_sha256": "3553c80b8a963c76e690b26c195813dfad4f228ef9703656ab826c0b0f5976e6",
+            "bar_sync_static_sites": 9,
+            "global_load_static_sites": 11,
+            "target_loads": [
+              {
+                "ir_line": 62,
+                "loop_depth": 0,
+                "operation": "%target_value = tt.load %target_ptrs_22, %target_mask_20, %cst_7 : tensor<64x!tt.ptr<i32>, #blocked> loc(#loc141)"
+              },
+              {
+                "ir_line": 113,
+                "loop_depth": 1,
+                "operation": "%prev_target_value_54 = tt.load %prev_target_value_44, %prev_target_value, %cst_7 : tensor<64x!tt.ptr<i32>, #blocked> loc(#loc178)"
+              }
+            ],
+            "target_loads_inside_loop": 1
+          }
+        },
+        "immutable": {
+          "multiplier": 1,
+          "warps": 2,
+          "median_us": 18.969999626278877,
+          "seed_medians_us": [
+            18.969999626278877,
+            18.710000440478325,
+            20.239999517798424
+          ],
+          "resources": {
+            "registers": 31,
+            "spills": 0,
+            "shared_bytes": 4,
+            "ptx_sha256": "dc76543f7bfa5e18a10e71cb5913adaf8daf0f14309ea445e7ad5b8390e8d73f",
+            "cubin_sha256": "57d524ce1a7f6059e0792bf9dff4e07a40fed61b5bce17e64eed8a23718bf0fa",
+            "ttgir_sha256": "53278811b3345584da8f2123f47a520ecaa3bd20d3ad6e8bd6dd37581518b48b",
+            "bar_sync_static_sites": 9,
+            "global_load_static_sites": 11,
+            "target_loads": [
+              {
+                "ir_line": 62,
+                "loop_depth": 0,
+                "operation": "%target_value = tt.load %target_ptrs_22, %target_mask_20, %cst_7 : tensor<64x!tt.ptr<i32>, #blocked> loc(#loc141)"
+              },
+              {
+                "ir_line": 100,
+                "loop_depth": 0,
+                "operation": "%prev_target_value_45 = tt.load %prev_target_value_44, %prev_target_value, %cst_7 : tensor<64x!tt.ptr<i32>, #blocked> loc(#loc167)"
+              }
+            ],
+            "target_loads_inside_loop": 0
+          }
+        },
+        "manual": {
+          "multiplier": 1,
+          "warps": 2,
+          "median_us": 19.311999902129173,
+          "seed_medians_us": [
+            18.045999109745026,
+            19.435999915003777,
+            19.311999902129173
+          ],
+          "resources": {
+            "registers": 31,
+            "spills": 0,
+            "shared_bytes": 4,
+            "ptx_sha256": "9d9bc6b6b00f5baa6ab0944f813464fb65a747f2d698f20ca6fb79e50ef1a0ab",
+            "cubin_sha256": "5f5226d358946dd0007fb7579731f5a849aecc3922a9c3b2764d2f3008ef8ae3",
+            "ttgir_sha256": "7fb771d3611c17949a23c20cea5896b44755fe8e153eb85e2ba6cbb7d41545d8",
+            "bar_sync_static_sites": 9,
+            "global_load_static_sites": 11,
+            "target_loads": [
+              {
+                "ir_line": 62,
+                "loop_depth": 0,
+                "operation": "%target_value = tt.load %target_ptrs_22, %target_mask_20, %cst_7 : tensor<64x!tt.ptr<i32>, #blocked> loc(#loc141)"
+              },
+              {
+                "ir_line": 93,
+                "loop_depth": 0,
+                "operation": "%prev_target_value_40 = tt.load %prev_target_value_39, %prev_target_value, %cst_7 : tensor<64x!tt.ptr<i32>, #blocked> loc(#loc160)"
+              }
+            ],
+            "target_loads_inside_loop": 0
+          }
+        }
+      },
+      "manual_speedup_best_to_best": 0.9951325470910589,
+      "native_speedup_best_to_best": 1.0130732752047953,
+      "confirmed_configurations": [
+        {
+          "multiplier": 1,
+          "warps": 2,
+          "full_forward_seed_speedups": [
+            1.0625069929189341,
+            1.0144062703559102,
+            1.0609983496416058
+          ],
+          "kernel_seed_speedups": [
+            1.0216236598326693,
+            1.0267196596326227,
+            1.0198652116112388
+          ]
+        },
+        {
+          "multiplier": 1,
+          "warps": 4,
+          "full_forward_seed_speedups": [
+            1.0491320213605282,
+            0.9666226009345827,
+            0.9667787464346801
+          ],
+          "kernel_seed_speedups": [
+            1.0124976330404962,
+            1.0110477561713813,
+            1.0020568435604809
+          ]
+        },
+        {
+          "multiplier": 1,
+          "warps": 8,
+          "full_forward_seed_speedups": [
+            1.0085788527491872,
+            1.0455958143180273,
+            1.0394750067533813
+          ],
+          "kernel_seed_speedups": [
+            1.0118354448625486,
+            1.010656584008721,
+            1.0100033329174627
+          ]
+        }
+      ]
+    },
+    {
+      "case": {
+        "split": "training",
+        "T": 512,
+        "N": 128,
+        "C": 128,
+        "U": 64,
+        "dtype": "float32",
+        "target_dtype": "int32",
+        "target_1d": false,
+        "reduction": "mean",
+        "zero_infinity": true,
+        "id": "training-T512-N128-U64-float32-2d"
+      },
+      "best_confirmed": {
+        "original": {
+          "multiplier": 1,
+          "warps": 8,
+          "median_us": 212.46999502182007,
+          "seed_medians_us": [
+            209.93199944496155,
+            212.46999502182007,
+            218.55799853801727
+          ],
+          "resources": {
+            "registers": 32,
+            "spills": 0,
+            "shared_bytes": 4,
+            "ptx_sha256": "bcc8a8b8a537cd2e5e7b72d75263a2b9a314bb943b79178bc1d820b4b6175af9",
+            "cubin_sha256": "a6e648196f7de4c25ce4459635dfbb58aed2a6c2ed831e239b7055a51f1ef5d2",
+            "ttgir_sha256": "f59da019d1b1ed9f767ca1bb36c17b7b189cd05af442a9c1d12f13a687067efd",
+            "bar_sync_static_sites": 9,
+            "global_load_static_sites": 11,
+            "target_loads": [
+              {
+                "ir_line": 62,
+                "loop_depth": 0,
+                "operation": "%target_value = tt.load %target_ptrs_22, %target_mask_20, %cst_7 : tensor<256x!tt.ptr<i32>, #blocked> loc(#loc141)"
+              },
+              {
+                "ir_line": 113,
+                "loop_depth": 1,
+                "operation": "%prev_target_value_54 = tt.load %prev_target_value_44, %prev_target_value, %cst_7 : tensor<256x!tt.ptr<i32>, #blocked> loc(#loc178)"
+              }
+            ],
+            "target_loads_inside_loop": 1
+          }
+        },
+        "immutable": {
+          "multiplier": 1,
+          "warps": 8,
+          "median_us": 209.14000272750854,
+          "seed_medians_us": [
+            209.14000272750854,
+            207.04199373722076,
+            213.62599730491638
+          ],
+          "resources": {
+            "registers": 31,
+            "spills": 0,
+            "shared_bytes": 4,
+            "ptx_sha256": "b7e812f1de74988195eecd60f9a1dcf56d9565c09be6650b26c2a3fe98c2466e",
+            "cubin_sha256": "70b9fa2d1f52e239da0ae654333760e4b02edecdb7e50fefdd0ff5456c1bdc52",
+            "ttgir_sha256": "f1f56dbd82e91945408222d39fd47faa019efee4cddaf6163d6f469d155721c6",
+            "bar_sync_static_sites": 9,
+            "global_load_static_sites": 11,
+            "target_loads": [
+              {
+                "ir_line": 62,
+                "loop_depth": 0,
+                "operation": "%target_value = tt.load %target_ptrs_22, %target_mask_20, %cst_7 : tensor<256x!tt.ptr<i32>, #blocked> loc(#loc141)"
+              },
+              {
+                "ir_line": 100,
+                "loop_depth": 0,
+                "operation": "%prev_target_value_45 = tt.load %prev_target_value_44, %prev_target_value, %cst_7 : tensor<256x!tt.ptr<i32>, #blocked> loc(#loc167)"
+              }
+            ],
+            "target_loads_inside_loop": 0
+          }
+        },
+        "manual": {
+          "multiplier": 1,
+          "warps": 8,
+          "median_us": 209.27800238132477,
+          "seed_medians_us": [
+            209.27800238132477,
+            207.177996635437,
+            213.48999440670013
+          ],
+          "resources": {
+            "registers": 31,
+            "spills": 0,
+            "shared_bytes": 4,
+            "ptx_sha256": "c4f85d623e59991acb7a15059033634d91c41a484c8df4853faaf45d3110a110",
+            "cubin_sha256": "fd70cc75687372d256f6789461622df39ba1c2d43e5a06e768caac02be9bbfe4",
+            "ttgir_sha256": "295c89cf22e5ec53c03b9361a3219dbc7f8d622b538f24ab6e07351c15b8db3f",
+            "bar_sync_static_sites": 9,
+            "global_load_static_sites": 11,
+            "target_loads": [
+              {
+                "ir_line": 62,
+                "loop_depth": 0,
+                "operation": "%target_value = tt.load %target_ptrs_22, %target_mask_20, %cst_7 : tensor<256x!tt.ptr<i32>, #blocked> loc(#loc141)"
+              },
+              {
+                "ir_line": 93,
+                "loop_depth": 0,
+                "operation": "%prev_target_value_40 = tt.load %prev_target_value_39, %prev_target_value, %cst_7 : tensor<256x!tt.ptr<i32>, #blocked> loc(#loc160)"
+              }
+            ],
+            "target_loads_inside_loop": 0
+          }
+        }
+      },
+      "manual_speedup_best_to_best": 1.0152524039993425,
+      "native_speedup_best_to_best": 1.0159223116136715,
+      "confirmed_configurations": [
+        {
+          "multiplier": 1,
+          "warps": 8,
+          "full_forward_seed_speedups": [
+            1.0031250157981015,
+            1.02554324528823,
+            1.0237388367796878
+          ],
+          "kernel_seed_speedups": [
+            1.0047732985727176,
+            1.024966586758225,
+            1.0251923977223651
+          ]
+        }
+      ]
+    }
+  ],
+  "records": 51,
+  "all_validation_passed": true,
+  "scope": "Complete training-forward GPU work including input conversion, 1D offsets, recurrence/full log_alpha, zero_infinity, loss reduction/output conversion. No backward, host length-stat/dispatch checks, allocator latency or log_softmax preparation.",
+  "native_immutable": "Inspect each variant's target-load loop depth, unchanged barrier count, resources and baseline/native PTX hashes. In the original source gate native was a no-op; --native-followup verifies actual compiler hoisting."
+}

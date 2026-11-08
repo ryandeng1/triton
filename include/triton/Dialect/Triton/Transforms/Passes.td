@@ -76,7 +76,14 @@ def TritonLoopInvariantCodeMotion : Pass</*cli-arg*/"triton-licm", /*Op*/"mlir::
     entering a loop does not imply reaching a load after a nested region.
     Unknown initial conditions remain unsupported. Volatile
     accesses and loops with assertions, calls, or other unknown effects are
-    not eligible for this extension.
+    not eligible for this extension. An ordinary load rooted in an explicitly
+    immutable global pointer argument may also move across existing CTA-scoped
+    `ttg.barrier` operations: initialization at entry and invariance through all
+    aliases exclude barrier-mediated publication of new input values. The
+    barriers retain their positions and their ordering of all other accesses.
+    This exception does not extend to shared/tensor inputs, warp-scoped barriers,
+    async operations, or the weaker alias-only inference below. Original masks,
+    loop-entry guards and straight-line-prefix checks still apply.
 
     A second opt-in derives read invariance from weaker caller facts. Argument
     attribute `tt.experimental_alias_group = N : i32`, with nonnegative N,
@@ -93,9 +100,15 @@ def TritonLoopInvariantCodeMotion : Pass</*cli-arg*/"triton-licm", /*Op*/"mlir::
     async operations and other unknown effects conservatively prevent this
     inference. Callers must establish the region disjointness facts; this pass
     does not inspect runtime storage addresses.
+    Pointer provenance also follows bounded scf.for recurrences whose backedge
+    derives from the same carried pointer, including validated nested for results.
+    A stable allocation root does not make an advancing address loop-invariant;
+    ordinary LICM operand checks remain necessary. Root-changing recurrences,
+    cross-carried pointers, selections and unknown pointer operations are rejected.
   }];
 
-  let dependentDialects = ["mlir::triton::TritonDialect"];
+  let dependentDialects = ["mlir::triton::TritonDialect",
+                           "mlir::triton::gpu::TritonGPUDialect"];
 }
 
 def TritonLoopAwareCSE : Pass<"triton-loop-aware-cse", "mlir::ModuleOp"> {
@@ -207,6 +220,53 @@ def TritonRelaxPrivateAtomics : Pass<"triton-relax-private-atomics", "mlir::Modu
     Option<"target", "target", "std::string", "\"\"", "Target architecture; only cuda is supported">
   ];
   let dependentDialects = ["mlir::triton::TritonDialect", "mlir::scf::SCFDialect"];
+}
+
+def TritonPrivateReductionOwnership : Pass<"triton-private-reduction-ownership", "mlir::ModuleOp"> {
+  let summary = "Assign owners to bounded private lock/count reductions";
+  let description = [{
+    Experimental CUDA-only transformation of a public, uncalled entry kernel.
+    Recognize one row computation and disjoint row store followed by a private
+    lock/count reduction: lock index program_id(x) % G, empty acquire-release
+    CAS spin loop, count-controlled first assignment versus new+old additions
+    to two rank-one FP32 partial buffers, stores, a CTA barrier and unlock.
+    Recognition follows IR roles and addresses, not kernel or argument names.
+
+    All four mutated pointer roots require tt.experimental_private = 1 : i32,
+    meaning initialized storage and no outside access during the invocation.
+    Their distinct nonnegative tt.experimental_alias_group values prove disjoint
+    actual footprints, including all derived accesses. Ordinary input reads must
+    belong to groups disjoint from every mutated root. Readonly inputs may alias
+    one another. Calls, inline assembly, other control regions, extra writes and
+    unknown effects are rejected; pure arithmetic/math reduce combiners are allowed.
+
+    The lock/count argument requires tt.experimental_initial_zero = 1 : i32 for
+    every accessed lock and count at every invocation, experimental_num_ctas = 1,
+    and exact experimental_grid_x/y/z facts (y=z=1), all with the tt. prefix and
+    i32 values. Optional tt.experimental_value = N : i32 on an i32 scalar argument
+    promises its exact runtime value for this invocation. These values are used
+    to prove address and induction bounds, not to replace original SSA arguments.
+    The caller must enforce these facts; runtime example values are not proofs.
+
+    Address analysis proves group*N+lane partials, disjoint row*stride+lane output
+    writes, a common lane<N mask, and nonnegative, nonoverflowing i32 intermediates.
+    The original one-dimensional grid remains unchanged. Programs below G become
+    owners and process rows owner+k*G, with the first row peeled to initialize
+    partials directly. Later additions preserve the original new+old operand order.
+    Final partials, counts and locks are preserved. This selects a permitted
+    per-group serialization; it does not authorize floating-point reassociation.
+
+    The proof is bounded to canonical matching IR, including its modulo operation;
+    simplifications such as G=1 may leave the original kernel unchanged. It does
+    not promise profitability. Functions transformed successfully receive
+    tt.experimental_private_reduction_owned = 1 : i32. The pass is opt-in, requires
+    target=cuda and one CTA per logical program, and leaves unproved cases unchanged.
+  }];
+  let options = [
+    Option<"target", "target", "std::string", "\"\"", "Target architecture; only cuda is supported">
+  ];
+  let dependentDialects = ["mlir::triton::TritonDialect", "mlir::scf::SCFDialect",
+                           "mlir::triton::gpu::TritonGPUDialect"];
 }
 
 #endif

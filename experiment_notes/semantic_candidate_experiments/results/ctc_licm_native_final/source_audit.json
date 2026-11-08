@@ -1,0 +1,13 @@
+{
+  "revision": "3f1f896fd90f5db42d167d64fcb9691326071bc2",
+  "url": "https://github.com/flagos-ai/FlagGems/blob/3f1f896fd90f5db42d167d64fcb9691326071bc2/src/flag_gems/ops/ctc_loss.py",
+  "source_sha256": "54ff130ab816ef2a610a083ae6239717f6d44d8e7dd3c79b3972454d092da91d",
+  "extracted_source_sha256": "cdc0946dfe8d5583c79b4c7904bbc367478bd234de1eab6229b78c3e1ef56daa",
+  "original_body_ast_sha256": "0c33561aa2eaa503813bc635c97429ab0bae934187e7aab72ed2b2a684e22ca1",
+  "undo_manual_change_recovers_exact_original_ast": true,
+  "barrier_sites_unchanged": 3,
+  "manual_change": "Move prev_target_index, prev_target_value, skip_allowed immediately before the timestep loop; conjoin target load mask with T>1. No other body changes.",
+  "precondition": "Targets initialized and unchanged through invocation; distinct from writable loss/alpha allocations. Original masked accesses and all barrier positions preserved.",
+  "host_path": "CtcLossFunction.forward when ctx.needs_input_grad[0] is true. No-grad uses different kernels. Forward saves full log_alpha. This gate includes full training-forward GPU work, not backward or host validation/allocation latency.",
+  "t0_limitation": "T=0 is not executed: unchanged upstream stores initial alpha into a zero-sized N*T*S allocation. T=1 tests a zero-trip recurrence and masked hoisted load."
+}

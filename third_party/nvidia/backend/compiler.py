@@ -161,6 +161,7 @@ class CUDAOptions:
     # Experimental: derive indexed-update injectivity from scoped argument contracts.
     enable_indexed_update_specialization: bool = False
     enable_private_atomic_relaxation: bool = False
+    enable_private_reduction_ownership: bool = False
 
     def __post_init__(self):
         if self.max_occupancy is not None and (type(self.max_occupancy) is not int or self.max_occupancy <= 0):
@@ -314,6 +315,8 @@ class CUDABackend(BaseBackend):
             passes.ttir.add_specialize_indexed_updates(pm, "cuda")
         if opt.enable_private_atomic_relaxation and opt.num_ctas == 1:
             passes.ttir.add_relax_private_atomics(pm, "cuda")
+        if opt.enable_private_reduction_ownership and opt.num_ctas == 1:
+            passes.ttir.add_private_reduction_ownership(pm, "cuda")
         pm.run(mod, 'make_ttir')
         return mod
 

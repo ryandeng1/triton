@@ -1,0 +1,151 @@
+{
+  "case": "upstream1024",
+  "seed": 55031,
+  "selected_configurations": {
+    "original": [
+      8,
+      1,
+      3
+    ],
+    "immutable": [
+      8,
+      1,
+      3
+    ],
+    "alias": [
+      8,
+      1,
+      3
+    ]
+  },
+  "state_reset_included_every_invocation": true,
+  "alias_has_no_immutable_attribute": true,
+  "alias_allocation_disjointness_checked": true,
+  "selected_alias_parameter_loads": [
+    {
+      "ir_line": 140,
+      "operation": "%b_A_log = tt.load %p_A_log, %b_h : !tt.ptr<f32> loc(#loc156)"
+    },
+    {
+      "ir_line": 141,
+      "operation": "%b_dt_bias = tt.load %p_dt_bias, %b_h : !tt.ptr<f32> loc(#loc157)"
+    }
+  ],
+  "alias_timestep_loop_line": 146,
+  "alias_and_immutable_ptx_exact_equal": true,
+  "alias_and_immutable_resources_equal": true,
+  "resources": {
+    "original": {
+      "registers": 96,
+      "spills": 0,
+      "shared": 512,
+      "ptx_sha256": "21be2f30ee97b8a51243ff583fbc87613dbfb7b3f70b0d627086435535d8ef3d",
+      "cubin_sha256": "3415bca94da7709cb9e9b7005cee6c5867d16e90ee5611207afcb65549e150fc"
+    },
+    "immutable": {
+      "registers": 108,
+      "spills": 0,
+      "shared": 512,
+      "ptx_sha256": "a9b6c4a613a2a44b0ec85f810ed98a12393b006955f670f5118677da0ca05468",
+      "cubin_sha256": "c75d5a84589a77b27e21de469d3d4d3c9f42b5f518fac9d3983ae23cbcdd7fca"
+    },
+    "alias": {
+      "registers": 108,
+      "spills": 0,
+      "shared": 512,
+      "ptx_sha256": "a9b6c4a613a2a44b0ec85f810ed98a12393b006955f670f5118677da0ca05468",
+      "cubin_sha256": "c75d5a84589a77b27e21de469d3d4d3c9f42b5f518fac9d3983ae23cbcdd7fca"
+    },
+    "manual": {
+      "registers": 108,
+      "spills": 0,
+      "shared": 512,
+      "ptx_sha256": "872db25b37171a5b2a407e7e0b270c4a152d09a2408eaa8ca303a1dc4a723ae5",
+      "cubin_sha256": "d0138608f7358c44ef8c877426e40a9b8215f3d5b2355e5d30f3a2b567f21446"
+    }
+  },
+  "validation": {
+    "0": {
+      "original": {
+        "max_output_error": 2.9043774185666393e-07,
+        "max_state_error": 2.004166370639382e-07,
+        "same_config_bitwise_equal_to_original": true,
+        "guards_passed": true
+      },
+      "immutable": {
+        "max_output_error": 2.9043774185666393e-07,
+        "max_state_error": 2.004166370639382e-07,
+        "same_config_bitwise_equal_to_original": true,
+        "guards_passed": true
+      },
+      "alias": {
+        "max_output_error": 2.9043774185666393e-07,
+        "max_state_error": 2.004166370639382e-07,
+        "same_config_bitwise_equal_to_original": true,
+        "guards_passed": true
+      },
+      "manual": {
+        "max_output_error": 2.9043774185666393e-07,
+        "max_state_error": 2.004166370639382e-07,
+        "same_config_bitwise_equal_to_original": true,
+        "guards_passed": true
+      }
+    }
+  },
+  "times_us": {
+    "original": [
+      763.0800008773804,
+      759.0159773826599,
+      759.1720223426819,
+      758.8840126991272,
+      759.0320110321045,
+      758.9679956436157,
+      758.9799761772156,
+      759.0360045433044,
+      758.899986743927,
+      758.8880062103271,
+      758.9319944381714,
+      758.9240074157715,
+      758.8919997215271
+    ],
+    "immutable": [
+      673.3199954032898,
+      669.3000197410583,
+      669.3120002746582,
+      669.0279841423035,
+      669.5520281791687,
+      669.264018535614,
+      669.3879961967468,
+      669.3519949913025,
+      669.3680286407471,
+      669.4239974021912,
+      669.2240238189697,
+      669.3400144577026,
+      669.0599918365479
+    ],
+    "alias": [
+      674.6559739112854,
+      669.3599820137024,
+      668.9839959144592,
+      668.9919829368591,
+      669.3959832191467,
+      669.2119836807251,
+      669.4279909133911,
+      669.3199872970581,
+      669.0559983253479,
+      669.0840125083923,
+      669.0719723701477,
+      669.3120002746582,
+      669.2559719085693
+    ]
+  },
+  "median_us": {
+    "original": 758.9679956436157,
+    "immutable": 669.3400144577026,
+    "alias": 669.2559719085693
+  },
+  "paired_alias_speedup_vs_original": 1.1340405470461896,
+  "paired_alias_over_immutable_time": 0.9999461887898599,
+  "native_library_sha256": "6be58f8451548d939876f4848a62a9dc8c504a41200e759781a12ba63e3661f0",
+  "harness_sha256": "362500d747e8f81a3966574a309f7d1cf8d4989f02db308fa7bc01b942b32d86"
+}

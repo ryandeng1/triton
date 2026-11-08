@@ -1402,3 +1402,226 @@ def test_native_immutable_licm_compile_rejects_invalid_contract(device, invalid)
     options = {"num_ctas": 2} if invalid == "multiple_ctas" else {}
     with pytest.raises((ValueError, TypeError)):
         compile_immutable_licm(_native_immutable_loop_tl, args, grid=(2, ), immutable_args=immutable, options=options)
+
+
+@triton.jit
+def _native_private_reduction_protocol(X, Y, Sum, Square, Lock, N, G: tl.constexpr, BLOCK: tl.constexpr):
+    row = tl.program_id(0)
+    cols = tl.arange(0, BLOCK)
+    mask = cols < N
+    values = tl.load(X + row * N + cols, mask, other=0)
+    tl.store(Y + row * N + cols, values * 2, mask)
+    first, second = values, values * values
+    group = row % G
+    mutex = Lock + group
+    count = mutex + G
+    sum_ptr = Sum + group * N + cols
+    square_ptr = Square + group * N + cols
+    while tl.atomic_cas(mutex, 0, 1) == 1:
+        pass
+    if tl.load(count) == 0:
+        tl.atomic_xchg(count, 1)
+    else:
+        first += tl.load(sum_ptr, mask)
+        second += tl.load(square_ptr, mask)
+    tl.store(sum_ptr, first, mask)
+    tl.store(square_ptr, second, mask)
+    tl.debug_barrier()
+    tl.atomic_xchg(mutex, 0)
+
+
+def _private_reduction_args(device, rows, columns, groups):
+    x = torch.randint(-4, 5, (rows, columns), device=device).float()
+    y = torch.full_like(x, 17)
+    sums = torch.full((groups, columns), 17.0, device=device)
+    squares = torch.full_like(sums, 19)
+    locks = torch.zeros(2 * groups, device=device, dtype=torch.int32)
+    return x, y, sums, squares, locks, columns, groups, triton.next_power_of_2(columns)
+
+
+@pytest.mark.parametrize("shape", [(17, 13, 4), (5, 65, 2), (3, 7, 8)])
+def test_native_private_reduction_ownership_preserves_complete_state(device, shape):
+    _semantic_require_cuda(device)
+    from triton.experimental.semantic_contracts.native import compile_private_reduction_ownership
+
+    rows, columns, groups = shape
+    args = _private_reduction_args(device, rows, columns, groups)
+    plan = compile_private_reduction_ownership(_native_private_reduction_protocol, args, grid=(rows, ),
+                                               private_args=("Y", "Sum", "Square", "Lock"),
+                                               zero_initialized_args=("Lock", ))
+    assert plan.report()["transformed"]
+    assert plan.baseline.src.fn is plan.optimized.src.fn
+    assert plan.baseline.src.signature == plan.optimized.src.signature
+    assert plan.baseline.src.constants == plan.optimized.src.constants
+    assert _native_indexed_has_atomic(plan.baseline)
+    assert not _native_indexed_has_atomic(plan.optimized)
+    for shift in (0, 1):
+        args[0].add_(shift)
+        expected_sum = torch.full_like(args[2], 17)
+        expected_square = torch.full_like(args[3], 19)
+        for group in range(min(rows, groups)):
+            values = args[0][group::groups]
+            expected_sum[group] = values.sum(0)
+            expected_square[group] = (values * values).sum(0)
+        expected_count = torch.zeros_like(args[4])
+        expected_count[groups:groups + min(rows, groups)] = 1
+        for run in (lambda: plan.baseline[plan.grid](*args), lambda: plan(*args)):
+            args[1].fill_(17)
+            args[2].fill_(17)
+            args[3].fill_(19)
+            args[4].zero_()
+            run()
+            assert torch.equal(args[1], args[0] * 2)
+            assert torch.equal(args[2], expected_sum)
+            assert torch.equal(args[3], expected_square)
+            assert torch.equal(args[4], expected_count)
+
+
+def test_native_private_reduction_ownership_preserves_first_assignment_bits(device):
+    _semantic_require_cuda(device)
+    from triton.experimental.semantic_contracts.native import compile_private_reduction_ownership
+
+    args = _private_reduction_args(device, 4, 13, 4)
+    bits = torch.tensor([
+        0, 0x80000000, 1, 0x80000001, 0x007fffff, 0x807fffff, 0x00800000, 0x80800000, 0x7f800000, 0xff800000,
+        0x3f800000, 0xbf800000, 0x7fc12345
+    ], device=device, dtype=torch.uint32).view(torch.float32)
+    args[0].copy_(bits.expand_as(args[0]))
+    plan = compile_private_reduction_ownership(_native_private_reduction_protocol, args, grid=(4, ),
+                                               private_args=(1, 2, 3, 4), zero_initialized_args=(4, ))
+    assert plan.report()["transformed"]
+    plan(*args)
+    assert torch.equal(args[2].view(torch.uint32), args[0].view(torch.uint32))
+    expected = [value.clone() for value in args[1:5]]
+    args[4].zero_()
+    plan.baseline[plan.grid](*args)
+    for actual, wanted in zip(args[1:5], expected):
+        _native_indexed_same_values(actual, wanted)
+
+
+@pytest.mark.parametrize("contract", ["missing_zero", "missing_private", "folded_group"])
+def test_native_private_reduction_ownership_unproved_protocol_keeps_locks(device, contract):
+    _semantic_require_cuda(device)
+    from triton.experimental.semantic_contracts.native import compile_private_reduction_ownership
+
+    # G=1 canonicalizes away the modulo operation required by the bounded proof.
+    args = _private_reduction_args(device, 17, 13, 1 if contract == "folded_group" else 4)
+    private = (2, 3, 4) if contract == "missing_private" else (1, 2, 3, 4)
+    zero = () if contract == "missing_zero" else (4, )
+    plan = compile_private_reduction_ownership(_native_private_reduction_protocol, args, grid=(17, ),
+                                               private_args=private, zero_initialized_args=zero)
+    assert not plan.report()["transformed"]
+    assert _native_indexed_has_atomic(plan.optimized)
+
+
+@pytest.mark.parametrize("change", ["grid", "scalar", "metadata", "alias"])
+def test_native_private_reduction_ownership_checks_launch_binding(device, change):
+    _semantic_require_cuda(device)
+    from triton.experimental.semantic_contracts.native import compile_private_reduction_ownership
+
+    args = _private_reduction_args(device, 17, 13, 4)
+    plan = compile_private_reduction_ownership(_native_private_reduction_protocol, args, grid=(17, ),
+                                               private_args=(1, 2, 3, 4), zero_initialized_args=(4, ))
+    changed, kwargs = list(args), {}
+    if change == "grid":
+        kwargs["grid"] = (18, )
+    elif change == "scalar":
+        changed[5] = 12
+    elif change == "metadata":
+        changed[0] = args[0].half()
+    else:
+        changed[1] = args[0]
+    with pytest.raises(ValueError):
+        plan(*changed, **kwargs)
+
+
+@triton.jit
+def _native_immutable_barrier_recurrence_tl(X, Gamma, Scratch, Y, STEPS, N: tl.constexpr, BLOCK: tl.constexpr,
+                                            VOLATILE: tl.constexpr):
+    batch = tl.program_id(0)
+    col = tl.arange(0, BLOCK)
+    mask = col < N
+    initial = tl.load(X + batch * N + col, mask, other=0)
+    tl.store(Scratch + batch * 2 * N + col, initial, mask)
+    tl.debug_barrier()
+    for step in range(STEPS):
+        neighbor = tl.where(col > 0, col - 1, N - 1)
+        previous = tl.load(Scratch + batch * 2 * N + (step % 2) * N + neighbor, mask, other=0)
+        gamma = tl.load(Gamma + col, mask, other=0, volatile=VOLATILE)
+        tl.store(Scratch + batch * 2 * N + ((step + 1) % 2) * N + col, previous + gamma, mask)
+        tl.debug_barrier()
+    final = tl.load(Scratch + batch * 2 * N + (STEPS % 2) * N + col, mask, other=0)
+    tl.store(Y + batch * N + col, final, mask)
+
+
+@gluon.jit
+def _native_immutable_barrier_recurrence_gluon(X, Gamma, Scratch, Y, STEPS, N: gl.constexpr, BLOCK: gl.constexpr,
+                                               VOLATILE: gl.constexpr):
+    batch = gl.program_id(0)
+    col = gl.arange(0, BLOCK, layout=gl.BlockedLayout([1], [32], [4], [0]))
+    mask = col < N
+    initial = gl.load(X + batch * N + col, mask, other=0)
+    gl.store(Scratch + batch * 2 * N + col, initial, mask)
+    gl.barrier()
+    for step in range(STEPS):
+        neighbor = gl.where(col > 0, col - 1, N - 1)
+        previous = gl.load(Scratch + batch * 2 * N + (step % 2) * N + neighbor, mask, other=0)
+        gamma = gl.load(Gamma + col, mask, other=0, volatile=VOLATILE)
+        gl.store(Scratch + batch * 2 * N + ((step + 1) % 2) * N + col, previous + gamma, mask)
+        gl.barrier()
+    final = gl.load(Scratch + batch * 2 * N + (STEPS % 2) * N + col, mask, other=0)
+    gl.store(Y + batch * N + col, final, mask)
+
+
+@pytest.mark.parametrize("frontend", ["triton", "gluon"])
+@pytest.mark.parametrize("steps", [0, 3])
+@pytest.mark.parametrize("volatile", [False, True])
+def test_native_immutable_cta_barrier_preserves_recurrence_and_zero_trip(device, frontend, steps, volatile):
+    _semantic_require_cuda(device)
+    batch, width, guard = 4, 65, 64
+    x = torch.arange(batch * width, device=device, dtype=torch.float32).reshape(batch, width)
+    # For zero trips a null allocation must remain unread. This low-level
+    # compiler test binds the vacuous immutable-input contract directly instead
+    # of the conservative host wrapper, which rejects empty backing storage.
+    gamma = torch.arange(width, device=device, dtype=torch.float32) % 7 if steps else torch.empty(0, device=device)
+    scratch_storage = torch.full((batch * 2 * width + 2 * guard, ), 123., device=device)
+    output_storage = torch.full((batch * width + 2 * guard, ), 123., device=device)
+    scratch = scratch_storage[guard:-guard].reshape(batch, 2, width)
+    output = output_storage[guard:-guard].reshape(batch, width)
+    kernel = _native_immutable_barrier_recurrence_tl if frontend == "triton" else _native_immutable_barrier_recurrence_gluon
+    args = (x, gamma, scratch, output, steps, width, 128, volatile)
+    options = dict(num_warps=4, num_stages=1, enable_indexed_update_specialization=False,
+                   enable_private_atomic_relaxation=False)
+    baseline = kernel.warmup(*args, grid=(batch, ), **options)
+
+    def compile_with(attributes):
+        attrs = {key: list(value) for key, value in baseline.src.attrs.items()}
+        for key, value in attributes.items():
+            attrs[key] = attrs.get(key, []) + value
+        source = type(baseline.src)(baseline.src.fn, baseline.src.signature, constexprs=baseline.src.constants,
+                                    attrs=attrs)
+        return triton.compile(source, target=baseline.metadata.target, options=options)
+
+    immutable = compile_with({(1, ): [("tt.experimental_immutable", 1)]})
+    alias = compile_with({(i, ): [("tt.experimental_alias_group", 0 if i == 1 else 1)] for i in range(4)})
+    if steps:
+        before = baseline.asm["ttgir"].split("scf.for", 1)[0].count("tt.load")
+        moved = immutable.asm["ttgir"].split("scf.for", 1)[0].count("tt.load")
+        # Production Gluon lowering currently does not invoke Triton LICM.
+        # Keep it as an unchanged-pipeline correctness control; adding a general
+        # LICM stage to user-scheduled Gluon kernels is a separate decision.
+        assert moved == before + (not volatile and frontend == "triton")
+        assert alias.asm["ttgir"].split("scf.for", 1)[0].count("tt.load") == before
+    # The communication protocol is unchanged even when the global input load
+    # moves. Every state update depends on another logical element's prior row.
+    assert immutable.asm["ttgir"].count("ttg.barrier") == baseline.asm["ttgir"].count("ttg.barrier")
+    expected = x.clone()
+    for _ in range(steps):
+        expected = torch.roll(expected, 1, -1) + gamma
+    for compiled in (baseline, immutable, alias):
+        scratch.fill_(float("nan"))
+        output.fill_(float("nan"))
+        compiled[(batch, 1, 1)](*args)
+        assert torch.equal(output, expected)
+        for storage in (scratch_storage, output_storage):
+            assert torch.all(storage[:guard] == 123.) and torch.all(storage[-guard:] == 123.)

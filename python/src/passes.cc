@@ -62,6 +62,12 @@ void init_triton_passes_ttir(py::module_ &m) {
           options.target = target;
           pm.addPass(createTritonRelaxPrivateAtomics(options));
         });
+  m.def("add_private_reduction_ownership",
+        [](mlir::PassManager &pm, const std::string &target) {
+          TritonPrivateReductionOwnershipOptions options;
+          options.target = target;
+          pm.addPass(createTritonPrivateReductionOwnership(options));
+        });
   ADD_PASS_WRAPPER_0("add_loop_aware_cse", createTritonLoopAwareCSE);
   ADD_PASS_OPTION_WRAPPER_4("add_convert_to_ttgpuir",
                             createConvertTritonToTritonGPU, const std::string &,

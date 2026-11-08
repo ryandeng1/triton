@@ -1,0 +1,61 @@
+{
+  "torch": "2.14.1+cu130",
+  "triton": "3.9.0",
+  "device": "NVIDIA B300 SXM6 PC",
+  "capability": [
+    10,
+    3
+  ],
+  "harness_sha256": "67b1cb8cac5b1342fe970c423c6b72fe8f5d029276482d88667a7c9a460c5662",
+  "libtriton_sha256": "7ce04279b259aa032acf62c9125a598adf5c20e66b828067d1c7ca458a9c0d19",
+  "python": "/home/ryandeng/tpaa/.venv-semantic/bin/python",
+  "args": {
+    "output": "experiment_notes/semantic_candidate_experiments/results/ctc_licm_final",
+    "cache": "/tmp/semantic-survey-cache",
+    "rounds": 9,
+    "graph_repeats": 16,
+    "warmup_ms": 50,
+    "only": ""
+  },
+  "configurations": [
+    [
+      1,
+      1
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      1,
+      4
+    ],
+    [
+      1,
+      8
+    ],
+    [
+      2,
+      1
+    ],
+    [
+      2,
+      2
+    ],
+    [
+      2,
+      4
+    ],
+    [
+      2,
+      8
+    ]
+  ],
+  "screen_seed": 0,
+  "confirmation_seeds": [
+    0,
+    1,
+    2
+  ],
+  "confirmation_selection": "Union of each variant's independently best screen configuration; all variants run on the same union."
+}

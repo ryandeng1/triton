@@ -1,0 +1,390 @@
+{
+  "scope": "Complete training-forward GPU work including input conversion, 1D offsets, recurrence/full log_alpha, zero_infinity, loss reduction/output conversion. No backward, host length-stat/dispatch checks, allocator latency or log_softmax preparation.",
+  "records": 51,
+  "configuration_protocol": "Three seeds on17fixed configurations from previous independently tuned baseline/manual/no-op-native union. No new screen or global native autotune. Nine shuffled rounds and16graph repetitions; graph capture order also shuffled.",
+  "compiler_result": "Unchanged original CTC source plus explicit immutable target attribute now hoists previous-label load and dependent logic. All native target loads are outside loops; all51baseline/native final PTX barrier counts equal; all full-output/scratch bitwise and independent CPU FP64 loss/alpha checks pass.",
+  "baseline_controls": "All51old/new baseline resource signatures match. Retained two representative old/new executable PTX programs are identical after removing debug paths/DWARF; full cubin hashes are not identical. Baseline/source AST hashes match.",
+  "main_findings": [
+    "Largest held-out T1024,N64,U128,BF16: native complete-forward seed speedups1.0213/1.0242/1.0212 andkernel1.0214/1.0200/1.0231. This matches the source-hoist upper bound, with38\u219236registers and unchanged10barrier sites.",
+    "Training T256,N256,U64,BF16,1D: native complete-forward speedups1.0490/1.0525/1.0473 andkernel1.0674/1.0675/1.0704. Native registers32\u219230;barrier sites9\u21929.",
+    "Other cases mostly show0\u20133% gains. Short no-op controls show timing variation; T=1 and empty-target cases eliminate no loop load, and their small timing changes are not compiler optimization gains.",
+    "Gluon production lowering does not invoke this LICM pass. Its runtime tests validate unchanged-pipeline correctness only; no Gluon optimization claim."
+  ],
+  "legality_scope": "Explicit initialized-at-entry immutable GLOBAL input only; existing CTA barriers retained. Alias-only facts, warp barriers, non-global pointers, volatile loads, unknown/async effects, calls/assertions and potentially nonreached prefixes retain conservative behavior. Loop-entry masks preserved.",
+  "checks": "Combined LICM lit passed;8barrier runtime parameter cases passed alongside10private-ownership cases in root run. Source-level manual variant remains an upper bound; this bundle separately demonstrates actual native compiler behavior.",
+  "rows": [
+    {
+      "case": "edge-T1-N4-U1-bfloat16-1d",
+      "baseline_best_config": {
+        "multiplier": 1,
+        "warps": 1
+      },
+      "best_medians_us": {
+        "original": 14.21200018376112,
+        "immutable": 14.313999563455582,
+        "manual": 14.32000007480383
+      },
+      "native_best_ratio": 0.992874152381919,
+      "native_full_seed_ratios": [
+        0.9429405508854516,
+        0.9441265939544566,
+        1.0627285039521281
+      ],
+      "native_kernel_seed_ratios": [
+        1.0012500095496946,
+        0.9877750392030019,
+        0.9975338899928328
+      ],
+      "native_same_ptx_as_baseline": [
+        true,
+        true,
+        true
+      ],
+      "target_loads_in_loop": {
+        "original": 0,
+        "immutable": 0,
+        "manual": 0
+      }
+    },
+    {
+      "case": "edge-T1-N4-U1-float32-2d",
+      "baseline_best_config": {
+        "multiplier": 2,
+        "warps": 1
+      },
+      "best_medians_us": {
+        "original": 1.5320000238716602,
+        "immutable": 1.5839999541640282,
+        "manual": 1.5439999988302588
+      },
+      "native_best_ratio": 0.9671717602291148,
+      "native_full_seed_ratios": [
+        0.9635220276825385,
+        0.978426379534482,
+        0.9419191889497163
+      ],
+      "native_kernel_seed_ratios": [
+        0.9949622515251287,
+        1.0461132736394227,
+        0.9875311496267125
+      ],
+      "native_same_ptx_as_baseline": [
+        true,
+        true,
+        true
+      ],
+      "target_loads_in_loop": {
+        "original": 0,
+        "immutable": 0,
+        "manual": 0
+      }
+    },
+    {
+      "case": "edge-T16-N4-U0-float32-2d",
+      "baseline_best_config": {
+        "multiplier": 1,
+        "warps": 4
+      },
+      "best_medians_us": {
+        "original": 12.028000317513943,
+        "immutable": 11.781999841332436,
+        "manual": 12.56600022315979
+      },
+      "native_best_ratio": 1.0208793481152931,
+      "native_full_seed_ratios": [
+        0.9367601507088823,
+        0.935428177578712,
+        1.0638548319890764
+      ],
+      "native_kernel_seed_ratios": [
+        0.9850746285945693,
+        0.9969418727985222,
+        0.9885117228403514
+      ],
+      "native_same_ptx_as_baseline": [
+        true,
+        true,
+        true
+      ],
+      "target_loads_in_loop": {
+        "original": 0,
+        "immutable": 0,
+        "manual": 0
+      }
+    },
+    {
+      "case": "heldout-T1024-N64-U128-bfloat16-2d",
+      "baseline_best_config": {
+        "multiplier": 1,
+        "warps": 8
+      },
+      "best_medians_us": {
+        "original": 930.8599829673767,
+        "immutable": 908.8259935379028,
+        "manual": 907.3579907417297
+      },
+      "native_best_ratio": 1.0242444533784727,
+      "native_full_seed_ratios": [
+        1.0212850210292947,
+        1.0242444533784727,
+        1.0211899591687503
+      ],
+      "native_kernel_seed_ratios": [
+        1.021426504173944,
+        1.0199740088633225,
+        1.0231478683852573
+      ],
+      "native_same_ptx_as_baseline": [
+        false,
+        false,
+        false
+      ],
+      "target_loads_in_loop": {
+        "original": 1,
+        "immutable": 0,
+        "manual": 0
+      }
+    },
+    {
+      "case": "heldout-T128-N512-U24-float32-2d",
+      "baseline_best_config": {
+        "multiplier": 1,
+        "warps": 2
+      },
+      "best_medians_us": {
+        "original": 47.48399928212166,
+        "immutable": 46.73999920487404,
+        "manual": 46.77199944853783
+      },
+      "native_best_ratio": 1.0159178453124584,
+      "native_full_seed_ratios": [
+        1.0159178453124584,
+        1.0207152459901954,
+        1.0157412693914216
+      ],
+      "native_kernel_seed_ratios": [
+        1.015084870905102,
+        1.0122469764172273,
+        1.016026907697568
+      ],
+      "native_same_ptx_as_baseline": [
+        false,
+        false,
+        false
+      ],
+      "target_loads_in_loop": {
+        "original": 1,
+        "immutable": 0,
+        "manual": 0
+      }
+    },
+    {
+      "case": "heldout-T256-N128-U48-float32-1d",
+      "baseline_best_config": {
+        "multiplier": 1,
+        "warps": 4
+      },
+      "best_medians_us": {
+        "original": 107.06599801778793,
+        "immutable": 104.2179986834526,
+        "manual": 104.69599813222885
+      },
+      "native_best_ratio": 1.027327327048236,
+      "native_full_seed_ratios": [
+        1.017832041431692,
+        1.027327327048236,
+        1.0219566545046268
+      ],
+      "native_kernel_seed_ratios": [
+        1.0185589845504592,
+        1.0276733459043776,
+        1.0182795094159838
+      ],
+      "native_same_ptx_as_baseline": [
+        false,
+        false,
+        false
+      ],
+      "target_loads_in_loop": {
+        "original": 1,
+        "immutable": 0,
+        "manual": 0
+      }
+    },
+    {
+      "case": "heldout-T64-N32-U24-float32-2d",
+      "baseline_best_config": {
+        "multiplier": 1,
+        "warps": 2
+      },
+      "best_medians_us": {
+        "original": 27.038000524044037,
+        "immutable": 27.003999799489975,
+        "manual": 26.920000091195107
+      },
+      "native_best_ratio": 1.0012590995706756,
+      "native_full_seed_ratios": [
+        1.0174975999301799,
+        0.9959398013134013,
+        1.0012590995706756
+      ],
+      "native_kernel_seed_ratios": [
+        1.0148006730377037,
+        1.0069806897426838,
+        1.0146077133811515
+      ],
+      "native_same_ptx_as_baseline": [
+        false,
+        false,
+        false
+      ],
+      "target_loads_in_loop": {
+        "original": 1,
+        "immutable": 0,
+        "manual": 0
+      }
+    },
+    {
+      "case": "training-T128-N32-U32-float32-2d",
+      "baseline_best_config": {
+        "multiplier": 1,
+        "warps": 4
+      },
+      "best_medians_us": {
+        "original": 55.955998599529266,
+        "immutable": 55.521998554468155,
+        "manual": 55.257998406887054
+      },
+      "native_best_ratio": 1.0078167223147658,
+      "native_full_seed_ratios": [
+        1.010446339064496,
+        1.000214485202552,
+        1.0168254122261413
+      ],
+      "native_kernel_seed_ratios": [
+        1.0125896802001892,
+        1.0176904042294803,
+        1.0076535635401696
+      ],
+      "native_same_ptx_as_baseline": [
+        false,
+        false,
+        false
+      ],
+      "target_loads_in_loop": {
+        "original": 1,
+        "immutable": 0,
+        "manual": 0
+      }
+    },
+    {
+      "case": "training-T256-N256-U64-bfloat16-1d",
+      "baseline_best_config": {
+        "multiplier": 1,
+        "warps": 8
+      },
+      "best_medians_us": {
+        "original": 146.83400094509125,
+        "immutable": 139.9800032377243,
+        "manual": 139.26200568675995
+      },
+      "native_best_ratio": 1.0489641202231363,
+      "native_full_seed_ratios": [
+        1.0489641202231363,
+        1.0524806380649114,
+        1.0472859973550201
+      ],
+      "native_kernel_seed_ratios": [
+        1.0673959924987686,
+        1.067481013841386,
+        1.0704202981222477
+      ],
+      "native_same_ptx_as_baseline": [
+        false,
+        false,
+        false
+      ],
+      "target_loads_in_loop": {
+        "original": 1,
+        "immutable": 0,
+        "manual": 0
+      }
+    },
+    {
+      "case": "training-T32-N4-U16-float32-2d",
+      "baseline_best_config": {
+        "multiplier": 1,
+        "warps": 4
+      },
+      "best_medians_us": {
+        "original": 19.217999652028084,
+        "immutable": 18.969999626278877,
+        "manual": 19.311999902129173
+      },
+      "native_best_ratio": 1.0130732752047953,
+      "native_full_seed_ratios": [
+        1.009136682977689,
+        0.9646593025948025,
+        0.9611717324704829
+      ],
+      "native_kernel_seed_ratios": [
+        1.011742736248237,
+        1.0101477183343701,
+        0.9993162340911991
+      ],
+      "native_same_ptx_as_baseline": [
+        false,
+        false,
+        false
+      ],
+      "target_loads_in_loop": {
+        "original": 1,
+        "immutable": 0,
+        "manual": 0
+      }
+    },
+    {
+      "case": "training-T512-N128-U64-float32-2d",
+      "baseline_best_config": {
+        "multiplier": 1,
+        "warps": 8
+      },
+      "best_medians_us": {
+        "original": 212.46999502182007,
+        "immutable": 209.14000272750854,
+        "manual": 209.27800238132477
+      },
+      "native_best_ratio": 1.0159223116136715,
+      "native_full_seed_ratios": [
+        1.0037869212351733,
+        1.0262169098481952,
+        1.0230870834791763
+      ],
+      "native_kernel_seed_ratios": [
+        1.0041328964265037,
+        1.0261208176020113,
+        1.0264423113607888
+      ],
+      "native_same_ptx_as_baseline": [
+        false,
+        false,
+        false
+      ],
+      "target_loads_in_loop": {
+        "original": 1,
+        "immutable": 0,
+        "manual": 0
+      }
+    }
+  ],
+  "reproduce": {
+    "working_directory": "triton repository root",
+    "command": "/home/ryandeng/tpaa/.venv-semantic/bin/python experiment_notes/semantic_candidate_experiments/ctc_licm_experiment.py --output /tmp/ctc-native-reproduce --native-followup --confirm-from experiment_notes/semantic_candidate_experiments/results/ctc_licm_final/selected_configurations.json",
+    "requirements": "Build current native compiler with make first; use NVIDIA CUDA GPU. Output directory must be fresh. On other hardware these are correctness/configuration checks, not portable latency expectations.",
+    "source_setup": "Driver first uses the pinned survey cache and otherwise reads the SHA256-verified retained source at results/ctc_licm_final/sources/ctc_loss.upstream.py. No network or FlagGems installation required.",
+    "measured_driver": "sources/ctc_licm_native_driver.py matches environment.json harness SHA256. Maintained driver additionally supports retained-source fallback and excludes Python cache files from manifests; measured computation is unchanged.",
+    "license": "sources/FlagGems-LICENSE (Apache-2.0); original copyright/license header retained in ctc_loss.upstream.py.",
+    "license_source_url": "https://raw.githubusercontent.com/flagos-ai/FlagGems/3f1f896fd90f5db42d167d64fcb9691326071bc2/LICENSE",
+    "current_driver_sha256": "edb6f22cfbbe5c9194d4a1510ff4579c87a39b937c9fb3d4ab3b80bad63ebf9f"
+  }
+}

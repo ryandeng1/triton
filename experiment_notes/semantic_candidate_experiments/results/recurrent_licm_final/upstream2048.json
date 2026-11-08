@@ -1,0 +1,1066 @@
+{
+  "case": {
+    "id": "upstream2048",
+    "cohort": "upstream_test_holdout",
+    "B": 4,
+    "T": 2048,
+    "H": 4,
+    "HV": 8,
+    "K": 64,
+    "V": 64,
+    "dtype": "bfloat16",
+    "qk_dtype": "float32",
+    "parameter_dtype": "float32",
+    "scale": 0.1
+  },
+  "seed": 1856,
+  "confirmation_seed": 11856,
+  "repetitions": 8,
+  "state_reset_included_every_invocation": true,
+  "state_reset_bytes": 524288,
+  "scope": "all timestep outputs and final-state writes plus identical state reset; allocations, oracle, compile and tuning excluded",
+  "tuning": [
+    {
+      "config": [
+        8,
+        1,
+        3
+      ],
+      "times_us": {
+        "original": [
+          1269.5800065994263,
+          1266.808032989502,
+          1266.4320468902588
+        ],
+        "immutable": [
+          1282.4079990386963,
+          1279.1919708251953,
+          1279.412031173706
+        ],
+        "alias": [
+          1270.2560424804688,
+          1266.3320302963257,
+          1266.7039632797241
+        ],
+        "manual": [
+          1281.9559574127197,
+          1279.9240350723267,
+          1279.628038406372
+        ]
+      },
+      "median_us": {
+        "original": 1266.808032989502,
+        "immutable": 1279.412031173706,
+        "alias": 1266.7039632797241,
+        "manual": 1279.9240350723267
+      },
+      "validation": {
+        "original": {
+          "max_output_error": 8.108890978131278e-08,
+          "max_state_error": 6.390923543708737e-07,
+          "same_config_bitwise_equal_to_original": true,
+          "guards_passed": true
+        },
+        "immutable": {
+          "max_output_error": 8.108890978131278e-08,
+          "max_state_error": 6.390923543708737e-07,
+          "same_config_bitwise_equal_to_original": true,
+          "guards_passed": true
+        },
+        "alias": {
+          "max_output_error": 8.108890978131278e-08,
+          "max_state_error": 6.390923543708737e-07,
+          "same_config_bitwise_equal_to_original": true,
+          "guards_passed": true
+        },
+        "manual": {
+          "max_output_error": 8.108890978131278e-08,
+          "max_state_error": 6.390923543708737e-07,
+          "same_config_bitwise_equal_to_original": true,
+          "guards_passed": true
+        }
+      },
+      "resources": {
+        "original": {
+          "registers": 64,
+          "spills": 0,
+          "shared": 256,
+          "ptx_sha256": "9bd0b2aa9850d68eca66d468be66c31a03464db4ec275662a5ac26e894a85d80",
+          "cubin_sha256": "6124e6605190508da1df639abbb0d1964a9acf4ef712c42ffba9aa07f1399e19"
+        },
+        "immutable": {
+          "registers": 64,
+          "spills": 0,
+          "shared": 256,
+          "ptx_sha256": "9fa27bb7cfd681f01af32a9d207403ae0c93e28247e4e44990b03a522bdb7dcb",
+          "cubin_sha256": "085101279a43df73b688903485b4dc67b5556a3abb1c1701178239480573c8f5"
+        },
+        "alias": {
+          "registers": 64,
+          "spills": 0,
+          "shared": 256,
+          "ptx_sha256": "9bd0b2aa9850d68eca66d468be66c31a03464db4ec275662a5ac26e894a85d80",
+          "cubin_sha256": "6124e6605190508da1df639abbb0d1964a9acf4ef712c42ffba9aa07f1399e19"
+        },
+        "manual": {
+          "registers": 64,
+          "spills": 0,
+          "shared": 256,
+          "ptx_sha256": "47a21306c320e0c02c53cde6f240ba605f6a3c339f8b39d191b9e903dd4728f8",
+          "cubin_sha256": "6f1dcc172037a2ee528138db00664e829628072a342e96b75e23ce27b02acf63"
+        }
+      },
+      "profitability_guard": {
+        "selected": "optimized",
+        "binary_changed": true,
+        "grid": [
+          1,
+          8,
+          32
+        ],
+        "launched_ctas": 256,
+        "immutable_args": [
+          0,
+          2
+        ],
+        "native_attributes": {
+          "(0,)": [
+            [
+              "tt.divisibility",
+              16
+            ],
+            [
+              "tt.experimental_immutable",
+              1
+            ]
+          ],
+          "(1,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(2,)": [
+            [
+              "tt.divisibility",
+              16
+            ],
+            [
+              "tt.experimental_immutable",
+              1
+            ]
+          ],
+          "(5,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(6,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(7,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(8,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(9,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(10,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(11,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(12,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(15,)": [],
+          "(16,)": [],
+          "(17,)": [],
+          "(18,)": [],
+          "(19,)": [],
+          "(20,)": [],
+          "(21,)": [],
+          "(22,)": [],
+          "(23,)": [],
+          "(24,)": []
+        },
+        "variants": {
+          "baseline": {
+            "blocks_per_sm": 32,
+            "sm_count": 148,
+            "threads_per_block": 32,
+            "registers": 64,
+            "spills": 0,
+            "shared_bytes": 256
+          },
+          "optimized": {
+            "blocks_per_sm": 32,
+            "sm_count": 148,
+            "threads_per_block": 32,
+            "registers": 64,
+            "spills": 0,
+            "shared_bytes": 256
+          }
+        },
+        "guard": {
+          "no_residency_loss": true,
+          "grid_limited": true,
+          "definition": "no spills and (no blocks/SM loss or total launched CTAs fit optimized residency)",
+          "limitation": "profitability heuristic; can miss gains and cannot guarantee no regressions"
+        },
+        "contract": "initialized immutable inputs remain unchanged through invocation completion, including aliases",
+        "scope": "same source and launch; both atomic specialization passes disabled; no timing calibration"
+      }
+    },
+    {
+      "config": [
+        16,
+        1,
+        2
+      ],
+      "times_us": {
+        "original": [
+          1312.3639822006226,
+          1308.344006538391,
+          1306.50794506073
+        ],
+        "immutable": [
+          1295.6600189208984,
+          1292.199969291687,
+          1291.2839651107788
+        ],
+        "alias": [
+          1310.04798412323,
+          1308.2480430603027,
+          1307.6560497283936
+        ],
+        "manual": [
+          1288.3800268173218,
+          1287.3799800872803,
+          1286.83602809906
+        ]
+      },
+      "median_us": {
+        "original": 1308.344006538391,
+        "immutable": 1292.199969291687,
+        "alias": 1308.2480430603027,
+        "manual": 1287.3799800872803
+      },
+      "validation": {
+        "original": {
+          "max_output_error": 8.108890978131278e-08,
+          "max_state_error": 6.390923543708737e-07,
+          "same_config_bitwise_equal_to_original": true,
+          "guards_passed": true
+        },
+        "immutable": {
+          "max_output_error": 8.108890978131278e-08,
+          "max_state_error": 6.390923543708737e-07,
+          "same_config_bitwise_equal_to_original": true,
+          "guards_passed": true
+        },
+        "alias": {
+          "max_output_error": 8.108890978131278e-08,
+          "max_state_error": 6.390923543708737e-07,
+          "same_config_bitwise_equal_to_original": true,
+          "guards_passed": true
+        },
+        "manual": {
+          "max_output_error": 8.108890978131278e-08,
+          "max_state_error": 6.390923543708737e-07,
+          "same_config_bitwise_equal_to_original": true,
+          "guards_passed": true
+        }
+      },
+      "resources": {
+        "original": {
+          "registers": 96,
+          "spills": 0,
+          "shared": 256,
+          "ptx_sha256": "6c1e690ee91854cb0b3d50c0623317ead7c1bc8c39952d76c2a8b2dacb3f94a1",
+          "cubin_sha256": "b414dab8b1ff92214fd05ba1cd9fa28ce77592c1b5adefddd7fdc22b16973ee1"
+        },
+        "immutable": {
+          "registers": 96,
+          "spills": 0,
+          "shared": 256,
+          "ptx_sha256": "9a9f4132c7664b9bb9535fc8a3ead72cba86eeff3879849c8b2a5c2075b93896",
+          "cubin_sha256": "b5b50167289b47be17f548502d2160c2cd3a4f33e6beecd670142d271b624c77"
+        },
+        "alias": {
+          "registers": 96,
+          "spills": 0,
+          "shared": 256,
+          "ptx_sha256": "6c1e690ee91854cb0b3d50c0623317ead7c1bc8c39952d76c2a8b2dacb3f94a1",
+          "cubin_sha256": "b414dab8b1ff92214fd05ba1cd9fa28ce77592c1b5adefddd7fdc22b16973ee1"
+        },
+        "manual": {
+          "registers": 96,
+          "spills": 0,
+          "shared": 256,
+          "ptx_sha256": "48994d83a24ec30d4f7693e2260e5a105fb5ae5fa08d8a189c0caaddd3a002d8",
+          "cubin_sha256": "8d18347d26304920abed0a4c570d6fa775ddd6df59dc5871444f966abe4c709d"
+        }
+      },
+      "profitability_guard": {
+        "selected": "optimized",
+        "binary_changed": true,
+        "grid": [
+          1,
+          4,
+          32
+        ],
+        "launched_ctas": 128,
+        "immutable_args": [
+          0,
+          2
+        ],
+        "native_attributes": {
+          "(0,)": [
+            [
+              "tt.divisibility",
+              16
+            ],
+            [
+              "tt.experimental_immutable",
+              1
+            ]
+          ],
+          "(1,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(2,)": [
+            [
+              "tt.divisibility",
+              16
+            ],
+            [
+              "tt.experimental_immutable",
+              1
+            ]
+          ],
+          "(5,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(6,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(7,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(8,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(9,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(10,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(11,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(12,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(15,)": [],
+          "(16,)": [],
+          "(17,)": [],
+          "(18,)": [],
+          "(19,)": [],
+          "(20,)": [],
+          "(21,)": [],
+          "(22,)": [],
+          "(23,)": [],
+          "(24,)": []
+        },
+        "variants": {
+          "baseline": {
+            "blocks_per_sm": 20,
+            "sm_count": 148,
+            "threads_per_block": 32,
+            "registers": 96,
+            "spills": 0,
+            "shared_bytes": 256
+          },
+          "optimized": {
+            "blocks_per_sm": 20,
+            "sm_count": 148,
+            "threads_per_block": 32,
+            "registers": 96,
+            "spills": 0,
+            "shared_bytes": 256
+          }
+        },
+        "guard": {
+          "no_residency_loss": true,
+          "grid_limited": true,
+          "definition": "no spills and (no blocks/SM loss or total launched CTAs fit optimized residency)",
+          "limitation": "profitability heuristic; can miss gains and cannot guarantee no regressions"
+        },
+        "contract": "initialized immutable inputs remain unchanged through invocation completion, including aliases",
+        "scope": "same source and launch; both atomic specialization passes disabled; no timing calibration"
+      }
+    },
+    {
+      "config": [
+        32,
+        2,
+        2
+      ],
+      "times_us": {
+        "original": [
+          1731.9480180740356,
+          1727.7120351791382,
+          1727.7079820632935
+        ],
+        "immutable": [
+          1562.9520416259766,
+          1559.723973274231,
+          1559.607982635498
+        ],
+        "alias": [
+          1730.0159931182861,
+          1727.5439500808716,
+          1728.279948234558
+        ],
+        "manual": [
+          1562.1240139007568,
+          1559.7920417785645,
+          1559.8160028457642
+        ]
+      },
+      "median_us": {
+        "original": 1727.7120351791382,
+        "immutable": 1559.723973274231,
+        "alias": 1728.279948234558,
+        "manual": 1559.8160028457642
+      },
+      "validation": {
+        "original": {
+          "max_output_error": 8.108890978131278e-08,
+          "max_state_error": 6.390923543708737e-07,
+          "same_config_bitwise_equal_to_original": true,
+          "guards_passed": true
+        },
+        "immutable": {
+          "max_output_error": 8.108890978131278e-08,
+          "max_state_error": 6.390923543708737e-07,
+          "same_config_bitwise_equal_to_original": true,
+          "guards_passed": true
+        },
+        "alias": {
+          "max_output_error": 8.108890978131278e-08,
+          "max_state_error": 6.390923543708737e-07,
+          "same_config_bitwise_equal_to_original": true,
+          "guards_passed": true
+        },
+        "manual": {
+          "max_output_error": 8.108890978131278e-08,
+          "max_state_error": 6.390923543708737e-07,
+          "same_config_bitwise_equal_to_original": true,
+          "guards_passed": true
+        }
+      },
+      "resources": {
+        "original": {
+          "registers": 96,
+          "spills": 4,
+          "shared": 256,
+          "ptx_sha256": "93b2000199c3504a5c8fa58e694067d3a825edb5419231585102f9e926bfaef9",
+          "cubin_sha256": "7c3ca1d2e81912f891e1c6f384367be76cebc6036d426178c1d2aec03bcd1686"
+        },
+        "immutable": {
+          "registers": 116,
+          "spills": 0,
+          "shared": 256,
+          "ptx_sha256": "eb58919aca321d0731b38f64320bdac8ad42c584a6af52d04ade1f8eb392838c",
+          "cubin_sha256": "847c7250067937100dfabdfe30e37c0a9998946e4ef13e4a606442108c52c0fc"
+        },
+        "alias": {
+          "registers": 96,
+          "spills": 4,
+          "shared": 256,
+          "ptx_sha256": "93b2000199c3504a5c8fa58e694067d3a825edb5419231585102f9e926bfaef9",
+          "cubin_sha256": "7c3ca1d2e81912f891e1c6f384367be76cebc6036d426178c1d2aec03bcd1686"
+        },
+        "manual": {
+          "registers": 116,
+          "spills": 0,
+          "shared": 256,
+          "ptx_sha256": "37f50473be8ee658c59439647bc1c050caf590c3bc3944fd9092e9821de040d7",
+          "cubin_sha256": "8e29c38a6c8c57a979d92377cfdf5f86d4f3a255424231463ba4ab8c0df4a268"
+        }
+      },
+      "profitability_guard": {
+        "selected": "optimized",
+        "binary_changed": true,
+        "grid": [
+          1,
+          2,
+          32
+        ],
+        "launched_ctas": 64,
+        "immutable_args": [
+          0,
+          2
+        ],
+        "native_attributes": {
+          "(0,)": [
+            [
+              "tt.divisibility",
+              16
+            ],
+            [
+              "tt.experimental_immutable",
+              1
+            ]
+          ],
+          "(1,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(2,)": [
+            [
+              "tt.divisibility",
+              16
+            ],
+            [
+              "tt.experimental_immutable",
+              1
+            ]
+          ],
+          "(5,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(6,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(7,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(8,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(9,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(10,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(11,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(12,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(15,)": [],
+          "(16,)": [],
+          "(17,)": [],
+          "(18,)": [],
+          "(19,)": [],
+          "(20,)": [],
+          "(21,)": [],
+          "(22,)": [],
+          "(23,)": [],
+          "(24,)": []
+        },
+        "variants": {
+          "baseline": {
+            "blocks_per_sm": 10,
+            "sm_count": 148,
+            "threads_per_block": 64,
+            "registers": 96,
+            "spills": 4,
+            "shared_bytes": 256
+          },
+          "optimized": {
+            "blocks_per_sm": 8,
+            "sm_count": 148,
+            "threads_per_block": 64,
+            "registers": 116,
+            "spills": 0,
+            "shared_bytes": 256
+          }
+        },
+        "guard": {
+          "no_residency_loss": false,
+          "grid_limited": true,
+          "definition": "no spills and (no blocks/SM loss or total launched CTAs fit optimized residency)",
+          "limitation": "profitability heuristic; can miss gains and cannot guarantee no regressions"
+        },
+        "contract": "initialized immutable inputs remain unchanged through invocation completion, including aliases",
+        "scope": "same source and launch; both atomic specialization passes disabled; no timing calibration"
+      }
+    },
+    {
+      "config": [
+        64,
+        4,
+        1
+      ],
+      "times_us": {
+        "original": [
+          1724.8120307922363,
+          1720.3480005264282,
+          1719.931960105896
+        ],
+        "immutable": [
+          1718.2680368423462,
+          1715.1399850845337,
+          1715.3719663619995
+        ],
+        "alias": [
+          1722.6999998092651,
+          1719.7719812393188,
+          1720.188021659851
+        ],
+        "manual": [
+          1717.4439430236816,
+          1714.52796459198,
+          1715.232014656067
+        ]
+      },
+      "median_us": {
+        "original": 1720.3480005264282,
+        "immutable": 1715.3719663619995,
+        "alias": 1720.188021659851,
+        "manual": 1715.232014656067
+      },
+      "validation": {
+        "original": {
+          "max_output_error": 8.108890978131278e-08,
+          "max_state_error": 7.58301643921655e-07,
+          "same_config_bitwise_equal_to_original": true,
+          "guards_passed": true
+        },
+        "immutable": {
+          "max_output_error": 8.108890978131278e-08,
+          "max_state_error": 7.58301643921655e-07,
+          "same_config_bitwise_equal_to_original": true,
+          "guards_passed": true
+        },
+        "alias": {
+          "max_output_error": 8.108890978131278e-08,
+          "max_state_error": 7.58301643921655e-07,
+          "same_config_bitwise_equal_to_original": true,
+          "guards_passed": true
+        },
+        "manual": {
+          "max_output_error": 8.108890978131278e-08,
+          "max_state_error": 7.58301643921655e-07,
+          "same_config_bitwise_equal_to_original": true,
+          "guards_passed": true
+        }
+      },
+      "resources": {
+        "original": {
+          "registers": 124,
+          "spills": 0,
+          "shared": 1024,
+          "ptx_sha256": "232a353faa8e8304fa5f2025537ef0629d28a668a2d25c2b240d8de9cbcb6a88",
+          "cubin_sha256": "3ce9078c51961f1975f787399dc3bd39ecc5e6eee360779e9ed64c48d85f5dd8"
+        },
+        "immutable": {
+          "registers": 127,
+          "spills": 0,
+          "shared": 1024,
+          "ptx_sha256": "84e43b2fed450801c5078b35aa96be32748cb0404e2017ff0ea1293f4f53a2fb",
+          "cubin_sha256": "2df8eb76a6560e2e5492d0dcee4de99bc73f573d1d66a82e3d18ab1f4d5a609c"
+        },
+        "alias": {
+          "registers": 124,
+          "spills": 0,
+          "shared": 1024,
+          "ptx_sha256": "232a353faa8e8304fa5f2025537ef0629d28a668a2d25c2b240d8de9cbcb6a88",
+          "cubin_sha256": "3ce9078c51961f1975f787399dc3bd39ecc5e6eee360779e9ed64c48d85f5dd8"
+        },
+        "manual": {
+          "registers": 127,
+          "spills": 0,
+          "shared": 1024,
+          "ptx_sha256": "55c98373785f9db20e2cde450e3514f780aa999b40dce28e58596a5e16e22b85",
+          "cubin_sha256": "dc66129fc2fb5d69d6d534e05fc5de7ef8b0e3b4978fea055753971c215848ef"
+        }
+      },
+      "profitability_guard": {
+        "selected": "optimized",
+        "binary_changed": true,
+        "grid": [
+          1,
+          1,
+          32
+        ],
+        "launched_ctas": 32,
+        "immutable_args": [
+          0,
+          2
+        ],
+        "native_attributes": {
+          "(0,)": [
+            [
+              "tt.divisibility",
+              16
+            ],
+            [
+              "tt.experimental_immutable",
+              1
+            ]
+          ],
+          "(1,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(2,)": [
+            [
+              "tt.divisibility",
+              16
+            ],
+            [
+              "tt.experimental_immutable",
+              1
+            ]
+          ],
+          "(5,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(6,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(7,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(8,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(9,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(10,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(11,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(12,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(15,)": [],
+          "(16,)": [],
+          "(17,)": [],
+          "(18,)": [],
+          "(19,)": [],
+          "(20,)": [],
+          "(21,)": [],
+          "(22,)": [],
+          "(23,)": [],
+          "(24,)": []
+        },
+        "variants": {
+          "baseline": {
+            "blocks_per_sm": 4,
+            "sm_count": 148,
+            "threads_per_block": 128,
+            "registers": 124,
+            "spills": 0,
+            "shared_bytes": 1024
+          },
+          "optimized": {
+            "blocks_per_sm": 4,
+            "sm_count": 148,
+            "threads_per_block": 128,
+            "registers": 127,
+            "spills": 0,
+            "shared_bytes": 1024
+          }
+        },
+        "guard": {
+          "no_residency_loss": true,
+          "grid_limited": true,
+          "definition": "no spills and (no blocks/SM loss or total launched CTAs fit optimized residency)",
+          "limitation": "profitability heuristic; can miss gains and cannot guarantee no regressions"
+        },
+        "contract": "initialized immutable inputs remain unchanged through invocation completion, including aliases",
+        "scope": "same source and launch; both atomic specialization passes disabled; no timing calibration"
+      }
+    }
+  ],
+  "selected_config_indices": {
+    "original": 0,
+    "immutable": 0,
+    "alias": 0,
+    "manual": 0
+  },
+  "selected_configurations": {
+    "original": [
+      8,
+      1,
+      3
+    ],
+    "immutable": [
+      8,
+      1,
+      3
+    ],
+    "alias": [
+      8,
+      1,
+      3
+    ],
+    "manual": [
+      8,
+      1,
+      3
+    ]
+  },
+  "confirmation_us": {
+    "original": [
+      1270.0480222702026,
+      1267.5080299377441,
+      1267.091989517212,
+      1266.692042350769,
+      1267.1480178833008,
+      1267.4360275268555,
+      1267.2280073165894,
+      1267.6199674606323,
+      1267.0639753341675,
+      1267.3200368881226,
+      1267.1400308609009
+    ],
+    "immutable": [
+      1283.136010169983,
+      1280.9760570526123,
+      1280.3879976272583,
+      1280.6559801101685,
+      1280.8599472045898,
+      1280.9280157089233,
+      1280.7799577713013,
+      1281.0839414596558,
+      1281.216025352478,
+      1281.5120220184326,
+      1280.8279991149902
+    ],
+    "alias": [
+      1269.7160243988037,
+      1267.0320272445679,
+      1267.3360109329224,
+      1267.3799991607666,
+      1267.5399780273438,
+      1267.0799493789673,
+      1266.7319774627686,
+      1267.016053199768,
+      1267.3120498657227,
+      1267.2040462493896,
+      1267.2319412231445
+    ],
+    "manual": [
+      1284.8360538482666,
+      1281.5719842910767,
+      1280.5960178375244,
+      1280.8279991149902,
+      1280.5839776992798,
+      1281.3760042190552,
+      1280.6400060653687,
+      1280.236005783081,
+      1280.3360223770142,
+      1280.2480459213257,
+      1280.992031097412
+    ]
+  },
+  "confirmation_median_us": {
+    "original": 1267.2280073165894,
+    "immutable": 1280.9280157089233,
+    "alias": 1267.2319412231445,
+    "manual": 1280.6400060653687
+  },
+  "paired_speedup_vs_independently_tuned_original": {
+    "immutable": {
+      "median": 0.9894189861634829,
+      "min": 0.988925593450183,
+      "max": 0.9897999995354768,
+      "ratios": [
+        0.9897999995354768,
+        0.9894861211177852,
+        0.9896156414034764,
+        0.9890962616219555,
+        0.9892947473678019,
+        0.9894670207719668,
+        0.9894189861634829,
+        0.9894901703445891,
+        0.9889542046475596,
+        0.988925593450183,
+        0.9893131878257289
+      ]
+    },
+    "alias": {
+      "median": 1.000091532724407,
+      "min": 0.9994571818945753,
+      "max": 1.0004766429433465,
+      "ratios": [
+        1.000261474113124,
+        1.000375683236841,
+        0.999807453261325,
+        0.9994571818945753,
+        0.9996907709809256,
+        1.0002810226363874,
+        1.0003915823257374,
+        1.0004766429433465,
+        0.9998042514220696,
+        1.000091532724407,
+        0.9999274715549271
+      ]
+    },
+    "manual": {
+      "median": 0.9894548880894413,
+      "min": 0.9884903357640287,
+      "max": 0.9901455370217214,
+      "ratios": [
+        0.9884903357640287,
+        0.9890260129546198,
+        0.9894548880894413,
+        0.988963423056032,
+        0.9895079432118787,
+        0.9891210880753963,
+        0.9895271124709072,
+        0.9901455370217214,
+        0.9896339345211842,
+        0.9899019498023138,
+        0.9891865055361474
+      ]
+    }
+  },
+  "confirmation_validation": {
+    "0": {
+      "original": {
+        "max_output_error": 3.234489061310075e-08,
+        "max_state_error": 1.6358006965644378e-07,
+        "same_config_bitwise_equal_to_original": true,
+        "guards_passed": true
+      },
+      "immutable": {
+        "max_output_error": 3.234489061310075e-08,
+        "max_state_error": 1.6358006965644378e-07,
+        "same_config_bitwise_equal_to_original": true,
+        "guards_passed": true
+      },
+      "alias": {
+        "max_output_error": 3.234489061310075e-08,
+        "max_state_error": 1.6358006965644378e-07,
+        "same_config_bitwise_equal_to_original": true,
+        "guards_passed": true
+      },
+      "manual": {
+        "max_output_error": 3.234489061310075e-08,
+        "max_state_error": 1.6358006965644378e-07,
+        "same_config_bitwise_equal_to_original": true,
+        "guards_passed": true
+      }
+    }
+  },
+  "elapsed_seconds": 9.938337087631226,
+  "readonly_inputs_unchanged": true
+}

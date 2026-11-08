@@ -1,0 +1,23 @@
+{
+  "lib/Dialect/Triton/Transforms/PrivateReductionOwnership.cpp": {
+    "sha256": "2000db5e6bfeff64c48d46edb108ed03b1a5e7848106656dbf285ac2f19f9d74",
+    "snapshot": "sources/PrivateReductionOwnership.cpp"
+  },
+  "python/triton/experimental/semantic_contracts/native.py": {
+    "sha256": "adc50d9772d853dfe54b8474e1459049da9b0a3ea1c421601d4d736c9df323d9",
+    "snapshot": "sources/native.py.gz"
+  },
+  "third_party/nvidia/backend/compiler.py": {
+    "sha256": "e75ef905e7797383f8c98bd0249b60dd5677b14abf231b7e4f000e07158b51e2",
+    "snapshot": "sources/compiler.py.gz"
+  },
+  "experiment_notes/semantic_candidate_experiments/coverage_experiment.py": {
+    "sha256": "db50502fc3f549eb7550f594521835097e0d14d994f477e77da7bbaa812330d2",
+    "snapshot": "sources/coverage_experiment.py.gz"
+  },
+  "measured_harness": {
+    "sha256": "c1c49224e169eedf728bc0af9650c2258c6af7c3861a96ae829edb39ff276106",
+    "snapshot": "sources/experiment_native_stage.py"
+  },
+  "base_git_commit": "d20482df026f8c64f862ca6b7d6558528c8b9e8b"
+}

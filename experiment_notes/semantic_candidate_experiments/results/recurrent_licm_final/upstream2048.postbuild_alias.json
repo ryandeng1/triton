@@ -1,0 +1,151 @@
+{
+  "case": "upstream2048",
+  "seed": 55031,
+  "selected_configurations": {
+    "original": [
+      8,
+      1,
+      3
+    ],
+    "immutable": [
+      8,
+      1,
+      3
+    ],
+    "alias": [
+      8,
+      1,
+      3
+    ]
+  },
+  "state_reset_included_every_invocation": true,
+  "alias_has_no_immutable_attribute": true,
+  "alias_allocation_disjointness_checked": true,
+  "selected_alias_parameter_loads": [
+    {
+      "ir_line": 140,
+      "operation": "%b_A_log = tt.load %p_A_log, %b_h : !tt.ptr<f32> loc(#loc156)"
+    },
+    {
+      "ir_line": 141,
+      "operation": "%b_dt_bias = tt.load %p_dt_bias, %b_h : !tt.ptr<f32> loc(#loc157)"
+    }
+  ],
+  "alias_timestep_loop_line": 146,
+  "alias_and_immutable_ptx_exact_equal": true,
+  "alias_and_immutable_resources_equal": true,
+  "resources": {
+    "original": {
+      "registers": 64,
+      "spills": 0,
+      "shared": 256,
+      "ptx_sha256": "9bd0b2aa9850d68eca66d468be66c31a03464db4ec275662a5ac26e894a85d80",
+      "cubin_sha256": "6124e6605190508da1df639abbb0d1964a9acf4ef712c42ffba9aa07f1399e19"
+    },
+    "immutable": {
+      "registers": 64,
+      "spills": 0,
+      "shared": 256,
+      "ptx_sha256": "9fa27bb7cfd681f01af32a9d207403ae0c93e28247e4e44990b03a522bdb7dcb",
+      "cubin_sha256": "085101279a43df73b688903485b4dc67b5556a3abb1c1701178239480573c8f5"
+    },
+    "alias": {
+      "registers": 64,
+      "spills": 0,
+      "shared": 256,
+      "ptx_sha256": "9fa27bb7cfd681f01af32a9d207403ae0c93e28247e4e44990b03a522bdb7dcb",
+      "cubin_sha256": "085101279a43df73b688903485b4dc67b5556a3abb1c1701178239480573c8f5"
+    },
+    "manual": {
+      "registers": 64,
+      "spills": 0,
+      "shared": 256,
+      "ptx_sha256": "47a21306c320e0c02c53cde6f240ba605f6a3c339f8b39d191b9e903dd4728f8",
+      "cubin_sha256": "6f1dcc172037a2ee528138db00664e829628072a342e96b75e23ce27b02acf63"
+    }
+  },
+  "validation": {
+    "0": {
+      "original": {
+        "max_output_error": 2.929513118199445e-08,
+        "max_state_error": 1.8683279423559185e-07,
+        "same_config_bitwise_equal_to_original": true,
+        "guards_passed": true
+      },
+      "immutable": {
+        "max_output_error": 2.929513118199445e-08,
+        "max_state_error": 1.8683279423559185e-07,
+        "same_config_bitwise_equal_to_original": true,
+        "guards_passed": true
+      },
+      "alias": {
+        "max_output_error": 2.929513118199445e-08,
+        "max_state_error": 1.8683279423559185e-07,
+        "same_config_bitwise_equal_to_original": true,
+        "guards_passed": true
+      },
+      "manual": {
+        "max_output_error": 2.929513118199445e-08,
+        "max_state_error": 1.8683279423559185e-07,
+        "same_config_bitwise_equal_to_original": true,
+        "guards_passed": true
+      }
+    }
+  },
+  "times_us": {
+    "original": [
+      1269.5720195770264,
+      1266.7920589447021,
+      1266.543984413147,
+      1266.7880058288574,
+      1266.7759656906128,
+      1266.3480043411255,
+      1266.8839693069458,
+      1266.65198802948,
+      1266.219973564148,
+      1266.7319774627686,
+      1267.035961151123,
+      1266.800045967102,
+      1266.260027885437
+    ],
+    "immutable": [
+      1283.087968826294,
+      1279.960036277771,
+      1280.135989189148,
+      1280.2679538726807,
+      1279.5159816741943,
+      1280.184030532837,
+      1279.952049255371,
+      1280.0559997558594,
+      1279.703974723816,
+      1280.2040576934814,
+      1279.6319723129272,
+      1279.6119451522827,
+      1280.079960823059
+    ],
+    "alias": [
+      1284.6519947052002,
+      1279.8320055007935,
+      1280.079960823059,
+      1280.7159423828125,
+      1279.9839973449707,
+      1279.9079418182373,
+      1280.2560329437256,
+      1279.7319889068604,
+      1279.9040079116821,
+      1279.6000242233276,
+      1279.852032661438,
+      1280.3839445114136,
+      1280.2280187606812
+    ]
+  },
+  "median_us": {
+    "original": 1266.7759656906128,
+    "immutable": 1280.0559997558594,
+    "alias": 1279.9839973449707
+  },
+  "paired_alias_speedup_vs_original": 0.9894256790011705,
+  "paired_alias_over_immutable_time": 1.0001563120782753,
+  "native_library_sha256": "6be58f8451548d939876f4848a62a9dc8c504a41200e759781a12ba63e3661f0",
+  "harness_sha256": "362500d747e8f81a3966574a309f7d1cf8d4989f02db308fa7bc01b942b32d86"
+}

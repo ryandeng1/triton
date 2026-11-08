@@ -1,0 +1,280 @@
+{
+  "scope": "Complete training-forward GPU work including input conversion, 1D offsets, recurrence/full log_alpha, zero_infinity, loss reduction/output conversion. No backward, host length-stat/dispatch checks, allocator latency or log_softmax preparation.",
+  "records": 139,
+  "screen_records": 88,
+  "confirmation_records": 51,
+  "configuration_search": "Same eight configurations for all three variants: BLOCK_S=next_power_of_2(2U+1) times1or2; num_warps1/2/4/8. Confirm union of independently selected per-variant winners across three seeds;9shuffled graph rounds,16repetitions, capture order also shuffled.",
+  "source": "Pinned FlagGems generic training-forward implementation, revision3f1f896fd90f5db42d167d64fcb9691326071bc2. Distinct no-grad/backward paths are not claims of this study.",
+  "correctness": {
+    "all_passed": true,
+    "reference": "Independent PyTorch CPU FP64 CTC for raw loss, final reduction and every valid log_alpha state/time; full scratch/output bitwise comparison between variants; poisoned outputs and allocation guards; input snapshots.",
+    "max_log_alpha_absolute_error": 0.0106915255291824,
+    "tolerance": "FP32 recurrence/raw loss atol0.004,rtol3e-5; final BF16 rtol0.01; finalFP32 rtol3e-5. Inf/zero outcomes checked.",
+    "edges": "T=1 zero-trip recurrence, empty targets, input lengths0/1/2, repeated labels, 1D/2D targets, FP32/BF16 log_probs, int32/int64 targets. T=0 not executed because unchanged upstream t0 store is out of bounds for zero-sized log_alpha."
+  },
+  "barriers": "Three source ttg.barrier sites unchanged by AST undo audit; per-specialization final PTX bar.sync count identical across baseline/manual in all139records.",
+  "native_contract_result": "Every baseline/native-immutable PTX SHA256 pair is identical. Current native pass rejects loops containing ttg.barrier. Manual variant is an upper bound, not evidence that the current compiler performs this optimization.",
+  "main_findings": [
+    "Most gains are modest after independent tuning; several large wins in slow configurations disappear against a tuned baseline.",
+    "Held-outT1024,N64,U128,BF16,2D: baseline928.106us versusmanual909.072us best-to-best(1.0209x); pairedseed full ratios1.0208/1.0209/1.0226 andkernel ratios1.0225/1.0231/1.0213. Native no-opcontrol0.99964\u20131.00025x. Registers38\u219236;barriers10\u219210.",
+    "TrainingT256,N256,U64,BF16,1D: pairedseed complete-forward speedups1.0645/1.0524/1.0406; kernel-only1.0807/1.0774/1.0590. Registers32\u219232;barriers9\u21929.",
+    "Short cases have nontrivial graph/control variation; zero-trip workloads have no actual invariant load to eliminate, so apparent small timing differences there are not optimization claims."
+  ],
+  "decision": "A narrow barrier-aware immutable-global-load extension has a small but repeatable performance target. It must retain all barriers and masks, and then be tested on unchanged CTC source; manual timing alone is not a compiler result.",
+  "needed_proof": "Only an explicitly initialized-at-entry, unchanged-through-all-aliases global input pointer permits moving its ordinary invariant load across CTA barriers. Preserve the original load mask plus loop-entry guard; reject volatile loads, unknown/async effects, calls/assertions, mutable or alias-only inputs, and loads after a potentially nonreached prefix. Do not weaken synchronization or its shared/TMEM ordering.",
+  "rows": [
+    {
+      "case": "edge-T1-N4-U1-bfloat16-1d",
+      "baseline_best_config": {
+        "block_multiplier": 1,
+        "warps": 2
+      },
+      "manual_speedup_best_to_best": 1.0085100118799495,
+      "paired_seed_manual_full_speedups": [
+        0.9504338284366962,
+        0.94852841941153,
+        1.0498550186306317
+      ],
+      "paired_seed_manual_kernel_speedups": [
+        0.9938119059738783,
+        1.0098159545131757,
+        0.9889162436217093
+      ],
+      "identical_native_full_speedups": [
+        1.002357168149181,
+        0.9917207132334808,
+        1.0586269573856046
+      ]
+    },
+    {
+      "case": "edge-T1-N4-U1-float32-2d",
+      "baseline_best_config": {
+        "block_multiplier": 2,
+        "warps": 1
+      },
+      "manual_speedup_best_to_best": 1.0026455228106663,
+      "paired_seed_manual_full_speedups": [
+        1.027063648700453,
+        0.9960578649949364,
+        0.9960317157840006
+      ],
+      "paired_seed_manual_kernel_speedups": [
+        1.0039840942342644,
+        1.0092592528430708,
+        0.9946808107150393
+      ],
+      "identical_native_full_speedups": [
+        1.0106524667879184,
+        1.0026455228106663,
+        1.0026630585668266
+      ]
+    },
+    {
+      "case": "edge-T16-N4-U0-float32-2d",
+      "baseline_best_config": {
+        "block_multiplier": 1,
+        "warps": 1
+      },
+      "manual_speedup_best_to_best": 0.9955665067947171,
+      "paired_seed_manual_full_speedups": [
+        0.9446063854545049,
+        0.9955665067947171,
+        1.0064838012577733
+      ],
+      "paired_seed_manual_kernel_speedups": [
+        1.0115162905476123,
+        0.9995084686141642,
+        1.001486631736686
+      ],
+      "identical_native_full_speedups": [
+        1.0034229710450517,
+        0.9418983904916839,
+        0.9441671965149478
+      ]
+    },
+    {
+      "case": "heldout-T1024-N64-U128-bfloat16-2d",
+      "baseline_best_config": {
+        "block_multiplier": 1,
+        "warps": 8
+      },
+      "manual_speedup_best_to_best": 1.0209378667829554,
+      "paired_seed_manual_full_speedups": [
+        1.0207918325822314,
+        1.0209378667829554,
+        1.0226208329294637
+      ],
+      "paired_seed_manual_kernel_speedups": [
+        1.022547606180574,
+        1.0231242721075935,
+        1.0213368780271253
+      ],
+      "identical_native_full_speedups": [
+        1.0002488148425002,
+        0.9996402946515159,
+        1.0002033353441298
+      ]
+    },
+    {
+      "case": "heldout-T128-N512-U24-float32-2d",
+      "baseline_best_config": {
+        "block_multiplier": 1,
+        "warps": 2
+      },
+      "manual_speedup_best_to_best": 1.0136853080925183,
+      "paired_seed_manual_full_speedups": [
+        1.0136853080925183,
+        1.0151015299219297,
+        1.012715686772516
+      ],
+      "paired_seed_manual_kernel_speedups": [
+        1.0151892701701624,
+        1.0142656486347363,
+        1.0097249818515208
+      ],
+      "identical_native_full_speedups": [
+        0.9979208763486053,
+        0.999791633943754,
+        1.0022660310675007
+      ]
+    },
+    {
+      "case": "heldout-T256-N128-U48-float32-1d",
+      "baseline_best_config": {
+        "block_multiplier": 1,
+        "warps": 4
+      },
+      "manual_speedup_best_to_best": 1.0215087076469036,
+      "paired_seed_manual_full_speedups": [
+        1.0166517359162606,
+        1.0215087076469036,
+        1.0200954300970189
+      ],
+      "paired_seed_manual_kernel_speedups": [
+        1.021183943343874,
+        1.0257081808975423,
+        1.0183276721546375
+      ],
+      "identical_native_full_speedups": [
+        0.999982704767357,
+        0.9957656952240066,
+        1.0056014227894534
+      ]
+    },
+    {
+      "case": "heldout-T64-N32-U24-float32-2d",
+      "baseline_best_config": {
+        "block_multiplier": 1,
+        "warps": 2
+      },
+      "manual_speedup_best_to_best": 1.0059879997415162,
+      "paired_seed_manual_full_speedups": [
+        1.0152632701902577,
+        1.0056872473024197,
+        1.0059879997415162
+      ],
+      "paired_seed_manual_kernel_speedups": [
+        1.0167950894475055,
+        1.009743801404627,
+        1.017932264330973
+      ],
+      "identical_native_full_speedups": [
+        0.9981332759525929,
+        0.9959324572557965,
+        0.996219690510416
+      ]
+    },
+    {
+      "case": "training-T128-N32-U32-float32-2d",
+      "baseline_best_config": {
+        "block_multiplier": 1,
+        "warps": 4
+      },
+      "manual_speedup_best_to_best": 1.0101444226043115,
+      "paired_seed_manual_full_speedups": [
+        1.0101444226043115,
+        0.9983721209142625,
+        0.9985205392647805
+      ],
+      "paired_seed_manual_kernel_speedups": [
+        1.002695665415515,
+        1.0057452216500737,
+        1.008891047078351
+      ],
+      "identical_native_full_speedups": [
+        0.9986917691581736,
+        1.0017376489307024,
+        1.0018269150741832
+      ]
+    },
+    {
+      "case": "training-T256-N256-U64-bfloat16-1d",
+      "baseline_best_config": {
+        "block_multiplier": 1,
+        "warps": 8
+      },
+      "manual_speedup_best_to_best": 1.060895024157567,
+      "paired_seed_manual_full_speedups": [
+        1.0645184808034616,
+        1.0524358095267445,
+        1.040619418348125
+      ],
+      "paired_seed_manual_kernel_speedups": [
+        1.0806663425282919,
+        1.0773971408484875,
+        1.058965264208863
+      ],
+      "identical_native_full_speedups": [
+        1.0031097794855124,
+        0.9991682860047739,
+        0.9956521138596659
+      ]
+    },
+    {
+      "case": "training-T32-N4-U16-float32-2d",
+      "baseline_best_config": {
+        "block_multiplier": 1,
+        "warps": 2
+      },
+      "manual_speedup_best_to_best": 1.004592555089325,
+      "paired_seed_manual_full_speedups": [
+        0.9729787152563126,
+        1.013140937576208,
+        0.9753296255928786
+      ],
+      "paired_seed_manual_kernel_speedups": [
+        1.0225173581160254,
+        1.0231077638175414,
+        1.0236180248135383
+      ],
+      "identical_native_full_speedups": [
+        0.9936736500622456,
+        0.9596001526677376,
+        1.0035971257452017
+      ]
+    },
+    {
+      "case": "training-T512-N128-U64-float32-2d",
+      "baseline_best_config": {
+        "block_multiplier": 1,
+        "warps": 8
+      },
+      "manual_speedup_best_to_best": 1.0226222083812861,
+      "paired_seed_manual_full_speedups": [
+        1.0112341096004185,
+        1.0239825205601603,
+        1.0239537745649838
+      ],
+      "paired_seed_manual_kernel_speedups": [
+        1.008197230454482,
+        1.027394511461079,
+        1.0260773591458727
+      ],
+      "identical_native_full_speedups": [
+        1.001353611487864,
+        0.9997270338571974,
+        0.9991763625952017
+      ]
+    }
+  ]
+}

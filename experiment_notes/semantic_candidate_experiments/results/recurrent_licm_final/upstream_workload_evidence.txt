@@ -1,0 +1,167 @@
+op_tests/test_gated_delta_rule.py:453-556
+https://github.com/ROCm/aiter/blob/ef0a5a26b8cb38ea1308f827985e36cde964a6ab/op_tests/test_gated_delta_rule.py#L453-L556
+
+453: @pytest.mark.parametrize(
+454:     ("B", "T", "H", "HV", "D", "scale", "gate_logit_normalizer", "dtype"),
+455:     [
+456:         pytest.param(
+457:             *test,
+458:             id="B{}-T{}-H{}-HV{}-D{}-scale{}-gate_logit_normalizer{}-{}".format(*test),
+459:         )
+460:         for test in [
+461:             (1, 63, 1, 1, 64, 1, 1, torch.float),
+462:             (2, 500, 4, 4, 60, 1, 1, torch.float),
+463:             (2, 1000, 2, 8, 128, 1, 0.1, torch.float),
+464:             (3, 1024, 2, 2, 128, 0.1, 1, torch.float),
+465:             (4, 1024, 3, 3, 128, 1, 10, torch.float),
+466:             (4, 2048, 4, 4, 64, 0.1, 1, torch.float),
+467:             (2, 1024, 4, 4, 128, 1, 0.1, torch.float16),
+468:             (2, 1024, 4, 8, 128, 1, 10, torch.float16),
+469:             (2, 1024, 4, 4, 128, 1, 0.1, torch.bfloat16),
+470:             (2, 1024, 4, 8, 128, 1, 1, torch.bfloat16),
+471:             (4, 2048, 4, 8, 64, 0.1, 1, torch.bfloat16),
+472:         ]
+473:     ],
+474: )
+475: def test_fused_sigmoid_gating_delta_rule_update(
+476:     B: int,
+477:     T: int,
+478:     H: int,
+479:     HV: int,
+480:     D: int,
+481:     scale: float,
+482:     gate_logit_normalizer: float,
+483:     dtype: torch.dtype,
+484: ):
+485:     """Test fused sigmoid gating delta rule update kernel."""
+486:     torch.manual_seed(42)
+487: 
+488:     # Create input tensors
+489:     q = torch.randn(B, T, H, D, dtype=torch.float32)
+490:     k = torch.randn(B, T, H, D, dtype=torch.float32)
+491:     v = torch.randn(B, T, HV, D, dtype=dtype)
+492:     b = torch.randn(B, T, HV, dtype=dtype)  # beta logits
+493: 
+494:     # Gating parameters
+495:     A_log = torch.randn(HV, dtype=torch.float32)
+496:     a = torch.randn(B, T, HV, dtype=torch.float32)
+497:     dt_bias = torch.randn(HV, dtype=torch.float32)
+498:     softplus_beta = 1.0
+499:     softplus_threshold = 20.0
+500: 
+501:     # Initial state
+502:     h0 = torch.randn(B, HV, D, D, dtype=torch.float32)
+503:     initial_state_indices = torch.arange(B, dtype=torch.long)
+504: 
+505:     # Move to device
+506:     q, k, v, b, A_log, a, dt_bias, h0, initial_state_indices = (
+507:         x.to(device) for x in (q, k, v, b, A_log, a, dt_bias, h0, initial_state_indices)
+508:     )
+509: 
+510:     # Compute reference using recurrent implementation
+511:     # Compute g = -exp(A_log) * softplus(a + dt_bias)
+512:     # This is already in log-space (negative values for decay)
+513:     x = a + dt_bias[None, None, :]
+514:     softplus_x = F.softplus(x, beta=softplus_beta, threshold=softplus_threshold)
+515:     g = -torch.exp(A_log[None, None, :]) * softplus_x
+516:     beta = torch.sigmoid(b)
+517: 
+518:     # Expand q and k to match HV heads for reference implementation
+519:     q_expanded = F.normalize(
+520:         repeat(q.clone(), "b t h d -> b t (h g) d", g=HV // H), p=2, dim=-1
+521:     ).to(dtype)
+522:     k_expanded = F.normalize(
+523:         repeat(k.clone(), "b t h d -> b t (h g) d", g=HV // H), p=2, dim=-1
+524:     ).to(dtype)
+525: 
+526:     ref, _ = recurrent_gated_delta_rule_ref(
+527:         q=q_expanded,
+528:         k=k_expanded,
+529:         v=v.clone(),
+530:         beta=beta.clone(),
+531:         g=g.clone(),
+532:         scale=scale,
+533:         initial_state=h0.clone(),
+534:         output_final_state=True,
+535:     )
+536: 
+537:     # Compute using fused kernel
+538:     tri = fused_sigmoid_gating_delta_rule_update(
+539:         A_log=A_log,
+540:         a=a,
+541:         dt_bias=dt_bias,
+542:         softplus_beta=softplus_beta,
+543:         softplus_threshold=softplus_threshold,
+544:         q=q.clone(),
+545:         k=k.clone(),
+546:         v=v.clone(),
+547:         b=b.clone(),
+548:         initial_state_source=h0.clone(),
+549:         initial_state_indices=initial_state_indices,
+550:         scale=scale,
+551:         use_qk_l2norm_in_kernel=True,
+552:     )
+553: 
+554:     # Use higher tolerance for bfloat16 due to lower precision
+555:     tol = 0.005 if dtype == torch.bfloat16 else 0.002
+556:     assert_close("o", ref, tri, tol)
+
+op_tests/op_benchmarks/triton/bench_fused_kda_decode.py:115-133
+https://github.com/ROCm/aiter/blob/ef0a5a26b8cb38ea1308f827985e36cde964a6ab/op_tests/op_benchmarks/triton/bench_fused_kda_decode.py#L115-L133
+
+115:     return {
+116:         "mixed_qkv": torch.randn(batch, 3 * lp, dtype=DTYPE, device=DEVICE),
+117:         "conv_weight": torch.randn(3 * lp, W, dtype=DTYPE, device=DEVICE) * 0.1,
+118:         "conv_state": torch.randn(num_slots, 3 * lp, W - 1, dtype=DTYPE, device=DEVICE)
+119:         * 0.1,
+120:         "gate": torch.randn(1, batch, Hloc, D, dtype=DTYPE, device=DEVICE) * 0.5,
+121:         "beta": torch.randn(1, batch, Hloc, dtype=DTYPE, device=DEVICE),
+122:         "out_gate": torch.randn(batch, lp, dtype=DTYPE, device=DEVICE),
+123:         "A_log": torch.randn(Hloc, dtype=DTYPE, device=DEVICE) * 0.1,
+124:         "dt_bias": torch.randn(lp, dtype=DTYPE, device=DEVICE) * 0.1,
+125:         "ssm_state": torch.randn(
+126:             num_slots, Hloc, D, D, dtype=torch.float32, device=DEVICE
+127:         )
+128:         * 0.01,
+129:         "norm_weight": torch.ones(D, dtype=DTYPE, device=DEVICE),
+130:         "ssm_state_indices": torch.arange(batch, dtype=torch.int32, device=DEVICE),
+131:         "cu_seqlens": torch.arange(batch + 1, dtype=torch.int64, device=DEVICE),
+132:     }
+133: 
+
+op_tests/op_benchmarks/triton/bench_fused_kda_decode.py:340-371
+https://github.com/ROCm/aiter/blob/ef0a5a26b8cb38ea1308f827985e36cde964a6ab/op_tests/op_benchmarks/triton/bench_fused_kda_decode.py#L340-L371
+
+340:         T = mixed_qkv.shape[0]
+341:         lp = Hloc * D
+342:         q, k, v = causal_conv1d_update_split_qkv(
+343:             mixed_qkv,
+344:             cs_3k,
+345:             conv_weight,
+346:             lp,
+347:             lp,
+348:             bias=None,
+349:             activation="silu",
+350:             conv_state_indices=ssm_state_indices,
+351:             use_gluon=False,
+352:         )
+353:         out = torch.empty(T, Hloc, D, dtype=q.dtype, device=DEVICE)
+354:         fused_sigmoid_gating_delta_rule_update(
+355:             A_log=A_log,
+356:             a=gate,
+357:             dt_bias=dt_bias,
+358:             softplus_beta=1.0,
+359:             softplus_threshold=20.0,
+360:             q=rearrange(q, "t (h d) -> 1 t h d", d=D),
+361:             k=rearrange(k, "t (h d) -> 1 t h d", d=D),
+362:             v=rearrange(v, "t (h d) -> 1 t h d", d=D),
+363:             b=beta,
+364:             initial_state_source=ss_3k,
+365:             initial_state_indices=ssm_state_indices,
+366:             use_qk_l2norm_in_kernel=True,
+367:             cu_seqlens=cu_seqlens,
+368:         )
+369:         og3d = rearrange(out_gate[:T], "t (h d) -> t h d", d=D)
+370:         rmsnorm_gated_bf16(out, norm_weight, og3d, 1e-6)
+371: 
+

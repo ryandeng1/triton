@@ -1,0 +1,22 @@
+{
+  "all51_baseline_resource_records_equal": true,
+  "representative_executable_ptx_comparisons": [
+    {
+      "case": "training-T128-N32-U32-float32-2d-b128-w4",
+      "executable_ptx_equal": true,
+      "normalization": "Remove .file/.loc directives, comment-only lines and .debug DWARF sections, retaining executable PTX and non-debug directives. Differences encode output-directory path.",
+      "old_sha256": "1012cdfc973b787f08b2e6a646fce8d767b1ac7819304a4b9b7ba55fdc1a427c",
+      "new_sha256": "4a5a053b5f4a8ff008eb5b1d2e36d7608aff3247295531f810003c53ffd18e66",
+      "executable_sha256": "a36ed964a45a4ac10d7aae9a56199c9ffafdc65618554bc997920a688c8b4f46"
+    },
+    {
+      "case": "heldout-T256-N128-U48-float32-1d-b128-w4",
+      "executable_ptx_equal": true,
+      "normalization": "Remove .file/.loc directives, comment-only lines and .debug DWARF sections, retaining executable PTX and non-debug directives. Differences encode output-directory path.",
+      "old_sha256": "38ab799983b55055db45815210ae3a09cbabf9fc28e074130418bef0ac4d4303",
+      "new_sha256": "ecceb8b34c7b7e953c0e96beeccc3885cf1da2a51a8634d027e2671e4e24d34c",
+      "executable_sha256": "39f942cd8915a3d4ed5a33dc15759f501c314d4209ab748a11fdc3d082d0c7f1"
+    }
+  ],
+  "full_ptx_and_cubin_hashes_differ_due_to_debug_source_path": "New output directory changes .file and DWARF path data; do not claim binary identity."
+}

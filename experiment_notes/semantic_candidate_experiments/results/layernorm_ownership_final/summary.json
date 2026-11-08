@@ -1,0 +1,771 @@
+{
+  "status": "Fresh source reconstruction and native compiler transformation both measured; historical numbers remain separate.",
+  "historical_recovery": "Only protocol/findings/summary were committed at18368cb1f. Source harness reconstructed; original tutorial SHA256 exactly matches historical58716180088be8a05e3e21fb2bab2db2bc5e7780fd3dd7e680e682a82ecdd048.",
+  "input_distribution": "Fresh standard-normal x,dy,w, zero bias; original tutorial forward supplies commonFP32 savedstats. Historical harness inputs were not recovered; historical numbers are not relabeled.",
+  "contract": [
+    "Exact one-dimensional M-program launch.",
+    "Positive M, N, G; valid affine row/scratch addresses without signed-i32 overflow.",
+    "Initialized private writable allocations disjoint from all read inputs and each other.",
+    "Zeroed 2G lock/count words before every launch.",
+    "Read inputs unchanged during invocation.",
+    "No external or intermediate observers."
+  ],
+  "numerical_legality": "Every owner and native output/partial matches bitwise one increasing-row serialization of the unchanged original producer. A G=M run captures exact FP32 row contributions; an independent ordered kernel applies original new+old with per-update scratch rounding and direct first assignment. DX matches original row computation bitwise.",
+  "mathematical_diagnostic": "Direct nearest-even rounding of FP64 derivative using actual saved FP32 statistics. Historical absolute tolerance 0.01 is recorded without loosening. Some fresh BF16 outputs fail in original, owner and native; exact original-program refinement does not establish universal mathematical or training accuracy.",
+  "scope": "Completebackward: originalM launch +lock/countreset +samefinalreduction. Allocation,forward,producer,hostguards excluded. Bothvariants use same declaredscratchprecision.",
+  "groups": [
+    {
+      "case": "confirm-bfloat16-m4096-n1024",
+      "shape": [
+        4096,
+        1024
+      ],
+      "dtype": "bfloat16",
+      "scratch_dtype": "torch.float32",
+      "seeds": [
+        11,
+        12,
+        13
+      ],
+      "best_tested": {
+        "locked": {
+          "group": 256,
+          "warps": 8,
+          "us": 49.688998609781265
+        },
+        "owner": {
+          "group": 256,
+          "warps": 4,
+          "us": 24.656999856233597
+        }
+      },
+      "speedup": 2.0152086182220286,
+      "torch_native_median_us": 23.074500262737274,
+      "exact_selected_serialization": true,
+      "historical_math_diagnostic_failure_count": 24,
+      "historical_math_max_error": 0.25
+    },
+    {
+      "case": "confirm-bfloat16-m4096-n4096",
+      "shape": [
+        4096,
+        4096
+      ],
+      "dtype": "bfloat16",
+      "scratch_dtype": "torch.float32",
+      "seeds": [
+        11,
+        12,
+        13
+      ],
+      "best_tested": {
+        "locked": {
+          "group": 256,
+          "warps": 8,
+          "us": 80.03400266170502
+        },
+        "owner": {
+          "group": 256,
+          "warps": 8,
+          "us": 43.692998588085175
+        }
+      },
+      "speedup": 1.8317351806458488,
+      "torch_native_median_us": 55.11149950325489,
+      "exact_selected_serialization": true,
+      "historical_math_diagnostic_failure_count": 38,
+      "historical_math_max_error": 0.03125
+    },
+    {
+      "case": "confirm-float32-m4096-n1024",
+      "shape": [
+        4096,
+        1024
+      ],
+      "dtype": "float32",
+      "scratch_dtype": "torch.float32",
+      "seeds": [
+        11,
+        12,
+        13
+      ],
+      "best_tested": {
+        "locked": {
+          "group": 256,
+          "warps": 4,
+          "us": 50.32600089907646
+        },
+        "owner": {
+          "group": 256,
+          "warps": 4,
+          "us": 25.357000529766083
+        }
+      },
+      "speedup": 1.9846984993355095,
+      "torch_native_median_us": 22.01800048351288,
+      "exact_selected_serialization": true,
+      "historical_math_diagnostic_failure_count": 0,
+      "historical_math_max_error": 0
+    },
+    {
+      "case": "confirm-float32-m4096-n4096",
+      "shape": [
+        4096,
+        4096
+      ],
+      "dtype": "float32",
+      "scratch_dtype": "torch.float32",
+      "seeds": [
+        11,
+        12,
+        13
+      ],
+      "best_tested": {
+        "locked": {
+          "group": 256,
+          "warps": 4,
+          "us": 78.00500094890594
+        },
+        "owner": {
+          "group": 256,
+          "warps": 8,
+          "us": 54.07800152897835
+        }
+      },
+      "speedup": 1.442453469866227,
+      "torch_native_median_us": 82.75000005960464,
+      "exact_selected_serialization": true,
+      "historical_math_diagnostic_failure_count": 0,
+      "historical_math_max_error": 0
+    }
+  ],
+  "boundary_cases": [
+    {
+      "case": "smoke-bfloat16-m257-n1000",
+      "shape": [
+        257,
+        1000
+      ],
+      "dtype": "bfloat16",
+      "scratch_dtype": "torch.float32",
+      "checks": "exactserialization/canaries/partials/inactivecounts/inputpreservationpassed",
+      "performance_claim": false
+    },
+    {
+      "case": "smoke-float16-m257-n1000",
+      "shape": [
+        257,
+        1000
+      ],
+      "dtype": "float16",
+      "scratch_dtype": "torch.float16",
+      "checks": "exactserialization/canaries/partials/inactivecounts/inputpreservationpassed",
+      "performance_claim": false
+    },
+    {
+      "case": "smoke-float32-m1-n1",
+      "shape": [
+        1,
+        1
+      ],
+      "dtype": "float32",
+      "scratch_dtype": "torch.float32",
+      "checks": "exactserialization/canaries/partials/inactivecounts/inputpreservationpassed",
+      "performance_claim": false
+    },
+    {
+      "case": "smoke-float32-m17-n33",
+      "shape": [
+        17,
+        33
+      ],
+      "dtype": "float32",
+      "scratch_dtype": "torch.float32",
+      "checks": "exactserialization/canaries/partials/inactivecounts/inputpreservationpassed",
+      "performance_claim": false
+    },
+    {
+      "case": "smoke-float32-m513-n4097",
+      "shape": [
+        513,
+        4097
+      ],
+      "dtype": "float32",
+      "scratch_dtype": "torch.float32",
+      "checks": "exactserialization/canaries/partials/inactivecounts/inputpreservationpassed",
+      "performance_claim": false
+    }
+  ],
+  "source_records": {
+    "confirm": 21,
+    "screen": 96,
+    "smoke": 15
+  },
+  "validation": {
+    "screen_configurations": 96,
+    "independent_confirmation_records": 21,
+    "boundary_records": 15,
+    "diagnostic_tolerance_changed": false,
+    "native_code": "21 main and 9 boundary records; all bitwise/state/guard checks passed.",
+    "quack": "unavailable in current environment"
+  },
+  "native": {
+    "records": {
+      "confirm": 21,
+      "smoke": 9
+    },
+    "fingerprints": {
+      "harness": "c1c49224e169eedf728bc0af9650c2258c6af7c3861a96ae829edb39ff276106",
+      "libtriton": "6be58f8451548d939876f4848a62a9dc8c504a41200e759781a12ba63e3661f0",
+      "tutorial": "58716180088be8a05e3e21fb2bab2db2bc5e7780fd3dd7e680e682a82ecdd048"
+    },
+    "semantics": "Native pass consumes unchanged original row kernel and runtime scalar facts; N and stride remain normal SSA arguments. Two FP32 partials are carried by owner programs. Grid/signature/precision/final reduction and bookkeeping preserved.",
+    "groups": [
+      {
+        "case": "native-confirm-bfloat16-m4096-n1024",
+        "shape": [
+          4096,
+          1024
+        ],
+        "dtype": "bfloat16",
+        "scratch_dtype": "torch.float32",
+        "seeds": [
+          11,
+          12,
+          13
+        ],
+        "best_tested": {
+          "locked": {
+            "group": 256,
+            "warps": 8,
+            "us": 49.68700185418129
+          },
+          "owner": {
+            "group": 256,
+            "warps": 4,
+            "us": 24.584000930190086
+          },
+          "native": {
+            "group": 256,
+            "warps": 4,
+            "us": 24.188000708818436
+          }
+        },
+        "native_speedup": 2.0542004464249275,
+        "configurations": [
+          {
+            "group": 256,
+            "warps": 4,
+            "median_us": {
+              "locked": 54.52299863100052,
+              "owner": 24.584000930190086,
+              "native": 24.188000708818436,
+              "torch_native": 23.096999153494835
+            },
+            "matched_native_speedup": 2.254134158807205,
+            "resources": {
+              "baseline": {
+                "atomic_instruction_sites": 3,
+                "bar_sync_sites": 13,
+                "registers": 40,
+                "spills": 0,
+                "shared_bytes": 4096
+              },
+              "optimized": {
+                "atomic_instruction_sites": 0,
+                "bar_sync_sites": 11,
+                "registers": 80,
+                "spills": 0,
+                "shared_bytes": 4096
+              }
+            },
+            "exact_selected_serialization": true,
+            "math_diagnostic_failure_count": 18,
+            "math_diagnostic_max_error": 0.25
+          },
+          {
+            "group": 256,
+            "warps": 8,
+            "median_us": {
+              "locked": 49.68700185418129,
+              "owner": 25.324000045657158,
+              "native": 26.326000690460205,
+              "torch_native": 23.082999512553215
+            },
+            "matched_native_speedup": 1.887373719935609,
+            "resources": {
+              "baseline": {
+                "atomic_instruction_sites": 3,
+                "bar_sync_sites": 9,
+                "registers": 28,
+                "spills": 0,
+                "shared_bytes": 32
+              },
+              "optimized": {
+                "atomic_instruction_sites": 0,
+                "bar_sync_sites": 7,
+                "registers": 48,
+                "spills": 0,
+                "shared_bytes": 32
+              }
+            },
+            "exact_selected_serialization": true,
+            "math_diagnostic_failure_count": 18,
+            "math_diagnostic_max_error": 0.25
+          }
+        ]
+      },
+      {
+        "case": "native-confirm-bfloat16-m4096-n4096",
+        "shape": [
+          4096,
+          4096
+        ],
+        "dtype": "bfloat16",
+        "scratch_dtype": "torch.float32",
+        "seeds": [
+          11,
+          12,
+          13
+        ],
+        "best_tested": {
+          "locked": {
+            "group": 256,
+            "warps": 8,
+            "us": 80.21599799394608
+          },
+          "owner": {
+            "group": 256,
+            "warps": 8,
+            "us": 44.07799988985062
+          },
+          "native": {
+            "group": 256,
+            "warps": 8,
+            "us": 50.38699880242348
+          }
+        },
+        "native_speedup": 1.5919979340005443,
+        "configurations": [
+          {
+            "group": 256,
+            "warps": 8,
+            "median_us": {
+              "locked": 80.21599799394608,
+              "owner": 44.07799988985062,
+              "native": 50.38699880242348,
+              "torch_native": 55.26899918913841
+            },
+            "matched_native_speedup": 1.5919979340005443,
+            "resources": {
+              "baseline": {
+                "atomic_instruction_sites": 3,
+                "bar_sync_sites": 17,
+                "registers": 64,
+                "spills": 0,
+                "shared_bytes": 8192
+              },
+              "optimized": {
+                "atomic_instruction_sites": 0,
+                "bar_sync_sites": 15,
+                "registers": 128,
+                "spills": 0,
+                "shared_bytes": 8192
+              }
+            },
+            "exact_selected_serialization": true,
+            "math_diagnostic_failure_count": 25,
+            "math_diagnostic_max_error": 0.03125
+          },
+          {
+            "group": 512,
+            "warps": 8,
+            "median_us": {
+              "locked": 82.22000300884247,
+              "owner": 61.188001185655594,
+              "native": 67.46000051498413,
+              "torch_native": 55.28999865055084
+            },
+            "matched_native_speedup": 1.2187963590450888,
+            "resources": {
+              "baseline": {
+                "atomic_instruction_sites": 3,
+                "bar_sync_sites": 17,
+                "registers": 64,
+                "spills": 0,
+                "shared_bytes": 8192
+              },
+              "optimized": {
+                "atomic_instruction_sites": 0,
+                "bar_sync_sites": 15,
+                "registers": 128,
+                "spills": 0,
+                "shared_bytes": 8192
+              }
+            },
+            "exact_selected_serialization": true,
+            "math_diagnostic_failure_count": 30,
+            "math_diagnostic_max_error": 0.03125
+          }
+        ]
+      },
+      {
+        "case": "native-confirm-float32-m4096-n1024",
+        "shape": [
+          4096,
+          1024
+        ],
+        "dtype": "float32",
+        "scratch_dtype": "torch.float32",
+        "seeds": [
+          11,
+          12,
+          13
+        ],
+        "best_tested": {
+          "locked": {
+            "group": 256,
+            "warps": 4,
+            "us": 48.347000032663345
+          },
+          "owner": {
+            "group": 256,
+            "warps": 4,
+            "us": 25.529000908136368
+          },
+          "native": {
+            "group": 256,
+            "warps": 4,
+            "us": 27.286000549793243
+          }
+        },
+        "native_speedup": 1.7718609931285694,
+        "configurations": [
+          {
+            "group": 256,
+            "warps": 4,
+            "median_us": {
+              "locked": 48.347000032663345,
+              "owner": 25.529000908136368,
+              "native": 27.286000549793243,
+              "torch_native": 22.071000188589096
+            },
+            "matched_native_speedup": 1.7718609931285694,
+            "resources": {
+              "baseline": {
+                "atomic_instruction_sites": 3,
+                "bar_sync_sites": 9,
+                "registers": 48,
+                "spills": 0,
+                "shared_bytes": 16
+              },
+              "optimized": {
+                "atomic_instruction_sites": 0,
+                "bar_sync_sites": 7,
+                "registers": 72,
+                "spills": 0,
+                "shared_bytes": 16
+              }
+            },
+            "exact_selected_serialization": true,
+            "math_diagnostic_failure_count": 0,
+            "math_diagnostic_max_error": 0
+          }
+        ]
+      },
+      {
+        "case": "native-confirm-float32-m4096-n4096",
+        "shape": [
+          4096,
+          4096
+        ],
+        "dtype": "float32",
+        "scratch_dtype": "torch.float32",
+        "seeds": [
+          11,
+          12,
+          13
+        ],
+        "best_tested": {
+          "locked": {
+            "group": 256,
+            "warps": 4,
+            "us": 78.13700288534164
+          },
+          "owner": {
+            "group": 256,
+            "warps": 8,
+            "us": 54.237000644207
+          },
+          "native": {
+            "group": 256,
+            "warps": 4,
+            "us": 54.85700070858002
+          }
+        },
+        "native_speedup": 1.424376139345155,
+        "configurations": [
+          {
+            "group": 256,
+            "warps": 4,
+            "median_us": {
+              "locked": 78.13700288534164,
+              "owner": 54.8270009458065,
+              "native": 54.85700070858002,
+              "torch_native": 82.88100361824036
+            },
+            "matched_native_speedup": 1.424376139345155,
+            "resources": {
+              "baseline": {
+                "atomic_instruction_sites": 3,
+                "bar_sync_sites": 9,
+                "registers": 130,
+                "spills": 0,
+                "shared_bytes": 16
+              },
+              "optimized": {
+                "atomic_instruction_sites": 0,
+                "bar_sync_sites": 7,
+                "registers": 235,
+                "spills": 0,
+                "shared_bytes": 16
+              }
+            },
+            "exact_selected_serialization": true,
+            "math_diagnostic_failure_count": 0,
+            "math_diagnostic_max_error": 0
+          },
+          {
+            "group": 256,
+            "warps": 8,
+            "median_us": {
+              "locked": 78.22299748659134,
+              "owner": 54.237000644207,
+              "native": 60.541000217199326,
+              "torch_native": 82.88999646902084
+            },
+            "matched_native_speedup": 1.2920664872723504,
+            "resources": {
+              "baseline": {
+                "atomic_instruction_sites": 3,
+                "bar_sync_sites": 9,
+                "registers": 64,
+                "spills": 0,
+                "shared_bytes": 32
+              },
+              "optimized": {
+                "atomic_instruction_sites": 0,
+                "bar_sync_sites": 7,
+                "registers": 124,
+                "spills": 0,
+                "shared_bytes": 32
+              }
+            },
+            "exact_selected_serialization": true,
+            "math_diagnostic_failure_count": 0,
+            "math_diagnostic_max_error": 0
+          }
+        ]
+      },
+      {
+        "case": "native-smoke-bfloat16-m257-n1000",
+        "shape": [
+          257,
+          1000
+        ],
+        "dtype": "bfloat16",
+        "scratch_dtype": "torch.float32",
+        "seeds": [
+          11,
+          12,
+          13
+        ],
+        "best_tested": {
+          "locked": {
+            "group": 256,
+            "warps": 4,
+            "us": 16.155999153852463
+          },
+          "owner": {
+            "group": 256,
+            "warps": 4,
+            "us": 12.659999541938305
+          },
+          "native": {
+            "group": 256,
+            "warps": 4,
+            "us": 12.679999694228172
+          }
+        },
+        "native_speedup": 1.2741324561077503,
+        "configurations": [
+          {
+            "group": 256,
+            "warps": 4,
+            "median_us": {
+              "locked": 16.155999153852463,
+              "owner": 12.659999541938305,
+              "native": 12.679999694228172,
+              "torch_native": 7.552000228315592
+            },
+            "matched_native_speedup": 1.2741324561077503,
+            "resources": {
+              "baseline": {
+                "atomic_instruction_sites": 3,
+                "bar_sync_sites": 15,
+                "registers": 56,
+                "spills": 0,
+                "shared_bytes": 4096
+              },
+              "optimized": {
+                "atomic_instruction_sites": 0,
+                "bar_sync_sites": 15,
+                "registers": 105,
+                "spills": 0,
+                "shared_bytes": 4096
+              }
+            },
+            "exact_selected_serialization": true,
+            "math_diagnostic_failure_count": 0,
+            "math_diagnostic_max_error": 0
+          }
+        ]
+      },
+      {
+        "case": "native-smoke-float32-m17-n33",
+        "shape": [
+          17,
+          33
+        ],
+        "dtype": "float32",
+        "scratch_dtype": "torch.float32",
+        "seeds": [
+          11,
+          12,
+          13
+        ],
+        "best_tested": {
+          "locked": {
+            "group": 64,
+            "warps": 4,
+            "us": 6.548000033944845
+          },
+          "owner": {
+            "group": 64,
+            "warps": 4,
+            "us": 3.828000044450164
+          },
+          "native": {
+            "group": 64,
+            "warps": 4,
+            "us": 3.768000053241849
+          }
+        },
+        "native_speedup": 1.737791916513161,
+        "configurations": [
+          {
+            "group": 64,
+            "warps": 4,
+            "median_us": {
+              "locked": 6.548000033944845,
+              "owner": 3.828000044450164,
+              "native": 3.768000053241849,
+              "torch_native": 4.296000115573406
+            },
+            "matched_native_speedup": 1.737791916513161,
+            "resources": {
+              "baseline": {
+                "atomic_instruction_sites": 3,
+                "bar_sync_sites": 9,
+                "registers": 22,
+                "spills": 0,
+                "shared_bytes": 8
+              },
+              "optimized": {
+                "atomic_instruction_sites": 0,
+                "bar_sync_sites": 7,
+                "registers": 32,
+                "spills": 0,
+                "shared_bytes": 8
+              }
+            },
+            "exact_selected_serialization": true,
+            "math_diagnostic_failure_count": 0,
+            "math_diagnostic_max_error": 0
+          }
+        ]
+      },
+      {
+        "case": "native-smoke-float32-m513-n4097",
+        "shape": [
+          513,
+          4097
+        ],
+        "dtype": "float32",
+        "scratch_dtype": "torch.float32",
+        "seeds": [
+          11,
+          12,
+          13
+        ],
+        "best_tested": {
+          "locked": {
+            "group": 128,
+            "warps": 4,
+            "us": 32.98800066113472
+          },
+          "owner": {
+            "group": 128,
+            "warps": 4,
+            "us": 33.28000009059906
+          },
+          "native": {
+            "group": 128,
+            "warps": 4,
+            "us": 35.90400144457817
+          }
+        },
+        "native_speedup": 0.9187834039070931,
+        "configurations": [
+          {
+            "group": 128,
+            "warps": 4,
+            "median_us": {
+              "locked": 32.98800066113472,
+              "owner": 33.28000009059906,
+              "native": 35.90400144457817,
+              "torch_native": 17.45999976992607
+            },
+            "matched_native_speedup": 0.9187834039070931,
+            "resources": {
+              "baseline": {
+                "atomic_instruction_sites": 3,
+                "bar_sync_sites": 105,
+                "registers": 255,
+                "spills": 2,
+                "shared_bytes": 2048
+              },
+              "optimized": {
+                "atomic_instruction_sites": 0,
+                "bar_sync_sites": 135,
+                "registers": 255,
+                "spills": 170,
+                "shared_bytes": 2048
+              }
+            },
+            "exact_selected_serialization": true,
+            "math_diagnostic_failure_count": 0,
+            "math_diagnostic_max_error": 0
+          }
+        ]
+      }
+    ],
+    "limitations": [
+      "Native recognizer initially accepts only two FP32 partials with exact lock/count protocol and affine ownership; no arbitrary reduction reassociation.",
+      "G=1 and N=1 canonical forms may decline; FP16/BF16 scratch is outside native scope.",
+      "No profitability guard: wide low-reuse case regresses with spills.",
+      "Immutable row-prefix reuse is incomplete: native TTGIR can contain a second weight load before the loop.",
+      "Quack unavailable; torch native backward is the measured strong provider."
+    ]
+  }
+}

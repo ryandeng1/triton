@@ -22,8 +22,10 @@ runs rather than absolute timings across experiments.
 | Faster attention implementations | Tritonbench 143.47 μs; Gluon 105.28; FA4 90.11 | Matched BF16 B2/H8/N4096/D128. The whole gap was not attributed to one semantic property. |
 | Identity accumulator rescale elision | FA4 1.096×; manual Gluon port 1.050× | Same threshold-eight policy and exactly equal paired outputs/LSE. Threshold-zero elision was slightly slower; threshold-eight failed scale-four accuracy stress checks. |
 | Typed score/probability storage reuse | D64 reservation 512→256; runtime 94.12→94.09 μs | Capacity rather than throughput benefit: another tile fits 512 columns instead of requiring 640. |
-| LayerNorm backward owner-computes rewrite | BF16: about 1.9–2.0× at 4096×1024; 1.78× at 4096×4096 | Source prototype against the tuned tutorial-derived registered Tritonbench provider, with FP32 partials on both sides. Other providers sometimes match or beat it. FP32 gains were 1.88×/1.40×; FP16 1151×8192 gained 1.83×. |
+| LayerNorm backward, native private ownership | BF16 2.05×/1.59× at 4096×1024/4096; FP32 1.77×/1.42× | Matched FP32 scratch, original grid/reset/final reduction, tuned locked baseline and fixed candidate configurations. Torch native is faster at width 1024. Exact permitted-serialization checks pass; separate BF16 mathematical accuracy limits remain. |
 | Persistent AITER RMSNorm, native immutable-input contract | Forward 1.11–1.48×; backward 1.05–1.06× | Large-shape regression now profiled: occupancy falls while DRAM traffic barely changes. Resource guard declines measured losses, but also misses a held-out 17% gain. AMD-origin kernels compiled on NVIDIA. |
+| FlagGems CTC, native immutable input across CTA barriers | Complete training-forward 1.021–1.024× at T1024/N64/U128; 1.047–1.053× at T256/N256/U64 | 139 source-study records and 51 rebuilt-native confirmations. Full saved alpha and loss checked; barriers retained. Most other cases gain 0–3%. Backward is excluded. |
+| AITER recurrent delta rule, native alias-derived LICM | About 1.134× at upstream T1024/D128; 1.09× at larger decode; 1.056× at T500/D60 | Three of six cases improve; three are neutral/slower. Includes state reset, every timestep output and final state. New pointer provenance makes alias-only and immutable PTX identical. Supported long-T tests do not establish production prevalence. |
 | Transformer Engine MoE unpermute backward | Native hoist 1.19×, 1.11×, approximately 1.00× | Best tested configuration per variant after bounded tuning; manual and contract variants matched machine code. |
 | Producer-unique embedding backward | Source specialization 1.16–1.26×; frequency-scaled 1.41–2.18× | Includes dense zeroing and final copy. These historical timings used finite, non-subnormal BF16 gradients and predate the automatic proof pipeline below. |
 | Unchanged FlagGems indexed updates, native Triton pass | Unique RMW 1.15–1.25×; initialized-zero 1.15–1.28× | Correct native transformation, but the ordering control below recovers essentially all of this gain while retaining atomics. Reset/count/conversion included. Gluon correctness also validated. |
@@ -41,16 +43,18 @@ runs rather than absolute timings across experiments.
 | TorchRec TBE immutable metadata | No improvement; identical PTX/executable code | Tested upstream and persistent grids. Immutable data does not make iteration-varying addresses invariant. |
 
 The LayerNorm rewrite assigns each partial buffer and its contributing rows to
-one owner, retaining partial sums in registers and removing locks and intermediate
-partial traffic. The headline variant retains the original launch grid, reset,
-and final reduction. Its proof needs complete row coverage, disjoint buffers,
-unchanged inputs, private initialized scratch, no intermediate observers, the
-supported launch shape, and preserved final state. It selects a permitted
-serialization; it does not authorize arbitrary floating-point reassociation.
-BF16 scratch precision is a separate issue: FP32 scratch was applied to both
-sides. An FP32 reference rounding error was corrected using FP64/direct rounding
-without relaxing tolerances; one original configuration still failed and was
-excluded. These checks do not establish a universal training-accuracy contract.
+one owner, retaining two partial vectors in registers and removing locks and
+intermediate partial traffic. The reconstructed harness retains the exact original
+Tritonbench kernel AST, launch grid, reset and final reduction. It checks every
+partial, DX, final gradient, count and lock against an independently evaluated
+permitted original serialization, including first assignment and original
+new-plus-old order. Fresh source validation covers 96 tuning configurations,
+21 confirmations and 15 boundaries; source BF16 gains reproduce at 2.02×/1.83×.
+The subsequent native study has 30 records and preserves that serialization.
+Some BF16 cases fail the separate historical
+absolute-0.01 FP64 mathematical diagnostic in both versions; none was dropped or
+given a wider tolerance. FP32 cases pass. Program refinement does not establish
+universal training accuracy. Historical timings remain separately identified.
 
 Attention identity elision assumes finite scores/accumulators; changing the
 softmax shift policy is a separate transformation. Storage reuse additionally
@@ -84,8 +88,8 @@ now connects producer facts to optimization:
 
 This remains a fixed-metadata FX prototype with two owned operators and a bounded
 real ATen consumer on NVIDIA CUDA. It has no autograd formulas for the owned ops
-or general `torch.compile`/torch-mlir integration. Automatic LayerNorm ownership
-rewriting and general attention transformations remain unimplemented. Propagating
+or general `torch.compile`/torch-mlir integration. General attention transformations remain unimplemented. A separate bounded
+native LayerNorm ownership proof is now implemented, as described below. Propagating
 uniqueness into Inductor before embedding decomposition could remove frequency
 counting and avoid a separate FX interpreter. The following experiment instead
 tests the compiler opportunity directly in Triton/Gluon. No TLX CLC or multi-CTA
@@ -195,20 +199,54 @@ deduplication), including **75** inside loops. It also finds **250** invariant
 load/loop pairs with a store in the loop (**233** after deduplication), checking
 address, mask and `other`, not just pointer roots. These are source candidates,
 including platform-specific code and helpers, rather than proven legal or
-profitable transformations. CPU-only compilation confirms a scalar LICM miss in
-Liger cross-entropy backward and two invariant gating-parameter loads in AITER's
-recurrent delta-rule update. Contracts hoist these loads. FlagGems CTC retains its
-invariant target load because the current effects guard rejects its barrier;
-alias-only analysis also misses AITER's loop-carried pointer effects. These are
-concrete analysis-extension candidates; none has a performance result yet.
+profitable transformations. The Liger general-path scalar-load miss is not a
+production plain-backward opportunity: its fast plain path already hoists it.
 
-Both native passes remain opt-in and CUDA-only with one CTA per logical program.
-Initialization/privacy and immutable-input promises remain caller obligations;
-wrappers check storage and launch bindings. Timings exclude producer generation,
-allocation, and Python guards. They are device timings, not model speedups.
-Final validation: `make`, **263 runtime tests**, and **14 compiler test files**
-passed. This phase adds 13 compiler cases and 26 runtime cases; five real RMSNorm
-wrapper integrations also passed with binaries identical to the profiling study.
+Two analysis gaps are now closed in native Triton LICM. Explicit immutable global
+inputs may move across existing CTA barriers, retaining masks, entry guards and
+all barriers. This recovers the manual CTC hoist on unchanged training-forward
+source. Alias-only contracts still conservatively reject barrier-bearing loops.
+Pointer provenance now follows bounded `scf.for` backedges derived from their own
+carried pointer, including nested loops. This proves AITER's ordinary stores
+cannot clobber its invariant parameters: alias-only and immutable binaries match
+exactly on all six post-build cases. Advancing addresses remain variant;
+root-changing/cross-carried pointers and unknown operations are rejected.
+
+AITER also exposes the current profitability limits. The residency heuristic
+accepts all three negative cases. At T500, both native and manual code hoist the
+loads and dependent negative exponential, but manual gains about 14% versus
+native's 6%. Masked inactive values and downstream IR scheduling differ; this is
+not a missing dependent-expression hoist. The long-T workloads are exact upstream
+test shapes; a malformed legacy decode benchmark branch was not used as an
+equivalent baseline, and chunked prefill remains a stronger algorithmic candidate.
+
+The new opt-in [private-reduction ownership pass](../lib/Dialect/Triton/Transforms/PrivateReductionOwnership.cpp)
+recognizes IR roles rather than kernel names. Private initialized disjoint outputs,
+zeroed locks/counts and bound scalar/grid facts permit it to prove disjoint rows
+and assign owners to a two-FP32-partial lock/count protocol. It preserves the
+original grid and one correlated per-group serialization, with no floating-point
+reassociation license. Missing facts, overflow, observers and unsupported IR keep
+the original kernel. The [guarded wrapper](../python/triton/experimental/semantic_contracts/native.py)
+checks metadata, scalar values, storage overlap and launch geometry; initialization
+and privacy remain caller promises. This is a bounded prototype, not a general
+reduction or profitability analysis. Normal scalar arguments retain their original
+specialization policy; exact-value facts are used for proof only. Native backward
+measures 49.69→24.19 μs and 80.22→50.39 μs on BF16 widths 1024/4096. The manual
+owner remains faster on some configurations: native code reloads an invariant
+weight vector after the peeled first row and keeps pointer setup live longer.
+At the irregular 513×4097 boundary, native regresses 32.99→35.90 μs with spills
+rising from 2 to 170. Reusing proven invariant values and screening spill-heavy
+ownership variants are concrete next opportunities; neither is claimed solved.
+
+The ownership pass is connected to the Triton CUDA pipeline, with one CTA per
+logical program. Gluon's production pipeline does not invoke Triton LICM; the new
+Gluon tests are unchanged-pipeline correctness controls, not optimization results.
+No TLX or torch-mlir implementation was added. Timings exclude allocations and
+Python guards and are device timings, not model speedups.
+Current [validation](native_extensions_validation_11_08.json) passed `make`,
+**282 runtime tests** and **14 compiler test files**, adding 19 runtime and 35
+compiler cases. CTC, AITER and LayerNorm native follow-ups preserve complete
+observable state under their respective contracts.
 
 Retained evidence and reproducers:
 
@@ -254,6 +292,14 @@ Retained evidence and reproducers:
   and [pinned prevalence survey](semantic_candidate_experiments/results/semantic_survey_final/summary.json)
   retain current measurements, profiler evidence, compiled follow-ups and
   reproduction commands. Source counts are not measured optimization coverage.
+- [CTC source study](semantic_candidate_experiments/results/ctc_licm_final/findings.json)
+  and [native confirmation](semantic_candidate_experiments/results/ctc_licm_native_final/findings.json)
+  retain complete training-forward controls and immutable/barrier legality checks.
+  [AITER recurrent evidence](semantic_candidate_experiments/results/recurrent_licm_final/README.md)
+  separates frozen immutable results from rebuilt alias-only validation.
+  [Reconstructed LayerNorm evidence](semantic_candidate_experiments/results/layernorm_ownership_final/README.md)
+  retains the exact original source, independent serialization oracle, numerical
+  limitations, fresh tuning and separate native follow-up.
 - [Experiment scripts](semantic_candidate_experiments/) and pinned `vendor/`
   sources/licenses remain. RMSNorm, MoE, irregular-kernel, and Mamba harnesses
   expose `--help`; analyses can consume newly generated reports.
@@ -266,7 +312,7 @@ integration examples into an unused output directory:
 ../.venv-semantic/bin/python experiment_notes/semantic_candidate_experiments/native_indexed_update_experiment.py --mode confirm --output /tmp/triton-native-indexed-rerun
 ```
 
-Cleanup removed overlapping prose, superseded runs, historical generated-code
+Earlier cleanup removed overlapping prose, superseded runs, historical generated-code
 copies, and caches. Selected raw timing reports remain to audit aggregate
 statistics; their old assembly paths may point to pruned files. See
 [cleanup.json](cleanup.json) for the retention policy and size accounting.

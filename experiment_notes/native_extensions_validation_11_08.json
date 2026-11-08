@@ -1,0 +1,68 @@
+{
+  "date": "2026-11-08",
+  "base_commit": "d20482df026f8c64f862ca6b7d6558528c8b9e8b",
+  "scope": "Native immutable global loads across retained CTA barriers; bounded same-root scf.for pointer provenance; private two-FP32-partial lock/count ownership rewrite and guarded Python entry.",
+  "native_library_sha256": "6be58f8451548d939876f4848a62a9dc8c504a41200e759781a12ba63e3661f0",
+  "files_sha256": {
+    "lib/Dialect/Triton/Transforms/PrivateReductionOwnership.cpp": "2000db5e6bfeff64c48d46edb108ed03b1a5e7848106656dbf285ac2f19f9d74",
+    "lib/Dialect/Triton/Transforms/LoopInvariantCodeMotion.cpp": "e9070ad8046aaa4f7a4ad9220a417d983fd078f57a12db4af90e641569b39c54",
+    "include/triton/Dialect/Triton/Transforms/Passes.td": "d97c9add766759a98c3c5ba6ceecb49efebfe2378e2c765e34b0cabd82e49522",
+    "python/triton/experimental/semantic_contracts/native.py": "adc50d9772d853dfe54b8474e1459049da9b0a3ea1c421601d4d736c9df323d9",
+    "python/test/unit/runtime/test_specialize.py": "d5ec7dbb76abe0c888a79be0720a7bb3914fb51808b4dcb4ec42a2751f5d5fcc",
+    "test/Triton/combine.mlir": "92f3f1b516628ee2c14c81f2566bba5a813b49f092eec5a1616b51d80f32bd64",
+    "test/Triton/loop-invariant-code-motion.mlir": "264ae774bbbf9c878517b7d73968994da600633276ef7f69344d588f69d272cb",
+    "python/src/passes.cc": "41f19eaf34c4858b5127492fbc650922492eb953a3ca2c56ecce38b22c58e8a0",
+    "third_party/nvidia/backend/compiler.py": "e75ef905e7797383f8c98bd0249b60dd5677b14abf231b7e4f000e07158b51e2"
+  },
+  "checks": [
+    {
+      "command": "make",
+      "cwd": "triton",
+      "exit_code": 0,
+      "log_sha256": "45141c624c73cd4af9cf468d732fc140c094df5e180f88b4fa856b64f3294c8f"
+    },
+    {
+      "command": "ninja triton-opt && lit -v test/Triton",
+      "cwd": "build/cmake.linux-x86_64-cpython-3.12",
+      "exit_code": 0,
+      "compiler_test_files_passed": 14,
+      "log_sha256": "d9e5acbfd28ddb45f88c6e04a44414c27a51941e9bcfb2a80667fe13b78abe2f"
+    },
+    {
+      "command": "pytest -s --tb=short python/test/unit/runtime/test_specialize.py",
+      "cwd": "triton",
+      "exit_code": 0,
+      "runtime_cases_passed": 282,
+      "log_sha256": "9dcf44713b9c1f437869251b443a79d3b41a51a5efa4d7f32ab0a16b648e7b94"
+    }
+  ],
+  "new_tests": {
+    "compiler_cases": 35,
+    "ownership_compiler_cases": 17,
+    "licm_compiler_cases": 18,
+    "runtime_cases": 19,
+    "ownership_runtime_cases": 11,
+    "immutable_barrier_runtime_cases": 8
+  },
+  "runtime_checks": [
+    "generic non-LayerNorm sum/square protocol",
+    "all output/count/lock state",
+    "signed zeros, subnormals, infinities and first-assignment NaN payload",
+    "changed inputs between invocations",
+    "missing contracts and canonical G=1 fallback",
+    "grid/scalar/metadata/alias guards",
+    "Triton/Gluon CTA-barrier recurrence, volatile and zero-trip controls"
+  ],
+  "independent_review": "Two read-only reviews found no correctness blocker in the bounded native proof, wrapper or pointer recurrence analysis. Initialization/privacy/zero contents/access bounds remain caller obligations.",
+  "scope_limits": [
+    "ownership connected to Triton CUDA pipeline only, one CTA per program, canonical lock/count protocol with two FP32 partials",
+    "Gluon pipeline does not invoke Triton LICM; Gluon barrier tests verify unchanged-pipeline correctness",
+    "no general profitability guarantee: AITER small regressions and LayerNorm spilling boundary are retained",
+    "no torch-mlir/TLX or general framework ownership integration"
+  ],
+  "experiment_evidence": {
+    "ctc": "semantic_candidate_experiments/results/ctc_licm_native_final/findings.json",
+    "recurrent": "semantic_candidate_experiments/results/recurrent_licm_final/postbuild_alias_validation.json",
+    "layernorm": "semantic_candidate_experiments/results/layernorm_ownership_final/summary.json"
+  }
+}

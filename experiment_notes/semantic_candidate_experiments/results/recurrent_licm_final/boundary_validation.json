@@ -1,0 +1,94 @@
+[
+  {
+    "case": {
+      "id": "mixed_varlen",
+      "cohort": "diagnostic_correctness_only",
+      "B": 1,
+      "T": 13,
+      "H": 4,
+      "HV": 8,
+      "K": 64,
+      "V": 64,
+      "dtype": "bfloat16",
+      "qk_dtype": "float32",
+      "parameter_dtype": "float32",
+      "lengths": [
+        0,
+        1,
+        4,
+        8
+      ],
+      "negative_index": true,
+      "scale": 0.125
+    },
+    "validation": {
+      "original": {
+        "max_output_error": 1.3180007904511903e-08,
+        "max_state_error": 1.244062973748683e-07,
+        "same_config_bitwise_equal_to_original": true,
+        "guards_passed": true
+      },
+      "immutable": {
+        "max_output_error": 1.3180007904511903e-08,
+        "max_state_error": 1.244062973748683e-07,
+        "same_config_bitwise_equal_to_original": true,
+        "guards_passed": true
+      },
+      "alias": {
+        "max_output_error": 1.3180007904511903e-08,
+        "max_state_error": 1.244062973748683e-07,
+        "same_config_bitwise_equal_to_original": true,
+        "guards_passed": true
+      },
+      "manual": {
+        "max_output_error": 1.3180007904511903e-08,
+        "max_state_error": 1.244062973748683e-07,
+        "same_config_bitwise_equal_to_original": true,
+        "guards_passed": true
+      }
+    }
+  },
+  {
+    "case": {
+      "id": "no_initial_state",
+      "cohort": "diagnostic_correctness_only",
+      "B": 2,
+      "T": 4,
+      "H": 4,
+      "HV": 8,
+      "K": 128,
+      "V": 128,
+      "dtype": "float16",
+      "qk_dtype": "float32",
+      "parameter_dtype": "float32",
+      "initial": false,
+      "scale": 0.08838834764831845
+    },
+    "validation": {
+      "original": {
+        "max_output_error": 6.52833469921843e-09,
+        "max_state_error": 0.0,
+        "same_config_bitwise_equal_to_original": true,
+        "guards_passed": true
+      },
+      "immutable": {
+        "max_output_error": 6.52833469921843e-09,
+        "max_state_error": 0.0,
+        "same_config_bitwise_equal_to_original": true,
+        "guards_passed": true
+      },
+      "alias": {
+        "max_output_error": 6.52833469921843e-09,
+        "max_state_error": 0.0,
+        "same_config_bitwise_equal_to_original": true,
+        "guards_passed": true
+      },
+      "manual": {
+        "max_output_error": 6.52833469921843e-09,
+        "max_state_error": 0.0,
+        "same_config_bitwise_equal_to_original": true,
+        "guards_passed": true
+      }
+    }
+  }
+]

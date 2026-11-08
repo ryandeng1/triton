@@ -22,6 +22,11 @@ proves that weakening internal ordering preserves observable results. Inputs nee
 not be unique or immutable between invocations, and the output need not start at
 zero. Initialized output,
 in-allocation accesses and absence of external observers remain caller promises.
+
+``compile_private_reduction_ownership`` exposes private allocations, initial
+lock/count zeros and exact launch/scalar facts. A bounded native TTIR proof can
+then assign reduction owners while preserving a permitted lock serialization.
+Its implementation is currently connected to the Triton CUDA pipeline only.
 """
 
 import copy
@@ -509,3 +514,138 @@ def compile_immutable_licm(kernel, args, *, grid, immutable_args, options=None):
     source = type(template.src)(template.src.fn, template.src.signature, constexprs=template.src.constants, attrs=attrs)
     optimized = triton.compile(source, target=template.metadata.target, options=options)
     return NativeImmutableLICM(baseline, optimized, args, grid, immutable_args, attrs)
+
+
+class NativePrivateReductionOwnership:
+    """Guarded entry to an experimental private-reduction ownership proof.
+
+    Initialization and absence of external observers are caller promises, as for
+    the other private-output interfaces. Exposed compiled kernels bypass guards.
+    """
+
+    def __init__(self, baseline, optimized, args, grid, private_args, zero_args, attrs):
+        self.baseline, self.optimized = baseline, optimized
+        self.grid, self.private_args, self.zero_args = grid, private_args, zero_args
+        self.attrs = attrs
+        self.signatures = tuple(_signature(value) for value in args)
+
+    def __call__(self, *args, grid=None):
+        actual_grid = self.grid if grid is None else _grid_tuple(grid)
+        if actual_grid != self.grid:
+            raise ValueError("launch grid differs from the private-reduction ownership proof")
+        if tuple(_signature(value) for value in args) != self.signatures:
+            raise ValueError("argument metadata or scalar specialization changed")
+        for number in self.private_args:
+            _check_private_storage(args, number)
+        return self.optimized[self.grid](*args)
+
+    run = __call__
+
+    def report(self):
+        variants = {}
+        for name, kernel in (("baseline", self.baseline), ("optimized", self.optimized)):
+            kernel._init_handles()
+            ptx = kernel.asm.get("ptx", "")
+            variants[name] = {
+                "atomic_instruction_sites": len(re.findall(r"\b(?:atom|red)\.", ptx)),
+                "bar_sync_sites": len(re.findall(r"\bbar\.sync\b", ptx)),
+                "registers": kernel.n_regs,
+                "spills": kernel.n_spills,
+                "shared_bytes": kernel.metadata.shared,
+            }
+        return {
+            "transformed": "tt.experimental_private_reduction_owned" in self.optimized.asm.get("ttir", ""),
+            "grid": self.grid,
+            "private_args": self.private_args,
+            "zero_initialized_args": self.zero_args,
+            "native_attributes": {str(key): value
+                                  for key, value in self.attrs.items()},
+            "variants": variants,
+            "proof":
+            "closed private lock/count reduction; disjoint row writes and inputs; exact launch and scalar facts",
+            "scope": "unchanged source/grid; compiler derives owners and selects a permitted per-group serialization",
+        }
+
+
+def compile_private_reduction_ownership(kernel, args, *, grid, private_args, zero_initialized_args=(), options=None):
+    """Expose allocation and launch facts for a bounded private reduction proof.
+
+    ``private_args`` names initialized tensor allocations that no outside code
+    accesses during the invocation. Their full backing storage must be disjoint
+    from every other tensor argument. ``zero_initialized_args`` is a subset whose
+    accessed elements contain zero before EVERY invocation; the recognized lock
+    and count allocation requires this promise. The wrapper never scans or
+    initializes payloads. All accesses must remain within their allocations.
+
+    Exact positive int32 scalar values and one-dimensional launch geometry are
+    bound to the plan. The native pass recognizes the lock/count reduction from
+    its IR, proves disjoint row writes, and assigns owners. The caller does not
+    specify a kernel name, ownership mapping, or floating reassociation license.
+    Unproved cases retain the original kernel. Inputs may change between calls;
+    metadata, scalar values, current device, grid and storage overlap are checked.
+
+    The initial proof supports two FP32 partial buffers, an ordinary row output,
+    and one private zeroed int32 lock/count allocation on CUDA with num_ctas=1.
+    Both variants retain the original source and scalar specialization policy.
+    """
+    if not isinstance(args, tuple) or len(args) != len(kernel.arg_names):
+        raise ValueError("args must provide every kernel argument positionally, including constexprs")
+
+    def positions(values, label):
+        if not isinstance(values, tuple):
+            raise ValueError(f"{label} must be a tuple of argument names or positions")
+        result = []
+        for number in values:
+            if isinstance(number, str):
+                number = kernel.arg_names.index(number)
+            if type(number) is not int or not 0 <= number < len(args) or number in result:
+                raise ValueError(f"invalid or duplicate argument in {label}")
+            result.append(number)
+        return tuple(result)
+
+    private_args = positions(private_args, "private_args")
+    zero_args = positions(zero_initialized_args, "zero_initialized_args")
+    if not private_args or not set(zero_args).issubset(private_args):
+        raise ValueError("private_args must be nonempty and include every zero-initialized argument")
+    grid = _grid_tuple(grid)
+    if grid[1:] != (1, 1):
+        raise ValueError("private-reduction ownership currently requires a one-dimensional grid")
+    options = dict(options or {})
+    if options.get("num_ctas", 1) != 1:
+        raise ValueError("private-reduction ownership currently requires num_ctas=1")
+    options.update(enable_indexed_update_specialization=False, enable_private_atomic_relaxation=False,
+                   enable_private_reduction_ownership=False)
+    for number in private_args:
+        _check_private_storage(args, number)
+    for value in args:
+        _signature(value)
+    template = kernel.warmup(*args, grid=grid, **options)
+    attrs = {
+        key: [(name, value)
+              for name, value in values
+              if not name.startswith("tt.experimental_")]
+        for key, values in template.src.attrs.items()
+    }
+    source = type(template.src)(template.src.fn, template.src.signature, constexprs=template.src.constants, attrs=attrs)
+    baseline = triton.compile(source, target=template.metadata.target, options=options)
+    attrs = copy.deepcopy(attrs)
+    for number, value in enumerate(args):
+        # Constexprs have no runtime argument to carry an IR attribute. Attribute
+        # keys otherwise use source argument paths; codegen maps them to IR args.
+        if (number, ) in template.src.constants:
+            continue
+        if isinstance(value, torch.Tensor):
+            group = private_args.index(number) + 1 if number in private_args else 0
+            attrs.setdefault((number, ), []).append(("tt.experimental_alias_group", group))
+        elif type(value) is int and 0 < value <= _I32_MAX:
+            attrs.setdefault((number, ), []).append(("tt.experimental_value", value))
+    for number in private_args:
+        attrs.setdefault((number, ), []).extend([("tt.experimental_private", 1), ("tt.experimental_num_ctas", 1),
+                                                 ("tt.experimental_grid_x", grid[0]), ("tt.experimental_grid_y", 1),
+                                                 ("tt.experimental_grid_z", 1)])
+    for number in zero_args:
+        attrs[(number, )].append(("tt.experimental_initial_zero", 1))
+    source = type(template.src)(template.src.fn, template.src.signature, constexprs=template.src.constants, attrs=attrs)
+    optimized = triton.compile(source, target=template.metadata.target,
+                               options=dict(options, enable_private_reduction_ownership=True))
+    return NativePrivateReductionOwnership(baseline, optimized, args, grid, private_args, zero_args, attrs)

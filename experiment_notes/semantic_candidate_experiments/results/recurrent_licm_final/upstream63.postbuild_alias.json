@@ -1,0 +1,177 @@
+{
+  "case": "upstream63",
+  "seed": 55031,
+  "selected_configurations": {
+    "original": [
+      8,
+      1,
+      3
+    ],
+    "immutable": [
+      16,
+      1,
+      2
+    ],
+    "alias": [
+      16,
+      1,
+      2
+    ]
+  },
+  "state_reset_included_every_invocation": true,
+  "alias_has_no_immutable_attribute": true,
+  "alias_allocation_disjointness_checked": true,
+  "selected_alias_parameter_loads": [
+    {
+      "ir_line": 117,
+      "operation": "%b_A_log = tt.load %A_log, %b_h : !tt.ptr<f32> loc(#loc135)"
+    },
+    {
+      "ir_line": 118,
+      "operation": "%b_dt_bias = tt.load %dt_bias, %b_h : !tt.ptr<f32> loc(#loc136)"
+    }
+  ],
+  "alias_timestep_loop_line": 123,
+  "alias_and_immutable_ptx_exact_equal": true,
+  "alias_and_immutable_resources_equal": true,
+  "resources": {
+    "original": {
+      "registers": 97,
+      "spills": 0,
+      "shared": 256,
+      "ptx_sha256": "053a74c7003bcd9197a29c55d4dd423d8ec13b9ad08a17c4c9d6ec4cea15b436",
+      "cubin_sha256": "040e982121a0426f8030351af650eab11a1f2171d3b12d79eed6edd87c1dcfbd"
+    },
+    "immutable": {
+      "registers": 97,
+      "spills": 0,
+      "shared": 256,
+      "ptx_sha256": "9c57cea6deb21c7440be105fcc32949f5fcd598e7f1379b2a77ff8c99b5f24c1",
+      "cubin_sha256": "91744ec87a99cf00c7113c6588cbe203d3fd5a70b6017a90402a710f3d49d39e"
+    },
+    "alias": {
+      "registers": 97,
+      "spills": 0,
+      "shared": 256,
+      "ptx_sha256": "9c57cea6deb21c7440be105fcc32949f5fcd598e7f1379b2a77ff8c99b5f24c1",
+      "cubin_sha256": "91744ec87a99cf00c7113c6588cbe203d3fd5a70b6017a90402a710f3d49d39e"
+    },
+    "manual": {
+      "registers": 97,
+      "spills": 0,
+      "shared": 256,
+      "ptx_sha256": "0d7aa260f0d367acde03cd439d1db8593a9d1f2503e9f993fd00cb22641f2195",
+      "cubin_sha256": "92c13adf71a854798fa318165ddf3ebe17060ba7878d89394b8d96d9bf49f515"
+    }
+  },
+  "validation": {
+    "0": {
+      "original": {
+        "max_output_error": 1.1363308460854427e-07,
+        "max_state_error": 1.5583077672687295e-07,
+        "same_config_bitwise_equal_to_original": true,
+        "guards_passed": true
+      },
+      "immutable": {
+        "max_output_error": 1.1363308460854427e-07,
+        "max_state_error": 1.5583077672687295e-07,
+        "same_config_bitwise_equal_to_original": true,
+        "guards_passed": true
+      },
+      "alias": {
+        "max_output_error": 1.1363308460854427e-07,
+        "max_state_error": 1.5583077672687295e-07,
+        "same_config_bitwise_equal_to_original": true,
+        "guards_passed": true
+      },
+      "manual": {
+        "max_output_error": 1.1363308460854427e-07,
+        "max_state_error": 1.5583077672687295e-07,
+        "same_config_bitwise_equal_to_original": true,
+        "guards_passed": true
+      }
+    },
+    "1": {
+      "original": {
+        "max_output_error": 1.1363308460854427e-07,
+        "max_state_error": 1.5583077672687295e-07,
+        "same_config_bitwise_equal_to_original": true,
+        "guards_passed": true
+      },
+      "immutable": {
+        "max_output_error": 1.1363308460854427e-07,
+        "max_state_error": 1.5583077672687295e-07,
+        "same_config_bitwise_equal_to_original": true,
+        "guards_passed": true
+      },
+      "alias": {
+        "max_output_error": 1.1363308460854427e-07,
+        "max_state_error": 1.5583077672687295e-07,
+        "same_config_bitwise_equal_to_original": true,
+        "guards_passed": true
+      },
+      "manual": {
+        "max_output_error": 1.1363308460854427e-07,
+        "max_state_error": 1.5583077672687295e-07,
+        "same_config_bitwise_equal_to_original": true,
+        "guards_passed": true
+      }
+    }
+  },
+  "times_us": {
+    "original": [
+      47.79599979519844,
+      45.48899829387665,
+      45.46099901199341,
+      45.44299840927124,
+      45.42899876832962,
+      45.44400051236153,
+      45.44699937105179,
+      45.462001115083694,
+      45.43599858880043,
+      45.419998466968536,
+      45.448001474142075,
+      45.462001115083694,
+      45.44400051236153
+    ],
+    "immutable": [
+      49.0030013024807,
+      46.15899920463562,
+      46.17200046777725,
+      46.19999974966049,
+      46.144999563694,
+      46.15800082683563,
+      46.16500064730644,
+      46.20100185275078,
+      46.16500064730644,
+      46.15100100636482,
+      46.19099944829941,
+      46.14600166678429,
+      46.188000589609146
+    ],
+    "alias": [
+      48.98500069975853,
+      46.213001012802124,
+      46.188998967409134,
+      46.199001371860504,
+      46.160001307725906,
+      46.19799926877022,
+      46.17200046777725,
+      46.163998544216156,
+      46.16999998688698,
+      46.153999865055084,
+      46.195998787879944,
+      46.16300016641617,
+      46.22400179505348
+    ]
+  },
+  "median_us": {
+    "original": 45.44699937105179,
+    "immutable": 46.16500064730644,
+    "alias": 46.188998967409134
+  },
+  "paired_alias_speedup_vs_original": 0.9841022006000646,
+  "paired_alias_over_immutable_time": 1.0001516261317591,
+  "native_library_sha256": "6be58f8451548d939876f4848a62a9dc8c504a41200e759781a12ba63e3661f0",
+  "harness_sha256": "362500d747e8f81a3966574a309f7d1cf8d4989f02db308fa7bc01b942b32d86"
+}

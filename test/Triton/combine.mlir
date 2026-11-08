@@ -1,3 +1,6 @@
+// RUN: triton-opt %s --triton-private-reduction-ownership="target=cuda" --split-input-file | FileCheck %s --check-prefix=OWNERSHIP
+// RUN: triton-opt %s --triton-private-reduction-ownership --split-input-file | FileCheck %s --check-prefix=OWNERSHIP-NO-TARGET
+// RUN: triton-opt %s --triton-private-reduction-ownership="target=hip" --split-input-file | FileCheck %s --check-prefix=OWNERSHIP-NO-TARGET
 // RUN: triton-opt %s -canonicalize -triton-combine --split-input-file | FileCheck %s
 // RUN: triton-opt %s --triton-specialize-indexed-updates="target=cuda" --split-input-file | FileCheck %s --check-prefix=INDEXED
 // RUN: triton-opt %s --triton-specialize-indexed-updates --split-input-file | FileCheck %s --check-prefix=NO-TARGET
@@ -2577,4 +2580,1283 @@ tt.func public @private_integer_mixed_scope(%src: !tt.ptr<i32> {tt.experimental_
   %old = tt.atomic_rmw add, acq_rel, gpu, %ptrs, %values, %mask : (tensor<8x!tt.ptr<i32>>, tensor<8xi32>, tensor<8xi1>) -> tensor<8xi32>
   %second = tt.atomic_rmw add, acq_rel, sys, %ptrs, %values, %mask : (tensor<8x!tt.ptr<i32>>, tensor<8xi32>, tensor<8xi1>) -> tensor<8xi32>
   tt.return
+}
+
+// -----
+
+// A generic sum/square protocol, unrelated to LayerNorm names.
+// OWNERSHIP-LABEL: tt.func {{.*}}@private_reduction_owned(
+// OWNERSHIP-SAME: tt.experimental_private_reduction_owned = 1 : i32
+// OWNERSHIP: tt.get_num_programs x
+// OWNERSHIP-NOT: tt.atomic
+// OWNERSHIP-NOT: scf.while
+// OWNERSHIP: scf.for
+// OWNERSHIP: arith.addf
+// OWNERSHIP-NOT: tt.atomic
+// OWNERSHIP: tt.return
+// OWNERSHIP-NO-TARGET-LABEL: @private_reduction_owned(
+// OWNERSHIP-NO-TARGET-NOT: tt.experimental_private_reduction_owned
+// OWNERSHIP-NO-TARGET: tt.atomic_cas
+// OWNERSHIP-NO-TARGET: tt.return
+module {
+  tt.func public @private_reduction_owned(%X: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32},
+      %Y: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32},
+      %Sum: !tt.ptr<f32> {tt.experimental_alias_group = 2 : i32, tt.experimental_private = 1 : i32},
+      %Square: !tt.ptr<f32> {tt.experimental_alias_group = 3 : i32, tt.experimental_private = 1 : i32},
+      %Lock: !tt.ptr<i32> {tt.experimental_alias_group = 4 : i32, tt.experimental_private = 1 : i32, tt.experimental_initial_zero = 1 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_grid_x = 17 : i32, tt.experimental_grid_y = 1 : i32, tt.experimental_grid_z = 1 : i32},
+      %N: i32 {tt.experimental_value = 7 : i32},
+      %stride: i32 {tt.experimental_value = 7 : i32}) attributes {noinline = false} {
+    %values = arith.constant dense<0.000000e+00> : tensor<8xf32>
+    %true = arith.constant true
+    %c1_i32 = arith.constant 1 : i32
+    %c8_i32 = arith.constant 8 : i32
+    %cst = arith.constant dense<2.000000e+00> : tensor<8xf32>
+    %c0_i32 = arith.constant 0 : i32
+    %row = tt.get_program_id x : i32
+    %cols = tt.make_range {end = 8 : i32, start = 0 : i32} : tensor<8xi32>
+    %mask = tt.splat %N : i32 -> tensor<8xi32>
+    %mask_0 = arith.cmpi slt, %cols, %mask : tensor<8xi32>
+    %values_1 = arith.muli %row, %stride : i32
+    %values_2 = tt.addptr %X, %values_1 : !tt.ptr<f32>, i32
+    %values_3 = tt.splat %values_2 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %values_4 = tt.addptr %values_3, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %first = tt.load %values_4, %mask_0, %values : tensor<8x!tt.ptr<f32>>
+    %0 = tt.addptr %Y, %values_1 : !tt.ptr<f32>, i32
+    %1 = tt.splat %0 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %2 = tt.addptr %1, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %3 = arith.mulf %first, %cst : tensor<8xf32>
+    tt.store %2, %3, %mask_0 : tensor<8x!tt.ptr<f32>>
+    %second = arith.mulf %first, %first : tensor<8xf32>
+    %group = arith.remsi %row, %c8_i32 : i32
+    %mutex = tt.addptr %Lock, %group : !tt.ptr<i32>, i32
+    %count = tt.addptr %mutex, %c8_i32 : !tt.ptr<i32>, i32
+    %sum_ptr = arith.muli %group, %N : i32
+    %sum_ptr_5 = tt.addptr %Sum, %sum_ptr : !tt.ptr<f32>, i32
+    %sum_ptr_6 = tt.splat %sum_ptr_5 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %sum_ptr_7 = tt.addptr %sum_ptr_6, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %square_ptr = tt.addptr %Square, %sum_ptr : !tt.ptr<f32>, i32
+    %square_ptr_8 = tt.splat %square_ptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %square_ptr_9 = tt.addptr %square_ptr_8, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    scf.while : () -> () {
+      %8 = tt.atomic_cas acq_rel, gpu, %mutex, %c0_i32, %c1_i32 : (!tt.ptr<i32>, i32, i32) -> i32
+      %9 = arith.cmpi eq, %8, %c1_i32 : i32
+      scf.condition(%9)
+    } do {
+      scf.yield
+    }
+    %4 = tt.load %count : !tt.ptr<i32>
+    %5 = arith.cmpi eq, %4, %c0_i32 : i32
+    %6:2 = scf.if %5 -> (tensor<8xf32>, tensor<8xf32>) {
+      %8 = tt.atomic_rmw exch, acq_rel, gpu, %count, %c1_i32, %true : (!tt.ptr<i32>, i32, i1) -> i32
+      scf.yield %first, %second : tensor<8xf32>, tensor<8xf32>
+    } else {
+      %first_10 = tt.load %sum_ptr_7, %mask_0 : tensor<8x!tt.ptr<f32>>
+      %first_11 = arith.addf %first, %first_10 : tensor<8xf32>
+      %second_12 = tt.load %square_ptr_9, %mask_0 : tensor<8x!tt.ptr<f32>>
+      %second_13 = arith.addf %second, %second_12 : tensor<8xf32>
+      scf.yield %first_11, %second_13 : tensor<8xf32>, tensor<8xf32>
+    }
+    tt.store %sum_ptr_7, %6#0, %mask_0 : tensor<8x!tt.ptr<f32>>
+    tt.store %square_ptr_9, %6#1, %mask_0 : tensor<8x!tt.ptr<f32>>
+    ttg.barrier all
+    %7 = tt.atomic_rmw exch, acq_rel, gpu, %mutex, %c0_i32, %true : (!tt.ptr<i32>, i32, i1) -> i32
+    tt.return
+  }
+}
+
+// -----
+
+// Lock/count initialization is essential.
+// OWNERSHIP-LABEL: tt.func {{.*}}@ownership_missing_zero(
+// OWNERSHIP-NOT: tt.experimental_private_reduction_owned
+// OWNERSHIP: scf.while
+// OWNERSHIP: tt.atomic_cas
+// OWNERSHIP: tt.return
+module {
+  tt.func public @ownership_missing_zero(%X: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32},
+      %Y: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32},
+      %Sum: !tt.ptr<f32> {tt.experimental_alias_group = 2 : i32, tt.experimental_private = 1 : i32},
+      %Square: !tt.ptr<f32> {tt.experimental_alias_group = 3 : i32, tt.experimental_private = 1 : i32},
+      %Lock: !tt.ptr<i32> {tt.experimental_alias_group = 4 : i32, tt.experimental_private = 1 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_grid_x = 17 : i32, tt.experimental_grid_y = 1 : i32, tt.experimental_grid_z = 1 : i32},
+      %N: i32 {tt.experimental_value = 7 : i32},
+      %stride: i32 {tt.experimental_value = 7 : i32}) attributes {noinline = false} {
+    %values = arith.constant dense<0.000000e+00> : tensor<8xf32>
+    %true = arith.constant true
+    %c1_i32 = arith.constant 1 : i32
+    %c8_i32 = arith.constant 8 : i32
+    %cst = arith.constant dense<2.000000e+00> : tensor<8xf32>
+    %c0_i32 = arith.constant 0 : i32
+    %row = tt.get_program_id x : i32
+    %cols = tt.make_range {end = 8 : i32, start = 0 : i32} : tensor<8xi32>
+    %mask = tt.splat %N : i32 -> tensor<8xi32>
+    %mask_0 = arith.cmpi slt, %cols, %mask : tensor<8xi32>
+    %values_1 = arith.muli %row, %stride : i32
+    %values_2 = tt.addptr %X, %values_1 : !tt.ptr<f32>, i32
+    %values_3 = tt.splat %values_2 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %values_4 = tt.addptr %values_3, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %first = tt.load %values_4, %mask_0, %values : tensor<8x!tt.ptr<f32>>
+    %0 = tt.addptr %Y, %values_1 : !tt.ptr<f32>, i32
+    %1 = tt.splat %0 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %2 = tt.addptr %1, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %3 = arith.mulf %first, %cst : tensor<8xf32>
+    tt.store %2, %3, %mask_0 : tensor<8x!tt.ptr<f32>>
+    %second = arith.mulf %first, %first : tensor<8xf32>
+    %group = arith.remsi %row, %c8_i32 : i32
+    %mutex = tt.addptr %Lock, %group : !tt.ptr<i32>, i32
+    %count = tt.addptr %mutex, %c8_i32 : !tt.ptr<i32>, i32
+    %sum_ptr = arith.muli %group, %N : i32
+    %sum_ptr_5 = tt.addptr %Sum, %sum_ptr : !tt.ptr<f32>, i32
+    %sum_ptr_6 = tt.splat %sum_ptr_5 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %sum_ptr_7 = tt.addptr %sum_ptr_6, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %square_ptr = tt.addptr %Square, %sum_ptr : !tt.ptr<f32>, i32
+    %square_ptr_8 = tt.splat %square_ptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %square_ptr_9 = tt.addptr %square_ptr_8, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    scf.while : () -> () {
+      %8 = tt.atomic_cas acq_rel, gpu, %mutex, %c0_i32, %c1_i32 : (!tt.ptr<i32>, i32, i32) -> i32
+      %9 = arith.cmpi eq, %8, %c1_i32 : i32
+      scf.condition(%9)
+    } do {
+      scf.yield
+    }
+    %4 = tt.load %count : !tt.ptr<i32>
+    %5 = arith.cmpi eq, %4, %c0_i32 : i32
+    %6:2 = scf.if %5 -> (tensor<8xf32>, tensor<8xf32>) {
+      %8 = tt.atomic_rmw exch, acq_rel, gpu, %count, %c1_i32, %true : (!tt.ptr<i32>, i32, i1) -> i32
+      scf.yield %first, %second : tensor<8xf32>, tensor<8xf32>
+    } else {
+      %first_10 = tt.load %sum_ptr_7, %mask_0 : tensor<8x!tt.ptr<f32>>
+      %first_11 = arith.addf %first, %first_10 : tensor<8xf32>
+      %second_12 = tt.load %square_ptr_9, %mask_0 : tensor<8x!tt.ptr<f32>>
+      %second_13 = arith.addf %second, %second_12 : tensor<8xf32>
+      scf.yield %first_11, %second_13 : tensor<8xf32>, tensor<8xf32>
+    }
+    tt.store %sum_ptr_7, %6#0, %mask_0 : tensor<8x!tt.ptr<f32>>
+    tt.store %square_ptr_9, %6#1, %mask_0 : tensor<8x!tt.ptr<f32>>
+    ttg.barrier all
+    %7 = tt.atomic_rmw exch, acq_rel, gpu, %mutex, %c0_i32, %true : (!tt.ptr<i32>, i32, i1) -> i32
+    tt.return
+  }
+}
+
+// -----
+
+// A concurrent observer of row output forbids serial ownership.
+// OWNERSHIP-LABEL: tt.func {{.*}}@ownership_missing_private(
+// OWNERSHIP-NOT: tt.experimental_private_reduction_owned
+// OWNERSHIP: scf.while
+// OWNERSHIP: tt.atomic_cas
+// OWNERSHIP: tt.return
+module {
+  tt.func public @ownership_missing_private(%X: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32},
+      %Y: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32},
+      %Sum: !tt.ptr<f32> {tt.experimental_alias_group = 2 : i32, tt.experimental_private = 1 : i32},
+      %Square: !tt.ptr<f32> {tt.experimental_alias_group = 3 : i32, tt.experimental_private = 1 : i32},
+      %Lock: !tt.ptr<i32> {tt.experimental_alias_group = 4 : i32, tt.experimental_private = 1 : i32, tt.experimental_initial_zero = 1 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_grid_x = 17 : i32, tt.experimental_grid_y = 1 : i32, tt.experimental_grid_z = 1 : i32},
+      %N: i32 {tt.experimental_value = 7 : i32},
+      %stride: i32 {tt.experimental_value = 7 : i32}) attributes {noinline = false} {
+    %values = arith.constant dense<0.000000e+00> : tensor<8xf32>
+    %true = arith.constant true
+    %c1_i32 = arith.constant 1 : i32
+    %c8_i32 = arith.constant 8 : i32
+    %cst = arith.constant dense<2.000000e+00> : tensor<8xf32>
+    %c0_i32 = arith.constant 0 : i32
+    %row = tt.get_program_id x : i32
+    %cols = tt.make_range {end = 8 : i32, start = 0 : i32} : tensor<8xi32>
+    %mask = tt.splat %N : i32 -> tensor<8xi32>
+    %mask_0 = arith.cmpi slt, %cols, %mask : tensor<8xi32>
+    %values_1 = arith.muli %row, %stride : i32
+    %values_2 = tt.addptr %X, %values_1 : !tt.ptr<f32>, i32
+    %values_3 = tt.splat %values_2 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %values_4 = tt.addptr %values_3, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %first = tt.load %values_4, %mask_0, %values : tensor<8x!tt.ptr<f32>>
+    %0 = tt.addptr %Y, %values_1 : !tt.ptr<f32>, i32
+    %1 = tt.splat %0 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %2 = tt.addptr %1, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %3 = arith.mulf %first, %cst : tensor<8xf32>
+    tt.store %2, %3, %mask_0 : tensor<8x!tt.ptr<f32>>
+    %second = arith.mulf %first, %first : tensor<8xf32>
+    %group = arith.remsi %row, %c8_i32 : i32
+    %mutex = tt.addptr %Lock, %group : !tt.ptr<i32>, i32
+    %count = tt.addptr %mutex, %c8_i32 : !tt.ptr<i32>, i32
+    %sum_ptr = arith.muli %group, %N : i32
+    %sum_ptr_5 = tt.addptr %Sum, %sum_ptr : !tt.ptr<f32>, i32
+    %sum_ptr_6 = tt.splat %sum_ptr_5 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %sum_ptr_7 = tt.addptr %sum_ptr_6, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %square_ptr = tt.addptr %Square, %sum_ptr : !tt.ptr<f32>, i32
+    %square_ptr_8 = tt.splat %square_ptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %square_ptr_9 = tt.addptr %square_ptr_8, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    scf.while : () -> () {
+      %8 = tt.atomic_cas acq_rel, gpu, %mutex, %c0_i32, %c1_i32 : (!tt.ptr<i32>, i32, i32) -> i32
+      %9 = arith.cmpi eq, %8, %c1_i32 : i32
+      scf.condition(%9)
+    } do {
+      scf.yield
+    }
+    %4 = tt.load %count : !tt.ptr<i32>
+    %5 = arith.cmpi eq, %4, %c0_i32 : i32
+    %6:2 = scf.if %5 -> (tensor<8xf32>, tensor<8xf32>) {
+      %8 = tt.atomic_rmw exch, acq_rel, gpu, %count, %c1_i32, %true : (!tt.ptr<i32>, i32, i1) -> i32
+      scf.yield %first, %second : tensor<8xf32>, tensor<8xf32>
+    } else {
+      %first_10 = tt.load %sum_ptr_7, %mask_0 : tensor<8x!tt.ptr<f32>>
+      %first_11 = arith.addf %first, %first_10 : tensor<8xf32>
+      %second_12 = tt.load %square_ptr_9, %mask_0 : tensor<8x!tt.ptr<f32>>
+      %second_13 = arith.addf %second, %second_12 : tensor<8xf32>
+      scf.yield %first_11, %second_13 : tensor<8xf32>, tensor<8xf32>
+    }
+    tt.store %sum_ptr_7, %6#0, %mask_0 : tensor<8x!tt.ptr<f32>>
+    tt.store %square_ptr_9, %6#1, %mask_0 : tensor<8x!tt.ptr<f32>>
+    ttg.barrier all
+    %7 = tt.atomic_rmw exch, acq_rel, gpu, %mutex, %c0_i32, %true : (!tt.ptr<i32>, i32, i1) -> i32
+    tt.return
+  }
+}
+
+// -----
+
+// A read may alias a mutation.
+// OWNERSHIP-LABEL: tt.func {{.*}}@ownership_input_alias(
+// OWNERSHIP-NOT: tt.experimental_private_reduction_owned
+// OWNERSHIP: scf.while
+// OWNERSHIP: tt.atomic_cas
+// OWNERSHIP: tt.return
+module {
+  tt.func public @ownership_input_alias(%X: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32},
+      %Y: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32},
+      %Sum: !tt.ptr<f32> {tt.experimental_alias_group = 2 : i32, tt.experimental_private = 1 : i32},
+      %Square: !tt.ptr<f32> {tt.experimental_alias_group = 3 : i32, tt.experimental_private = 1 : i32},
+      %Lock: !tt.ptr<i32> {tt.experimental_alias_group = 4 : i32, tt.experimental_private = 1 : i32, tt.experimental_initial_zero = 1 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_grid_x = 17 : i32, tt.experimental_grid_y = 1 : i32, tt.experimental_grid_z = 1 : i32},
+      %N: i32 {tt.experimental_value = 7 : i32},
+      %stride: i32 {tt.experimental_value = 7 : i32}) attributes {noinline = false} {
+    %values = arith.constant dense<0.000000e+00> : tensor<8xf32>
+    %true = arith.constant true
+    %c1_i32 = arith.constant 1 : i32
+    %c8_i32 = arith.constant 8 : i32
+    %cst = arith.constant dense<2.000000e+00> : tensor<8xf32>
+    %c0_i32 = arith.constant 0 : i32
+    %row = tt.get_program_id x : i32
+    %cols = tt.make_range {end = 8 : i32, start = 0 : i32} : tensor<8xi32>
+    %mask = tt.splat %N : i32 -> tensor<8xi32>
+    %mask_0 = arith.cmpi slt, %cols, %mask : tensor<8xi32>
+    %values_1 = arith.muli %row, %stride : i32
+    %values_2 = tt.addptr %X, %values_1 : !tt.ptr<f32>, i32
+    %values_3 = tt.splat %values_2 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %values_4 = tt.addptr %values_3, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %first = tt.load %values_4, %mask_0, %values : tensor<8x!tt.ptr<f32>>
+    %0 = tt.addptr %Y, %values_1 : !tt.ptr<f32>, i32
+    %1 = tt.splat %0 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %2 = tt.addptr %1, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %3 = arith.mulf %first, %cst : tensor<8xf32>
+    tt.store %2, %3, %mask_0 : tensor<8x!tt.ptr<f32>>
+    %second = arith.mulf %first, %first : tensor<8xf32>
+    %group = arith.remsi %row, %c8_i32 : i32
+    %mutex = tt.addptr %Lock, %group : !tt.ptr<i32>, i32
+    %count = tt.addptr %mutex, %c8_i32 : !tt.ptr<i32>, i32
+    %sum_ptr = arith.muli %group, %N : i32
+    %sum_ptr_5 = tt.addptr %Sum, %sum_ptr : !tt.ptr<f32>, i32
+    %sum_ptr_6 = tt.splat %sum_ptr_5 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %sum_ptr_7 = tt.addptr %sum_ptr_6, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %square_ptr = tt.addptr %Square, %sum_ptr : !tt.ptr<f32>, i32
+    %square_ptr_8 = tt.splat %square_ptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %square_ptr_9 = tt.addptr %square_ptr_8, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    scf.while : () -> () {
+      %8 = tt.atomic_cas acq_rel, gpu, %mutex, %c0_i32, %c1_i32 : (!tt.ptr<i32>, i32, i32) -> i32
+      %9 = arith.cmpi eq, %8, %c1_i32 : i32
+      scf.condition(%9)
+    } do {
+      scf.yield
+    }
+    %4 = tt.load %count : !tt.ptr<i32>
+    %5 = arith.cmpi eq, %4, %c0_i32 : i32
+    %6:2 = scf.if %5 -> (tensor<8xf32>, tensor<8xf32>) {
+      %8 = tt.atomic_rmw exch, acq_rel, gpu, %count, %c1_i32, %true : (!tt.ptr<i32>, i32, i1) -> i32
+      scf.yield %first, %second : tensor<8xf32>, tensor<8xf32>
+    } else {
+      %first_10 = tt.load %sum_ptr_7, %mask_0 : tensor<8x!tt.ptr<f32>>
+      %first_11 = arith.addf %first, %first_10 : tensor<8xf32>
+      %second_12 = tt.load %square_ptr_9, %mask_0 : tensor<8x!tt.ptr<f32>>
+      %second_13 = arith.addf %second, %second_12 : tensor<8xf32>
+      scf.yield %first_11, %second_13 : tensor<8xf32>, tensor<8xf32>
+    }
+    tt.store %sum_ptr_7, %6#0, %mask_0 : tensor<8x!tt.ptr<f32>>
+    tt.store %square_ptr_9, %6#1, %mask_0 : tensor<8x!tt.ptr<f32>>
+    ttg.barrier all
+    %7 = tt.atomic_rmw exch, acq_rel, gpu, %mutex, %c0_i32, %true : (!tt.ptr<i32>, i32, i1) -> i32
+    tt.return
+  }
+}
+
+// -----
+
+// Partial arrays must be disjoint.
+// OWNERSHIP-LABEL: tt.func {{.*}}@ownership_partial_alias(
+// OWNERSHIP-NOT: tt.experimental_private_reduction_owned
+// OWNERSHIP: scf.while
+// OWNERSHIP: tt.atomic_cas
+// OWNERSHIP: tt.return
+module {
+  tt.func public @ownership_partial_alias(%X: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32},
+      %Y: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32},
+      %Sum: !tt.ptr<f32> {tt.experimental_alias_group = 2 : i32, tt.experimental_private = 1 : i32},
+      %Square: !tt.ptr<f32> {tt.experimental_alias_group = 2 : i32, tt.experimental_private = 1 : i32},
+      %Lock: !tt.ptr<i32> {tt.experimental_alias_group = 4 : i32, tt.experimental_private = 1 : i32, tt.experimental_initial_zero = 1 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_grid_x = 17 : i32, tt.experimental_grid_y = 1 : i32, tt.experimental_grid_z = 1 : i32},
+      %N: i32 {tt.experimental_value = 7 : i32},
+      %stride: i32 {tt.experimental_value = 7 : i32}) attributes {noinline = false} {
+    %values = arith.constant dense<0.000000e+00> : tensor<8xf32>
+    %true = arith.constant true
+    %c1_i32 = arith.constant 1 : i32
+    %c8_i32 = arith.constant 8 : i32
+    %cst = arith.constant dense<2.000000e+00> : tensor<8xf32>
+    %c0_i32 = arith.constant 0 : i32
+    %row = tt.get_program_id x : i32
+    %cols = tt.make_range {end = 8 : i32, start = 0 : i32} : tensor<8xi32>
+    %mask = tt.splat %N : i32 -> tensor<8xi32>
+    %mask_0 = arith.cmpi slt, %cols, %mask : tensor<8xi32>
+    %values_1 = arith.muli %row, %stride : i32
+    %values_2 = tt.addptr %X, %values_1 : !tt.ptr<f32>, i32
+    %values_3 = tt.splat %values_2 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %values_4 = tt.addptr %values_3, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %first = tt.load %values_4, %mask_0, %values : tensor<8x!tt.ptr<f32>>
+    %0 = tt.addptr %Y, %values_1 : !tt.ptr<f32>, i32
+    %1 = tt.splat %0 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %2 = tt.addptr %1, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %3 = arith.mulf %first, %cst : tensor<8xf32>
+    tt.store %2, %3, %mask_0 : tensor<8x!tt.ptr<f32>>
+    %second = arith.mulf %first, %first : tensor<8xf32>
+    %group = arith.remsi %row, %c8_i32 : i32
+    %mutex = tt.addptr %Lock, %group : !tt.ptr<i32>, i32
+    %count = tt.addptr %mutex, %c8_i32 : !tt.ptr<i32>, i32
+    %sum_ptr = arith.muli %group, %N : i32
+    %sum_ptr_5 = tt.addptr %Sum, %sum_ptr : !tt.ptr<f32>, i32
+    %sum_ptr_6 = tt.splat %sum_ptr_5 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %sum_ptr_7 = tt.addptr %sum_ptr_6, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %square_ptr = tt.addptr %Square, %sum_ptr : !tt.ptr<f32>, i32
+    %square_ptr_8 = tt.splat %square_ptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %square_ptr_9 = tt.addptr %square_ptr_8, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    scf.while : () -> () {
+      %8 = tt.atomic_cas acq_rel, gpu, %mutex, %c0_i32, %c1_i32 : (!tt.ptr<i32>, i32, i32) -> i32
+      %9 = arith.cmpi eq, %8, %c1_i32 : i32
+      scf.condition(%9)
+    } do {
+      scf.yield
+    }
+    %4 = tt.load %count : !tt.ptr<i32>
+    %5 = arith.cmpi eq, %4, %c0_i32 : i32
+    %6:2 = scf.if %5 -> (tensor<8xf32>, tensor<8xf32>) {
+      %8 = tt.atomic_rmw exch, acq_rel, gpu, %count, %c1_i32, %true : (!tt.ptr<i32>, i32, i1) -> i32
+      scf.yield %first, %second : tensor<8xf32>, tensor<8xf32>
+    } else {
+      %first_10 = tt.load %sum_ptr_7, %mask_0 : tensor<8x!tt.ptr<f32>>
+      %first_11 = arith.addf %first, %first_10 : tensor<8xf32>
+      %second_12 = tt.load %square_ptr_9, %mask_0 : tensor<8x!tt.ptr<f32>>
+      %second_13 = arith.addf %second, %second_12 : tensor<8xf32>
+      scf.yield %first_11, %second_13 : tensor<8xf32>, tensor<8xf32>
+    }
+    tt.store %sum_ptr_7, %6#0, %mask_0 : tensor<8x!tt.ptr<f32>>
+    tt.store %square_ptr_9, %6#1, %mask_0 : tensor<8x!tt.ptr<f32>>
+    ttg.barrier all
+    %7 = tt.atomic_rmw exch, acq_rel, gpu, %mutex, %c0_i32, %true : (!tt.ptr<i32>, i32, i1) -> i32
+    tt.return
+  }
+}
+
+// -----
+
+// A normal scalar needs an exact contract to prove disjoint rows.
+// OWNERSHIP-LABEL: tt.func {{.*}}@ownership_unknown_extent(
+// OWNERSHIP-NOT: tt.experimental_private_reduction_owned
+// OWNERSHIP: scf.while
+// OWNERSHIP: tt.atomic_cas
+// OWNERSHIP: tt.return
+module {
+  tt.func public @ownership_unknown_extent(%X: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32},
+      %Y: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32},
+      %Sum: !tt.ptr<f32> {tt.experimental_alias_group = 2 : i32, tt.experimental_private = 1 : i32},
+      %Square: !tt.ptr<f32> {tt.experimental_alias_group = 3 : i32, tt.experimental_private = 1 : i32},
+      %Lock: !tt.ptr<i32> {tt.experimental_alias_group = 4 : i32, tt.experimental_private = 1 : i32, tt.experimental_initial_zero = 1 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_grid_x = 17 : i32, tt.experimental_grid_y = 1 : i32, tt.experimental_grid_z = 1 : i32},
+      %N: i32,
+      %stride: i32 {tt.experimental_value = 7 : i32}) attributes {noinline = false} {
+    %values = arith.constant dense<0.000000e+00> : tensor<8xf32>
+    %true = arith.constant true
+    %c1_i32 = arith.constant 1 : i32
+    %c8_i32 = arith.constant 8 : i32
+    %cst = arith.constant dense<2.000000e+00> : tensor<8xf32>
+    %c0_i32 = arith.constant 0 : i32
+    %row = tt.get_program_id x : i32
+    %cols = tt.make_range {end = 8 : i32, start = 0 : i32} : tensor<8xi32>
+    %mask = tt.splat %N : i32 -> tensor<8xi32>
+    %mask_0 = arith.cmpi slt, %cols, %mask : tensor<8xi32>
+    %values_1 = arith.muli %row, %stride : i32
+    %values_2 = tt.addptr %X, %values_1 : !tt.ptr<f32>, i32
+    %values_3 = tt.splat %values_2 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %values_4 = tt.addptr %values_3, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %first = tt.load %values_4, %mask_0, %values : tensor<8x!tt.ptr<f32>>
+    %0 = tt.addptr %Y, %values_1 : !tt.ptr<f32>, i32
+    %1 = tt.splat %0 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %2 = tt.addptr %1, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %3 = arith.mulf %first, %cst : tensor<8xf32>
+    tt.store %2, %3, %mask_0 : tensor<8x!tt.ptr<f32>>
+    %second = arith.mulf %first, %first : tensor<8xf32>
+    %group = arith.remsi %row, %c8_i32 : i32
+    %mutex = tt.addptr %Lock, %group : !tt.ptr<i32>, i32
+    %count = tt.addptr %mutex, %c8_i32 : !tt.ptr<i32>, i32
+    %sum_ptr = arith.muli %group, %N : i32
+    %sum_ptr_5 = tt.addptr %Sum, %sum_ptr : !tt.ptr<f32>, i32
+    %sum_ptr_6 = tt.splat %sum_ptr_5 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %sum_ptr_7 = tt.addptr %sum_ptr_6, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %square_ptr = tt.addptr %Square, %sum_ptr : !tt.ptr<f32>, i32
+    %square_ptr_8 = tt.splat %square_ptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %square_ptr_9 = tt.addptr %square_ptr_8, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    scf.while : () -> () {
+      %8 = tt.atomic_cas acq_rel, gpu, %mutex, %c0_i32, %c1_i32 : (!tt.ptr<i32>, i32, i32) -> i32
+      %9 = arith.cmpi eq, %8, %c1_i32 : i32
+      scf.condition(%9)
+    } do {
+      scf.yield
+    }
+    %4 = tt.load %count : !tt.ptr<i32>
+    %5 = arith.cmpi eq, %4, %c0_i32 : i32
+    %6:2 = scf.if %5 -> (tensor<8xf32>, tensor<8xf32>) {
+      %8 = tt.atomic_rmw exch, acq_rel, gpu, %count, %c1_i32, %true : (!tt.ptr<i32>, i32, i1) -> i32
+      scf.yield %first, %second : tensor<8xf32>, tensor<8xf32>
+    } else {
+      %first_10 = tt.load %sum_ptr_7, %mask_0 : tensor<8x!tt.ptr<f32>>
+      %first_11 = arith.addf %first, %first_10 : tensor<8xf32>
+      %second_12 = tt.load %square_ptr_9, %mask_0 : tensor<8x!tt.ptr<f32>>
+      %second_13 = arith.addf %second, %second_12 : tensor<8xf32>
+      scf.yield %first_11, %second_13 : tensor<8xf32>, tensor<8xf32>
+    }
+    tt.store %sum_ptr_7, %6#0, %mask_0 : tensor<8x!tt.ptr<f32>>
+    tt.store %square_ptr_9, %6#1, %mask_0 : tensor<8x!tt.ptr<f32>>
+    ttg.barrier all
+    %7 = tt.atomic_rmw exch, acq_rel, gpu, %mutex, %c0_i32, %true : (!tt.ptr<i32>, i32, i1) -> i32
+    tt.return
+  }
+}
+
+// -----
+
+// Row stride smaller than the live width.
+// OWNERSHIP-LABEL: tt.func {{.*}}@ownership_overlapping_rows(
+// OWNERSHIP-NOT: tt.experimental_private_reduction_owned
+// OWNERSHIP: scf.while
+// OWNERSHIP: tt.atomic_cas
+// OWNERSHIP: tt.return
+module {
+  tt.func public @ownership_overlapping_rows(%X: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32},
+      %Y: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32},
+      %Sum: !tt.ptr<f32> {tt.experimental_alias_group = 2 : i32, tt.experimental_private = 1 : i32},
+      %Square: !tt.ptr<f32> {tt.experimental_alias_group = 3 : i32, tt.experimental_private = 1 : i32},
+      %Lock: !tt.ptr<i32> {tt.experimental_alias_group = 4 : i32, tt.experimental_private = 1 : i32, tt.experimental_initial_zero = 1 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_grid_x = 17 : i32, tt.experimental_grid_y = 1 : i32, tt.experimental_grid_z = 1 : i32},
+      %N: i32 {tt.experimental_value = 7 : i32},
+      %stride: i32 {tt.experimental_value = 6 : i32}) attributes {noinline = false} {
+    %values = arith.constant dense<0.000000e+00> : tensor<8xf32>
+    %true = arith.constant true
+    %c1_i32 = arith.constant 1 : i32
+    %c8_i32 = arith.constant 8 : i32
+    %cst = arith.constant dense<2.000000e+00> : tensor<8xf32>
+    %c0_i32 = arith.constant 0 : i32
+    %row = tt.get_program_id x : i32
+    %cols = tt.make_range {end = 8 : i32, start = 0 : i32} : tensor<8xi32>
+    %mask = tt.splat %N : i32 -> tensor<8xi32>
+    %mask_0 = arith.cmpi slt, %cols, %mask : tensor<8xi32>
+    %values_1 = arith.muli %row, %stride : i32
+    %values_2 = tt.addptr %X, %values_1 : !tt.ptr<f32>, i32
+    %values_3 = tt.splat %values_2 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %values_4 = tt.addptr %values_3, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %first = tt.load %values_4, %mask_0, %values : tensor<8x!tt.ptr<f32>>
+    %0 = tt.addptr %Y, %values_1 : !tt.ptr<f32>, i32
+    %1 = tt.splat %0 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %2 = tt.addptr %1, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %3 = arith.mulf %first, %cst : tensor<8xf32>
+    tt.store %2, %3, %mask_0 : tensor<8x!tt.ptr<f32>>
+    %second = arith.mulf %first, %first : tensor<8xf32>
+    %group = arith.remsi %row, %c8_i32 : i32
+    %mutex = tt.addptr %Lock, %group : !tt.ptr<i32>, i32
+    %count = tt.addptr %mutex, %c8_i32 : !tt.ptr<i32>, i32
+    %sum_ptr = arith.muli %group, %N : i32
+    %sum_ptr_5 = tt.addptr %Sum, %sum_ptr : !tt.ptr<f32>, i32
+    %sum_ptr_6 = tt.splat %sum_ptr_5 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %sum_ptr_7 = tt.addptr %sum_ptr_6, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %square_ptr = tt.addptr %Square, %sum_ptr : !tt.ptr<f32>, i32
+    %square_ptr_8 = tt.splat %square_ptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %square_ptr_9 = tt.addptr %square_ptr_8, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    scf.while : () -> () {
+      %8 = tt.atomic_cas acq_rel, gpu, %mutex, %c0_i32, %c1_i32 : (!tt.ptr<i32>, i32, i32) -> i32
+      %9 = arith.cmpi eq, %8, %c1_i32 : i32
+      scf.condition(%9)
+    } do {
+      scf.yield
+    }
+    %4 = tt.load %count : !tt.ptr<i32>
+    %5 = arith.cmpi eq, %4, %c0_i32 : i32
+    %6:2 = scf.if %5 -> (tensor<8xf32>, tensor<8xf32>) {
+      %8 = tt.atomic_rmw exch, acq_rel, gpu, %count, %c1_i32, %true : (!tt.ptr<i32>, i32, i1) -> i32
+      scf.yield %first, %second : tensor<8xf32>, tensor<8xf32>
+    } else {
+      %first_10 = tt.load %sum_ptr_7, %mask_0 : tensor<8x!tt.ptr<f32>>
+      %first_11 = arith.addf %first, %first_10 : tensor<8xf32>
+      %second_12 = tt.load %square_ptr_9, %mask_0 : tensor<8x!tt.ptr<f32>>
+      %second_13 = arith.addf %second, %second_12 : tensor<8xf32>
+      scf.yield %first_11, %second_13 : tensor<8xf32>, tensor<8xf32>
+    }
+    tt.store %sum_ptr_7, %6#0, %mask_0 : tensor<8x!tt.ptr<f32>>
+    tt.store %square_ptr_9, %6#1, %mask_0 : tensor<8x!tt.ptr<f32>>
+    ttg.barrier all
+    %7 = tt.atomic_rmw exch, acq_rel, gpu, %mutex, %c0_i32, %true : (!tt.ptr<i32>, i32, i1) -> i32
+    tt.return
+  }
+}
+
+// -----
+
+// Original row offsets cannot wrap i32.
+// OWNERSHIP-LABEL: tt.func {{.*}}@ownership_row_offset_overflow(
+// OWNERSHIP-NOT: tt.experimental_private_reduction_owned
+// OWNERSHIP: scf.while
+// OWNERSHIP: tt.atomic_cas
+// OWNERSHIP: tt.return
+module {
+  tt.func public @ownership_row_offset_overflow(%X: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32},
+      %Y: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32},
+      %Sum: !tt.ptr<f32> {tt.experimental_alias_group = 2 : i32, tt.experimental_private = 1 : i32},
+      %Square: !tt.ptr<f32> {tt.experimental_alias_group = 3 : i32, tt.experimental_private = 1 : i32},
+      %Lock: !tt.ptr<i32> {tt.experimental_alias_group = 4 : i32, tt.experimental_private = 1 : i32, tt.experimental_initial_zero = 1 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_grid_x = 17 : i32, tt.experimental_grid_y = 1 : i32, tt.experimental_grid_z = 1 : i32},
+      %N: i32 {tt.experimental_value = 7 : i32},
+      %stride: i32 {tt.experimental_value = 2147483647 : i32}) attributes {noinline = false} {
+    %values = arith.constant dense<0.000000e+00> : tensor<8xf32>
+    %true = arith.constant true
+    %c1_i32 = arith.constant 1 : i32
+    %c8_i32 = arith.constant 8 : i32
+    %cst = arith.constant dense<2.000000e+00> : tensor<8xf32>
+    %c0_i32 = arith.constant 0 : i32
+    %row = tt.get_program_id x : i32
+    %cols = tt.make_range {end = 8 : i32, start = 0 : i32} : tensor<8xi32>
+    %mask = tt.splat %N : i32 -> tensor<8xi32>
+    %mask_0 = arith.cmpi slt, %cols, %mask : tensor<8xi32>
+    %values_1 = arith.muli %row, %stride : i32
+    %values_2 = tt.addptr %X, %values_1 : !tt.ptr<f32>, i32
+    %values_3 = tt.splat %values_2 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %values_4 = tt.addptr %values_3, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %first = tt.load %values_4, %mask_0, %values : tensor<8x!tt.ptr<f32>>
+    %0 = tt.addptr %Y, %values_1 : !tt.ptr<f32>, i32
+    %1 = tt.splat %0 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %2 = tt.addptr %1, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %3 = arith.mulf %first, %cst : tensor<8xf32>
+    tt.store %2, %3, %mask_0 : tensor<8x!tt.ptr<f32>>
+    %second = arith.mulf %first, %first : tensor<8xf32>
+    %group = arith.remsi %row, %c8_i32 : i32
+    %mutex = tt.addptr %Lock, %group : !tt.ptr<i32>, i32
+    %count = tt.addptr %mutex, %c8_i32 : !tt.ptr<i32>, i32
+    %sum_ptr = arith.muli %group, %N : i32
+    %sum_ptr_5 = tt.addptr %Sum, %sum_ptr : !tt.ptr<f32>, i32
+    %sum_ptr_6 = tt.splat %sum_ptr_5 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %sum_ptr_7 = tt.addptr %sum_ptr_6, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %square_ptr = tt.addptr %Square, %sum_ptr : !tt.ptr<f32>, i32
+    %square_ptr_8 = tt.splat %square_ptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %square_ptr_9 = tt.addptr %square_ptr_8, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    scf.while : () -> () {
+      %8 = tt.atomic_cas acq_rel, gpu, %mutex, %c0_i32, %c1_i32 : (!tt.ptr<i32>, i32, i32) -> i32
+      %9 = arith.cmpi eq, %8, %c1_i32 : i32
+      scf.condition(%9)
+    } do {
+      scf.yield
+    }
+    %4 = tt.load %count : !tt.ptr<i32>
+    %5 = arith.cmpi eq, %4, %c0_i32 : i32
+    %6:2 = scf.if %5 -> (tensor<8xf32>, tensor<8xf32>) {
+      %8 = tt.atomic_rmw exch, acq_rel, gpu, %count, %c1_i32, %true : (!tt.ptr<i32>, i32, i1) -> i32
+      scf.yield %first, %second : tensor<8xf32>, tensor<8xf32>
+    } else {
+      %first_10 = tt.load %sum_ptr_7, %mask_0 : tensor<8x!tt.ptr<f32>>
+      %first_11 = arith.addf %first, %first_10 : tensor<8xf32>
+      %second_12 = tt.load %square_ptr_9, %mask_0 : tensor<8x!tt.ptr<f32>>
+      %second_13 = arith.addf %second, %second_12 : tensor<8xf32>
+      scf.yield %first_11, %second_13 : tensor<8xf32>, tensor<8xf32>
+    }
+    tt.store %sum_ptr_7, %6#0, %mask_0 : tensor<8x!tt.ptr<f32>>
+    tt.store %square_ptr_9, %6#1, %mask_0 : tensor<8x!tt.ptr<f32>>
+    ttg.barrier all
+    %7 = tt.atomic_rmw exch, acq_rel, gpu, %mutex, %c0_i32, %true : (!tt.ptr<i32>, i32, i1) -> i32
+    tt.return
+  }
+}
+
+// -----
+
+// The introduced row += groups must not wrap, even on the final step.
+// OWNERSHIP-LABEL: tt.func {{.*}}@ownership_increment_overflow(
+// OWNERSHIP-NOT: tt.experimental_private_reduction_owned
+// OWNERSHIP: scf.while
+// OWNERSHIP: tt.atomic_cas
+// OWNERSHIP: tt.return
+module {
+  tt.func public @ownership_increment_overflow(%X: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32},
+      %Y: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32},
+      %Sum: !tt.ptr<f32> {tt.experimental_alias_group = 2 : i32, tt.experimental_private = 1 : i32},
+      %Square: !tt.ptr<f32> {tt.experimental_alias_group = 3 : i32, tt.experimental_private = 1 : i32},
+      %Lock: !tt.ptr<i32> {tt.experimental_alias_group = 4 : i32, tt.experimental_private = 1 : i32, tt.experimental_initial_zero = 1 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_grid_x = 2147483647 : i32, tt.experimental_grid_y = 1 : i32, tt.experimental_grid_z = 1 : i32},
+      %N: i32 {tt.experimental_value = 1 : i32},
+      %stride: i32 {tt.experimental_value = 1 : i32}) attributes {noinline = false} {
+    %values = arith.constant dense<0.000000e+00> : tensor<8xf32>
+    %true = arith.constant true
+    %c1_i32 = arith.constant 1 : i32
+    %c8_i32 = arith.constant 8 : i32
+    %cst = arith.constant dense<2.000000e+00> : tensor<8xf32>
+    %c0_i32 = arith.constant 0 : i32
+    %row = tt.get_program_id x : i32
+    %cols = tt.make_range {end = 8 : i32, start = 0 : i32} : tensor<8xi32>
+    %mask = tt.splat %N : i32 -> tensor<8xi32>
+    %mask_0 = arith.cmpi slt, %cols, %mask : tensor<8xi32>
+    %values_1 = arith.muli %row, %stride : i32
+    %values_2 = tt.addptr %X, %values_1 : !tt.ptr<f32>, i32
+    %values_3 = tt.splat %values_2 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %values_4 = tt.addptr %values_3, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %first = tt.load %values_4, %mask_0, %values : tensor<8x!tt.ptr<f32>>
+    %0 = tt.addptr %Y, %values_1 : !tt.ptr<f32>, i32
+    %1 = tt.splat %0 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %2 = tt.addptr %1, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %3 = arith.mulf %first, %cst : tensor<8xf32>
+    tt.store %2, %3, %mask_0 : tensor<8x!tt.ptr<f32>>
+    %second = arith.mulf %first, %first : tensor<8xf32>
+    %group = arith.remsi %row, %c8_i32 : i32
+    %mutex = tt.addptr %Lock, %group : !tt.ptr<i32>, i32
+    %count = tt.addptr %mutex, %c8_i32 : !tt.ptr<i32>, i32
+    %sum_ptr = arith.muli %group, %N : i32
+    %sum_ptr_5 = tt.addptr %Sum, %sum_ptr : !tt.ptr<f32>, i32
+    %sum_ptr_6 = tt.splat %sum_ptr_5 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %sum_ptr_7 = tt.addptr %sum_ptr_6, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %square_ptr = tt.addptr %Square, %sum_ptr : !tt.ptr<f32>, i32
+    %square_ptr_8 = tt.splat %square_ptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %square_ptr_9 = tt.addptr %square_ptr_8, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    scf.while : () -> () {
+      %8 = tt.atomic_cas acq_rel, gpu, %mutex, %c0_i32, %c1_i32 : (!tt.ptr<i32>, i32, i32) -> i32
+      %9 = arith.cmpi eq, %8, %c1_i32 : i32
+      scf.condition(%9)
+    } do {
+      scf.yield
+    }
+    %4 = tt.load %count : !tt.ptr<i32>
+    %5 = arith.cmpi eq, %4, %c0_i32 : i32
+    %6:2 = scf.if %5 -> (tensor<8xf32>, tensor<8xf32>) {
+      %8 = tt.atomic_rmw exch, acq_rel, gpu, %count, %c1_i32, %true : (!tt.ptr<i32>, i32, i1) -> i32
+      scf.yield %first, %second : tensor<8xf32>, tensor<8xf32>
+    } else {
+      %first_10 = tt.load %sum_ptr_7, %mask_0 : tensor<8x!tt.ptr<f32>>
+      %first_11 = arith.addf %first, %first_10 : tensor<8xf32>
+      %second_12 = tt.load %square_ptr_9, %mask_0 : tensor<8x!tt.ptr<f32>>
+      %second_13 = arith.addf %second, %second_12 : tensor<8xf32>
+      scf.yield %first_11, %second_13 : tensor<8xf32>, tensor<8xf32>
+    }
+    tt.store %sum_ptr_7, %6#0, %mask_0 : tensor<8x!tt.ptr<f32>>
+    tt.store %square_ptr_9, %6#1, %mask_0 : tensor<8x!tt.ptr<f32>>
+    ttg.barrier all
+    %7 = tt.atomic_rmw exch, acq_rel, gpu, %mutex, %c0_i32, %true : (!tt.ptr<i32>, i32, i1) -> i32
+    tt.return
+  }
+}
+
+// -----
+
+// One logical program must be one CTA.
+// OWNERSHIP-LABEL: tt.func {{.*}}@ownership_multicta(
+// OWNERSHIP-NOT: tt.experimental_private_reduction_owned
+// OWNERSHIP: scf.while
+// OWNERSHIP: tt.atomic_cas
+// OWNERSHIP: tt.return
+module attributes {"ttg.num-ctas" = 2 : i32} {
+  tt.func public @ownership_multicta(%X: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32},
+      %Y: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32},
+      %Sum: !tt.ptr<f32> {tt.experimental_alias_group = 2 : i32, tt.experimental_private = 1 : i32},
+      %Square: !tt.ptr<f32> {tt.experimental_alias_group = 3 : i32, tt.experimental_private = 1 : i32},
+      %Lock: !tt.ptr<i32> {tt.experimental_alias_group = 4 : i32, tt.experimental_private = 1 : i32, tt.experimental_initial_zero = 1 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_grid_x = 17 : i32, tt.experimental_grid_y = 1 : i32, tt.experimental_grid_z = 1 : i32},
+      %N: i32 {tt.experimental_value = 7 : i32},
+      %stride: i32 {tt.experimental_value = 7 : i32}) attributes {noinline = false} {
+    %values = arith.constant dense<0.000000e+00> : tensor<8xf32>
+    %true = arith.constant true
+    %c1_i32 = arith.constant 1 : i32
+    %c8_i32 = arith.constant 8 : i32
+    %cst = arith.constant dense<2.000000e+00> : tensor<8xf32>
+    %c0_i32 = arith.constant 0 : i32
+    %row = tt.get_program_id x : i32
+    %cols = tt.make_range {end = 8 : i32, start = 0 : i32} : tensor<8xi32>
+    %mask = tt.splat %N : i32 -> tensor<8xi32>
+    %mask_0 = arith.cmpi slt, %cols, %mask : tensor<8xi32>
+    %values_1 = arith.muli %row, %stride : i32
+    %values_2 = tt.addptr %X, %values_1 : !tt.ptr<f32>, i32
+    %values_3 = tt.splat %values_2 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %values_4 = tt.addptr %values_3, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %first = tt.load %values_4, %mask_0, %values : tensor<8x!tt.ptr<f32>>
+    %0 = tt.addptr %Y, %values_1 : !tt.ptr<f32>, i32
+    %1 = tt.splat %0 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %2 = tt.addptr %1, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %3 = arith.mulf %first, %cst : tensor<8xf32>
+    tt.store %2, %3, %mask_0 : tensor<8x!tt.ptr<f32>>
+    %second = arith.mulf %first, %first : tensor<8xf32>
+    %group = arith.remsi %row, %c8_i32 : i32
+    %mutex = tt.addptr %Lock, %group : !tt.ptr<i32>, i32
+    %count = tt.addptr %mutex, %c8_i32 : !tt.ptr<i32>, i32
+    %sum_ptr = arith.muli %group, %N : i32
+    %sum_ptr_5 = tt.addptr %Sum, %sum_ptr : !tt.ptr<f32>, i32
+    %sum_ptr_6 = tt.splat %sum_ptr_5 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %sum_ptr_7 = tt.addptr %sum_ptr_6, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %square_ptr = tt.addptr %Square, %sum_ptr : !tt.ptr<f32>, i32
+    %square_ptr_8 = tt.splat %square_ptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %square_ptr_9 = tt.addptr %square_ptr_8, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    scf.while : () -> () {
+      %8 = tt.atomic_cas acq_rel, gpu, %mutex, %c0_i32, %c1_i32 : (!tt.ptr<i32>, i32, i32) -> i32
+      %9 = arith.cmpi eq, %8, %c1_i32 : i32
+      scf.condition(%9)
+    } do {
+      scf.yield
+    }
+    %4 = tt.load %count : !tt.ptr<i32>
+    %5 = arith.cmpi eq, %4, %c0_i32 : i32
+    %6:2 = scf.if %5 -> (tensor<8xf32>, tensor<8xf32>) {
+      %8 = tt.atomic_rmw exch, acq_rel, gpu, %count, %c1_i32, %true : (!tt.ptr<i32>, i32, i1) -> i32
+      scf.yield %first, %second : tensor<8xf32>, tensor<8xf32>
+    } else {
+      %first_10 = tt.load %sum_ptr_7, %mask_0 : tensor<8x!tt.ptr<f32>>
+      %first_11 = arith.addf %first, %first_10 : tensor<8xf32>
+      %second_12 = tt.load %square_ptr_9, %mask_0 : tensor<8x!tt.ptr<f32>>
+      %second_13 = arith.addf %second, %second_12 : tensor<8xf32>
+      scf.yield %first_11, %second_13 : tensor<8xf32>, tensor<8xf32>
+    }
+    tt.store %sum_ptr_7, %6#0, %mask_0 : tensor<8x!tt.ptr<f32>>
+    tt.store %square_ptr_9, %6#1, %mask_0 : tensor<8x!tt.ptr<f32>>
+    ttg.barrier all
+    %7 = tt.atomic_rmw exch, acq_rel, gpu, %mutex, %c0_i32, %true : (!tt.ptr<i32>, i32, i1) -> i32
+    tt.return
+  }
+}
+
+// -----
+
+// A CTA-scoped lock cannot serialize the original grid.
+// OWNERSHIP-LABEL: tt.func {{.*}}@ownership_wrong_scope(
+// OWNERSHIP-NOT: tt.experimental_private_reduction_owned
+// OWNERSHIP: scf.while
+// OWNERSHIP: tt.atomic_cas
+// OWNERSHIP: tt.return
+module {
+  tt.func public @ownership_wrong_scope(%X: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32},
+      %Y: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32},
+      %Sum: !tt.ptr<f32> {tt.experimental_alias_group = 2 : i32, tt.experimental_private = 1 : i32},
+      %Square: !tt.ptr<f32> {tt.experimental_alias_group = 3 : i32, tt.experimental_private = 1 : i32},
+      %Lock: !tt.ptr<i32> {tt.experimental_alias_group = 4 : i32, tt.experimental_private = 1 : i32, tt.experimental_initial_zero = 1 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_grid_x = 17 : i32, tt.experimental_grid_y = 1 : i32, tt.experimental_grid_z = 1 : i32},
+      %N: i32 {tt.experimental_value = 7 : i32},
+      %stride: i32 {tt.experimental_value = 7 : i32}) attributes {noinline = false} {
+    %values = arith.constant dense<0.000000e+00> : tensor<8xf32>
+    %true = arith.constant true
+    %c1_i32 = arith.constant 1 : i32
+    %c8_i32 = arith.constant 8 : i32
+    %cst = arith.constant dense<2.000000e+00> : tensor<8xf32>
+    %c0_i32 = arith.constant 0 : i32
+    %row = tt.get_program_id x : i32
+    %cols = tt.make_range {end = 8 : i32, start = 0 : i32} : tensor<8xi32>
+    %mask = tt.splat %N : i32 -> tensor<8xi32>
+    %mask_0 = arith.cmpi slt, %cols, %mask : tensor<8xi32>
+    %values_1 = arith.muli %row, %stride : i32
+    %values_2 = tt.addptr %X, %values_1 : !tt.ptr<f32>, i32
+    %values_3 = tt.splat %values_2 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %values_4 = tt.addptr %values_3, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %first = tt.load %values_4, %mask_0, %values : tensor<8x!tt.ptr<f32>>
+    %0 = tt.addptr %Y, %values_1 : !tt.ptr<f32>, i32
+    %1 = tt.splat %0 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %2 = tt.addptr %1, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %3 = arith.mulf %first, %cst : tensor<8xf32>
+    tt.store %2, %3, %mask_0 : tensor<8x!tt.ptr<f32>>
+    %second = arith.mulf %first, %first : tensor<8xf32>
+    %group = arith.remsi %row, %c8_i32 : i32
+    %mutex = tt.addptr %Lock, %group : !tt.ptr<i32>, i32
+    %count = tt.addptr %mutex, %c8_i32 : !tt.ptr<i32>, i32
+    %sum_ptr = arith.muli %group, %N : i32
+    %sum_ptr_5 = tt.addptr %Sum, %sum_ptr : !tt.ptr<f32>, i32
+    %sum_ptr_6 = tt.splat %sum_ptr_5 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %sum_ptr_7 = tt.addptr %sum_ptr_6, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %square_ptr = tt.addptr %Square, %sum_ptr : !tt.ptr<f32>, i32
+    %square_ptr_8 = tt.splat %square_ptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %square_ptr_9 = tt.addptr %square_ptr_8, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    scf.while : () -> () {
+      %8 = tt.atomic_cas acq_rel, cta, %mutex, %c0_i32, %c1_i32 : (!tt.ptr<i32>, i32, i32) -> i32
+      %9 = arith.cmpi eq, %8, %c1_i32 : i32
+      scf.condition(%9)
+    } do {
+      scf.yield
+    }
+    %4 = tt.load %count : !tt.ptr<i32>
+    %5 = arith.cmpi eq, %4, %c0_i32 : i32
+    %6:2 = scf.if %5 -> (tensor<8xf32>, tensor<8xf32>) {
+      %8 = tt.atomic_rmw exch, acq_rel, gpu, %count, %c1_i32, %true : (!tt.ptr<i32>, i32, i1) -> i32
+      scf.yield %first, %second : tensor<8xf32>, tensor<8xf32>
+    } else {
+      %first_10 = tt.load %sum_ptr_7, %mask_0 : tensor<8x!tt.ptr<f32>>
+      %first_11 = arith.addf %first, %first_10 : tensor<8xf32>
+      %second_12 = tt.load %square_ptr_9, %mask_0 : tensor<8x!tt.ptr<f32>>
+      %second_13 = arith.addf %second, %second_12 : tensor<8xf32>
+      scf.yield %first_11, %second_13 : tensor<8xf32>, tensor<8xf32>
+    }
+    tt.store %sum_ptr_7, %6#0, %mask_0 : tensor<8x!tt.ptr<f32>>
+    tt.store %square_ptr_9, %6#1, %mask_0 : tensor<8x!tt.ptr<f32>>
+    ttg.barrier all
+    %7 = tt.atomic_rmw exch, acq_rel, gpu, %mutex, %c0_i32, %true : (!tt.ptr<i32>, i32, i1) -> i32
+    tt.return
+  }
+}
+
+// -----
+
+// Volatile input reads cannot be rescheduled.
+// OWNERSHIP-LABEL: tt.func {{.*}}@ownership_volatile(
+// OWNERSHIP-NOT: tt.experimental_private_reduction_owned
+// OWNERSHIP: scf.while
+// OWNERSHIP: tt.atomic_cas
+// OWNERSHIP: tt.return
+module {
+  tt.func public @ownership_volatile(%X: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32},
+      %Y: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32},
+      %Sum: !tt.ptr<f32> {tt.experimental_alias_group = 2 : i32, tt.experimental_private = 1 : i32},
+      %Square: !tt.ptr<f32> {tt.experimental_alias_group = 3 : i32, tt.experimental_private = 1 : i32},
+      %Lock: !tt.ptr<i32> {tt.experimental_alias_group = 4 : i32, tt.experimental_private = 1 : i32, tt.experimental_initial_zero = 1 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_grid_x = 17 : i32, tt.experimental_grid_y = 1 : i32, tt.experimental_grid_z = 1 : i32},
+      %N: i32 {tt.experimental_value = 7 : i32},
+      %stride: i32 {tt.experimental_value = 7 : i32}) attributes {noinline = false} {
+    %values = arith.constant dense<0.000000e+00> : tensor<8xf32>
+    %true = arith.constant true
+    %c1_i32 = arith.constant 1 : i32
+    %c8_i32 = arith.constant 8 : i32
+    %cst = arith.constant dense<2.000000e+00> : tensor<8xf32>
+    %c0_i32 = arith.constant 0 : i32
+    %row = tt.get_program_id x : i32
+    %cols = tt.make_range {end = 8 : i32, start = 0 : i32} : tensor<8xi32>
+    %mask = tt.splat %N : i32 -> tensor<8xi32>
+    %mask_0 = arith.cmpi slt, %cols, %mask : tensor<8xi32>
+    %values_1 = arith.muli %row, %stride : i32
+    %values_2 = tt.addptr %X, %values_1 : !tt.ptr<f32>, i32
+    %values_3 = tt.splat %values_2 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %values_4 = tt.addptr %values_3, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %first = tt.load %values_4, %mask_0, %values {isVolatile = true} : tensor<8x!tt.ptr<f32>>
+    %0 = tt.addptr %Y, %values_1 : !tt.ptr<f32>, i32
+    %1 = tt.splat %0 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %2 = tt.addptr %1, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %3 = arith.mulf %first, %cst : tensor<8xf32>
+    tt.store %2, %3, %mask_0 : tensor<8x!tt.ptr<f32>>
+    %second = arith.mulf %first, %first : tensor<8xf32>
+    %group = arith.remsi %row, %c8_i32 : i32
+    %mutex = tt.addptr %Lock, %group : !tt.ptr<i32>, i32
+    %count = tt.addptr %mutex, %c8_i32 : !tt.ptr<i32>, i32
+    %sum_ptr = arith.muli %group, %N : i32
+    %sum_ptr_5 = tt.addptr %Sum, %sum_ptr : !tt.ptr<f32>, i32
+    %sum_ptr_6 = tt.splat %sum_ptr_5 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %sum_ptr_7 = tt.addptr %sum_ptr_6, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %square_ptr = tt.addptr %Square, %sum_ptr : !tt.ptr<f32>, i32
+    %square_ptr_8 = tt.splat %square_ptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %square_ptr_9 = tt.addptr %square_ptr_8, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    scf.while : () -> () {
+      %8 = tt.atomic_cas acq_rel, gpu, %mutex, %c0_i32, %c1_i32 : (!tt.ptr<i32>, i32, i32) -> i32
+      %9 = arith.cmpi eq, %8, %c1_i32 : i32
+      scf.condition(%9)
+    } do {
+      scf.yield
+    }
+    %4 = tt.load %count : !tt.ptr<i32>
+    %5 = arith.cmpi eq, %4, %c0_i32 : i32
+    %6:2 = scf.if %5 -> (tensor<8xf32>, tensor<8xf32>) {
+      %8 = tt.atomic_rmw exch, acq_rel, gpu, %count, %c1_i32, %true : (!tt.ptr<i32>, i32, i1) -> i32
+      scf.yield %first, %second : tensor<8xf32>, tensor<8xf32>
+    } else {
+      %first_10 = tt.load %sum_ptr_7, %mask_0 : tensor<8x!tt.ptr<f32>>
+      %first_11 = arith.addf %first, %first_10 : tensor<8xf32>
+      %second_12 = tt.load %square_ptr_9, %mask_0 : tensor<8x!tt.ptr<f32>>
+      %second_13 = arith.addf %second, %second_12 : tensor<8xf32>
+      scf.yield %first_11, %second_13 : tensor<8xf32>, tensor<8xf32>
+    }
+    tt.store %sum_ptr_7, %6#0, %mask_0 : tensor<8x!tt.ptr<f32>>
+    tt.store %square_ptr_9, %6#1, %mask_0 : tensor<8x!tt.ptr<f32>>
+    ttg.barrier all
+    %7 = tt.atomic_rmw exch, acq_rel, gpu, %mutex, %c0_i32, %true : (!tt.ptr<i32>, i32, i1) -> i32
+    tt.return
+  }
+}
+
+// -----
+
+// The critical section cannot publish intermediate partials.
+// OWNERSHIP-LABEL: tt.func {{.*}}@ownership_observer(
+// OWNERSHIP-NOT: tt.experimental_private_reduction_owned
+// OWNERSHIP: scf.while
+// OWNERSHIP: tt.atomic_cas
+// OWNERSHIP: tt.return
+module {
+  tt.func public @ownership_observer(%X: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32},
+      %Y: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32},
+      %Sum: !tt.ptr<f32> {tt.experimental_alias_group = 2 : i32, tt.experimental_private = 1 : i32},
+      %Square: !tt.ptr<f32> {tt.experimental_alias_group = 3 : i32, tt.experimental_private = 1 : i32},
+      %Lock: !tt.ptr<i32> {tt.experimental_alias_group = 4 : i32, tt.experimental_private = 1 : i32, tt.experimental_initial_zero = 1 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_grid_x = 17 : i32, tt.experimental_grid_y = 1 : i32, tt.experimental_grid_z = 1 : i32},
+      %N: i32 {tt.experimental_value = 7 : i32},
+      %stride: i32 {tt.experimental_value = 7 : i32}) attributes {noinline = false} {
+    %values = arith.constant dense<0.000000e+00> : tensor<8xf32>
+    %true = arith.constant true
+    %c1_i32 = arith.constant 1 : i32
+    %c8_i32 = arith.constant 8 : i32
+    %cst = arith.constant dense<2.000000e+00> : tensor<8xf32>
+    %c0_i32 = arith.constant 0 : i32
+    %row = tt.get_program_id x : i32
+    %cols = tt.make_range {end = 8 : i32, start = 0 : i32} : tensor<8xi32>
+    %mask = tt.splat %N : i32 -> tensor<8xi32>
+    %mask_0 = arith.cmpi slt, %cols, %mask : tensor<8xi32>
+    %values_1 = arith.muli %row, %stride : i32
+    %values_2 = tt.addptr %X, %values_1 : !tt.ptr<f32>, i32
+    %values_3 = tt.splat %values_2 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %values_4 = tt.addptr %values_3, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %first = tt.load %values_4, %mask_0, %values : tensor<8x!tt.ptr<f32>>
+    %0 = tt.addptr %Y, %values_1 : !tt.ptr<f32>, i32
+    %1 = tt.splat %0 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %2 = tt.addptr %1, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %3 = arith.mulf %first, %cst : tensor<8xf32>
+    tt.store %2, %3, %mask_0 : tensor<8x!tt.ptr<f32>>
+    %second = arith.mulf %first, %first : tensor<8xf32>
+    %group = arith.remsi %row, %c8_i32 : i32
+    %mutex = tt.addptr %Lock, %group : !tt.ptr<i32>, i32
+    %count = tt.addptr %mutex, %c8_i32 : !tt.ptr<i32>, i32
+    %sum_ptr = arith.muli %group, %N : i32
+    %sum_ptr_5 = tt.addptr %Sum, %sum_ptr : !tt.ptr<f32>, i32
+    %sum_ptr_6 = tt.splat %sum_ptr_5 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %sum_ptr_7 = tt.addptr %sum_ptr_6, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %square_ptr = tt.addptr %Square, %sum_ptr : !tt.ptr<f32>, i32
+    %square_ptr_8 = tt.splat %square_ptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %square_ptr_9 = tt.addptr %square_ptr_8, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    scf.while : () -> () {
+      %8 = tt.atomic_cas acq_rel, gpu, %mutex, %c0_i32, %c1_i32 : (!tt.ptr<i32>, i32, i32) -> i32
+      %9 = arith.cmpi eq, %8, %c1_i32 : i32
+      scf.condition(%9)
+    } do {
+      scf.yield
+    }
+    %4 = tt.load %count : !tt.ptr<i32>
+    %5 = arith.cmpi eq, %4, %c0_i32 : i32
+    %6:2 = scf.if %5 -> (tensor<8xf32>, tensor<8xf32>) {
+      %8 = tt.atomic_rmw exch, acq_rel, gpu, %count, %c1_i32, %true : (!tt.ptr<i32>, i32, i1) -> i32
+      scf.yield %first, %second : tensor<8xf32>, tensor<8xf32>
+    } else {
+      %first_10 = tt.load %sum_ptr_7, %mask_0 : tensor<8x!tt.ptr<f32>>
+      %first_11 = arith.addf %first, %first_10 : tensor<8xf32>
+      %second_12 = tt.load %square_ptr_9, %mask_0 : tensor<8x!tt.ptr<f32>>
+      %second_13 = arith.addf %second, %second_12 : tensor<8xf32>
+      scf.yield %first_11, %second_13 : tensor<8xf32>, tensor<8xf32>
+    }
+    tt.store %sum_ptr_7, %6#0, %mask_0 : tensor<8x!tt.ptr<f32>>
+    tt.store %square_ptr_9, %6#1, %mask_0 : tensor<8x!tt.ptr<f32>>
+    tt.store %2, %6#0, %mask_0 : tensor<8x!tt.ptr<f32>>
+    ttg.barrier all
+    %7 = tt.atomic_rmw exch, acq_rel, gpu, %mutex, %c0_i32, %true : (!tt.ptr<i32>, i32, i1) -> i32
+    tt.return
+  }
+}
+
+// -----
+
+// The bounded proof preserves the exact new-plus-old expression.
+// OWNERSHIP-LABEL: tt.func {{.*}}@ownership_operand_order(
+// OWNERSHIP-NOT: tt.experimental_private_reduction_owned
+// OWNERSHIP: scf.while
+// OWNERSHIP: tt.atomic_cas
+// OWNERSHIP: tt.return
+module {
+  tt.func public @ownership_operand_order(%X: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32},
+      %Y: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32},
+      %Sum: !tt.ptr<f32> {tt.experimental_alias_group = 2 : i32, tt.experimental_private = 1 : i32},
+      %Square: !tt.ptr<f32> {tt.experimental_alias_group = 3 : i32, tt.experimental_private = 1 : i32},
+      %Lock: !tt.ptr<i32> {tt.experimental_alias_group = 4 : i32, tt.experimental_private = 1 : i32, tt.experimental_initial_zero = 1 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_grid_x = 17 : i32, tt.experimental_grid_y = 1 : i32, tt.experimental_grid_z = 1 : i32},
+      %N: i32 {tt.experimental_value = 7 : i32},
+      %stride: i32 {tt.experimental_value = 7 : i32}) attributes {noinline = false} {
+    %values = arith.constant dense<0.000000e+00> : tensor<8xf32>
+    %true = arith.constant true
+    %c1_i32 = arith.constant 1 : i32
+    %c8_i32 = arith.constant 8 : i32
+    %cst = arith.constant dense<2.000000e+00> : tensor<8xf32>
+    %c0_i32 = arith.constant 0 : i32
+    %row = tt.get_program_id x : i32
+    %cols = tt.make_range {end = 8 : i32, start = 0 : i32} : tensor<8xi32>
+    %mask = tt.splat %N : i32 -> tensor<8xi32>
+    %mask_0 = arith.cmpi slt, %cols, %mask : tensor<8xi32>
+    %values_1 = arith.muli %row, %stride : i32
+    %values_2 = tt.addptr %X, %values_1 : !tt.ptr<f32>, i32
+    %values_3 = tt.splat %values_2 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %values_4 = tt.addptr %values_3, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %first = tt.load %values_4, %mask_0, %values : tensor<8x!tt.ptr<f32>>
+    %0 = tt.addptr %Y, %values_1 : !tt.ptr<f32>, i32
+    %1 = tt.splat %0 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %2 = tt.addptr %1, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %3 = arith.mulf %first, %cst : tensor<8xf32>
+    tt.store %2, %3, %mask_0 : tensor<8x!tt.ptr<f32>>
+    %second = arith.mulf %first, %first : tensor<8xf32>
+    %group = arith.remsi %row, %c8_i32 : i32
+    %mutex = tt.addptr %Lock, %group : !tt.ptr<i32>, i32
+    %count = tt.addptr %mutex, %c8_i32 : !tt.ptr<i32>, i32
+    %sum_ptr = arith.muli %group, %N : i32
+    %sum_ptr_5 = tt.addptr %Sum, %sum_ptr : !tt.ptr<f32>, i32
+    %sum_ptr_6 = tt.splat %sum_ptr_5 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %sum_ptr_7 = tt.addptr %sum_ptr_6, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %square_ptr = tt.addptr %Square, %sum_ptr : !tt.ptr<f32>, i32
+    %square_ptr_8 = tt.splat %square_ptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %square_ptr_9 = tt.addptr %square_ptr_8, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    scf.while : () -> () {
+      %8 = tt.atomic_cas acq_rel, gpu, %mutex, %c0_i32, %c1_i32 : (!tt.ptr<i32>, i32, i32) -> i32
+      %9 = arith.cmpi eq, %8, %c1_i32 : i32
+      scf.condition(%9)
+    } do {
+      scf.yield
+    }
+    %4 = tt.load %count : !tt.ptr<i32>
+    %5 = arith.cmpi eq, %4, %c0_i32 : i32
+    %6:2 = scf.if %5 -> (tensor<8xf32>, tensor<8xf32>) {
+      %8 = tt.atomic_rmw exch, acq_rel, gpu, %count, %c1_i32, %true : (!tt.ptr<i32>, i32, i1) -> i32
+      scf.yield %first, %second : tensor<8xf32>, tensor<8xf32>
+    } else {
+      %first_10 = tt.load %sum_ptr_7, %mask_0 : tensor<8x!tt.ptr<f32>>
+      %first_11 = arith.addf %first_10, %first : tensor<8xf32>
+      %second_12 = tt.load %square_ptr_9, %mask_0 : tensor<8x!tt.ptr<f32>>
+      %second_13 = arith.addf %second, %second_12 : tensor<8xf32>
+      scf.yield %first_11, %second_13 : tensor<8xf32>, tensor<8xf32>
+    }
+    tt.store %sum_ptr_7, %6#0, %mask_0 : tensor<8x!tt.ptr<f32>>
+    tt.store %square_ptr_9, %6#1, %mask_0 : tensor<8x!tt.ptr<f32>>
+    ttg.barrier all
+    %7 = tt.atomic_rmw exch, acq_rel, gpu, %mutex, %c0_i32, %true : (!tt.ptr<i32>, i32, i1) -> i32
+    tt.return
+  }
+}
+
+// -----
+
+// The inspected function must be an uncalled entry point.
+// OWNERSHIP-LABEL: tt.func {{.*}}@ownership_private_helper(
+// OWNERSHIP-NOT: tt.experimental_private_reduction_owned
+// OWNERSHIP: scf.while
+// OWNERSHIP: tt.atomic_cas
+// OWNERSHIP: tt.return
+module {
+  tt.func private @ownership_private_helper(%X: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32},
+      %Y: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32},
+      %Sum: !tt.ptr<f32> {tt.experimental_alias_group = 2 : i32, tt.experimental_private = 1 : i32},
+      %Square: !tt.ptr<f32> {tt.experimental_alias_group = 3 : i32, tt.experimental_private = 1 : i32},
+      %Lock: !tt.ptr<i32> {tt.experimental_alias_group = 4 : i32, tt.experimental_private = 1 : i32, tt.experimental_initial_zero = 1 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_grid_x = 17 : i32, tt.experimental_grid_y = 1 : i32, tt.experimental_grid_z = 1 : i32},
+      %N: i32 {tt.experimental_value = 7 : i32},
+      %stride: i32 {tt.experimental_value = 7 : i32}) attributes {noinline = false} {
+    %values = arith.constant dense<0.000000e+00> : tensor<8xf32>
+    %true = arith.constant true
+    %c1_i32 = arith.constant 1 : i32
+    %c8_i32 = arith.constant 8 : i32
+    %cst = arith.constant dense<2.000000e+00> : tensor<8xf32>
+    %c0_i32 = arith.constant 0 : i32
+    %row = tt.get_program_id x : i32
+    %cols = tt.make_range {end = 8 : i32, start = 0 : i32} : tensor<8xi32>
+    %mask = tt.splat %N : i32 -> tensor<8xi32>
+    %mask_0 = arith.cmpi slt, %cols, %mask : tensor<8xi32>
+    %values_1 = arith.muli %row, %stride : i32
+    %values_2 = tt.addptr %X, %values_1 : !tt.ptr<f32>, i32
+    %values_3 = tt.splat %values_2 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %values_4 = tt.addptr %values_3, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %first = tt.load %values_4, %mask_0, %values : tensor<8x!tt.ptr<f32>>
+    %0 = tt.addptr %Y, %values_1 : !tt.ptr<f32>, i32
+    %1 = tt.splat %0 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %2 = tt.addptr %1, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %3 = arith.mulf %first, %cst : tensor<8xf32>
+    tt.store %2, %3, %mask_0 : tensor<8x!tt.ptr<f32>>
+    %second = arith.mulf %first, %first : tensor<8xf32>
+    %group = arith.remsi %row, %c8_i32 : i32
+    %mutex = tt.addptr %Lock, %group : !tt.ptr<i32>, i32
+    %count = tt.addptr %mutex, %c8_i32 : !tt.ptr<i32>, i32
+    %sum_ptr = arith.muli %group, %N : i32
+    %sum_ptr_5 = tt.addptr %Sum, %sum_ptr : !tt.ptr<f32>, i32
+    %sum_ptr_6 = tt.splat %sum_ptr_5 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %sum_ptr_7 = tt.addptr %sum_ptr_6, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %square_ptr = tt.addptr %Square, %sum_ptr : !tt.ptr<f32>, i32
+    %square_ptr_8 = tt.splat %square_ptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %square_ptr_9 = tt.addptr %square_ptr_8, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    scf.while : () -> () {
+      %8 = tt.atomic_cas acq_rel, gpu, %mutex, %c0_i32, %c1_i32 : (!tt.ptr<i32>, i32, i32) -> i32
+      %9 = arith.cmpi eq, %8, %c1_i32 : i32
+      scf.condition(%9)
+    } do {
+      scf.yield
+    }
+    %4 = tt.load %count : !tt.ptr<i32>
+    %5 = arith.cmpi eq, %4, %c0_i32 : i32
+    %6:2 = scf.if %5 -> (tensor<8xf32>, tensor<8xf32>) {
+      %8 = tt.atomic_rmw exch, acq_rel, gpu, %count, %c1_i32, %true : (!tt.ptr<i32>, i32, i1) -> i32
+      scf.yield %first, %second : tensor<8xf32>, tensor<8xf32>
+    } else {
+      %first_10 = tt.load %sum_ptr_7, %mask_0 : tensor<8x!tt.ptr<f32>>
+      %first_11 = arith.addf %first, %first_10 : tensor<8xf32>
+      %second_12 = tt.load %square_ptr_9, %mask_0 : tensor<8x!tt.ptr<f32>>
+      %second_13 = arith.addf %second, %second_12 : tensor<8xf32>
+      scf.yield %first_11, %second_13 : tensor<8xf32>, tensor<8xf32>
+    }
+    tt.store %sum_ptr_7, %6#0, %mask_0 : tensor<8x!tt.ptr<f32>>
+    tt.store %square_ptr_9, %6#1, %mask_0 : tensor<8x!tt.ptr<f32>>
+    ttg.barrier all
+    %7 = tt.atomic_rmw exch, acq_rel, gpu, %mutex, %c0_i32, %true : (!tt.ptr<i32>, i32, i1) -> i32
+    tt.return
+  }
+}
+
+// -----
+
+// Even an algebraically cancelled offset must have valid intermediate bounds.
+// OWNERSHIP-LABEL: tt.func {{.*}}@ownership_intermediate_overflow(
+// OWNERSHIP-NOT: tt.experimental_private_reduction_owned
+// OWNERSHIP: scf.while
+// OWNERSHIP: tt.atomic_cas
+// OWNERSHIP: tt.return
+module {
+  tt.func public @ownership_intermediate_overflow(%X: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32},
+      %Y: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32},
+      %Sum: !tt.ptr<f32> {tt.experimental_alias_group = 2 : i32, tt.experimental_private = 1 : i32},
+      %Square: !tt.ptr<f32> {tt.experimental_alias_group = 3 : i32, tt.experimental_private = 1 : i32},
+      %Lock: !tt.ptr<i32> {tt.experimental_alias_group = 4 : i32, tt.experimental_private = 1 : i32, tt.experimental_initial_zero = 1 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_grid_x = 17 : i32, tt.experimental_grid_y = 1 : i32, tt.experimental_grid_z = 1 : i32},
+      %N: i32 {tt.experimental_value = 7 : i32},
+      %stride: i32 {tt.experimental_value = 7 : i32}) attributes {noinline = false} {
+    %values = arith.constant dense<0.000000e+00> : tensor<8xf32>
+    %true = arith.constant true
+    %c1_i32 = arith.constant 1 : i32
+    %c8_i32 = arith.constant 8 : i32
+    %cst = arith.constant dense<2.000000e+00> : tensor<8xf32>
+    %c0_i32 = arith.constant 0 : i32
+    %row = tt.get_program_id x : i32
+    %cols = tt.make_range {end = 8 : i32, start = 0 : i32} : tensor<8xi32>
+    %mask = tt.splat %N : i32 -> tensor<8xi32>
+    %mask_0 = arith.cmpi slt, %cols, %mask : tensor<8xi32>
+    %huge = arith.constant 2147483647 : i32
+    %overflow = arith.muli %row, %huge : i32
+    %cancel = arith.muli %overflow, %c0_i32 : i32
+    %row_base = arith.muli %row, %stride : i32
+    %values_1 = arith.addi %row_base, %cancel : i32
+    %values_2 = tt.addptr %X, %values_1 : !tt.ptr<f32>, i32
+    %values_3 = tt.splat %values_2 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %values_4 = tt.addptr %values_3, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %first = tt.load %values_4, %mask_0, %values : tensor<8x!tt.ptr<f32>>
+    %0 = tt.addptr %Y, %values_1 : !tt.ptr<f32>, i32
+    %1 = tt.splat %0 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %2 = tt.addptr %1, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %3 = arith.mulf %first, %cst : tensor<8xf32>
+    tt.store %2, %3, %mask_0 : tensor<8x!tt.ptr<f32>>
+    %second = arith.mulf %first, %first : tensor<8xf32>
+    %group = arith.remsi %row, %c8_i32 : i32
+    %mutex = tt.addptr %Lock, %group : !tt.ptr<i32>, i32
+    %count = tt.addptr %mutex, %c8_i32 : !tt.ptr<i32>, i32
+    %sum_ptr = arith.muli %group, %N : i32
+    %sum_ptr_5 = tt.addptr %Sum, %sum_ptr : !tt.ptr<f32>, i32
+    %sum_ptr_6 = tt.splat %sum_ptr_5 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %sum_ptr_7 = tt.addptr %sum_ptr_6, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %square_ptr = tt.addptr %Square, %sum_ptr : !tt.ptr<f32>, i32
+    %square_ptr_8 = tt.splat %square_ptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %square_ptr_9 = tt.addptr %square_ptr_8, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    scf.while : () -> () {
+      %8 = tt.atomic_cas acq_rel, gpu, %mutex, %c0_i32, %c1_i32 : (!tt.ptr<i32>, i32, i32) -> i32
+      %9 = arith.cmpi eq, %8, %c1_i32 : i32
+      scf.condition(%9)
+    } do {
+      scf.yield
+    }
+    %4 = tt.load %count : !tt.ptr<i32>
+    %5 = arith.cmpi eq, %4, %c0_i32 : i32
+    %6:2 = scf.if %5 -> (tensor<8xf32>, tensor<8xf32>) {
+      %8 = tt.atomic_rmw exch, acq_rel, gpu, %count, %c1_i32, %true : (!tt.ptr<i32>, i32, i1) -> i32
+      scf.yield %first, %second : tensor<8xf32>, tensor<8xf32>
+    } else {
+      %first_10 = tt.load %sum_ptr_7, %mask_0 : tensor<8x!tt.ptr<f32>>
+      %first_11 = arith.addf %first, %first_10 : tensor<8xf32>
+      %second_12 = tt.load %square_ptr_9, %mask_0 : tensor<8x!tt.ptr<f32>>
+      %second_13 = arith.addf %second, %second_12 : tensor<8xf32>
+      scf.yield %first_11, %second_13 : tensor<8xf32>, tensor<8xf32>
+    }
+    tt.store %sum_ptr_7, %6#0, %mask_0 : tensor<8x!tt.ptr<f32>>
+    tt.store %square_ptr_9, %6#1, %mask_0 : tensor<8x!tt.ptr<f32>>
+    ttg.barrier all
+    %7 = tt.atomic_rmw exch, acq_rel, gpu, %mutex, %c0_i32, %true : (!tt.ptr<i32>, i32, i1) -> i32
+    tt.return
+  }
+}
+
+// -----
+
+// Cloning a row must not leave a nested use of the owner CTA id.
+// OWNERSHIP-LABEL: tt.func {{.*}}@ownership_hidden_program_id(
+// OWNERSHIP-NOT: tt.experimental_private_reduction_owned
+// OWNERSHIP: scf.while
+// OWNERSHIP: tt.atomic_cas
+// OWNERSHIP: tt.return
+module {
+  tt.func public @ownership_hidden_program_id(%X: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32},
+      %Y: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32, tt.experimental_private = 1 : i32},
+      %Sum: !tt.ptr<f32> {tt.experimental_alias_group = 2 : i32, tt.experimental_private = 1 : i32},
+      %Square: !tt.ptr<f32> {tt.experimental_alias_group = 3 : i32, tt.experimental_private = 1 : i32},
+      %Lock: !tt.ptr<i32> {tt.experimental_alias_group = 4 : i32, tt.experimental_private = 1 : i32, tt.experimental_initial_zero = 1 : i32, tt.experimental_num_ctas = 1 : i32, tt.experimental_grid_x = 17 : i32, tt.experimental_grid_y = 1 : i32, tt.experimental_grid_z = 1 : i32},
+      %N: i32 {tt.experimental_value = 7 : i32},
+      %stride: i32 {tt.experimental_value = 7 : i32}) attributes {noinline = false} {
+    %values = arith.constant dense<0.000000e+00> : tensor<8xf32>
+    %true = arith.constant true
+    %c1_i32 = arith.constant 1 : i32
+    %c8_i32 = arith.constant 8 : i32
+    %cst = arith.constant dense<2.000000e+00> : tensor<8xf32>
+    %c0_i32 = arith.constant 0 : i32
+    %row = tt.get_program_id x : i32
+    %cols = tt.make_range {end = 8 : i32, start = 0 : i32} : tensor<8xi32>
+    %mask = tt.splat %N : i32 -> tensor<8xi32>
+    %mask_0 = arith.cmpi slt, %cols, %mask : tensor<8xi32>
+    %values_1 = arith.muli %row, %stride : i32
+    %values_2 = tt.addptr %X, %values_1 : !tt.ptr<f32>, i32
+    %values_3 = tt.splat %values_2 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %values_4 = tt.addptr %values_3, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %first = tt.load %values_4, %mask_0, %values : tensor<8x!tt.ptr<f32>>
+    %0 = tt.addptr %Y, %values_1 : !tt.ptr<f32>, i32
+    %1 = tt.splat %0 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %2 = tt.addptr %1, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %3 = arith.mulf %first, %cst : tensor<8xf32>
+    tt.store %2, %3, %mask_0 : tensor<8x!tt.ptr<f32>>
+    %hidden = "tt.reduce"(%first) <{axis = 0 : i32}> ({
+    ^bb0(%lhs: f32, %rhs: f32):
+      %hidden_pid = tt.get_program_id x : i32
+      %hidden_float = arith.sitofp %hidden_pid : i32 to f32
+      %sum = arith.addf %lhs, %rhs : f32
+      %biased = arith.addf %sum, %hidden_float : f32
+      tt.reduce.return %biased : f32
+    }) : (tensor<8xf32>) -> f32
+    %second = arith.mulf %first, %first : tensor<8xf32>
+    %group = arith.remsi %row, %c8_i32 : i32
+    %mutex = tt.addptr %Lock, %group : !tt.ptr<i32>, i32
+    %count = tt.addptr %mutex, %c8_i32 : !tt.ptr<i32>, i32
+    %sum_ptr = arith.muli %group, %N : i32
+    %sum_ptr_5 = tt.addptr %Sum, %sum_ptr : !tt.ptr<f32>, i32
+    %sum_ptr_6 = tt.splat %sum_ptr_5 : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %sum_ptr_7 = tt.addptr %sum_ptr_6, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    %square_ptr = tt.addptr %Square, %sum_ptr : !tt.ptr<f32>, i32
+    %square_ptr_8 = tt.splat %square_ptr : !tt.ptr<f32> -> tensor<8x!tt.ptr<f32>>
+    %square_ptr_9 = tt.addptr %square_ptr_8, %cols : tensor<8x!tt.ptr<f32>>, tensor<8xi32>
+    scf.while : () -> () {
+      %8 = tt.atomic_cas acq_rel, gpu, %mutex, %c0_i32, %c1_i32 : (!tt.ptr<i32>, i32, i32) -> i32
+      %9 = arith.cmpi eq, %8, %c1_i32 : i32
+      scf.condition(%9)
+    } do {
+      scf.yield
+    }
+    %4 = tt.load %count : !tt.ptr<i32>
+    %5 = arith.cmpi eq, %4, %c0_i32 : i32
+    %6:2 = scf.if %5 -> (tensor<8xf32>, tensor<8xf32>) {
+      %8 = tt.atomic_rmw exch, acq_rel, gpu, %count, %c1_i32, %true : (!tt.ptr<i32>, i32, i1) -> i32
+      scf.yield %first, %second : tensor<8xf32>, tensor<8xf32>
+    } else {
+      %first_10 = tt.load %sum_ptr_7, %mask_0 : tensor<8x!tt.ptr<f32>>
+      %first_11 = arith.addf %first, %first_10 : tensor<8xf32>
+      %second_12 = tt.load %square_ptr_9, %mask_0 : tensor<8x!tt.ptr<f32>>
+      %second_13 = arith.addf %second, %second_12 : tensor<8xf32>
+      scf.yield %first_11, %second_13 : tensor<8xf32>, tensor<8xf32>
+    }
+    tt.store %sum_ptr_7, %6#0, %mask_0 : tensor<8x!tt.ptr<f32>>
+    tt.store %square_ptr_9, %6#1, %mask_0 : tensor<8x!tt.ptr<f32>>
+    ttg.barrier all
+    %7 = tt.atomic_rmw exch, acq_rel, gpu, %mutex, %c0_i32, %true : (!tt.ptr<i32>, i32, i1) -> i32
+    tt.return
+  }
 }

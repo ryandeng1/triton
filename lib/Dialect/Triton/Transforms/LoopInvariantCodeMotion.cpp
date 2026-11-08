@@ -5,6 +5,7 @@
 #include "triton/Dialect/Triton/IR/Dialect.h"
 #include "triton/Dialect/Triton/IR/Utility.h"
 #include "triton/Dialect/Triton/Transforms/Passes.h"
+#include "triton/Dialect/TritonGPU/IR/Dialect.h"
 #include "llvm/Support/Debug.h"
 
 namespace mlir::triton {
@@ -18,21 +19,53 @@ namespace mlir::triton {
 
 namespace {
 
-// Keep pointer provenance deliberately small. Unknown casts, selections and
-// loop-carried pointers must not inherit a caller's region contract.
+// Track allocation roots through representation-only pointer operations and
+// bounded scf.for recurrences. A stable root does not imply a stable address:
+// the LICM operand checks must still establish loop invariance independently.
 BlockArgument getEntryArgument(Value ptr) {
-  while (Operation *def = ptr.getDefiningOp()) {
-    if (!isa<AddPtrOp, SplatOp, BroadcastOp, ExpandDimsOp, ReshapeOp>(def))
+  auto findBase = [&](auto &&self, Value value, BlockArgument anchor,
+                      unsigned budget) -> Value {
+    if (!value || !budget)
       return {};
-    ptr = def->getOperand(0);
-  }
-  auto arg = dyn_cast<BlockArgument>(ptr);
-  if (!arg)
-    return {};
-  auto func = dyn_cast<FuncOp>(arg.getOwner()->getParentOp());
-  if (!func || arg.getOwner() != &func.getBody().front())
-    return {};
-  return arg;
+    while (Operation *def = value.getDefiningOp()) {
+      if (!budget)
+        return {};
+      --budget;
+      if (isa<AddPtrOp, SplatOp, BroadcastOp, ExpandDimsOp, ReshapeOp,
+              gpu::ConvertLayoutOp>(def)) {
+        value = def->getOperand(0);
+        continue;
+      }
+      if (auto loop = dyn_cast<scf::ForOp>(def)) {
+        auto result = cast<OpResult>(value);
+        value = loop.getRegionIterArgs()[result.getResultNumber()];
+        break;
+      }
+      // Casts, selections, calls and while results need separate proofs.
+      return {};
+    }
+    auto arg = dyn_cast<BlockArgument>(value);
+    if (!arg)
+      return {};
+    if (arg == anchor)
+      return arg;
+    if (auto func = dyn_cast<FuncOp>(arg.getOwner()->getParentOp()))
+      return arg.getOwner() == &func.getBody().front() ? Value(arg) : Value();
+    auto loop = dyn_cast<scf::ForOp>(arg.getOwner()->getParentOp());
+    if (!loop || arg.getOwner() != loop.getBody() || arg.getArgNumber() == 0 ||
+        !budget)
+      return {};
+    unsigned iter = arg.getArgNumber() - 1;
+    auto yield = cast<scf::YieldOp>(loop.getBody()->getTerminator());
+    // Each backedge must derive from this exact carried pointer. Following an
+    // unrelated carry or merely trusting the initial pointer would be unsound.
+    // Nested for results are accepted only after their own recurrence check.
+    if (self(self, yield.getOperand(iter), arg, budget - 1) != arg)
+      return {};
+    return self(self, loop.getInitArgs()[iter], anchor, budget - 1);
+  };
+  Value root = findBase(findBase, ptr, BlockArgument(), 64);
+  return root ? dyn_cast<BlockArgument>(root) : BlockArgument();
 }
 
 bool hasArgumentFlag(BlockArgument arg, StringRef name) {
@@ -112,8 +145,28 @@ class LoopInvariantCodeMotionPass
   DenseMap<LoopLikeOpInterface, bool> isLoopMemoryEffectFreeOrOnlyRead;
   DenseMap<Operation *, ArgumentMemoryEffects> argumentMemoryEffects;
 
-  bool hasOnlyOrdinaryMemoryEffects(LoopLikeOpInterface loop) {
-    return !loop->walk([](Operation *op) {
+  // CTA barriers cannot publish a new value of an explicitly immutable global
+  // argument: its contents are initialized at entry and unchanged through all
+  // aliases for the invocation. This does not apply to inferred no-clobber
+  // facts or shared/tensor memory, and does not remove or move the barriers
+  // themselves.
+  bool hasExplicitImmutableGlobalContents(Value ptr) {
+    auto arg = getEntryArgument(ptr);
+    if (!arg)
+      return false;
+    auto type = dyn_cast<PointerType>(arg.getType());
+    return type && type.getAddressSpace() == PtrAddrSpace::Global &&
+           hasArgumentFlag(arg, "tt.experimental_immutable");
+  }
+
+  bool hasOnlyOrdinaryMemoryEffects(LoopLikeOpInterface loop,
+                                    bool allowImmutableCTABarriers = false) {
+    return !loop->walk([allowImmutableCTABarriers](Operation *op) {
+                  if (auto barrier = dyn_cast<gpu::BarrierOp>(op))
+                    return allowImmutableCTABarriers &&
+                                   barrier.getScope() == gpu::BarrierScope::CTA
+                               ? WalkResult::advance()
+                               : WalkResult::interrupt();
                   if (auto load = dyn_cast<LoadOp>(op))
                     return load.getIsVolatile() ? WalkResult::interrupt()
                                                 : WalkResult::advance();
@@ -243,8 +296,11 @@ class LoopInvariantCodeMotionPass
               return isSpeculatable(op) && isMemoryEffectFree(op);
             if (load.getIsVolatile())
               return false;
-            bool readInvariant = hasInvariantContents(load.getPtr()) &&
-                                 hasOnlyOrdinaryMemoryEffects(loopLike);
+            bool readInvariant =
+                hasInvariantContents(load.getPtr()) &&
+                hasOnlyOrdinaryMemoryEffects(
+                    loopLike,
+                    hasExplicitImmutableGlobalContents(load.getPtr()));
             if (readInvariant && (load->getParentRegion() != region ||
                                   !hasStraightLinePrefix(load)))
               return false;

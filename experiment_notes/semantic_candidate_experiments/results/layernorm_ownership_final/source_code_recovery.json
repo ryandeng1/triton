@@ -1,0 +1,86 @@
+{
+  "a4b6ed190656e197cb0b2bd810d5c1d09c540bf8fb84a0bd5fca2fd73e5174c1": {
+    "directory": "screen-bfloat16-m4096-n4096",
+    "variant": "locked",
+    "cache_match": true,
+    "code": {
+      "registers": 255,
+      "spills": 176,
+      "shared": 0,
+      "atomic_sites": 3,
+      "barrier_sites": 5,
+      "cubin_sha256": "a4b6ed190656e197cb0b2bd810d5c1d09c540bf8fb84a0bd5fca2fd73e5174c1",
+      "artifact_prefix": "code/locked"
+    }
+  },
+  "7393add35a06c8728bd3ad4390767ddb404a9426c7898f9d011ef134937465d5": {
+    "directory": "screen-float32-m4096-n1024",
+    "variant": "locked",
+    "cache_match": true,
+    "code": {
+      "registers": 130,
+      "spills": 0,
+      "shared": 0,
+      "atomic_sites": 3,
+      "barrier_sites": 5,
+      "cubin_sha256": "7393add35a06c8728bd3ad4390767ddb404a9426c7898f9d011ef134937465d5",
+      "artifact_prefix": "code/locked"
+    }
+  },
+  "83700620886979f653856928bf248e9ebaf311b8b33f84742df19d48a91c6d15": {
+    "directory": "screen-bfloat16-m4096-n4096",
+    "variant": "final",
+    "cache_match": true,
+    "code": {
+      "registers": 96,
+      "spills": 0,
+      "shared": 2048,
+      "atomic_sites": 0,
+      "barrier_sites": 11,
+      "cubin_sha256": "83700620886979f653856928bf248e9ebaf311b8b33f84742df19d48a91c6d15",
+      "artifact_prefix": "code/final"
+    }
+  },
+  "8b1d8a839748f311ba8970130f2cb73ef8ac59033d55bb23c86840acb2485459": {
+    "directory": "screen-bfloat16-m4096-n4096",
+    "variant": "owner",
+    "cache_match": true,
+    "code": {
+      "registers": 64,
+      "spills": 1098,
+      "shared": 0,
+      "atomic_sites": 0,
+      "barrier_sites": 0,
+      "cubin_sha256": "8b1d8a839748f311ba8970130f2cb73ef8ac59033d55bb23c86840acb2485459",
+      "artifact_prefix": "code/owner"
+    }
+  },
+  "a70a4261b129ddc02fb9dc812a4f5fbc4549373a1d76a6d5fa9be1f4122990a9": {
+    "directory": "screen-float32-m4096-n1024",
+    "variant": "final",
+    "cache_match": true,
+    "code": {
+      "registers": 96,
+      "spills": 0,
+      "shared": 2048,
+      "atomic_sites": 0,
+      "barrier_sites": 11,
+      "cubin_sha256": "a70a4261b129ddc02fb9dc812a4f5fbc4549373a1d76a6d5fa9be1f4122990a9",
+      "artifact_prefix": "code/final"
+    }
+  },
+  "a54d44e8f329762aa784f9e5b70128ca06d1c59e0aa61d3b72a65f99df8115c4": {
+    "directory": "screen-float32-m4096-n1024",
+    "variant": "owner",
+    "cache_match": true,
+    "code": {
+      "registers": 237,
+      "spills": 0,
+      "shared": 0,
+      "atomic_sites": 0,
+      "barrier_sites": 0,
+      "cubin_sha256": "a54d44e8f329762aa784f9e5b70128ca06d1c59e0aa61d3b72a65f99df8115c4",
+      "artifact_prefix": "code/owner"
+    }
+  }
+}

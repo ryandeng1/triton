@@ -10,6 +10,7 @@ add_triton_library(TritonTransforms
   LoopUnroll.cpp
   ReorderBroadcast.cpp
   SpecializeIndexedUpdates.cpp
+  PrivateReductionOwnership.cpp
   RewriteTensorDescriptorToPointer.cpp
   ArithTypeConversion.cpp
   FunctionTypeConversion.cpp
@@ -24,4 +25,5 @@ add_triton_library(TritonTransforms
   MLIRTransforms
   MLIRSCFToControlFlow
   TritonIR
+  TritonGPUIR
 )

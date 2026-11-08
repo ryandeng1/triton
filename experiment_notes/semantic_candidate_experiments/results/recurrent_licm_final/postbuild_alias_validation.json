@@ -1,0 +1,941 @@
+{
+  "reports": [
+    {
+      "case": "decode16",
+      "seed": 55031,
+      "selected_configurations": {
+        "original": [
+          16,
+          1,
+          2
+        ],
+        "immutable": [
+          16,
+          1,
+          2
+        ],
+        "alias": [
+          16,
+          1,
+          2
+        ]
+      },
+      "state_reset_included_every_invocation": true,
+      "alias_has_no_immutable_attribute": true,
+      "alias_allocation_disjointness_checked": true,
+      "selected_alias_parameter_loads": [
+        {
+          "ir_line": 142,
+          "operation": "%b_A_log = tt.load %p_A_log, %b_h : !tt.ptr<bf16> loc(#loc154)"
+        },
+        {
+          "ir_line": 144,
+          "operation": "%b_dt_bias = tt.load %p_dt_bias, %b_h : !tt.ptr<bf16> loc(#loc155)"
+        }
+      ],
+      "alias_timestep_loop_line": 150,
+      "alias_and_immutable_ptx_exact_equal": true,
+      "alias_and_immutable_resources_equal": true,
+      "resources": {
+        "original": {
+          "registers": 213,
+          "spills": 0,
+          "shared": 512,
+          "ptx_sha256": "9281bf4fe3fab858d91c4510ec8dd47a721ca7c8ba99ebae9e752f31acebd6d0",
+          "cubin_sha256": "80eb69ea403e1164ed05b6006cafd1633cc401958ebd5a593eac2fdcb9081d27"
+        },
+        "immutable": {
+          "registers": 168,
+          "spills": 0,
+          "shared": 512,
+          "ptx_sha256": "5dee5f834fa5c76790b4359c31a023d642cebf77a71a0888e8c1d59bc93b3b11",
+          "cubin_sha256": "354523195efc7a856afc1441dac44835db384f7781f2568ca8bc48a1185ce164"
+        },
+        "alias": {
+          "registers": 168,
+          "spills": 0,
+          "shared": 512,
+          "ptx_sha256": "5dee5f834fa5c76790b4359c31a023d642cebf77a71a0888e8c1d59bc93b3b11",
+          "cubin_sha256": "354523195efc7a856afc1441dac44835db384f7781f2568ca8bc48a1185ce164"
+        },
+        "manual": {
+          "registers": 168,
+          "spills": 0,
+          "shared": 512,
+          "ptx_sha256": "c1ef48470081dd42092d3599985a32702d2e57ec865df0bed3d83e98df75fc53",
+          "cubin_sha256": "6bbe844ca2708f451c838cafd13481b648bf5a7f56c3f9a90eef9d95da2ea2b2"
+        }
+      },
+      "validation": {
+        "1": {
+          "original": {
+            "max_output_error": 0.00011698224224283849,
+            "max_state_error": 1.657846890879e-07,
+            "same_config_bitwise_equal_to_original": true,
+            "guards_passed": true
+          },
+          "immutable": {
+            "max_output_error": 0.00011698224224283849,
+            "max_state_error": 1.657846890879e-07,
+            "same_config_bitwise_equal_to_original": true,
+            "guards_passed": true
+          },
+          "alias": {
+            "max_output_error": 0.00011698224224283849,
+            "max_state_error": 1.657846890879e-07,
+            "same_config_bitwise_equal_to_original": true,
+            "guards_passed": true
+          },
+          "manual": {
+            "max_output_error": 0.00011698224224283849,
+            "max_state_error": 1.657846890879e-07,
+            "same_config_bitwise_equal_to_original": true,
+            "guards_passed": true
+          }
+        }
+      },
+      "times_us": {
+        "original": [
+          8.9327497407794,
+          6.3217501156032085,
+          6.316000130027533,
+          6.3184997998178005,
+          6.31425017490983,
+          6.31524994969368,
+          6.3149998895823956,
+          6.30825012922287,
+          6.319750100374222,
+          6.319249980151653,
+          6.320000160485506,
+          6.333999801427126,
+          6.3195000402629375
+        ],
+        "immutable": [
+          9.108499623835087,
+          6.4512500539422035,
+          6.437249947339296,
+          6.446249783039093,
+          6.438749842345715,
+          6.445250008255243,
+          6.451500114053488,
+          6.442250218242407,
+          6.441750098019838,
+          6.443500053137541,
+          6.449750158935785,
+          6.445500068366528,
+          6.442749872803688
+        ],
+        "alias": [
+          9.169000200927258,
+          6.466499995440245,
+          6.44124997779727,
+          6.446249783039093,
+          6.438999902456999,
+          6.429499946534634,
+          6.424250081181526,
+          6.4444998279213905,
+          6.435750052332878,
+          6.439750082790852,
+          6.439750082790852,
+          6.428750231862068,
+          6.437750067561865
+        ]
+      },
+      "median_us": {
+        "original": 6.319249980151653,
+        "immutable": 6.445250008255243,
+        "alias": 6.439750082790852
+      },
+      "paired_alias_speedup_vs_original": 0.981288077784072,
+      "paired_alias_over_immutable_time": 0.9994180227646831,
+      "native_library_sha256": "6be58f8451548d939876f4848a62a9dc8c504a41200e759781a12ba63e3661f0",
+      "harness_sha256": "362500d747e8f81a3966574a309f7d1cf8d4989f02db308fa7bc01b942b32d86"
+    },
+    {
+      "case": "upstream1024",
+      "seed": 55031,
+      "selected_configurations": {
+        "original": [
+          8,
+          1,
+          3
+        ],
+        "immutable": [
+          8,
+          1,
+          3
+        ],
+        "alias": [
+          8,
+          1,
+          3
+        ]
+      },
+      "state_reset_included_every_invocation": true,
+      "alias_has_no_immutable_attribute": true,
+      "alias_allocation_disjointness_checked": true,
+      "selected_alias_parameter_loads": [
+        {
+          "ir_line": 140,
+          "operation": "%b_A_log = tt.load %p_A_log, %b_h : !tt.ptr<f32> loc(#loc156)"
+        },
+        {
+          "ir_line": 141,
+          "operation": "%b_dt_bias = tt.load %p_dt_bias, %b_h : !tt.ptr<f32> loc(#loc157)"
+        }
+      ],
+      "alias_timestep_loop_line": 146,
+      "alias_and_immutable_ptx_exact_equal": true,
+      "alias_and_immutable_resources_equal": true,
+      "resources": {
+        "original": {
+          "registers": 96,
+          "spills": 0,
+          "shared": 512,
+          "ptx_sha256": "21be2f30ee97b8a51243ff583fbc87613dbfb7b3f70b0d627086435535d8ef3d",
+          "cubin_sha256": "3415bca94da7709cb9e9b7005cee6c5867d16e90ee5611207afcb65549e150fc"
+        },
+        "immutable": {
+          "registers": 108,
+          "spills": 0,
+          "shared": 512,
+          "ptx_sha256": "a9b6c4a613a2a44b0ec85f810ed98a12393b006955f670f5118677da0ca05468",
+          "cubin_sha256": "c75d5a84589a77b27e21de469d3d4d3c9f42b5f518fac9d3983ae23cbcdd7fca"
+        },
+        "alias": {
+          "registers": 108,
+          "spills": 0,
+          "shared": 512,
+          "ptx_sha256": "a9b6c4a613a2a44b0ec85f810ed98a12393b006955f670f5118677da0ca05468",
+          "cubin_sha256": "c75d5a84589a77b27e21de469d3d4d3c9f42b5f518fac9d3983ae23cbcdd7fca"
+        },
+        "manual": {
+          "registers": 108,
+          "spills": 0,
+          "shared": 512,
+          "ptx_sha256": "872db25b37171a5b2a407e7e0b270c4a152d09a2408eaa8ca303a1dc4a723ae5",
+          "cubin_sha256": "d0138608f7358c44ef8c877426e40a9b8215f3d5b2355e5d30f3a2b567f21446"
+        }
+      },
+      "validation": {
+        "0": {
+          "original": {
+            "max_output_error": 2.9043774185666393e-07,
+            "max_state_error": 2.004166370639382e-07,
+            "same_config_bitwise_equal_to_original": true,
+            "guards_passed": true
+          },
+          "immutable": {
+            "max_output_error": 2.9043774185666393e-07,
+            "max_state_error": 2.004166370639382e-07,
+            "same_config_bitwise_equal_to_original": true,
+            "guards_passed": true
+          },
+          "alias": {
+            "max_output_error": 2.9043774185666393e-07,
+            "max_state_error": 2.004166370639382e-07,
+            "same_config_bitwise_equal_to_original": true,
+            "guards_passed": true
+          },
+          "manual": {
+            "max_output_error": 2.9043774185666393e-07,
+            "max_state_error": 2.004166370639382e-07,
+            "same_config_bitwise_equal_to_original": true,
+            "guards_passed": true
+          }
+        }
+      },
+      "times_us": {
+        "original": [
+          763.0800008773804,
+          759.0159773826599,
+          759.1720223426819,
+          758.8840126991272,
+          759.0320110321045,
+          758.9679956436157,
+          758.9799761772156,
+          759.0360045433044,
+          758.899986743927,
+          758.8880062103271,
+          758.9319944381714,
+          758.9240074157715,
+          758.8919997215271
+        ],
+        "immutable": [
+          673.3199954032898,
+          669.3000197410583,
+          669.3120002746582,
+          669.0279841423035,
+          669.5520281791687,
+          669.264018535614,
+          669.3879961967468,
+          669.3519949913025,
+          669.3680286407471,
+          669.4239974021912,
+          669.2240238189697,
+          669.3400144577026,
+          669.0599918365479
+        ],
+        "alias": [
+          674.6559739112854,
+          669.3599820137024,
+          668.9839959144592,
+          668.9919829368591,
+          669.3959832191467,
+          669.2119836807251,
+          669.4279909133911,
+          669.3199872970581,
+          669.0559983253479,
+          669.0840125083923,
+          669.0719723701477,
+          669.3120002746582,
+          669.2559719085693
+        ]
+      },
+      "median_us": {
+        "original": 758.9679956436157,
+        "immutable": 669.3400144577026,
+        "alias": 669.2559719085693
+      },
+      "paired_alias_speedup_vs_original": 1.1340405470461896,
+      "paired_alias_over_immutable_time": 0.9999461887898599,
+      "native_library_sha256": "6be58f8451548d939876f4848a62a9dc8c504a41200e759781a12ba63e3661f0",
+      "harness_sha256": "362500d747e8f81a3966574a309f7d1cf8d4989f02db308fa7bc01b942b32d86"
+    },
+    {
+      "case": "decode64",
+      "seed": 55031,
+      "selected_configurations": {
+        "original": [
+          16,
+          1,
+          2
+        ],
+        "immutable": [
+          16,
+          1,
+          2
+        ],
+        "alias": [
+          16,
+          1,
+          2
+        ]
+      },
+      "state_reset_included_every_invocation": true,
+      "alias_has_no_immutable_attribute": true,
+      "alias_allocation_disjointness_checked": true,
+      "selected_alias_parameter_loads": [
+        {
+          "ir_line": 142,
+          "operation": "%b_A_log = tt.load %p_A_log, %b_h : !tt.ptr<bf16> loc(#loc154)"
+        },
+        {
+          "ir_line": 144,
+          "operation": "%b_dt_bias = tt.load %p_dt_bias, %b_h : !tt.ptr<bf16> loc(#loc155)"
+        }
+      ],
+      "alias_timestep_loop_line": 150,
+      "alias_and_immutable_ptx_exact_equal": true,
+      "alias_and_immutable_resources_equal": true,
+      "resources": {
+        "original": {
+          "registers": 209,
+          "spills": 0,
+          "shared": 512,
+          "ptx_sha256": "2d8df6f0f628453ce19d41a2a6e5c9d8c18ae77dbde1f767ca974e48caa44ec6",
+          "cubin_sha256": "2265d2659d262dc956762b034877b25e6fbb3e83c3867bf0f147777003c5ab5d"
+        },
+        "immutable": {
+          "registers": 168,
+          "spills": 0,
+          "shared": 512,
+          "ptx_sha256": "f6e5ae5b82f7c2eabf04630ce19972d35696b14642a0a7f139c0b9b691f881e9",
+          "cubin_sha256": "f0f073a9330b3c42c97cd0cf188efb4d4a5860df57dd5297ac5f7a03e96cd300"
+        },
+        "alias": {
+          "registers": 168,
+          "spills": 0,
+          "shared": 512,
+          "ptx_sha256": "f6e5ae5b82f7c2eabf04630ce19972d35696b14642a0a7f139c0b9b691f881e9",
+          "cubin_sha256": "f0f073a9330b3c42c97cd0cf188efb4d4a5860df57dd5297ac5f7a03e96cd300"
+        },
+        "manual": {
+          "registers": 168,
+          "spills": 0,
+          "shared": 512,
+          "ptx_sha256": "a4c4acb72279239044f8f37a39363c43c48b280b26c83c77ee0236e78f58560f",
+          "cubin_sha256": "e71ff11672aebace45db41b31656a07038ef0750f92630814e486f6b6efcd06e"
+        }
+      },
+      "validation": {
+        "1": {
+          "original": {
+            "max_output_error": 0.00012187627817447644,
+            "max_state_error": 1.5932724806155818e-07,
+            "same_config_bitwise_equal_to_original": true,
+            "guards_passed": true
+          },
+          "immutable": {
+            "max_output_error": 0.00012187627817447644,
+            "max_state_error": 1.5932724806155818e-07,
+            "same_config_bitwise_equal_to_original": true,
+            "guards_passed": true
+          },
+          "alias": {
+            "max_output_error": 0.00012187627817447644,
+            "max_state_error": 1.5932724806155818e-07,
+            "same_config_bitwise_equal_to_original": true,
+            "guards_passed": true
+          },
+          "manual": {
+            "max_output_error": 0.00012187627817447644,
+            "max_state_error": 1.5932724806155818e-07,
+            "same_config_bitwise_equal_to_original": true,
+            "guards_passed": true
+          }
+        }
+      },
+      "times_us": {
+        "original": [
+          35.29125079512596,
+          32.75274857878685,
+          32.76300057768822,
+          32.762251794338226,
+          32.72625058889389,
+          32.75299817323685,
+          32.75524824857712,
+          32.76824951171875,
+          32.76799991726875,
+          32.76275098323822,
+          32.71950036287308,
+          32.75974839925766,
+          32.7877514064312
+        ],
+        "immutable": [
+          32.63549879193306,
+          30.026750639081,
+          30.017999932169914,
+          30.04550002515316,
+          30.02524934709072,
+          29.972249642014503,
+          29.978999868035316,
+          30.026499181985855,
+          30.026249587535858,
+          30.02599999308586,
+          30.02999909222126,
+          29.984250664711,
+          30.02000041306019
+        ],
+        "alias": [
+          32.4692502617836,
+          30.030250549316406,
+          30.036499723792076,
+          30.010750517249107,
+          30.006999149918556,
+          29.9919992685318,
+          30.00525012612343,
+          30.028250068426132,
+          30.01224994659424,
+          30.015749856829643,
+          29.975999146699905,
+          30.002249404788017,
+          29.99825030565262
+        ]
+      },
+      "median_us": {
+        "original": 32.762251794338226,
+        "immutable": 30.02599999308586,
+        "alias": 30.010750517249107
+      },
+      "paired_alias_speedup_vs_original": 1.091523261751734,
+      "paired_alias_over_immutable_time": 0.9996586246500174,
+      "native_library_sha256": "6be58f8451548d939876f4848a62a9dc8c504a41200e759781a12ba63e3661f0",
+      "harness_sha256": "362500d747e8f81a3966574a309f7d1cf8d4989f02db308fa7bc01b942b32d86"
+    },
+    {
+      "case": "upstream63",
+      "seed": 55031,
+      "selected_configurations": {
+        "original": [
+          8,
+          1,
+          3
+        ],
+        "immutable": [
+          16,
+          1,
+          2
+        ],
+        "alias": [
+          16,
+          1,
+          2
+        ]
+      },
+      "state_reset_included_every_invocation": true,
+      "alias_has_no_immutable_attribute": true,
+      "alias_allocation_disjointness_checked": true,
+      "selected_alias_parameter_loads": [
+        {
+          "ir_line": 117,
+          "operation": "%b_A_log = tt.load %A_log, %b_h : !tt.ptr<f32> loc(#loc135)"
+        },
+        {
+          "ir_line": 118,
+          "operation": "%b_dt_bias = tt.load %dt_bias, %b_h : !tt.ptr<f32> loc(#loc136)"
+        }
+      ],
+      "alias_timestep_loop_line": 123,
+      "alias_and_immutable_ptx_exact_equal": true,
+      "alias_and_immutable_resources_equal": true,
+      "resources": {
+        "original": {
+          "registers": 97,
+          "spills": 0,
+          "shared": 256,
+          "ptx_sha256": "053a74c7003bcd9197a29c55d4dd423d8ec13b9ad08a17c4c9d6ec4cea15b436",
+          "cubin_sha256": "040e982121a0426f8030351af650eab11a1f2171d3b12d79eed6edd87c1dcfbd"
+        },
+        "immutable": {
+          "registers": 97,
+          "spills": 0,
+          "shared": 256,
+          "ptx_sha256": "9c57cea6deb21c7440be105fcc32949f5fcd598e7f1379b2a77ff8c99b5f24c1",
+          "cubin_sha256": "91744ec87a99cf00c7113c6588cbe203d3fd5a70b6017a90402a710f3d49d39e"
+        },
+        "alias": {
+          "registers": 97,
+          "spills": 0,
+          "shared": 256,
+          "ptx_sha256": "9c57cea6deb21c7440be105fcc32949f5fcd598e7f1379b2a77ff8c99b5f24c1",
+          "cubin_sha256": "91744ec87a99cf00c7113c6588cbe203d3fd5a70b6017a90402a710f3d49d39e"
+        },
+        "manual": {
+          "registers": 97,
+          "spills": 0,
+          "shared": 256,
+          "ptx_sha256": "0d7aa260f0d367acde03cd439d1db8593a9d1f2503e9f993fd00cb22641f2195",
+          "cubin_sha256": "92c13adf71a854798fa318165ddf3ebe17060ba7878d89394b8d96d9bf49f515"
+        }
+      },
+      "validation": {
+        "0": {
+          "original": {
+            "max_output_error": 1.1363308460854427e-07,
+            "max_state_error": 1.5583077672687295e-07,
+            "same_config_bitwise_equal_to_original": true,
+            "guards_passed": true
+          },
+          "immutable": {
+            "max_output_error": 1.1363308460854427e-07,
+            "max_state_error": 1.5583077672687295e-07,
+            "same_config_bitwise_equal_to_original": true,
+            "guards_passed": true
+          },
+          "alias": {
+            "max_output_error": 1.1363308460854427e-07,
+            "max_state_error": 1.5583077672687295e-07,
+            "same_config_bitwise_equal_to_original": true,
+            "guards_passed": true
+          },
+          "manual": {
+            "max_output_error": 1.1363308460854427e-07,
+            "max_state_error": 1.5583077672687295e-07,
+            "same_config_bitwise_equal_to_original": true,
+            "guards_passed": true
+          }
+        },
+        "1": {
+          "original": {
+            "max_output_error": 1.1363308460854427e-07,
+            "max_state_error": 1.5583077672687295e-07,
+            "same_config_bitwise_equal_to_original": true,
+            "guards_passed": true
+          },
+          "immutable": {
+            "max_output_error": 1.1363308460854427e-07,
+            "max_state_error": 1.5583077672687295e-07,
+            "same_config_bitwise_equal_to_original": true,
+            "guards_passed": true
+          },
+          "alias": {
+            "max_output_error": 1.1363308460854427e-07,
+            "max_state_error": 1.5583077672687295e-07,
+            "same_config_bitwise_equal_to_original": true,
+            "guards_passed": true
+          },
+          "manual": {
+            "max_output_error": 1.1363308460854427e-07,
+            "max_state_error": 1.5583077672687295e-07,
+            "same_config_bitwise_equal_to_original": true,
+            "guards_passed": true
+          }
+        }
+      },
+      "times_us": {
+        "original": [
+          47.79599979519844,
+          45.48899829387665,
+          45.46099901199341,
+          45.44299840927124,
+          45.42899876832962,
+          45.44400051236153,
+          45.44699937105179,
+          45.462001115083694,
+          45.43599858880043,
+          45.419998466968536,
+          45.448001474142075,
+          45.462001115083694,
+          45.44400051236153
+        ],
+        "immutable": [
+          49.0030013024807,
+          46.15899920463562,
+          46.17200046777725,
+          46.19999974966049,
+          46.144999563694,
+          46.15800082683563,
+          46.16500064730644,
+          46.20100185275078,
+          46.16500064730644,
+          46.15100100636482,
+          46.19099944829941,
+          46.14600166678429,
+          46.188000589609146
+        ],
+        "alias": [
+          48.98500069975853,
+          46.213001012802124,
+          46.188998967409134,
+          46.199001371860504,
+          46.160001307725906,
+          46.19799926877022,
+          46.17200046777725,
+          46.163998544216156,
+          46.16999998688698,
+          46.153999865055084,
+          46.195998787879944,
+          46.16300016641617,
+          46.22400179505348
+        ]
+      },
+      "median_us": {
+        "original": 45.44699937105179,
+        "immutable": 46.16500064730644,
+        "alias": 46.188998967409134
+      },
+      "paired_alias_speedup_vs_original": 0.9841022006000646,
+      "paired_alias_over_immutable_time": 1.0001516261317591,
+      "native_library_sha256": "6be58f8451548d939876f4848a62a9dc8c504a41200e759781a12ba63e3661f0",
+      "harness_sha256": "362500d747e8f81a3966574a309f7d1cf8d4989f02db308fa7bc01b942b32d86"
+    },
+    {
+      "case": "upstream500",
+      "seed": 55031,
+      "selected_configurations": {
+        "original": [
+          32,
+          2,
+          2
+        ],
+        "immutable": [
+          32,
+          2,
+          2
+        ],
+        "alias": [
+          32,
+          2,
+          2
+        ]
+      },
+      "state_reset_included_every_invocation": true,
+      "alias_has_no_immutable_attribute": true,
+      "alias_allocation_disjointness_checked": true,
+      "selected_alias_parameter_loads": [
+        {
+          "ir_line": 136,
+          "operation": "%b_A_log = tt.load %p_A_log, %b_h : !tt.ptr<f32> loc(#loc150)"
+        },
+        {
+          "ir_line": 137,
+          "operation": "%b_dt_bias = tt.load %p_dt_bias, %b_h : !tt.ptr<f32> loc(#loc151)"
+        }
+      ],
+      "alias_timestep_loop_line": 142,
+      "alias_and_immutable_ptx_exact_equal": true,
+      "alias_and_immutable_resources_equal": true,
+      "resources": {
+        "original": {
+          "registers": 114,
+          "spills": 0,
+          "shared": 256,
+          "ptx_sha256": "7798a334167a19b5693482912fdf97d4b633fa0963d339567e3302629eb8392c",
+          "cubin_sha256": "60c1c3b364693be150811c02b3293a92b9709e1ed093e1ad0ab9178ecd1d8062"
+        },
+        "immutable": {
+          "registers": 116,
+          "spills": 0,
+          "shared": 256,
+          "ptx_sha256": "c75d963cd727ee915050d1c18723abe66402fd1768912f278d1a2933debf9f10",
+          "cubin_sha256": "b64f2d6ec139a98496dfab80a690df21f4fad4f927691b43dcc6ff27735607bb"
+        },
+        "alias": {
+          "registers": 116,
+          "spills": 0,
+          "shared": 256,
+          "ptx_sha256": "c75d963cd727ee915050d1c18723abe66402fd1768912f278d1a2933debf9f10",
+          "cubin_sha256": "b64f2d6ec139a98496dfab80a690df21f4fad4f927691b43dcc6ff27735607bb"
+        },
+        "manual": {
+          "registers": 116,
+          "spills": 0,
+          "shared": 256,
+          "ptx_sha256": "967381aea9dc06d75c479cff31f2e69c4d551a5ce9627992db50f5aad71cb18b",
+          "cubin_sha256": "bfdb4a0dd2ddf73cadb6ff93e2eddc48305e178c4bb28710ff0ffa79adac716a"
+        }
+      },
+      "validation": {
+        "2": {
+          "original": {
+            "max_output_error": 1.929868735928153e-07,
+            "max_state_error": 1.059790045165876e-07,
+            "same_config_bitwise_equal_to_original": true,
+            "guards_passed": true
+          },
+          "immutable": {
+            "max_output_error": 1.929868735928153e-07,
+            "max_state_error": 1.059790045165876e-07,
+            "same_config_bitwise_equal_to_original": true,
+            "guards_passed": true
+          },
+          "alias": {
+            "max_output_error": 1.929868735928153e-07,
+            "max_state_error": 1.059790045165876e-07,
+            "same_config_bitwise_equal_to_original": true,
+            "guards_passed": true
+          },
+          "manual": {
+            "max_output_error": 1.929868735928153e-07,
+            "max_state_error": 1.059790045165876e-07,
+            "same_config_bitwise_equal_to_original": true,
+            "guards_passed": true
+          }
+        }
+      },
+      "times_us": {
+        "original": [
+          421.55998945236206,
+          419.1319942474365,
+          419.2720055580139,
+          419.2039966583252,
+          419.18399930000305,
+          419.3679988384247,
+          419.27599906921387,
+          419.21600699424744,
+          419.23201084136963,
+          419.2799925804138,
+          419.1719889640808,
+          419.20799016952515,
+          419.1559851169586
+        ],
+        "immutable": [
+          399.6320068836212,
+          396.63198590278625,
+          396.73200249671936,
+          396.67999744415283,
+          396.67999744415283,
+          396.807998418808,
+          396.7840075492859,
+          396.76401019096375,
+          396.81199193000793,
+          396.91999554634094,
+          396.76401019096375,
+          396.8439996242523,
+          396.7120051383972
+        ],
+        "alias": [
+          400.6440043449402,
+          396.84000611305237,
+          396.7359960079193,
+          396.73998951911926,
+          397.1880078315735,
+          397.58801460266113,
+          397.15999364852905,
+          396.6600000858307,
+          396.92801237106323,
+          396.7840075492859,
+          396.73200249671936,
+          396.9399929046631,
+          396.97200059890747
+        ]
+      },
+      "median_us": {
+        "original": 419.21600699424744,
+        "immutable": 396.76401019096375,
+        "alias": 396.92801237106323
+      },
+      "paired_alias_speedup_vs_original": 1.0561737420395907,
+      "paired_alias_over_immutable_time": 1.000292381388201,
+      "native_library_sha256": "6be58f8451548d939876f4848a62a9dc8c504a41200e759781a12ba63e3661f0",
+      "harness_sha256": "362500d747e8f81a3966574a309f7d1cf8d4989f02db308fa7bc01b942b32d86"
+    },
+    {
+      "case": "upstream2048",
+      "seed": 55031,
+      "selected_configurations": {
+        "original": [
+          8,
+          1,
+          3
+        ],
+        "immutable": [
+          8,
+          1,
+          3
+        ],
+        "alias": [
+          8,
+          1,
+          3
+        ]
+      },
+      "state_reset_included_every_invocation": true,
+      "alias_has_no_immutable_attribute": true,
+      "alias_allocation_disjointness_checked": true,
+      "selected_alias_parameter_loads": [
+        {
+          "ir_line": 140,
+          "operation": "%b_A_log = tt.load %p_A_log, %b_h : !tt.ptr<f32> loc(#loc156)"
+        },
+        {
+          "ir_line": 141,
+          "operation": "%b_dt_bias = tt.load %p_dt_bias, %b_h : !tt.ptr<f32> loc(#loc157)"
+        }
+      ],
+      "alias_timestep_loop_line": 146,
+      "alias_and_immutable_ptx_exact_equal": true,
+      "alias_and_immutable_resources_equal": true,
+      "resources": {
+        "original": {
+          "registers": 64,
+          "spills": 0,
+          "shared": 256,
+          "ptx_sha256": "9bd0b2aa9850d68eca66d468be66c31a03464db4ec275662a5ac26e894a85d80",
+          "cubin_sha256": "6124e6605190508da1df639abbb0d1964a9acf4ef712c42ffba9aa07f1399e19"
+        },
+        "immutable": {
+          "registers": 64,
+          "spills": 0,
+          "shared": 256,
+          "ptx_sha256": "9fa27bb7cfd681f01af32a9d207403ae0c93e28247e4e44990b03a522bdb7dcb",
+          "cubin_sha256": "085101279a43df73b688903485b4dc67b5556a3abb1c1701178239480573c8f5"
+        },
+        "alias": {
+          "registers": 64,
+          "spills": 0,
+          "shared": 256,
+          "ptx_sha256": "9fa27bb7cfd681f01af32a9d207403ae0c93e28247e4e44990b03a522bdb7dcb",
+          "cubin_sha256": "085101279a43df73b688903485b4dc67b5556a3abb1c1701178239480573c8f5"
+        },
+        "manual": {
+          "registers": 64,
+          "spills": 0,
+          "shared": 256,
+          "ptx_sha256": "47a21306c320e0c02c53cde6f240ba605f6a3c339f8b39d191b9e903dd4728f8",
+          "cubin_sha256": "6f1dcc172037a2ee528138db00664e829628072a342e96b75e23ce27b02acf63"
+        }
+      },
+      "validation": {
+        "0": {
+          "original": {
+            "max_output_error": 2.929513118199445e-08,
+            "max_state_error": 1.8683279423559185e-07,
+            "same_config_bitwise_equal_to_original": true,
+            "guards_passed": true
+          },
+          "immutable": {
+            "max_output_error": 2.929513118199445e-08,
+            "max_state_error": 1.8683279423559185e-07,
+            "same_config_bitwise_equal_to_original": true,
+            "guards_passed": true
+          },
+          "alias": {
+            "max_output_error": 2.929513118199445e-08,
+            "max_state_error": 1.8683279423559185e-07,
+            "same_config_bitwise_equal_to_original": true,
+            "guards_passed": true
+          },
+          "manual": {
+            "max_output_error": 2.929513118199445e-08,
+            "max_state_error": 1.8683279423559185e-07,
+            "same_config_bitwise_equal_to_original": true,
+            "guards_passed": true
+          }
+        }
+      },
+      "times_us": {
+        "original": [
+          1269.5720195770264,
+          1266.7920589447021,
+          1266.543984413147,
+          1266.7880058288574,
+          1266.7759656906128,
+          1266.3480043411255,
+          1266.8839693069458,
+          1266.65198802948,
+          1266.219973564148,
+          1266.7319774627686,
+          1267.035961151123,
+          1266.800045967102,
+          1266.260027885437
+        ],
+        "immutable": [
+          1283.087968826294,
+          1279.960036277771,
+          1280.135989189148,
+          1280.2679538726807,
+          1279.5159816741943,
+          1280.184030532837,
+          1279.952049255371,
+          1280.0559997558594,
+          1279.703974723816,
+          1280.2040576934814,
+          1279.6319723129272,
+          1279.6119451522827,
+          1280.079960823059
+        ],
+        "alias": [
+          1284.6519947052002,
+          1279.8320055007935,
+          1280.079960823059,
+          1280.7159423828125,
+          1279.9839973449707,
+          1279.9079418182373,
+          1280.2560329437256,
+          1279.7319889068604,
+          1279.9040079116821,
+          1279.6000242233276,
+          1279.852032661438,
+          1280.3839445114136,
+          1280.2280187606812
+        ]
+      },
+      "median_us": {
+        "original": 1266.7759656906128,
+        "immutable": 1280.0559997558594,
+        "alias": 1279.9839973449707
+      },
+      "paired_alias_speedup_vs_original": 0.9894256790011705,
+      "paired_alias_over_immutable_time": 1.0001563120782753,
+      "native_library_sha256": "6be58f8451548d939876f4848a62a9dc8c504a41200e759781a12ba63e3661f0",
+      "harness_sha256": "362500d747e8f81a3966574a309f7d1cf8d4989f02db308fa7bc01b942b32d86"
+    }
+  ],
+  "compiler_files": {
+    "/home/ryandeng/tpaa/triton/lib/Dialect/Triton/Transforms/LoopInvariantCodeMotion.cpp": "e9070ad8046aaa4f7a4ad9220a417d983fd078f57a12db4af90e641569b39c54",
+    "/home/ryandeng/tpaa/triton/third_party/nvidia/backend/compiler.py": "e75ef905e7797383f8c98bd0249b60dd5677b14abf231b7e4f000e07158b51e2"
+  },
+  "interpretation": "Same-root scf.for pointer provenance lets alias groups establish no-clobber without immutable attributes. All six alias kernels have exactly equal PTX/resources to explicit immutable kernels at matching configuration. This establishes proof equivalence for these tested bodies, not blanket profitability; negative cases remain negative."
+}

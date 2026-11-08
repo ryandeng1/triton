@@ -1,0 +1,23 @@
+{
+  "analysis.json": "997efbfdd8409435d2579edeb5965230f207c8007a364adac2b4b06e2c4af3ee",
+  "environment.json": "02fd2ce66131977706352cc5aaad3b01260aaef9c90449b3e6304e1d9f141a84",
+  "findings.json": "95f917bc9d8d68fceccd9cae6f76ffaf2986a44348f3d2f5b942c25e2e0bf2ba",
+  "ir/heldout-T256-N128-U48-float32-1d-b128-w4/immutable.ptx.gz": "1957c60cb6e2c63e5e6087c6c8a747b4b3aaa62627662713a785d7c383281e3d",
+  "ir/heldout-T256-N128-U48-float32-1d-b128-w4/immutable.ttgir.gz": "4bd3c36a4de9291175198943ec9b046ba05d999a830031f806c63a9ada329024",
+  "ir/heldout-T256-N128-U48-float32-1d-b128-w4/manual.ptx.gz": "c3eb9654b985d47b313556098af233cf078275879dffefa827517625a99d2270",
+  "ir/heldout-T256-N128-U48-float32-1d-b128-w4/manual.ttgir.gz": "3fe07aab35afb21dc5b728edfa5866e16d57b5080d10d12d42157ceffbb2b7d0",
+  "ir/heldout-T256-N128-U48-float32-1d-b128-w4/original.ptx.gz": "1957c60cb6e2c63e5e6087c6c8a747b4b3aaa62627662713a785d7c383281e3d",
+  "ir/heldout-T256-N128-U48-float32-1d-b128-w4/original.ttgir.gz": "33068fe85901979e0fc02a6e7711423e34586bd825257c2b9f09e824cf26ed89",
+  "ir/training-T128-N32-U32-float32-2d-b128-w4/immutable.ptx.gz": "f5ca091155194c4093e1318208e2de048c022c198551e6fcf5bed2d696d150fb",
+  "ir/training-T128-N32-U32-float32-2d-b128-w4/immutable.ttgir.gz": "4fe472cb4f2350d6bce77086b5e8f92c2abe15eb2952b0e035b4cec811e54846",
+  "ir/training-T128-N32-U32-float32-2d-b128-w4/manual.ptx.gz": "3c27574bb9dae26bd9f949fa466c91b0284eb291f2be9a5eb22ec1d2553dd501",
+  "ir/training-T128-N32-U32-float32-2d-b128-w4/manual.ttgir.gz": "96db80537060937b0df26c839c42e0933e1c04c285228ee77c0ec4378c5302b6",
+  "ir/training-T128-N32-U32-float32-2d-b128-w4/original.ptx.gz": "f5ca091155194c4093e1318208e2de048c022c198551e6fcf5bed2d696d150fb",
+  "ir/training-T128-N32-U32-float32-2d-b128-w4/original.ttgir.gz": "e42574c2b9ebe654e8238f49e9f9b6470d4a5ca303b46897d3ce9628bca666a8",
+  "measurements.json.gz": "73fe52f115daa5f82c95af9cbbcc970c33df9b92eb02535eb3f3a064b4d2921f",
+  "run.log": "ece8d6b8753dd15b06d2637a5a6aa8f38f347ecddf043e7c4738cb847894c20e",
+  "selected_configurations.json": "cb604db0ed97e29fcc96c31f6cb8b6ed3ce4f919d5b70bf612a9b315ab060717",
+  "source_audit.json": "fb4192ed72e4dd97f1ea65a5e966cf4dd447af071e1938af3888a6923f2b0747",
+  "sources/ctc_kernels.py": "cdc0946dfe8d5583c79b4c7904bbc367478bd234de1eab6229b78c3e1ef56daa",
+  "sources/ctc_loss.upstream.py": "54ff130ab816ef2a610a083ae6239717f6d44d8e7dd3c79b3972454d092da91d"
+}
