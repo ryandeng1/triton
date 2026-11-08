@@ -1,0 +1,70 @@
+{
+  "scope": "Static instruction sites in representative retained code, not measured dynamic counts or separate causal ablations",
+  "lowering_source": "lib/Conversion/TritonGPUToLLVM/Utility.cpp",
+  "lowering_sha256": "bb92fe42554400707f88430382c2fb14041890915e0014a9cd7c7d3aa1f0c9e3",
+  "mechanism": "insertAtomicOrderingBarriers inserts CTA synchronization before release and after acquire atomics; relaxing also enables no-return red lowering. This experiment changes ordering and all its compiler consequences together.",
+  "representatives": {
+    "n4096-d128-v8192-freq0-native_rmw.ptx": {
+      "ptx_sha256": "e5cc4930ce3cfdca5a219b3f846d2021731f6f5099a2686d9cb02861cb62b318",
+      "bar_sync_sites": 0,
+      "atomic_instructions": [],
+      "ordering_instructions": []
+    },
+    "n4096-d128-v8192-freq0-native_zero.ptx": {
+      "ptx_sha256": "b868578b464d03a49bea24ae818684a3c23b74df11be7d7407f0dca40d054eb3",
+      "bar_sync_sites": 0,
+      "atomic_instructions": [],
+      "ordering_instructions": []
+    },
+    "n4096-d128-v8192-freq0-original_acq_rel.ptx": {
+      "ptx_sha256": "76e923a80fa640d946df5d6458f870aaaa60ea46a9b2ea22178c37d7357d8611",
+      "bar_sync_sites": 2,
+      "atomic_instructions": [
+        "atom.global.gpu.acq_rel.add.f32"
+      ],
+      "ordering_instructions": [
+        "bar.sync \t0;",
+        "bar.sync \t0;"
+      ]
+    },
+    "n4096-d128-v8192-freq0-relaxed_atomic.ptx": {
+      "ptx_sha256": "8d89343d1836785a3be875151f2cc15ec9e5987419548aeebaa192fb58a733e1",
+      "bar_sync_sites": 0,
+      "atomic_instructions": [
+        "red.global.gpu.relaxed.add.f32"
+      ],
+      "ordering_instructions": []
+    },
+    "n4096-d128-v8192-freq1-native_rmw.ptx": {
+      "ptx_sha256": "98dd9c9771f68d623371554e00282a826c9c777593385316185bebf1ac10f305",
+      "bar_sync_sites": 0,
+      "atomic_instructions": [],
+      "ordering_instructions": []
+    },
+    "n4096-d128-v8192-freq1-native_zero.ptx": {
+      "ptx_sha256": "68e3ec5d3f9fb49d27c0e9f392b52c1316efd76c3c939afe0f040d2d6c050722",
+      "bar_sync_sites": 0,
+      "atomic_instructions": [],
+      "ordering_instructions": []
+    },
+    "n4096-d128-v8192-freq1-original_acq_rel.ptx": {
+      "ptx_sha256": "cb50c21bd78c7e53e8e34ef8b604bde1174a8b5783ee31cadc2d588c0f6f2b70",
+      "bar_sync_sites": 2,
+      "atomic_instructions": [
+        "atom.global.gpu.acq_rel.add.f32"
+      ],
+      "ordering_instructions": [
+        "bar.sync \t0;",
+        "bar.sync \t0;"
+      ]
+    },
+    "n4096-d128-v8192-freq1-relaxed_atomic.ptx": {
+      "ptx_sha256": "7b13bb6b3634543984a3e13f9f3f54d324b8df5c7a89afd347478a0472a74d6d",
+      "bar_sync_sites": 0,
+      "atomic_instructions": [
+        "red.global.gpu.relaxed.add.f32"
+      ],
+      "ordering_instructions": []
+    }
+  }
+}

@@ -1,0 +1,2944 @@
+{
+  "status": "passed",
+  "mode": "screen",
+  "gpu": "NVIDIA B300 SXM6 PC",
+  "torch": "2.14.1+cu130",
+  "triton": "3.9.0",
+  "compiler_sha256": "deff9f6bf2707b7992472fc9ddee3507f882fceda3d9611ebd3424a3e06ab028",
+  "source_audit": {
+    "signature_and_body_identical": true,
+    "ast_sha256": "80ca061a3cc64b589dae15840df1dec5b49ea1c50eb108c06a3c9f24d26bd7a3",
+    "dispatch_changes": "omit external libentry/heuristics decorators; retain upstream JIT do_not_specialize; explicit tuning"
+  },
+  "git_revision": "c596ded1a3c0318fd05b0f06401aaf6681acb067",
+  "source_sha256": {
+    "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/segmented_scatter_experiment.py": "e124ed30e8794399b580830009fcf2225ac1dc1bedec0c374315b195bad85010",
+    "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/segmented_kernels.py": "a605b8b5df9c6eb618e343a1296c6d8b99fffd89bec447b6b8931f0dedfffdce",
+    "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/coverage_experiment.py": "db50502fc3f549eb7550f594521835097e0d14d994f477e77da7bbaa812330d2"
+  },
+  "settings": {
+    "rounds": 5,
+    "repetitions": 32,
+    "warmup_ms": 40
+  },
+  "cases": [
+    {
+      "shape_r_k_w": [
+        31,
+        17,
+        67
+      ],
+      "block": 32,
+      "loop": 1,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            2.122000092640519,
+            2.04299995675683,
+            2.03999993391335,
+            2.0379999186843634,
+            2.0379999186843634
+          ],
+          "manual": [
+            2.3270000237971544,
+            2.2899999748915434,
+            2.3070001043379307,
+            2.274000085890293,
+            2.2909999825060368
+          ]
+        },
+        "median_us": {
+          "baseline": 2.03999993391335,
+          "manual": 2.2909999825060368
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "f023b43cff0577beaf92d7b6df3cfdab85075403d0beaeaa1547225161e1a6b3",
+          "atomic_sites": 1,
+          "registers": 20,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "36a1e301d6fc2f7bf43e9d2a29a3aa0c7a93d1991d893c8012772acdc2f09b2c",
+          "atomic_sites": 0,
+          "registers": 18,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        31,
+        17,
+        67
+      ],
+      "block": 32,
+      "loop": 2,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            2.351999981328845,
+            2.256999956443906,
+            2.237000036984682,
+            2.2330000065267086,
+            2.3169999476522207
+          ],
+          "manual": [
+            2.8909998945891857,
+            2.8570001013576984,
+            2.8729999903589487,
+            2.8669999446719885,
+            2.879000036045909
+          ]
+        },
+        "median_us": {
+          "baseline": 2.256999956443906,
+          "manual": 2.8729999903589487
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "af374dc8efcdb531dbaf031766200b51b9a55947ca9491b8fee1596838d7688b",
+          "atomic_sites": 2,
+          "registers": 22,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "1e392c40065393864b35d3b2144d348df3b7c49dce44122233c48dab81570cf4",
+          "atomic_sites": 0,
+          "registers": 22,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        31,
+        17,
+        67
+      ],
+      "block": 32,
+      "loop": 4,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            2.7940000873059034,
+            2.7630000840872526,
+            2.7360001113265753,
+            2.7620000764727592,
+            2.7199999894946814
+          ],
+          "manual": [
+            3.9029999170452356,
+            3.882999997586012,
+            3.8960000965744257,
+            3.8789999671280384,
+            3.8799999747425318
+          ]
+        },
+        "median_us": {
+          "baseline": 2.7620000764727592,
+          "manual": 3.882999997586012
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "47bea03a4ff8b57812373db285dfe3915fe2891202d4f85ca3ca852376dda042",
+          "atomic_sites": 4,
+          "registers": 22,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "36021c14c1c93e642fc2f7431460d22b6cfd1f85d61fa9cebb52d57e9fb3107d",
+          "atomic_sites": 0,
+          "registers": 22,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        31,
+        17,
+        67
+      ],
+      "block": 64,
+      "loop": 1,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            2.093000104650855,
+            1.9960000645369291,
+            1.9700000993907452,
+            1.9809999503195286,
+            2.0129999611526728
+          ],
+          "manual": [
+            2.2609999869018793,
+            2.3010000586509705,
+            2.2879999596625566,
+            2.28899996727705,
+            2.28599994443357
+          ]
+        },
+        "median_us": {
+          "baseline": 1.9960000645369291,
+          "manual": 2.2879999596625566
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "0c06eaf3695b1efe3fecd90e53297fec57d705c496d279ad1a53dd46ef908f50",
+          "atomic_sites": 1,
+          "registers": 20,
+          "spills": 0,
+          "shared_bytes": 0,
+          "retained_prefix": "code/r31-k17-w67-b64-l1-baseline"
+        },
+        "manual": {
+          "ptx_sha256": "96521dde9373070baedb57c3f1df63d346bb897a81abe78ebf657088e51b8a85",
+          "atomic_sites": 0,
+          "registers": 18,
+          "spills": 0,
+          "shared_bytes": 0,
+          "retained_prefix": "code/r31-k17-w67-b64-l1-manual"
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        31,
+        17,
+        67
+      ],
+      "block": 64,
+      "loop": 2,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            2.3399998899549246,
+            2.2299999836832285,
+            2.2499999031424522,
+            2.239000052213669,
+            2.242000075057149
+          ],
+          "manual": [
+            2.7409999165683985,
+            2.7129999361932278,
+            2.718999981880188,
+            2.693000016734004,
+            2.7389999013394117
+          ]
+        },
+        "median_us": {
+          "baseline": 2.242000075057149,
+          "manual": 2.718999981880188
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "aa6479cf53e85e0ecc3c2fd9384f0a521cd36e78dea1ebf517bf54edb02b37a2",
+          "atomic_sites": 2,
+          "registers": 22,
+          "spills": 0,
+          "shared_bytes": 0,
+          "retained_prefix": "code/r31-k17-w67-b64-l2-baseline"
+        },
+        "manual": {
+          "ptx_sha256": "7942439cdbd8cf1d3e8ea3d0bf82b7362fcb0c23f61fde00e9eb0ed8fcb5bf5b",
+          "atomic_sites": 0,
+          "registers": 22,
+          "spills": 0,
+          "shared_bytes": 0,
+          "retained_prefix": "code/r31-k17-w67-b64-l2-manual"
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        31,
+        17,
+        67
+      ],
+      "block": 64,
+      "loop": 4,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            2.877000020816922,
+            2.7379998937249184,
+            2.7459999546408653,
+            2.741999924182892,
+            2.7799999807029963
+          ],
+          "manual": [
+            3.9090001955628395,
+            3.8999998942017555,
+            3.903999924659729,
+            3.8880000356584787,
+            4.036999773234129
+          ]
+        },
+        "median_us": {
+          "baseline": 2.7459999546408653,
+          "manual": 3.903999924659729
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "6420d685bab234779b81a7414bd629a66850147c534824b925bc81782576fc4e",
+          "atomic_sites": 4,
+          "registers": 22,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "45dbd72280abd4cfb441c8332427a7fa84edc522568619e8ecb527023876c20a",
+          "atomic_sites": 0,
+          "registers": 22,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        31,
+        17,
+        67
+      ],
+      "block": 128,
+      "loop": 1,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            2.1009999327361584,
+            1.9950000569224358,
+            1.9859999883919954,
+            2.010999945923686,
+            1.955999992787838
+          ],
+          "manual": [
+            2.3240000009536743,
+            2.2849999368190765,
+            2.2690000478178263,
+            2.297000028192997,
+            2.2780001163482666
+          ]
+        },
+        "median_us": {
+          "baseline": 1.9950000569224358,
+          "manual": 2.2849999368190765
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "cbf47c4e68ae6934efa00c5bc9bd7239df93fabf47f62219cc92d297e39ea818",
+          "atomic_sites": 1,
+          "registers": 18,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "2eacfbdbd3047e8952cec36d670048c8a204badfa49482186b300e620378e9cc",
+          "atomic_sites": 0,
+          "registers": 16,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        31,
+        17,
+        67
+      ],
+      "block": 128,
+      "loop": 2,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            2.331000054255128,
+            2.280999906361103,
+            2.220999915152788,
+            2.237000036984682,
+            2.303000073879957
+          ],
+          "manual": [
+            2.67999991774559,
+            2.7469999622553587,
+            2.67999991774559,
+            2.67699989490211,
+            2.669000066816807
+          ]
+        },
+        "median_us": {
+          "baseline": 2.280999906361103,
+          "manual": 2.67999991774559
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "64afd447814a4ee0cd40293917ddc4c1c3d0aa12c74e4bf1e0855a181b210c1a",
+          "atomic_sites": 2,
+          "registers": 24,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "418f2f5a5fc3f655ec8f8d21d3df4afabc5787c8c3663ac5638213efdd467149",
+          "atomic_sites": 0,
+          "registers": 24,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        31,
+        17,
+        67
+      ],
+      "block": 128,
+      "loop": 4,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            2.8639999218285084,
+            2.8409999795258045,
+            2.79600010253489,
+            2.807999961078167,
+            2.7799999807029963
+          ],
+          "manual": [
+            3.9110002107918262,
+            3.889000043272972,
+            3.897000104188919,
+            3.8900000508874655,
+            3.8870000280439854
+          ]
+        },
+        "median_us": {
+          "baseline": 2.807999961078167,
+          "manual": 3.8900000508874655
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "041609e2cfb1275674bc0d11e7e297abca2f3d469078d0ddfffdf2163dc39e46",
+          "atomic_sites": 4,
+          "registers": 24,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "52184e926ad53817f5c0e864c6160086be0e87e89d3c6f300d7c5a90cee6f66c",
+          "atomic_sites": 0,
+          "registers": 24,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        31,
+        17,
+        67
+      ],
+      "block": 256,
+      "loop": 1,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            2.193999942392111,
+            2.1019999403506517,
+            2.0979999098926783,
+            2.1170000545680523,
+            2.105999970808625
+          ],
+          "manual": [
+            2.4339999072253704,
+            2.4160000029951334,
+            2.368000103160739,
+            2.4220000486820936,
+            2.41800001822412
+          ]
+        },
+        "median_us": {
+          "baseline": 2.105999970808625,
+          "manual": 2.41800001822412
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "313d3eeedf56b5e8a7143ac4d4d01ced609a5f6b1e250a0cab963f18a49fac7d",
+          "atomic_sites": 2,
+          "registers": 28,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "9f5b0f1386b719347fc2a3863b7e358caae77238811539e568ebdf8fdc922486",
+          "atomic_sites": 0,
+          "registers": 30,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        31,
+        17,
+        67
+      ],
+      "block": 256,
+      "loop": 2,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            2.587999915704131,
+            2.497999928891659,
+            2.4840000551193953,
+            2.489000093191862,
+            2.555999904870987
+          ],
+          "manual": [
+            2.9460000805556774,
+            2.9249999206513166,
+            2.9299999587237835,
+            2.962999977171421,
+            2.9299999587237835
+          ]
+        },
+        "median_us": {
+          "baseline": 2.497999928891659,
+          "manual": 2.9299999587237835
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "3139bf2b0b8e35d69731ed966ac0db32327d0d9e1ca5daca7b273190e385aa62",
+          "atomic_sites": 4,
+          "registers": 32,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "71fa03cd4937d970e118194bb580cd5b47fb03510d5f1aa171f2eed88e44e2a0",
+          "atomic_sites": 0,
+          "registers": 32,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        31,
+        17,
+        67
+      ],
+      "block": 256,
+      "loop": 4,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            3.246000036597252,
+            3.1500000040978193,
+            3.1320000998675823,
+            3.1500000040978193,
+            3.1349998898804188
+          ],
+          "manual": [
+            3.8509999867528677,
+            3.8350000977516174,
+            3.845999948680401,
+            3.8189999759197235,
+            3.831000067293644
+          ]
+        },
+        "median_us": {
+          "baseline": 3.1500000040978193,
+          "manual": 3.8350000977516174
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "d3376fb965ca1beabc374bc507bb6f97944a17c6af74efd53c642344c3a635a8",
+          "atomic_sites": 8,
+          "registers": 32,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "46ed93213200efe1ce7f39ae41e970c5db7af8c05d186b3b482ed626567894dc",
+          "atomic_sites": 0,
+          "registers": 32,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        1024,
+        64,
+        256
+      ],
+      "block": 32,
+      "loop": 1,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            3.0479999259114265,
+            3.0330000445246696,
+            3.0010000336915255,
+            3.022999968379736,
+            2.9949999880045652
+          ],
+          "manual": [
+            3.275000024586916,
+            3.2569998875260353,
+            3.2530000898987055,
+            3.2569998875260353,
+            3.2450000289827585
+          ]
+        },
+        "median_us": {
+          "baseline": 3.022999968379736,
+          "manual": 3.2569998875260353
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "f023b43cff0577beaf92d7b6df3cfdab85075403d0beaeaa1547225161e1a6b3",
+          "atomic_sites": 1,
+          "registers": 20,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "36a1e301d6fc2f7bf43e9d2a29a3aa0c7a93d1991d893c8012772acdc2f09b2c",
+          "atomic_sites": 0,
+          "registers": 18,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        1024,
+        64,
+        256
+      ],
+      "block": 32,
+      "loop": 2,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            3.0980000738054514,
+            2.9990000184625387,
+            2.9800001066178083,
+            2.9819998890161514,
+            3.0159999150782824
+          ],
+          "manual": [
+            3.6539998836815357,
+            3.657999914139509,
+            3.6410000175237656,
+            3.674000035971403,
+            3.6909999325871468
+          ]
+        },
+        "median_us": {
+          "baseline": 2.9990000184625387,
+          "manual": 3.657999914139509
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "af374dc8efcdb531dbaf031766200b51b9a55947ca9491b8fee1596838d7688b",
+          "atomic_sites": 2,
+          "registers": 22,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "1e392c40065393864b35d3b2144d348df3b7c49dce44122233c48dab81570cf4",
+          "atomic_sites": 0,
+          "registers": 22,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        1024,
+        64,
+        256
+      ],
+      "block": 32,
+      "loop": 4,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            3.505999920889735,
+            3.4390001092106104,
+            3.4459999296814203,
+            3.4719998948276043,
+            3.4199999645352364
+          ],
+          "manual": [
+            5.007000174373388,
+            5.109000019729137,
+            4.985000006854534,
+            4.980999976396561,
+            4.978999961167574
+          ]
+        },
+        "median_us": {
+          "baseline": 3.4459999296814203,
+          "manual": 4.985000006854534
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "47bea03a4ff8b57812373db285dfe3915fe2891202d4f85ca3ca852376dda042",
+          "atomic_sites": 4,
+          "registers": 22,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "36021c14c1c93e642fc2f7431460d22b6cfd1f85d61fa9cebb52d57e9fb3107d",
+          "atomic_sites": 0,
+          "registers": 22,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        1024,
+        64,
+        256
+      ],
+      "block": 64,
+      "loop": 1,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            2.7650000993162394,
+            2.7439999394118786,
+            2.7169999666512012,
+            2.761000068858266,
+            2.710999920964241
+          ],
+          "manual": [
+            2.9750000685453415,
+            2.930999966338277,
+            2.9720000457018614,
+            2.9700000304728746,
+            2.9299999587237835
+          ]
+        },
+        "median_us": {
+          "baseline": 2.7439999394118786,
+          "manual": 2.9700000304728746
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "0c06eaf3695b1efe3fecd90e53297fec57d705c496d279ad1a53dd46ef908f50",
+          "atomic_sites": 1,
+          "registers": 20,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "96521dde9373070baedb57c3f1df63d346bb897a81abe78ebf657088e51b8a85",
+          "atomic_sites": 0,
+          "registers": 18,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        1024,
+        64,
+        256
+      ],
+      "block": 64,
+      "loop": 2,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            2.9180001001805067,
+            2.8099999763071537,
+            2.8069999534636736,
+            2.8470000252127647,
+            2.859999891370535
+          ],
+          "manual": [
+            3.488000016659498,
+            3.5039999056607485,
+            3.5230000503361225,
+            3.444999922066927,
+            3.4469999372959137
+          ]
+        },
+        "median_us": {
+          "baseline": 2.8470000252127647,
+          "manual": 3.488000016659498
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "aa6479cf53e85e0ecc3c2fd9384f0a521cd36e78dea1ebf517bf54edb02b37a2",
+          "atomic_sites": 2,
+          "registers": 22,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "7942439cdbd8cf1d3e8ea3d0bf82b7362fcb0c23f61fde00e9eb0ed8fcb5bf5b",
+          "atomic_sites": 0,
+          "registers": 22,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        1024,
+        64,
+        256
+      ],
+      "block": 64,
+      "loop": 4,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            3.3480001147836447,
+            3.29799996688962,
+            3.29799996688962,
+            3.2939999364316463,
+            3.501000115647912
+          ],
+          "manual": [
+            3.9980001747608185,
+            3.963000141084194,
+            3.978000022470951,
+            3.9519998244941235,
+            3.971000202000141
+          ]
+        },
+        "median_us": {
+          "baseline": 3.29799996688962,
+          "manual": 3.971000202000141
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "6420d685bab234779b81a7414bd629a66850147c534824b925bc81782576fc4e",
+          "atomic_sites": 4,
+          "registers": 22,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "45dbd72280abd4cfb441c8332427a7fa84edc522568619e8ecb527023876c20a",
+          "atomic_sites": 0,
+          "registers": 22,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        1024,
+        64,
+        256
+      ],
+      "block": 128,
+      "loop": 1,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            2.6740001048892736,
+            2.561999950557947,
+            2.626999979838729,
+            2.553999889642,
+            2.587999915704131
+          ],
+          "manual": [
+            2.8359999414533377,
+            2.856000093743205,
+            2.8069999534636736,
+            2.80599994584918,
+            2.8069999534636736
+          ]
+        },
+        "median_us": {
+          "baseline": 2.587999915704131,
+          "manual": 2.8069999534636736
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "cbf47c4e68ae6934efa00c5bc9bd7239df93fabf47f62219cc92d297e39ea818",
+          "atomic_sites": 1,
+          "registers": 18,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "2eacfbdbd3047e8952cec36d670048c8a204badfa49482186b300e620378e9cc",
+          "atomic_sites": 0,
+          "registers": 16,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        1024,
+        64,
+        256
+      ],
+      "block": 128,
+      "loop": 2,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            2.8150000143796206,
+            2.7409999165683985,
+            2.781999995931983,
+            2.7809999883174896,
+            2.732000080868602
+          ],
+          "manual": [
+            3.0330000445246696,
+            2.9980000108480453,
+            3.0509999487549067,
+            3.011000109836459,
+            3.05499997921288
+          ]
+        },
+        "median_us": {
+          "baseline": 2.7809999883174896,
+          "manual": 3.0330000445246696
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "64afd447814a4ee0cd40293917ddc4c1c3d0aa12c74e4bf1e0855a181b210c1a",
+          "atomic_sites": 2,
+          "registers": 24,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "418f2f5a5fc3f655ec8f8d21d3df4afabc5787c8c3663ac5638213efdd467149",
+          "atomic_sites": 0,
+          "registers": 24,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        1024,
+        64,
+        256
+      ],
+      "block": 128,
+      "loop": 4,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            3.4169999416917562,
+            3.3179998863488436,
+            3.317000111564994,
+            3.531999886035919,
+            3.3319999929517508
+          ],
+          "manual": [
+            4.410000052303076,
+            4.352999851107597,
+            4.333000164479017,
+            4.393999930471182,
+            4.410000052303076
+          ]
+        },
+        "median_us": {
+          "baseline": 3.3319999929517508,
+          "manual": 4.393999930471182
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "041609e2cfb1275674bc0d11e7e297abca2f3d469078d0ddfffdf2163dc39e46",
+          "atomic_sites": 4,
+          "registers": 24,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "52184e926ad53817f5c0e864c6160086be0e87e89d3c6f300d7c5a90cee6f66c",
+          "atomic_sites": 0,
+          "registers": 24,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        1024,
+        64,
+        256
+      ],
+      "block": 256,
+      "loop": 1,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            2.7069998905062675,
+            2.6940000243484974,
+            2.6859999634325504,
+            2.6660000439733267,
+            2.6809999253600836
+          ],
+          "manual": [
+            2.828999888151884,
+            2.7989998925477266,
+            2.79000005684793,
+            2.839999971911311,
+            2.8180000372231007
+          ]
+        },
+        "median_us": {
+          "baseline": 2.6859999634325504,
+          "manual": 2.8180000372231007
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "313d3eeedf56b5e8a7143ac4d4d01ced609a5f6b1e250a0cab963f18a49fac7d",
+          "atomic_sites": 2,
+          "registers": 28,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "9f5b0f1386b719347fc2a3863b7e358caae77238811539e568ebdf8fdc922486",
+          "atomic_sites": 0,
+          "registers": 30,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        1024,
+        64,
+        256
+      ],
+      "block": 256,
+      "loop": 2,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            3.065000055357814,
+            2.9929999727755785,
+            3.0040000565350056,
+            2.9700000304728746,
+            3.019999945536256
+          ],
+          "manual": [
+            3.7169998977333307,
+            3.739000065252185,
+            3.776000114157796,
+            3.746999893337488,
+            3.6720000207424164
+          ]
+        },
+        "median_us": {
+          "baseline": 3.0040000565350056,
+          "manual": 3.739000065252185
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "3139bf2b0b8e35d69731ed966ac0db32327d0d9e1ca5daca7b273190e385aa62",
+          "atomic_sites": 4,
+          "registers": 32,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "71fa03cd4937d970e118194bb580cd5b47fb03510d5f1aa171f2eed88e44e2a0",
+          "atomic_sites": 0,
+          "registers": 32,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        1024,
+        64,
+        256
+      ],
+      "block": 256,
+      "loop": 4,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            3.831000067293644,
+            3.7899999879300594,
+            3.7609999999403954,
+            3.7819999270141125,
+            3.7479999009519815
+          ],
+          "manual": [
+            4.689000081270933,
+            4.718000069260597,
+            4.728999920189381,
+            4.72299987450242,
+            4.7109997831285
+          ]
+        },
+        "median_us": {
+          "baseline": 3.7819999270141125,
+          "manual": 4.718000069260597
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "d3376fb965ca1beabc374bc507bb6f97944a17c6af74efd53c642344c3a635a8",
+          "atomic_sites": 8,
+          "registers": 32,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "46ed93213200efe1ce7f39ae41e970c5db7af8c05d186b3b482ed626567894dc",
+          "atomic_sites": 0,
+          "registers": 32,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        4096,
+        128,
+        1024
+      ],
+      "block": 32,
+      "loop": 1,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            12.920999899506569,
+            12.857000343501568,
+            12.873999774456024,
+            12.880999594926834,
+            12.83199992030859
+          ],
+          "manual": [
+            13.214999809861183,
+            13.279999606311321,
+            13.263000175356865,
+            13.279000297188759,
+            13.240000233054161
+          ]
+        },
+        "median_us": {
+          "baseline": 12.873999774456024,
+          "manual": 13.263000175356865
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "f023b43cff0577beaf92d7b6df3cfdab85075403d0beaeaa1547225161e1a6b3",
+          "atomic_sites": 1,
+          "registers": 20,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "36a1e301d6fc2f7bf43e9d2a29a3aa0c7a93d1991d893c8012772acdc2f09b2c",
+          "atomic_sites": 0,
+          "registers": 18,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        4096,
+        128,
+        1024
+      ],
+      "block": 32,
+      "loop": 2,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            10.1539995521307,
+            10.153000243008137,
+            10.131999850273132,
+            10.103000327944756,
+            10.129000060260296
+          ],
+          "manual": [
+            11.93699985742569,
+            11.91100012511015,
+            11.899000033736229,
+            11.839999817311764,
+            11.85499969869852
+          ]
+        },
+        "median_us": {
+          "baseline": 10.131999850273132,
+          "manual": 11.899000033736229
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "af374dc8efcdb531dbaf031766200b51b9a55947ca9491b8fee1596838d7688b",
+          "atomic_sites": 2,
+          "registers": 22,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "1e392c40065393864b35d3b2144d348df3b7c49dce44122233c48dab81570cf4",
+          "atomic_sites": 0,
+          "registers": 22,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        4096,
+        128,
+        1024
+      ],
+      "block": 32,
+      "loop": 4,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            10.339000262320042,
+            10.307000018656254,
+            10.29600016772747,
+            10.293999686837196,
+            10.297000408172607
+          ],
+          "manual": [
+            11.788000352680683,
+            11.947999708354473,
+            11.76500041037798,
+            11.79799996316433,
+            11.845000088214874
+          ]
+        },
+        "median_us": {
+          "baseline": 10.297000408172607,
+          "manual": 11.79799996316433
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "47bea03a4ff8b57812373db285dfe3915fe2891202d4f85ca3ca852376dda042",
+          "atomic_sites": 4,
+          "registers": 22,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "36021c14c1c93e642fc2f7431460d22b6cfd1f85d61fa9cebb52d57e9fb3107d",
+          "atomic_sites": 0,
+          "registers": 22,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        4096,
+        128,
+        1024
+      ],
+      "block": 64,
+      "loop": 1,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            8.743000216782093,
+            8.654000237584114,
+            8.640999905765057,
+            8.681000210344791,
+            8.623000234365463
+          ],
+          "manual": [
+            9.171999990940094,
+            9.139000438153744,
+            9.16299968957901,
+            9.139000438153744,
+            9.109999984502792
+          ]
+        },
+        "median_us": {
+          "baseline": 8.654000237584114,
+          "manual": 9.139000438153744
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "0c06eaf3695b1efe3fecd90e53297fec57d705c496d279ad1a53dd46ef908f50",
+          "atomic_sites": 1,
+          "registers": 20,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "96521dde9373070baedb57c3f1df63d346bb897a81abe78ebf657088e51b8a85",
+          "atomic_sites": 0,
+          "registers": 18,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        4096,
+        128,
+        1024
+      ],
+      "block": 64,
+      "loop": 2,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            7.6500000432133675,
+            7.625999860465527,
+            7.615000009536743,
+            7.639999967068434,
+            7.613999769091606
+          ],
+          "manual": [
+            9.06199961900711,
+            9.101999923586845,
+            9.100000374019146,
+            9.01199970394373,
+            9.081000462174416
+          ]
+        },
+        "median_us": {
+          "baseline": 7.625999860465527,
+          "manual": 9.081000462174416
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "aa6479cf53e85e0ecc3c2fd9384f0a521cd36e78dea1ebf517bf54edb02b37a2",
+          "atomic_sites": 2,
+          "registers": 22,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "7942439cdbd8cf1d3e8ea3d0bf82b7362fcb0c23f61fde00e9eb0ed8fcb5bf5b",
+          "atomic_sites": 0,
+          "registers": 22,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        4096,
+        128,
+        1024
+      ],
+      "block": 64,
+      "loop": 4,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            7.849999703466892,
+            7.792000193148851,
+            7.8220004215836525,
+            7.829999551177025,
+            7.848000153899193
+          ],
+          "manual": [
+            9.499000385403633,
+            9.49000008404255,
+            9.519999846816063,
+            9.460999630391598,
+            9.445000439882278
+          ]
+        },
+        "median_us": {
+          "baseline": 7.829999551177025,
+          "manual": 9.49000008404255
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "6420d685bab234779b81a7414bd629a66850147c534824b925bc81782576fc4e",
+          "atomic_sites": 4,
+          "registers": 22,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "45dbd72280abd4cfb441c8332427a7fa84edc522568619e8ecb527023876c20a",
+          "atomic_sites": 0,
+          "registers": 22,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        4096,
+        128,
+        1024
+      ],
+      "block": 128,
+      "loop": 1,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            7.2639998979866505,
+            7.170999888330698,
+            7.185999769717455,
+            7.156999781727791,
+            7.2119999676942825
+          ],
+          "manual": [
+            7.9659996554255486,
+            7.938000373542309,
+            7.922999560832977,
+            7.950000464916229,
+            7.8950002789497375
+          ]
+        },
+        "median_us": {
+          "baseline": 7.185999769717455,
+          "manual": 7.938000373542309
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "cbf47c4e68ae6934efa00c5bc9bd7239df93fabf47f62219cc92d297e39ea818",
+          "atomic_sites": 1,
+          "registers": 18,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "2eacfbdbd3047e8952cec36d670048c8a204badfa49482186b300e620378e9cc",
+          "atomic_sites": 0,
+          "registers": 16,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        4096,
+        128,
+        1024
+      ],
+      "block": 128,
+      "loop": 2,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            7.408000063151121,
+            7.321999873965979,
+            7.286000065505505,
+            7.321000099182129,
+            7.315000053495169
+          ],
+          "manual": [
+            8.016999810934067,
+            7.977000437676907,
+            8.011000230908394,
+            8.039000444114208,
+            7.9840002581477165
+          ]
+        },
+        "median_us": {
+          "baseline": 7.321000099182129,
+          "manual": 8.011000230908394
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "64afd447814a4ee0cd40293917ddc4c1c3d0aa12c74e4bf1e0855a181b210c1a",
+          "atomic_sites": 2,
+          "registers": 24,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "418f2f5a5fc3f655ec8f8d21d3df4afabc5787c8c3663ac5638213efdd467149",
+          "atomic_sites": 0,
+          "registers": 24,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        4096,
+        128,
+        1024
+      ],
+      "block": 128,
+      "loop": 4,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            7.348000071942806,
+            7.290999870747328,
+            7.282000035047531,
+            7.300000172108412,
+            7.313000038266182
+          ],
+          "manual": [
+            8.329000324010849,
+            8.36700014770031,
+            8.337999694049358,
+            8.353999815881252,
+            8.326999843120575
+          ]
+        },
+        "median_us": {
+          "baseline": 7.300000172108412,
+          "manual": 8.337999694049358
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "041609e2cfb1275674bc0d11e7e297abca2f3d469078d0ddfffdf2163dc39e46",
+          "atomic_sites": 4,
+          "registers": 24,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "52184e926ad53817f5c0e864c6160086be0e87e89d3c6f300d7c5a90cee6f66c",
+          "atomic_sites": 0,
+          "registers": 24,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        4096,
+        128,
+        1024
+      ],
+      "block": 256,
+      "loop": 1,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            7.393999956548214,
+            7.381000090390444,
+            7.3460000567138195,
+            7.379999849945307,
+            7.350000087171793
+          ],
+          "manual": [
+            8.13200045377016,
+            8.175999857485294,
+            8.186000399291515,
+            8.198999799787998,
+            8.190999738872051
+          ]
+        },
+        "median_us": {
+          "baseline": 7.379999849945307,
+          "manual": 8.186000399291515
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "313d3eeedf56b5e8a7143ac4d4d01ced609a5f6b1e250a0cab963f18a49fac7d",
+          "atomic_sites": 2,
+          "registers": 28,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "9f5b0f1386b719347fc2a3863b7e358caae77238811539e568ebdf8fdc922486",
+          "atomic_sites": 0,
+          "registers": 30,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        4096,
+        128,
+        1024
+      ],
+      "block": 256,
+      "loop": 2,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            7.36499996855855,
+            7.331999950110912,
+            7.286000065505505,
+            7.306000217795372,
+            7.286000065505505
+          ],
+          "manual": [
+            8.202999830245972,
+            8.14099982380867,
+            8.14600009471178,
+            8.170000277459621,
+            8.162000216543674
+          ]
+        },
+        "median_us": {
+          "baseline": 7.306000217795372,
+          "manual": 8.162000216543674
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "3139bf2b0b8e35d69731ed966ac0db32327d0d9e1ca5daca7b273190e385aa62",
+          "atomic_sites": 4,
+          "registers": 32,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "71fa03cd4937d970e118194bb580cd5b47fb03510d5f1aa171f2eed88e44e2a0",
+          "atomic_sites": 0,
+          "registers": 32,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        4096,
+        128,
+        1024
+      ],
+      "block": 256,
+      "loop": 4,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            7.841999642550945,
+            7.7680000104010105,
+            7.745999842882156,
+            7.759000174701214,
+            7.726999931037426
+          ],
+          "manual": [
+            8.785000070929527,
+            8.787999860942364,
+            8.812000043690205,
+            8.786000311374664,
+            8.801000192761421
+          ]
+        },
+        "median_us": {
+          "baseline": 7.759000174701214,
+          "manual": 8.787999860942364
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "d3376fb965ca1beabc374bc507bb6f97944a17c6af74efd53c642344c3a635a8",
+          "atomic_sites": 8,
+          "registers": 32,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "46ed93213200efe1ce7f39ae41e970c5db7af8c05d186b3b482ed626567894dc",
+          "atomic_sites": 0,
+          "registers": 32,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        4096,
+        1024,
+        2048
+      ],
+      "block": 32,
+      "loop": 1,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            77.32699811458588,
+            77.29700207710266,
+            77.285997569561,
+            77.224001288414,
+            77.29200273752213
+          ],
+          "manual": [
+            117.15400218963623,
+            117.16900020837784,
+            117.31600016355515,
+            117.26099997758865,
+            117.19299852848053
+          ]
+        },
+        "median_us": {
+          "baseline": 77.29200273752213,
+          "manual": 117.19299852848053
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "f023b43cff0577beaf92d7b6df3cfdab85075403d0beaeaa1547225161e1a6b3",
+          "atomic_sites": 1,
+          "registers": 20,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "36a1e301d6fc2f7bf43e9d2a29a3aa0c7a93d1991d893c8012772acdc2f09b2c",
+          "atomic_sites": 0,
+          "registers": 18,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        4096,
+        1024,
+        2048
+      ],
+      "block": 32,
+      "loop": 2,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            55.987998843193054,
+            55.95900118350983,
+            56.03399872779846,
+            55.93999847769737,
+            55.94800040125847
+          ],
+          "manual": [
+            147.22999930381775,
+            147.0309942960739,
+            146.66299521923065,
+            146.77900075912476,
+            146.9690054655075
+          ]
+        },
+        "median_us": {
+          "baseline": 55.95900118350983,
+          "manual": 146.9690054655075
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "af374dc8efcdb531dbaf031766200b51b9a55947ca9491b8fee1596838d7688b",
+          "atomic_sites": 2,
+          "registers": 22,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "1e392c40065393864b35d3b2144d348df3b7c49dce44122233c48dab81570cf4",
+          "atomic_sites": 0,
+          "registers": 22,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        4096,
+        1024,
+        2048
+      ],
+      "block": 32,
+      "loop": 4,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            53.79800125956535,
+            53.77199873328209,
+            53.72599884867668,
+            53.73400077223778,
+            53.75799909234047
+          ],
+          "manual": [
+            131.42499327659607,
+            131.07800483703613,
+            131.41199946403503,
+            131.19100034236908,
+            130.99199533462524
+          ]
+        },
+        "median_us": {
+          "baseline": 53.75799909234047,
+          "manual": 131.19100034236908
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "47bea03a4ff8b57812373db285dfe3915fe2891202d4f85ca3ca852376dda042",
+          "atomic_sites": 4,
+          "registers": 22,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "36021c14c1c93e642fc2f7431460d22b6cfd1f85d61fa9cebb52d57e9fb3107d",
+          "atomic_sites": 0,
+          "registers": 22,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        4096,
+        1024,
+        2048
+      ],
+      "block": 64,
+      "loop": 1,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            43.89600083231926,
+            43.793000280857086,
+            43.88099908828735,
+            43.74000057578087,
+            43.78199949860573
+          ],
+          "manual": [
+            101.94899886846542,
+            101.87499970197678,
+            101.94700211286545,
+            101.87699645757675,
+            101.88700258731842
+          ]
+        },
+        "median_us": {
+          "baseline": 43.793000280857086,
+          "manual": 101.88700258731842
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "0c06eaf3695b1efe3fecd90e53297fec57d705c496d279ad1a53dd46ef908f50",
+          "atomic_sites": 1,
+          "registers": 20,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "96521dde9373070baedb57c3f1df63d346bb897a81abe78ebf657088e51b8a85",
+          "atomic_sites": 0,
+          "registers": 18,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        4096,
+        1024,
+        2048
+      ],
+      "block": 64,
+      "loop": 2,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            35.12300178408623,
+            34.949999302625656,
+            35.07399931550026,
+            35.01100093126297,
+            35.002999007701874
+          ],
+          "manual": [
+            121.92399799823761,
+            121.8319982290268,
+            121.40700221061707,
+            121.64600193500519,
+            121.64200097322464
+          ]
+        },
+        "median_us": {
+          "baseline": 35.01100093126297,
+          "manual": 121.64600193500519
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "aa6479cf53e85e0ecc3c2fd9384f0a521cd36e78dea1ebf517bf54edb02b37a2",
+          "atomic_sites": 2,
+          "registers": 22,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "7942439cdbd8cf1d3e8ea3d0bf82b7362fcb0c23f61fde00e9eb0ed8fcb5bf5b",
+          "atomic_sites": 0,
+          "registers": 22,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        4096,
+        1024,
+        2048
+      ],
+      "block": 64,
+      "loop": 4,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            34.16299819946289,
+            34.14800018072128,
+            34.12099927663803,
+            34.15299952030182,
+            34.1619998216629
+          ],
+          "manual": [
+            104.26600277423859,
+            104.31600362062454,
+            104.4979989528656,
+            104.29900139570236,
+            104.55100238323212
+          ]
+        },
+        "median_us": {
+          "baseline": 34.15299952030182,
+          "manual": 104.31600362062454
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "6420d685bab234779b81a7414bd629a66850147c534824b925bc81782576fc4e",
+          "atomic_sites": 4,
+          "registers": 22,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "45dbd72280abd4cfb441c8332427a7fa84edc522568619e8ecb527023876c20a",
+          "atomic_sites": 0,
+          "registers": 22,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        4096,
+        1024,
+        2048
+      ],
+      "block": 128,
+      "loop": 1,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            31.867001205682755,
+            31.877998262643814,
+            31.801000237464905,
+            31.888999044895172,
+            31.870000064373016
+          ],
+          "manual": [
+            81.47600293159485,
+            81.59799873828888,
+            81.52099698781967,
+            81.3940018415451,
+            81.50500059127808
+          ]
+        },
+        "median_us": {
+          "baseline": 31.870000064373016,
+          "manual": 81.50500059127808
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "cbf47c4e68ae6934efa00c5bc9bd7239df93fabf47f62219cc92d297e39ea818",
+          "atomic_sites": 1,
+          "registers": 18,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "2eacfbdbd3047e8952cec36d670048c8a204badfa49482186b300e620378e9cc",
+          "atomic_sites": 0,
+          "registers": 16,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        4096,
+        1024,
+        2048
+      ],
+      "block": 128,
+      "loop": 2,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            32.09500014781952,
+            32.13600069284439,
+            32.06700086593628,
+            32.08800032734871,
+            32.15700015425682
+          ],
+          "manual": [
+            88.02899718284607,
+            88.11900019645691,
+            87.90600299835205,
+            88.31900358200073,
+            88.31299841403961
+          ]
+        },
+        "median_us": {
+          "baseline": 32.09500014781952,
+          "manual": 88.11900019645691
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "64afd447814a4ee0cd40293917ddc4c1c3d0aa12c74e4bf1e0855a181b210c1a",
+          "atomic_sites": 2,
+          "registers": 24,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "418f2f5a5fc3f655ec8f8d21d3df4afabc5787c8c3663ac5638213efdd467149",
+          "atomic_sites": 0,
+          "registers": 24,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        4096,
+        1024,
+        2048
+      ],
+      "block": 128,
+      "loop": 4,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            33.011000603437424,
+            32.90700167417526,
+            32.90899842977524,
+            32.96099975705147,
+            32.94000029563904
+          ],
+          "manual": [
+            78.66699993610382,
+            78.58400046825409,
+            78.27199995517731,
+            78.57099920511246,
+            78.43899726867676
+          ]
+        },
+        "median_us": {
+          "baseline": 32.94000029563904,
+          "manual": 78.57099920511246
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "041609e2cfb1275674bc0d11e7e297abca2f3d469078d0ddfffdf2163dc39e46",
+          "atomic_sites": 4,
+          "registers": 24,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "52184e926ad53817f5c0e864c6160086be0e87e89d3c6f300d7c5a90cee6f66c",
+          "atomic_sites": 0,
+          "registers": 24,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        4096,
+        1024,
+        2048
+      ],
+      "block": 256,
+      "loop": 1,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            32.19500184059143,
+            32.03799948096275,
+            32.2050005197525,
+            32.141998410224915,
+            32.18099847435951
+          ],
+          "manual": [
+            67.1520009636879,
+            67.13300198316574,
+            67.27399677038193,
+            67.10600107908249,
+            67.29099899530411
+          ]
+        },
+        "median_us": {
+          "baseline": 32.18099847435951,
+          "manual": 67.1520009636879
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "313d3eeedf56b5e8a7143ac4d4d01ced609a5f6b1e250a0cab963f18a49fac7d",
+          "atomic_sites": 2,
+          "registers": 28,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "9f5b0f1386b719347fc2a3863b7e358caae77238811539e568ebdf8fdc922486",
+          "atomic_sites": 0,
+          "registers": 30,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        4096,
+        1024,
+        2048
+      ],
+      "block": 256,
+      "loop": 2,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            32.69900009036064,
+            32.648999243974686,
+            32.70899876952171,
+            32.78600051999092,
+            32.666001468896866
+          ],
+          "manual": [
+            60.29700115323067,
+            59.85099822282791,
+            59.97399985790253,
+            60.11899933218956,
+            60.026999562978745
+          ]
+        },
+        "median_us": {
+          "baseline": 32.69900009036064,
+          "manual": 60.026999562978745
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "3139bf2b0b8e35d69731ed966ac0db32327d0d9e1ca5daca7b273190e385aa62",
+          "atomic_sites": 4,
+          "registers": 32,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "71fa03cd4937d970e118194bb580cd5b47fb03510d5f1aa171f2eed88e44e2a0",
+          "atomic_sites": 0,
+          "registers": 32,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    },
+    {
+      "shape_r_k_w": [
+        4096,
+        1024,
+        2048
+      ],
+      "block": 256,
+      "loop": 4,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "baseline": [
+            33.61700102686882,
+            33.587001264095306,
+            33.610999584198,
+            33.41199830174446,
+            33.54499861598015
+          ],
+          "manual": [
+            49.348000437021255,
+            49.08699914813042,
+            49.12000149488449,
+            49.12399873137474,
+            49.153998494148254
+          ]
+        },
+        "median_us": {
+          "baseline": 33.587001264095306,
+          "manual": 49.12399873137474
+        },
+        "rounds": 5,
+        "repetitions": 32,
+        "warmup_ms": 40,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "producer": "topk",
+      "code": {
+        "baseline": {
+          "ptx_sha256": "d3376fb965ca1beabc374bc507bb6f97944a17c6af74efd53c642344c3a635a8",
+          "atomic_sites": 8,
+          "registers": 32,
+          "spills": 0,
+          "shared_bytes": 0
+        },
+        "manual": {
+          "ptx_sha256": "46ed93213200efe1ce7f39ae41e970c5db7af8c05d186b3b482ed626567894dc",
+          "atomic_sites": 0,
+          "registers": 32,
+          "spills": 0,
+          "shared_bytes": 0
+        }
+      },
+      "validation": "exact FP32 baseline/manual/reference; initialized nonzero output; producer-established per-row uniqueness",
+      "scope": "output initialization + scatter; producer and allocations excluded"
+    }
+  ],
+  "summary": [
+    {
+      "shape_r_k_w": [
+        31,
+        17,
+        67
+      ],
+      "config_median_us": {
+        "b32-l1": {
+          "baseline": 2.03999993391335,
+          "manual": 2.2909999825060368
+        },
+        "b32-l2": {
+          "baseline": 2.256999956443906,
+          "manual": 2.8729999903589487
+        },
+        "b32-l4": {
+          "baseline": 2.7620000764727592,
+          "manual": 3.882999997586012
+        },
+        "b64-l1": {
+          "baseline": 1.9960000645369291,
+          "manual": 2.2879999596625566
+        },
+        "b64-l2": {
+          "baseline": 2.242000075057149,
+          "manual": 2.718999981880188
+        },
+        "b64-l4": {
+          "baseline": 2.7459999546408653,
+          "manual": 3.903999924659729
+        },
+        "b128-l1": {
+          "baseline": 1.9950000569224358,
+          "manual": 2.2849999368190765
+        },
+        "b128-l2": {
+          "baseline": 2.280999906361103,
+          "manual": 2.67999991774559
+        },
+        "b128-l4": {
+          "baseline": 2.807999961078167,
+          "manual": 3.8900000508874655
+        },
+        "b256-l1": {
+          "baseline": 2.105999970808625,
+          "manual": 2.41800001822412
+        },
+        "b256-l2": {
+          "baseline": 2.497999928891659,
+          "manual": 2.9299999587237835
+        },
+        "b256-l4": {
+          "baseline": 3.1500000040978193,
+          "manual": 3.8350000977516174
+        }
+      },
+      "best": {
+        "baseline": {
+          "median_us": 1.9950000569224358,
+          "configuration": "b128-l1"
+        },
+        "manual": {
+          "median_us": 2.2849999368190765,
+          "configuration": "b128-l1"
+        }
+      },
+      "manual_speedup": 0.8730853882209089
+    },
+    {
+      "shape_r_k_w": [
+        1024,
+        64,
+        256
+      ],
+      "config_median_us": {
+        "b32-l1": {
+          "baseline": 3.022999968379736,
+          "manual": 3.2569998875260353
+        },
+        "b32-l2": {
+          "baseline": 2.9990000184625387,
+          "manual": 3.657999914139509
+        },
+        "b32-l4": {
+          "baseline": 3.4459999296814203,
+          "manual": 4.985000006854534
+        },
+        "b64-l1": {
+          "baseline": 2.7439999394118786,
+          "manual": 2.9700000304728746
+        },
+        "b64-l2": {
+          "baseline": 2.8470000252127647,
+          "manual": 3.488000016659498
+        },
+        "b64-l4": {
+          "baseline": 3.29799996688962,
+          "manual": 3.971000202000141
+        },
+        "b128-l1": {
+          "baseline": 2.587999915704131,
+          "manual": 2.8069999534636736
+        },
+        "b128-l2": {
+          "baseline": 2.7809999883174896,
+          "manual": 3.0330000445246696
+        },
+        "b128-l4": {
+          "baseline": 3.3319999929517508,
+          "manual": 4.393999930471182
+        },
+        "b256-l1": {
+          "baseline": 2.6859999634325504,
+          "manual": 2.8180000372231007
+        },
+        "b256-l2": {
+          "baseline": 3.0040000565350056,
+          "manual": 3.739000065252185
+        },
+        "b256-l4": {
+          "baseline": 3.7819999270141125,
+          "manual": 4.718000069260597
+        }
+      },
+      "best": {
+        "baseline": {
+          "median_us": 2.587999915704131,
+          "configuration": "b128-l1"
+        },
+        "manual": {
+          "median_us": 2.8069999534636736,
+          "configuration": "b128-l1"
+        }
+      },
+      "manual_speedup": 0.9219807476343884
+    },
+    {
+      "shape_r_k_w": [
+        4096,
+        128,
+        1024
+      ],
+      "config_median_us": {
+        "b32-l1": {
+          "baseline": 12.873999774456024,
+          "manual": 13.263000175356865
+        },
+        "b32-l2": {
+          "baseline": 10.131999850273132,
+          "manual": 11.899000033736229
+        },
+        "b32-l4": {
+          "baseline": 10.297000408172607,
+          "manual": 11.79799996316433
+        },
+        "b64-l1": {
+          "baseline": 8.654000237584114,
+          "manual": 9.139000438153744
+        },
+        "b64-l2": {
+          "baseline": 7.625999860465527,
+          "manual": 9.081000462174416
+        },
+        "b64-l4": {
+          "baseline": 7.829999551177025,
+          "manual": 9.49000008404255
+        },
+        "b128-l1": {
+          "baseline": 7.185999769717455,
+          "manual": 7.938000373542309
+        },
+        "b128-l2": {
+          "baseline": 7.321000099182129,
+          "manual": 8.011000230908394
+        },
+        "b128-l4": {
+          "baseline": 7.300000172108412,
+          "manual": 8.337999694049358
+        },
+        "b256-l1": {
+          "baseline": 7.379999849945307,
+          "manual": 8.186000399291515
+        },
+        "b256-l2": {
+          "baseline": 7.306000217795372,
+          "manual": 8.162000216543674
+        },
+        "b256-l4": {
+          "baseline": 7.759000174701214,
+          "manual": 8.787999860942364
+        }
+      },
+      "best": {
+        "baseline": {
+          "median_us": 7.185999769717455,
+          "configuration": "b128-l1"
+        },
+        "manual": {
+          "median_us": 7.938000373542309,
+          "configuration": "b128-l1"
+        }
+      },
+      "manual_speedup": 0.9052657384180399
+    },
+    {
+      "shape_r_k_w": [
+        4096,
+        1024,
+        2048
+      ],
+      "config_median_us": {
+        "b32-l1": {
+          "baseline": 77.29200273752213,
+          "manual": 117.19299852848053
+        },
+        "b32-l2": {
+          "baseline": 55.95900118350983,
+          "manual": 146.9690054655075
+        },
+        "b32-l4": {
+          "baseline": 53.75799909234047,
+          "manual": 131.19100034236908
+        },
+        "b64-l1": {
+          "baseline": 43.793000280857086,
+          "manual": 101.88700258731842
+        },
+        "b64-l2": {
+          "baseline": 35.01100093126297,
+          "manual": 121.64600193500519
+        },
+        "b64-l4": {
+          "baseline": 34.15299952030182,
+          "manual": 104.31600362062454
+        },
+        "b128-l1": {
+          "baseline": 31.870000064373016,
+          "manual": 81.50500059127808
+        },
+        "b128-l2": {
+          "baseline": 32.09500014781952,
+          "manual": 88.11900019645691
+        },
+        "b128-l4": {
+          "baseline": 32.94000029563904,
+          "manual": 78.57099920511246
+        },
+        "b256-l1": {
+          "baseline": 32.18099847435951,
+          "manual": 67.1520009636879
+        },
+        "b256-l2": {
+          "baseline": 32.69900009036064,
+          "manual": 60.026999562978745
+        },
+        "b256-l4": {
+          "baseline": 33.587001264095306,
+          "manual": 49.12399873137474
+        }
+      },
+      "best": {
+        "baseline": {
+          "median_us": 31.870000064373016,
+          "configuration": "b128-l1"
+        },
+        "manual": {
+          "median_us": 49.12399873137474,
+          "configuration": "b256-l4"
+        }
+      },
+      "manual_speedup": 0.6487664051668118
+    }
+  ]
+}

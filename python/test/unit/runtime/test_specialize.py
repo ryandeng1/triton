@@ -1034,3 +1034,193 @@ def test_native_indexed_update_compile_rejects_overlapping_output(device):
     with pytest.raises((ValueError, RuntimeError)):
         compile_indexed_update(_native_indexed_tl, args, grid=(19, 1), index_arg=1, output_arg=2, index_count=19,
                                index_bound=19, initial_zero=False)
+
+
+@triton.jit
+def _native_private_atomic_tl(Grad, Indices, Out, V, Padding, BLOCK_D: tl.constexpr, D: tl.constexpr,
+                              SEM: tl.constexpr):
+    row = tl.program_id(0)
+    cols = tl.program_id(1) * BLOCK_D + tl.arange(0, BLOCK_D)
+    index = tl.load(Indices + row)
+    value = tl.load(Grad + row * D + cols, mask=cols < D, other=0).to(tl.float32)
+    mask = (cols < D) & (index >= 0) & (index < V) & (index != Padding)
+    tl.atomic_add(Out + index * D + cols, value, mask=mask, sem=SEM)
+
+
+@gluon.jit
+def _native_private_atomic_gluon(Grad, Indices, Out, V, Padding, BLOCK_D: gl.constexpr, D: gl.constexpr,
+                                 SEM: gl.constexpr):
+    row = gl.program_id(0)
+    cols = gl.program_id(1) * BLOCK_D + gl.arange(0, BLOCK_D, layout=gl.BlockedLayout([1], [32], [4], [0]))
+    index = gl.load(Indices + row)
+    value = gl.load(Grad + row * D + cols, mask=cols < D, other=0).to(gl.float32)
+    mask = (cols < D) & (index >= 0) & (index < V) & (index != Padding)
+    gl.atomic_add(Out + index * D + cols, value, mask=mask, sem=SEM)
+
+
+@pytest.mark.parametrize("frontend", ["triton", "gluon"])
+@pytest.mark.parametrize("sem", ["acq_rel", "acquire", "release"])
+def test_native_private_atomic_preserves_duplicate_reductions(device, frontend, sem):
+    _semantic_require_cuda(device)
+    from triton.experimental.semantic_contracts.native import compile_private_atomic
+
+    count, dim, vocabulary = 257, 137, 13
+    indices = torch.arange(count, device=device) % vocabulary
+    grad = torch.ones((count, dim), device=device)
+    out = torch.full((vocabulary, dim), 5.0, device=device)
+    kernel = _native_private_atomic_tl if frontend == "triton" else _native_private_atomic_gluon
+    args = (grad, indices, out, vocabulary, 0, 128, dim, sem)
+    plan = compile_private_atomic(kernel, args, grid=(count, triton.cdiv(dim, 128)), output_arg="Out")
+    expected = torch.bincount(indices, minlength=vocabulary).float()[:, None].expand_as(out) + 5
+    expected[0].fill_(5)
+    plan.baseline[plan.grid](*args)
+    assert torch.equal(out, expected)
+    out.fill_(5)
+    plan(*args)
+    assert torch.equal(out, expected)
+    report = plan.report()
+    assert report["transformed"]
+    assert report["variants"]["baseline"]["bar_sync_sites"] > 0
+    assert report["variants"]["optimized"]["bar_sync_sites"] == 0
+    assert _native_indexed_has_atomic(plan.optimized)
+    assert "red.global.gpu.relaxed" in plan.optimized.asm["ptx"]
+    names = {name for entries in report["native_attributes"].values() for name, value in entries}
+    assert "tt.experimental_unique_indices" not in names
+    assert "tt.experimental_index_bound" not in names
+    assert "tt.experimental_initial_zero" not in names
+    assert plan.baseline.src.fn is plan.optimized.src.fn
+
+
+@pytest.mark.parametrize("frontend", ["triton", "gluon"])
+@pytest.mark.parametrize("initial_zero", [False, True])
+def test_native_private_atomic_preserves_edge_values_and_masks(device, frontend, initial_zero):
+    _semantic_require_cuda(device)
+    from triton.experimental.semantic_contracts.native import compile_private_atomic
+
+    count, dim, vocabulary, guard = 19, 137, 37, 16
+    indices = torch.arange(count - 1, -1, -1, device=device)
+    bits = torch.tensor([
+        0, 0x80000000, 1, 0x80000001, 0x007fffff, 0x807fffff, 0x00800000, 0x80800000, 0x7f800000, 0xff800000,
+        0x7fc12345, 0x3f800000
+    ], device=device, dtype=torch.uint32).view(torch.float32)
+    grad = bits.repeat(triton.cdiv(count * dim, bits.numel()))[:count * dim].reshape(count, dim)
+    grad[-1].fill_(float("nan"))
+    storage = torch.full((vocabulary * dim + guard * 2, ), 17.0, device=device)
+    out = storage[guard:-guard].view(vocabulary, dim)
+    initial = torch.zeros_like(out) if initial_zero else bits.roll(3).repeat(triton.cdiv(
+        vocabulary * dim, bits.numel()))[:vocabulary * dim].reshape(vocabulary, dim)
+    kernel = _native_private_atomic_tl if frontend == "triton" else _native_private_atomic_gluon
+    args = (grad, indices, out, vocabulary, 0, 128, dim, "acq_rel")
+    plan = compile_private_atomic(kernel, args, grid=(count, triton.cdiv(dim, 128)), output_arg=2)
+    out.copy_(initial)
+    plan.baseline[plan.grid](*args)
+    expected = out.clone()
+    out.copy_(initial)
+    plan(*args)
+    _native_indexed_same_values(out, expected)
+    _native_indexed_same_values(out[0], initial[0])
+    _native_indexed_same_values(out[count:], initial[count:])
+    assert torch.all(storage[:guard] == 17) and torch.all(storage[-guard:] == 17)
+    assert _native_indexed_has_atomic(plan.optimized)
+    assert plan.report()["transformed"]
+
+
+@pytest.mark.parametrize("frontend", ["triton", "gluon"])
+def test_native_private_atomic_already_relaxed_is_unchanged(device, frontend):
+    _semantic_require_cuda(device)
+    from triton.experimental.semantic_contracts.native import compile_private_atomic
+
+    count, dim, vocabulary = 31, 65, 7
+    indices = torch.arange(count, device=device) % vocabulary
+    grad = torch.ones((count, dim), device=device)
+    out = torch.zeros((vocabulary, dim), device=device)
+    kernel = _native_private_atomic_tl if frontend == "triton" else _native_private_atomic_gluon
+    args = (grad, indices, out, vocabulary, -1, 128, dim, "relaxed")
+    plan = compile_private_atomic(kernel, args, grid=(count, 1), output_arg=2)
+    plan(*args)
+    expected = torch.bincount(indices, minlength=vocabulary).float()[:, None].expand_as(out)
+    assert torch.equal(out, expected)
+    assert not plan.report()["transformed"]
+    assert "red.global.gpu.relaxed" in plan.optimized.asm["ptx"]
+
+
+@pytest.mark.parametrize("frontend", ["triton", "gluon"])
+def test_native_private_atomic_allows_input_mutation_and_replacement(device, frontend):
+    _semantic_require_cuda(device)
+    from triton.experimental.semantic_contracts.native import compile_private_atomic
+
+    count, dim, vocabulary = 31, 65, 11
+    indices = torch.arange(count, device=device) % vocabulary
+    grad = torch.ones((count, dim), device=device)
+    out = torch.zeros((vocabulary, dim), device=device)
+    kernel = _native_private_atomic_tl if frontend == "triton" else _native_private_atomic_gluon
+    args = (grad, indices, out, vocabulary, -1, 128, dim, "acq_rel")
+    plan = compile_private_atomic(kernel, args, grid=(count, 1), output_arg=2)
+    indices.fill_(3)
+    grad.fill_(2)
+    out.fill_(7)
+    plan(*args)
+    expected = torch.full_like(out, 7)
+    expected[3] += 2 * count
+    assert torch.equal(out, expected)
+    replacement_indices = torch.arange(count, device=device) % 5
+    replacement_grad = torch.full_like(grad, 3)
+    replacement_out = torch.full_like(out, 9)
+    plan(replacement_grad, replacement_indices, replacement_out, *args[3:])
+    expected = 9 + 3 * torch.bincount(replacement_indices, minlength=vocabulary).float()[:, None].expand_as(out)
+    assert torch.equal(replacement_out, expected)
+
+
+@pytest.mark.parametrize("change", ["grid", "scalar", "output_alias", "metadata"])
+def test_native_private_atomic_launch_guard_rejects_invalid_binding(device, change):
+    _semantic_require_cuda(device)
+    from triton.experimental.semantic_contracts.native import compile_private_atomic
+
+    count, dim = 31, 65
+    indices = torch.arange(count, device=device) % 7
+    grad = torch.ones((count, dim), device=device)
+    out = torch.zeros_like(grad)
+    args = (grad, indices, out, count, -1, 128, dim, "acq_rel")
+    plan = compile_private_atomic(_native_private_atomic_tl, args, grid=(count, 1), output_arg=2)
+    changed, kwargs = list(args), {}
+    if change == "grid":
+        kwargs["grid"] = (count, 2)
+    elif change == "scalar":
+        changed[3] = count + 1
+    elif change == "output_alias":
+        changed[2] = grad
+    else:
+        changed[1] = indices.to(torch.int32)
+    with pytest.raises((ValueError, RuntimeError)):
+        plan(*changed, **kwargs)
+
+
+@pytest.mark.parametrize("invalid", ["output_alias", "multiple_ctas", "indexed_removal"])
+def test_native_private_atomic_compile_rejects_invalid_contract(device, invalid):
+    _semantic_require_cuda(device)
+    from triton.experimental.semantic_contracts.native import compile_private_atomic
+
+    count, dim = 31, 65
+    indices = torch.arange(count, device=device) % 7
+    grad = torch.ones((count, dim), device=device)
+    out = grad if invalid == "output_alias" else torch.zeros_like(grad)
+    args = (grad, indices, out, count, -1, 128, dim, "acq_rel")
+    options = {"num_ctas": 2} if invalid == "multiple_ctas" else {
+        "enable_indexed_update_specialization": invalid == "indexed_removal"
+    }
+    with pytest.raises((ValueError, RuntimeError)):
+        compile_private_atomic(_native_private_atomic_tl, args, grid=(count, 1), output_arg=2, options=options)
+
+
+def test_native_private_atomic_without_contract_keeps_ordering(device):
+    _semantic_require_cuda(device)
+    count, dim, vocabulary = 31, 65, 7
+    indices = torch.arange(count, device=device) % vocabulary
+    grad = torch.ones((count, dim), device=device)
+    out = torch.zeros((vocabulary, dim), device=device)
+    compiled = _native_private_atomic_tl[(count, 1)](grad, indices, out, vocabulary, -1, 128, dim, "acq_rel",
+                                                     enable_private_atomic_relaxation=True)
+    expected = torch.bincount(indices, minlength=vocabulary).float()[:, None].expand_as(out)
+    assert torch.equal(out, expected)
+    assert "atom.global.gpu.acq_rel" in compiled.asm["ptx"]
+    assert "bar.sync" in compiled.asm["ptx"]

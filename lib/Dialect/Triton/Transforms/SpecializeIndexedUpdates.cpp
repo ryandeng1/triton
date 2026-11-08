@@ -1,5 +1,6 @@
 #include "mlir/Dialect/Arith/IR/Arith.h"
 #include "mlir/IR/Matchers.h"
+#include "mlir/IR/SymbolTable.h"
 #include "mlir/Interfaces/SideEffectInterfaces.h"
 #include "triton/Dialect/Triton/IR/Dialect.h"
 #include "triton/Dialect/Triton/IR/Utility.h"
@@ -13,6 +14,7 @@
 namespace mlir::triton {
 
 #define GEN_PASS_DEF_TRITONSPECIALIZEINDEXEDUPDATES
+#define GEN_PASS_DEF_TRITONRELAXPRIVATEATOMICS
 #include "triton/Dialect/Triton/Transforms/Passes.h.inc"
 
 namespace {
@@ -320,8 +322,75 @@ bool closedPrivateEffects(FuncOp function, AtomicRMWOp candidate,
   return true;
 }
 
+bool isCompleteKernelBody(FuncOp function) {
+  if (!function.isPublic() || function.getBody().empty() ||
+      !llvm::hasSingleElement(function.getBody()))
+    return false;
+  // This is a whole-kernel effects proof. Do not apply it to a helper whose
+  // caller can have memory effects outside the inspected function body.
+  auto uses = SymbolTable::getSymbolUses(function, function->getParentOp());
+  return uses && uses->empty();
+}
+
+bool relaxPrivateAtomic(FuncOp function) {
+  if (!isCompleteKernelBody(function))
+    return false;
+  AtomicRMWOp candidate;
+  for (Operation &op : function.getBody().front()) {
+    if (auto atomic = dyn_cast<AtomicRMWOp>(op)) {
+      if (candidate)
+        return false;
+      candidate = atomic;
+    }
+  }
+  if (!candidate || !candidate.getResult().use_empty() ||
+      candidate.getAtomicRmwOp() != RMWOp::FADD ||
+      candidate.getScope() != MemSyncScope::GPU)
+    return false;
+  switch (candidate.getSem()) {
+  case MemSemantic::ACQUIRE:
+  case MemSemantic::RELEASE:
+  case MemSemantic::ACQUIRE_RELEASE:
+    break;
+  default:
+    // In particular, an already-relaxed atomic is not a new specialization.
+    return false;
+  }
+  auto type = dyn_cast<RankedTensorType>(candidate.getType());
+  if (!type || type.getRank() != 1 || !type.getElementType().isF32() ||
+      type.getDimSize(0) <= 0)
+    return false;
+  auto destination = pointerRoot(candidate.getPtr());
+  if (!destination ||
+      cast<PointerType>(destination.getType()).getAddressSpace() !=
+          PtrAddrSpace::Global ||
+      !argumentFlag(destination, "tt.experimental_private") ||
+      !argumentFlag(destination, "tt.experimental_num_ctas") ||
+      !closedPrivateEffects(function, candidate, destination))
+    return false;
+
+  // The only write is this reduction, its old value is unobserved, and every
+  // ordinary read is disjoint from its destination. Thus other programs of
+  // this kernel cannot use it to publish a write or acquire an observable
+  // memory effect. The private-output contract excludes external access until
+  // invocation completion; no caller assertion about the absence of internal
+  // synchronization is needed. Acquire/release ordering therefore adds no
+  // observable behavior in this bounded function.
+  //
+  // Unlike specialize(), this proof needs no destination injectivity: the
+  // atomic remains atomic, so colliding indices still reduce correctly. It
+  // preserves the allowed nondeterministic floating-point serialization rather
+  // than promising one fixed summation order. No address, value or mask
+  // changes.
+  candidate.setSem(MemSemantic::RELAXED);
+  function->setAttr(
+      "tt.experimental_private_atomic_relaxed",
+      IntegerAttr::get(IntegerType::get(function.getContext(), 32), 1));
+  return true;
+}
+
 bool specialize(FuncOp function) {
-  if (function.getBody().empty() || !llvm::hasSingleElement(function.getBody()))
+  if (!isCompleteKernelBody(function))
     return false;
   AtomicRMWOp candidate;
   for (Operation &op : function.getBody().front()) {
@@ -400,6 +469,25 @@ public:
     }
     for (FuncOp function : module.getOps<FuncOp>())
       specialize(function);
+  }
+};
+
+class RelaxPrivateAtomicsPass
+    : public impl::TritonRelaxPrivateAtomicsBase<RelaxPrivateAtomicsPass> {
+public:
+  using Base::Base;
+
+  void runOnOperation() override {
+    if (target != "cuda")
+      return;
+    ModuleOp module = getOperation();
+    if (Attribute attr = module->getAttr("ttg.num-ctas")) {
+      auto numCTAs = dyn_cast<IntegerAttr>(attr);
+      if (!numCTAs || !numCTAs.getValue().isOne())
+        return;
+    }
+    for (FuncOp function : module.getOps<FuncOp>())
+      relaxPrivateAtomic(function);
   }
 };
 

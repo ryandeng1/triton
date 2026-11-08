@@ -26,7 +26,10 @@ runs rather than absolute timings across experiments.
 | Persistent AITER RMSNorm, native immutable-input contract | Forward 1.11–1.48×; backward 1.05–1.06× | Forward 16384×4096 regressed about 9%. Registers increased 68→94; occupancy causality was not profiled. AMD-origin kernels were compiled on NVIDIA. |
 | Transformer Engine MoE unpermute backward | Native hoist 1.19×, 1.11×, approximately 1.00× | Best tested configuration per variant after bounded tuning; manual and contract variants matched machine code. |
 | Producer-unique embedding backward | Source specialization 1.16–1.26×; frequency-scaled 1.41–2.18× | Includes dense zeroing and final copy. These historical timings used finite, non-subnormal BF16 gradients and predate the automatic proof pipeline below. |
-| Unchanged FlagGems indexed updates, native Triton pass | Unique RMW 1.15–1.25×; initialized-zero 1.15–1.28× | 36 seeded measurements on three shapes, plain/scaled modes, and block sizes 128/256. Reset, original frequency counting, and BF16 conversion retained; producer generation/allocations excluded. Gluon correctness also validated. |
+| Unchanged FlagGems indexed updates, native Triton pass | Unique RMW 1.15–1.25×; initialized-zero 1.15–1.28× | Correct native transformation, but the ordering control below recovers essentially all of this gain while retaining atomics. Reset/count/conversion included. Gluon correctness also validated. |
+| Embedding atomic-ordering control | Original→relaxed atomics 1.186× geometric mean; relaxed→native RMW 0.996×; relaxed→native zero 1.006× | 36 paired measurements. Changing only `sem="relaxed"` removes two CTA barriers and permits no-return reductions. Earlier attribution to uniqueness was too strong. |
+| Native private-output ordering relaxation | 1.192× geometric mean with unique indices; 1.179× with fourfold repeated indices | 72 measurements; atomics retained, unchanged source, native/manual relaxed timings within 0.3%. Includes reset/count/conversion; no uniqueness or immutable-index contracts. |
+| Segmented-unique FlagGems scatter-add | Ordinary RMW 0.65–0.91× consumer ratio; known-zero stores about 1.00–1.03× | 96 screening and 26 confirmation cases. With topk producer included, known-zero gains stay below 0.5% on tuned shapes. Baseline already uses relaxed atomics; native expansion was not implemented. |
 | Complete coverage and direct output writes | 1.40–2.30× over the previous unique-index implementation | Shared-output consumer ablation, including required initialization/conversion; bounded tuning over block sizes 128/256. Full permutations need one write launch; unique subsets need zeroing plus write. |
 | Real embedding backward vs Inductor, frequency scaling enabled | 1.69–14.61× GPU speedup over the faster tested mode | Output-only graphs include arange/randperm generation. Inductor default and max-autotune-no-cudagraphs retain atomic-update/count work. External CUDA graphs give all variants the same timing protocol. |
 | Same Inductor comparison, frequency scaling disabled | 0.58–1.05× GPU ratio; no general win | Inductor is often faster. Eliminating an atomic alone does not establish a profitable optimization; layout, fusion, launch count, and host overhead still matter. |
@@ -107,17 +110,58 @@ promise remain caller obligations. Duplicate-index embedding workloads do not
 qualify. Counting kernels, loops, arbitrary scatter expressions, and launch
 elimination are outside this pass.
 
-Against the best tested block size per variant, the six shape/mode groups gain
-**1.185× geometrically averaged** from unique RMW and **1.195×** with initialized
-zero. Native results match manual rewrites within 1%; zero knowledge adds only
-0.09–2.36% beyond unique RMW. This isolates a useful missing semantic fact in the
-native compiler. The larger earlier frequency-scaled gains also removed counting
-work, which this experiment deliberately retains. These are device timings, not
-ordinary-call or model-level speedups. Current validation passes **215 runtime
-tests**, including 17 new native GPU cases, and **14 compiler test files**,
-including 32 new proof/negative cases. A next native extension is proving vector
-index uniqueness in counting kernels; producer-fact attachment and profitability
-still need broader integration.
+The original six shape/mode groups gained **1.185× geometrically averaged** from
+unique RMW and **1.195×** with initialized zero, matching manual rewrites within
+1%. A subsequent 36-case control changed only the original atomic's ordering to
+`relaxed`, retaining atomics and all reset/count/conversion work. That recovered
+**1.186×** on its own. Relative to this stronger baseline, native RMW measured
+**0.996×** and native zero **1.006×**. Thus the original result establishes legality
+of atomic removal, but does not establish meaningful performance benefit from
+uniqueness. The ordering change removes two block barriers and enables no-return
+`red` instructions; their individual contributions were not isolated. The larger
+historical frequency-scaled gains also removed counting work.
+
+The second native candidate was unchanged FlagGems `scatter_add_2d_kernel`, using
+row-wise topk/sort to establish uniqueness within each row while allowing repeated
+index values across rows. Manual load/add/store regressed roughly **10–55%** at
+the four tuned shapes. Known-zero stores gave at most **3%** consumer improvement
+and less than **0.5%** with topk included. Both variants included initialization;
+BLOCK 32/64/128/256 and LOOP 1/2/4 were screened. Exact outputs, unwritten positions,
+changed inputs/producers, and an additional full-width sort control passed.
+This baseline already uses relaxed atomics. The performance gate failed, so no
+segmented compiler analysis or public API was added.
+
+That weaker ordering proof is now implemented as a separate native
+`triton-relax-private-atomics` pass, exposed through
+[`compile_private_atomic`](../python/triton/experimental/semantic_contracts/native.py).
+The caller promises initialized output and no access from outside the invocation.
+The compiler derives the absence of internal synchronization partners: one
+unused-result GPU f32 atomic add, ordinary reads disjoint from its output, and no
+other writes, calls, regions, or unknown effects. It keeps the atomic and changes
+only its ordering. No uniqueness, immutable-index, bound, grid, or zero facts are
+required by the native proof. Input contents and objects may change between
+guarded launches. Both native passes now reject private/called helper functions,
+whose callers could introduce effects outside the inspected body.
+
+On unchanged plain/scaled FlagGems kernels, 72 measurements show **1.15–1.26×**
+speedups: geometric means **1.192×** for unique indices and **1.179×** for shuffled
+fourfold repeats. Native and manual relaxed variants match within **0.3%**. All
+retain atomics; the transformed TTIR body changes only ordering, and representative
+PTX replaces two barriers plus `atom.acq_rel` with barrier-free `red.relaxed`.
+Duplicate correctness uses exact small-integer contributions; ordinary BF16
+gradient checks use a derived FP32 summation-error bound against FP64 references,
+allowing valid atomic serialization differences. Fourfold repeats are a controlled
+collision workload, not a claim about every training-index distribution.
+
+The pass is opt-in, CUDA-only, and bounded to one CTA per logical program and
+straight-line entry kernels. Initialization and external privacy remain caller
+obligations; the wrapper checks allocation disjointness and launch metadata.
+All timings include reset/count/conversion and exclude producer generation,
+allocation, and Python guards. They are device timings, not ordinary-call or model
+speedups. `make`, **237 runtime tests** and **14 compiler test files** passed;
+the new phase adds 22 GPU cases and 27 compiler cases, including helper rejections
+for the earlier indexed pass. Gluon correctness is covered; performance used
+Triton kernels. Persistent reduction ownership remains a larger opportunity.
 
 Retained evidence and reproducers:
 
@@ -147,6 +191,16 @@ Retained evidence and reproducers:
   [raw results](semantic_candidate_experiments/results/native_indexed_final/results.json)
   retain all 36 seeded measurements, source/compiler hashes and upstream AST
   audits. Representative TTIR/TTGIR/PTX and test logs are retained alongside them.
+- [Ordering-control evidence](semantic_candidate_experiments/results/native_atomic_ordering_final/results.json)
+  and its [instruction analysis](semantic_candidate_experiments/results/native_atomic_ordering_final/synchronization_analysis.json)
+  supersede the earlier attribution of the native speedup to uniqueness.
+  [Segmented scatter evidence](semantic_candidate_experiments/results/segmented_final/summary.json)
+  retains the negative result, tuning screens, producer-inclusive confirmation,
+  pinned source, and compact reproduction artifacts.
+- [Native private-atomic evidence](semantic_candidate_experiments/results/native_private_atomic_final/summary.json)
+  retains 72 paired measurements, proof scope, numerical checks, source/compiler
+  hashes, representative IR/PTX and build/test logs. Earlier records retain their
+  original compiler fingerprints and are historical measurements.
 - [Experiment scripts](semantic_candidate_experiments/) and pinned `vendor/`
   sources/licenses remain. RMSNorm, MoE, irregular-kernel, and Mamba harnesses
   expose `--help`; analyses can consume newly generated reports.

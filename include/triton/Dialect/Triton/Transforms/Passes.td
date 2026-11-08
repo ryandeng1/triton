@@ -124,8 +124,8 @@ def TritonSpecializeIndexedUpdates : Pass<"triton-specialize-indexed-updates", "
 
     On an output pointer, `tt.experimental_private = 1 : i32` promises initialized
     storage ready for ordinary access at invocation entry, no outside accesses
-    until invocation completion, and no synchronization/publication role for the
-    storage. It does not assert ownership by a program or address injectivity.
+    until invocation completion. It does not assert ownership by a program,
+    address injectivity, or the absence of internal synchronization partners.
     Optional `tt.experimental_initial_zero = 1 : i32` promises physical positive
     zero at entry. The existing `tt.experimental_alias_group` contract must prove
     every ordinary read footprint disjoint from the output footprint.
@@ -139,8 +139,10 @@ def TritonSpecializeIndexedUpdates : Pass<"triton-specialize-indexed-updates", "
     + make_range(0,B), including lossless casts and equivalent addptr grouping.
     D is a positive constant, grid_x <= N, and grid_y = ceil(D/B). Tail masks must
     imply column < D. Integer arithmetic is checked for overflow. Index loads
-    must be scalar and unmasked. Loops, regions, calls, volatile accesses, inline
-    assembly, unknown effects, additional writes, live atomic old values, and
+    must be scalar and unmasked. Only public kernels with no symbol uses in their
+    module are supported; private or called helper functions are rejected.
+    Loops, regions, calls, volatile accesses, inline assembly, unknown effects,
+    additional writes, live atomic old values, and
     non-GPU scope are unsupported. All unproved cases remain unchanged.
 
     Under this closed private-memory proof there is no synchronization partner
@@ -155,6 +157,50 @@ def TritonSpecializeIndexedUpdates : Pass<"triton-specialize-indexed-updates", "
     Option<"target", "target", "std::string", "\"\"", "Target architecture; only cuda is supported">
   ];
   let dependentDialects = ["mlir::arith::ArithDialect", "mlir::triton::TritonDialect"];
+}
+
+def TritonRelaxPrivateAtomics : Pass<"triton-relax-private-atomics", "mlir::ModuleOp"> {
+  let summary = "Relax atomic ordering for closed private-output reductions";
+  let description = [{
+    Experimental opt-in for CUDA f32 additions. Keep the atomic operation and
+    change acquire, release, or acquire-release ordering to relaxed after proving
+    that the ordering has no observable synchronization role. Already-relaxed
+    atomics are unchanged and do not receive a specialization marker.
+
+    On the global output pointer, `tt.experimental_private = 1 : i32` promises
+    initialized storage ready at invocation entry and no outside accesses or
+    observers until invocation completion. Its effects proof establishes the
+    absence of internal synchronization/publication rather than accepting that
+    as another promise.
+    The output additionally requires `tt.experimental_num_ctas = 1 : i32`.
+    The existing `tt.experimental_alias_group` contracts must prove every
+    ordinary read footprint disjoint from the output footprint. All accesses must remain
+    within the contracted allocations. These are caller obligations, not facts
+    inferred from race freedom or from observed example values.
+
+    The bounded proof accepts a public kernel with no symbol uses in its module,
+    consisting of one straight-line block containing one unused-result
+    GPU-scope rank-one f32 atomic add. Only ordinary nonvolatile loads from known
+    disjoint argument roots and memory-effect-free operations may accompany it.
+    Loops, regions, calls, inline assembly, unknown effects, additional writes,
+    ordinary output reads, used atomic results, non-GPU scopes, and called/private
+    helper functions are unsupported.
+
+    Other programs cannot observe an old atomic value or acquire an additional
+    write from this function, and the private contract excludes external partners.
+    Atomicity is preserved, including for repeated destination indices. The proof
+    needs no uniqueness, immutable-index, value-bound, grid, or initial-zero facts.
+    It does not promise a fixed floating-point summation order. The atomic's
+    pointer, value, mask, type, and scope remain unchanged.
+
+    Successfully transformed functions receive
+    `tt.experimental_private_atomic_relaxed = 1 : i32`. Only CUDA with one CTA
+    per logical program is supported. All unproved cases remain unchanged.
+  }];
+  let options = [
+    Option<"target", "target", "std::string", "\"\"", "Target architecture; only cuda is supported">
+  ];
+  let dependentDialects = ["mlir::triton::TritonDialect"];
 }
 
 #endif

@@ -1,0 +1,368 @@
+{
+  "date": "2026-11-08",
+  "status": "passed",
+  "finding": "Segmented uniqueness makes the manual atomic-removal rewrite legal for tested workloads, but ordinary load/add/store regresses, and known-zero stores give no material producer-plus-consumer improvement. Native expansion was not implemented.",
+  "gpu": "NVIDIA B300 SXM6 PC",
+  "source": {
+    "repository": "flagos-ai/FlagGems",
+    "revision": "3f1f896fd90f5db42d167d64fcb9691326071bc2",
+    "path": "src/flag_gems/ops/scatter_add.py",
+    "function": "scatter_add_2d_kernel",
+    "atomic_semantics": "relaxed",
+    "signature_and_body_ast_identical": true,
+    "dispatch_changes": "Explicit BLOCK/LOOP selection replaces external libentry/heuristics wrappers; original JIT do_not_specialize retained."
+  },
+  "contract_domain": "FP32 DIM1 updates; row-wise topk/sort producers guarantee unique in-range indices within each row. Index values may repeat across rows; disjoint output rows give unique destination addresses.",
+  "transformation": "Manual experimental rewrite only: masked ordinary output load (or explicit +0) followed by add.rn.ftz.f32 and masked store. No native segmented analysis was added.",
+  "method": {
+    "screen_cases": 96,
+    "confirmation_cases": 26,
+    "tuned_shapes": 4,
+    "screen_configs": {
+      "BLOCK": [
+        32,
+        64,
+        128,
+        256
+      ],
+      "LOOP": [
+        1,
+        2,
+        4
+      ],
+      "num_warps": 4
+    },
+    "confirmation_seeds": 3,
+    "rounds": 15,
+    "graph_repetitions": 32,
+    "warmup_ms": 200,
+    "order": "randomized interleaving; common physical output/input buffers; clocks not locked",
+    "initialization": "Nonzero output copy or physical zero reset included in every invocation",
+    "consumer_scope": "Initialization + scatter; allocations and producer excluded",
+    "chain_scope": "topk/sort producer + initialization + scatter; allocations excluded; CUDA graph device time, not ordinary Python-call latency",
+    "sort_control": "128x67 full-width sort, one seed, fixed BLOCK128/LOOP1, explicitly unscreened and excluded from tuned headline."
+  },
+  "validation": [
+    "All 96 screen and 26 confirmation cases pass exact FP32 baseline/manual/PyTorch-reference checks.",
+    "Confirmations poison outputs before initialization and compare all output values including unwritten positions.",
+    "Confirmations change source values and producer scores, regenerate indices, and recheck exact outputs.",
+    "Baseline PTX retains atomics; manual PTX removes them.",
+    "Final confirmation source hashes match current experiment files."
+  ],
+  "results": {
+    "nonzero": [
+      {
+        "shape_r_k_w": [
+          31,
+          17,
+          67
+        ],
+        "configs": {
+          "baseline": [
+            128,
+            1
+          ],
+          "manual": [
+            128,
+            1
+          ]
+        },
+        "consumer_median_us": {
+          "baseline": 1.9680000841617584,
+          "manual": 2.28899996727705
+        },
+        "producer_consumer_median_us": {
+          "baseline": 11.718000285327435,
+          "manual": 11.990999802947044
+        },
+        "consumer_speedup": 0.8597641381807677,
+        "producer_consumer_speedup": 0.9772329645479175,
+        "screened": true
+      },
+      {
+        "shape_r_k_w": [
+          1024,
+          64,
+          256
+        ],
+        "configs": {
+          "baseline": [
+            128,
+            1
+          ],
+          "manual": [
+            128,
+            1
+          ]
+        },
+        "consumer_median_us": {
+          "baseline": 2.5659999810159206,
+          "manual": 2.8299998957663774
+        },
+        "producer_consumer_median_us": {
+          "baseline": 23.567000404000282,
+          "manual": 23.798000067472458
+        },
+        "consumer_speedup": 0.9067138076063552,
+        "producer_consumer_speedup": 0.9902933161266811,
+        "screened": true
+      },
+      {
+        "shape_r_k_w": [
+          4096,
+          128,
+          1024
+        ],
+        "configs": {
+          "baseline": [
+            128,
+            1
+          ],
+          "manual": [
+            128,
+            1
+          ]
+        },
+        "consumer_median_us": {
+          "baseline": 7.168000098317862,
+          "manual": 7.919999770820141
+        },
+        "producer_consumer_median_us": {
+          "baseline": 137.9839926958084,
+          "manual": 138.98099958896637
+        },
+        "consumer_speedup": 0.9050505436536891,
+        "producer_consumer_speedup": 0.9928263079406063,
+        "screened": true
+      },
+      {
+        "shape_r_k_w": [
+          4096,
+          1024,
+          2048
+        ],
+        "configs": {
+          "baseline": [
+            128,
+            1
+          ],
+          "manual": [
+            256,
+            4
+          ]
+        },
+        "consumer_median_us": {
+          "baseline": 31.745001673698425,
+          "manual": 49.11300167441368
+        },
+        "producer_consumer_median_us": {
+          "baseline": 287.6090109348297,
+          "manual": 307.5779974460602
+        },
+        "consumer_speedup": 0.6463665545051905,
+        "producer_consumer_speedup": 0.9350766742841141,
+        "screened": true
+      },
+      {
+        "shape_r_k_w": [
+          128,
+          67,
+          67
+        ],
+        "configs": {
+          "baseline": [
+            128,
+            1
+          ],
+          "manual": [
+            128,
+            1
+          ]
+        },
+        "consumer_median_us": {
+          "baseline": 2.217999892309308,
+          "manual": 2.5400000158697367
+        },
+        "producer_consumer_median_us": {
+          "baseline": 11.152000166475773,
+          "manual": 11.408000253140926
+        },
+        "consumer_speedup": 0.8732282986029153,
+        "producer_consumer_speedup": 0.9775596001941997,
+        "screened": false
+      }
+    ],
+    "zero": [
+      {
+        "shape_r_k_w": [
+          31,
+          17,
+          67
+        ],
+        "configs": {
+          "baseline": [
+            64,
+            1
+          ],
+          "manual": [
+            64,
+            1
+          ]
+        },
+        "consumer_median_us": {
+          "baseline": 1.905999961309135,
+          "manual": 1.9030000548809767
+        },
+        "producer_consumer_median_us": {
+          "baseline": 11.633000336587429,
+          "manual": 11.58900000154972
+        },
+        "consumer_speedup": 1.0015764090076948,
+        "producer_consumer_speedup": 1.0037967326802852,
+        "screened": true
+      },
+      {
+        "shape_r_k_w": [
+          1024,
+          64,
+          256
+        ],
+        "configs": {
+          "baseline": [
+            128,
+            1
+          ],
+          "manual": [
+            128,
+            1
+          ]
+        },
+        "consumer_median_us": {
+          "baseline": 2.4160000029951334,
+          "manual": 2.4170000106096268
+        },
+        "producer_consumer_median_us": {
+          "baseline": 23.44300039112568,
+          "manual": 23.396000266075134
+        },
+        "consumer_speedup": 0.9995862608150171,
+        "producer_consumer_speedup": 1.0020088957307243,
+        "screened": true
+      },
+      {
+        "shape_r_k_w": [
+          4096,
+          128,
+          1024
+        ],
+        "configs": {
+          "baseline": [
+            128,
+            1
+          ],
+          "manual": [
+            128,
+            1
+          ]
+        },
+        "consumer_median_us": {
+          "baseline": 6.585999857634306,
+          "manual": 6.397000048309565
+        },
+        "producer_consumer_median_us": {
+          "baseline": 137.18999922275543,
+          "manual": 136.84700429439545
+        },
+        "consumer_speedup": 1.0295450692351777,
+        "producer_consumer_speedup": 1.0025064116684799,
+        "screened": true
+      },
+      {
+        "shape_r_k_w": [
+          4096,
+          1024,
+          2048
+        ],
+        "configs": {
+          "baseline": [
+            128,
+            1
+          ],
+          "manual": [
+            128,
+            2
+          ]
+        },
+        "consumer_median_us": {
+          "baseline": 25.111999362707138,
+          "manual": 24.689000099897385
+        },
+        "producer_consumer_median_us": {
+          "baseline": 280.4360091686249,
+          "manual": 279.0989875793457
+        },
+        "consumer_speedup": 1.0171331062861275,
+        "producer_consumer_speedup": 1.0047904924373796,
+        "screened": true
+      },
+      {
+        "shape_r_k_w": [
+          128,
+          67,
+          67
+        ],
+        "configs": {
+          "baseline": [
+            128,
+            1
+          ],
+          "manual": [
+            128,
+            1
+          ]
+        },
+        "consumer_median_us": {
+          "baseline": 2.0240000449121,
+          "manual": 2.0179999992251396
+        },
+        "producer_consumer_median_us": {
+          "baseline": 11.068999767303467,
+          "manual": 10.998999699950218
+        },
+        "consumer_speedup": 1.0029732634733717,
+        "producer_consumer_speedup": 1.0063642212258235,
+        "screened": false
+      }
+    ]
+  },
+  "interpretation": [
+    "Consumer-only nonzero RMW loses roughly 9\u201335% throughput relative to atomics at the tested tuned shapes; producer cost reduces the observed chain regression.",
+    "Known-zero consumer benefit reaches about 3% but producer-inclusive ratios are within about 0.5% of baseline at tuned shapes; this does not justify a native extension on performance grounds.",
+    "Extra indirect memory traffic is a plausible explanation for RMW regression, not a profiled causal conclusion.",
+    "This kernel already uses relaxed atomics. An ordering control is needed before attributing the previous embedding gains solely to atomic removal."
+  ],
+  "artifacts": {
+    "screen_nonzero": "screen_nonzero/results.json",
+    "screen_zero": "screen_zero/results.json",
+    "confirm_nonzero": "confirm_nonzero/results.json",
+    "confirm_zero": "confirm_zero/results.json",
+    "source_snapshot": "sources/",
+    "representative_ir": "screen_nonzero/code/ and screen_zero/code/"
+  },
+  "reproduce": {
+    "screen_nonzero": "python segmented_scatter_experiment.py --mode screen --initial nonzero --output NEW_DIR",
+    "screen_zero": "python segmented_scatter_experiment.py --mode screen --initial zero --output NEW_DIR",
+    "confirm": "python segmented_scatter_experiment.py --mode confirm --initial INITIAL --screen SCREEN/results.json --output NEW_DIR"
+  },
+  "provenance_note": "Raw screen reports retain fingerprints of the intermediate screening harness. Final confirmation snapshots are retained; timed manual arithmetic was unchanged between screen and confirmation. Raw confirmation screen_path fields record the original pre-consolidation locations; canonical reports are listed in artifacts.",
+  "compiler_sha256": "deff9f6bf2707b7992472fc9ddee3507f882fceda3d9611ebd3424a3e06ab028",
+  "source_sha256": {
+    "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/segmented_scatter_experiment.py": "ba723651b47a0900a18b80a1ec7c6aeca0c31d5afb09100ee62514774c7dac2b",
+    "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/segmented_kernels.py": "a605b8b5df9c6eb618e343a1296c6d8b99fffd89bec447b6b8931f0dedfffdce",
+    "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/coverage_experiment.py": "db50502fc3f549eb7550f594521835097e0d14d994f477e77da7bbaa812330d2"
+  },
+  "ordering_followup": {
+    "evidence": "../native_atomic_ordering_final/results.json",
+    "finding": "Completed control recovers essentially all earlier native embedding gain with only sem=relaxed; the current scatter baseline already uses relaxed atomics."
+  }
+}

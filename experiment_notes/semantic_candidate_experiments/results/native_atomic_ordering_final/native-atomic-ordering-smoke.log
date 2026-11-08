@@ -1,0 +1,2 @@
+{"shape": [31, 137, 67], "frequency": false, "block": 128, "seed": 0, "device_us": {"original_acq_rel": 4.623999819159508, "relaxed_atomic": 3.8960000965744257, "native_rmw": 4.071999806910753, "native_zero": 3.792000003159046}}
+{"shape": [31, 137, 67], "frequency": true, "block": 128, "seed": 0, "device_us": {"original_acq_rel": 6.6720000468194485, "relaxed_atomic": 6.0640000738203526, "native_rmw": 6.068000104278326, "native_zero": 5.967999808490276}}

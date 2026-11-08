@@ -1,0 +1,581 @@
+{
+  "date": "2026-11-08",
+  "status": "passed",
+  "finding": "Native private-output ordering relaxation retains atomicity, needs no uniqueness contract, and matches a manual relaxed-atomic control on unchanged FlagGems plain/scaled embedding kernels.",
+  "gpu": "NVIDIA B300 SXM6 PC",
+  "compiler_sha256": "37070dd90c060d7c56ab48ff3e4194e4948addc4bb66038e5a014be59da77185",
+  "validation": {
+    "make": "passed",
+    "runtime_tests": 237,
+    "new_private_atomic_gpu_cases": 22,
+    "compiler_test_files": 14,
+    "new_private_atomic_lit_cases": 25,
+    "smoke_benchmark_cases": 4,
+    "confirmation_cases": 72,
+    "source_and_compiler_hashes_verified": true,
+    "all_native_ttir_bodies_change_only_atomic_ordering": true,
+    "no_unique_immutable_bound_or_zero_contracts_emitted": true,
+    "exact_integer_gradient_duplicate_checks": "passed",
+    "ordinary_gradient_derived_error_bounds": "passed",
+    "numerical_observations": {
+      "unique": {
+        "max_abs_fp32_error": 0.0,
+        "maximum_fraction_of_derived_error_bound": 0.0
+      },
+      "fourfold": {
+        "max_abs_fp32_error": 2.384185791015625e-07,
+        "maximum_fraction_of_derived_error_bound": 0.2934359949493688
+      }
+    },
+    "new_indexed_helper_rejection_lit_cases": 2
+  },
+  "semantic_scope": {
+    "caller_promises": [
+      "Initialized private output ready at invocation entry, with no accesses by code outside the invocation until completion",
+      "Input/output backing allocations disjoint and every access inside its allocation",
+      "CUDA with one CTA per logical program"
+    ],
+    "compiler_proves": [
+      "Complete public kernel entry with no symbol uses in its module; private and called helpers rejected",
+      "One unused-result GPU-scope rank-one f32 atomic add in a straight-line function",
+      "Ordinary reads disjoint from output; no output reads, other writes, calls, barriers, volatile accesses or unknown effects",
+      "No internal synchronization/publication partner; this is derived rather than supplied as a caller assertion"
+    ],
+    "change": "Only atomic memory ordering to relaxed; masks, addresses, values and atomicity retained",
+    "not_required": [
+      "Unique destination indices",
+      "Immutable index contents between calls",
+      "Known-zero initialization",
+      "An index range/coverage proof"
+    ]
+  },
+  "method": {
+    "shape_n_d_v": [
+      [
+        4096,
+        128,
+        8192
+      ],
+      [
+        16384,
+        256,
+        32768
+      ],
+      [
+        8192,
+        1024,
+        16384
+      ]
+    ],
+    "index_domains": [
+      "unique randperm subset",
+      "uniform fourfold repeated permutation, shuffled"
+    ],
+    "frequency_modes": [
+      false,
+      true
+    ],
+    "block_sizes": [
+      128,
+      256
+    ],
+    "seeds": 3,
+    "timing": {
+      "rounds": 15,
+      "repetitions": 32,
+      "warmup_ms": 200
+    },
+    "order": "randomized interleaving, shared physical buffers, clocks unlocked",
+    "aggregation": "Median over seeds per block; best tested block per variant",
+    "included": "Scratch zero, original count reset/count kernel when frequency-scaled, update, BF16 conversion",
+    "excluded": "Index producer, allocation, compilation, Python guards and ordinary-call latency",
+    "numerical_policy": "Exact small-integer BF16 gradients validate duplicate accumulation without serialization ambiguity. Timed ordinary BF16 gradients are checked against FP64 reference with conservative FP32 gamma_m accumulation and FP64 reference/sum_abs bounds. BF16 conversion is checked against each actual FP32 result."
+  },
+  "geometric_mean_ratios": {
+    "unique": {
+      "original_over_native": 1.1924419102350623,
+      "manual_over_native": 1.0004322462485704
+    },
+    "fourfold": {
+      "original_over_native": 1.1789077533903958,
+      "manual_over_native": 1.0003490291687367
+    }
+  },
+  "speedup_range": {
+    "unique": [
+      1.1525698666176456,
+      1.261340152364051
+    ],
+    "fourfold": [
+      1.150295319378474,
+      1.2565673734388114
+    ]
+  },
+  "maximum_manual_native_relative_latency_difference": 0.0026269493755246565,
+  "instruction_evidence": {
+    "original": "Two bar.sync sites plus atom.global.gpu.acq_rel.add(.v2).f32",
+    "native_and_manual": "Zero bar.sync sites plus red.global.gpu.relaxed.add(.v2).f32; atomic operations remain",
+    "interpretation": "Performance includes all consequences of changing ordering, including barrier removal and no-return reduction selection. Their individual contributions are not isolated."
+  },
+  "results": [
+    {
+      "shape_n_d_v": [
+        4096,
+        128,
+        8192
+      ],
+      "frequency": false,
+      "index_kind": "unique",
+      "config_median_us": {
+        "128": {
+          "original_acq_rel": 7.35200010240078,
+          "native_relaxed": 5.83200016990304,
+          "manual_relaxed": 5.816000048071146
+        },
+        "256": {
+          "original_acq_rel": 7.340999785810709,
+          "native_relaxed": 5.8200000785291195,
+          "manual_relaxed": 5.828999914228916
+        }
+      },
+      "best": {
+        "original_acq_rel": {
+          "median_us": 7.340999785810709,
+          "block_d": 256
+        },
+        "native_relaxed": {
+          "median_us": 5.8200000785291195,
+          "block_d": 256
+        },
+        "manual_relaxed": {
+          "median_us": 5.816000048071146,
+          "block_d": 128
+        }
+      },
+      "original_over_native": 1.261340152364051,
+      "manual_over_native": 0.9993127095525771
+    },
+    {
+      "shape_n_d_v": [
+        4096,
+        128,
+        8192
+      ],
+      "frequency": false,
+      "index_kind": "fourfold",
+      "config_median_us": {
+        "128": {
+          "original_acq_rel": 7.1749999187886715,
+          "native_relaxed": 5.735000129789114,
+          "manual_relaxed": 5.7310000993311405
+        },
+        "256": {
+          "original_acq_rel": 7.1829999797046185,
+          "native_relaxed": 5.710000172257423,
+          "manual_relaxed": 5.72500005364418
+        }
+      },
+      "best": {
+        "original_acq_rel": {
+          "median_us": 7.1749999187886715,
+          "block_d": 128
+        },
+        "native_relaxed": {
+          "median_us": 5.710000172257423,
+          "block_d": 256
+        },
+        "manual_relaxed": {
+          "median_us": 5.72500005364418,
+          "block_d": 256
+        }
+      },
+      "original_over_native": 1.2565673734388114,
+      "manual_over_native": 1.0026269493755247
+    },
+    {
+      "shape_n_d_v": [
+        4096,
+        128,
+        8192
+      ],
+      "frequency": true,
+      "index_kind": "unique",
+      "config_median_us": {
+        "128": {
+          "original_acq_rel": 12.782000005245209,
+          "native_relaxed": 11.090000160038471,
+          "manual_relaxed": 11.118999682366848
+        },
+        "256": {
+          "original_acq_rel": 12.808999978005886,
+          "native_relaxed": 11.126999743282795,
+          "manual_relaxed": 11.129000224173069
+        }
+      },
+      "best": {
+        "original_acq_rel": {
+          "median_us": 12.782000005245209,
+          "block_d": 128
+        },
+        "native_relaxed": {
+          "median_us": 11.090000160038471,
+          "block_d": 128
+        },
+        "manual_relaxed": {
+          "median_us": 11.118999682366848,
+          "block_d": 128
+        }
+      },
+      "original_over_native": 1.1525698666176456,
+      "manual_over_native": 1.002614925330017
+    },
+    {
+      "shape_n_d_v": [
+        4096,
+        128,
+        8192
+      ],
+      "frequency": true,
+      "index_kind": "fourfold",
+      "config_median_us": {
+        "128": {
+          "original_acq_rel": 12.659000232815742,
+          "native_relaxed": 11.005000211298466,
+          "manual_relaxed": 11.005000211298466
+        },
+        "256": {
+          "original_acq_rel": 12.667999602854252,
+          "native_relaxed": 11.013000272214413,
+          "manual_relaxed": 11.00900024175644
+        }
+      },
+      "best": {
+        "original_acq_rel": {
+          "median_us": 12.659000232815742,
+          "block_d": 128
+        },
+        "native_relaxed": {
+          "median_us": 11.005000211298466,
+          "block_d": 128
+        },
+        "manual_relaxed": {
+          "median_us": 11.005000211298466,
+          "block_d": 128
+        }
+      },
+      "original_over_native": 1.150295319378474,
+      "manual_over_native": 1.0
+    },
+    {
+      "shape_n_d_v": [
+        16384,
+        256,
+        32768
+      ],
+      "frequency": false,
+      "index_kind": "unique",
+      "config_median_us": {
+        "128": {
+          "original_acq_rel": 31.699001789093018,
+          "native_relaxed": 27.96100080013275,
+          "manual_relaxed": 27.928000316023827
+        },
+        "256": {
+          "original_acq_rel": 22.787999361753464,
+          "native_relaxed": 19.533000886440277,
+          "manual_relaxed": 19.53599974513054
+        }
+      },
+      "best": {
+        "original_acq_rel": {
+          "median_us": 22.787999361753464,
+          "block_d": 256
+        },
+        "native_relaxed": {
+          "median_us": 19.533000886440277,
+          "block_d": 256
+        },
+        "manual_relaxed": {
+          "median_us": 19.53599974513054,
+          "block_d": 256
+        }
+      },
+      "original_over_native": 1.1666409833408031,
+      "manual_over_native": 1.0001535278018825
+    },
+    {
+      "shape_n_d_v": [
+        16384,
+        256,
+        32768
+      ],
+      "frequency": false,
+      "index_kind": "fourfold",
+      "config_median_us": {
+        "128": {
+          "original_acq_rel": 30.72899952530861,
+          "native_relaxed": 27.761999517679214,
+          "manual_relaxed": 27.76999957859516
+        },
+        "256": {
+          "original_acq_rel": 22.252000868320465,
+          "native_relaxed": 19.34400014579296,
+          "manual_relaxed": 19.339000806212425
+        }
+      },
+      "best": {
+        "original_acq_rel": {
+          "median_us": 22.252000868320465,
+          "block_d": 256
+        },
+        "native_relaxed": {
+          "median_us": 19.34400014579296,
+          "block_d": 256
+        },
+        "manual_relaxed": {
+          "median_us": 19.339000806212425,
+          "block_d": 256
+        }
+      },
+      "original_over_native": 1.1503308881622374,
+      "manual_over_native": 0.9997415560616802
+    },
+    {
+      "shape_n_d_v": [
+        16384,
+        256,
+        32768
+      ],
+      "frequency": true,
+      "index_kind": "unique",
+      "config_median_us": {
+        "128": {
+          "original_acq_rel": 39.51900079846382,
+          "native_relaxed": 33.5640013217926,
+          "manual_relaxed": 33.562999218702316
+        },
+        "256": {
+          "original_acq_rel": 29.43900041282177,
+          "native_relaxed": 25.276999920606613,
+          "manual_relaxed": 25.28800070285797
+        }
+      },
+      "best": {
+        "original_acq_rel": {
+          "median_us": 29.43900041282177,
+          "block_d": 256
+        },
+        "native_relaxed": {
+          "median_us": 25.276999920606613,
+          "block_d": 256
+        },
+        "manual_relaxed": {
+          "median_us": 25.28800070285797,
+          "block_d": 256
+        }
+      },
+      "original_over_native": 1.1646556357672084,
+      "manual_over_native": 1.000435209173791
+    },
+    {
+      "shape_n_d_v": [
+        16384,
+        256,
+        32768
+      ],
+      "frequency": true,
+      "index_kind": "fourfold",
+      "config_median_us": {
+        "128": {
+          "original_acq_rel": 38.54300081729889,
+          "native_relaxed": 33.369001001119614,
+          "manual_relaxed": 33.37100148200989
+        },
+        "256": {
+          "original_acq_rel": 28.790999203920364,
+          "native_relaxed": 25.02099983394146,
+          "manual_relaxed": 25.022000074386597
+        }
+      },
+      "best": {
+        "original_acq_rel": {
+          "median_us": 28.790999203920364,
+          "block_d": 256
+        },
+        "native_relaxed": {
+          "median_us": 25.02099983394146,
+          "block_d": 256
+        },
+        "manual_relaxed": {
+          "median_us": 25.022000074386597,
+          "block_d": 256
+        }
+      },
+      "original_over_native": 1.1506734101354668,
+      "manual_over_native": 1.0000399760381988
+    },
+    {
+      "shape_n_d_v": [
+        8192,
+        1024,
+        16384
+      ],
+      "frequency": false,
+      "index_kind": "unique",
+      "config_median_us": {
+        "128": {
+          "original_acq_rel": 66.50000065565109,
+          "native_relaxed": 55.05700036883354,
+          "manual_relaxed": 55.07500097155571
+        },
+        "256": {
+          "original_acq_rel": 45.882999897003174,
+          "native_relaxed": 38.34199905395508,
+          "manual_relaxed": 38.332998752593994
+        }
+      },
+      "best": {
+        "original_acq_rel": {
+          "median_us": 45.882999897003174,
+          "block_d": 256
+        },
+        "native_relaxed": {
+          "median_us": 38.34199905395508,
+          "block_d": 256
+        },
+        "manual_relaxed": {
+          "median_us": 38.332998752593994,
+          "block_d": 256
+        }
+      },
+      "original_over_native": 1.1966772998047481,
+      "manual_over_native": 0.9997652625949831
+    },
+    {
+      "shape_n_d_v": [
+        8192,
+        1024,
+        16384
+      ],
+      "frequency": false,
+      "index_kind": "fourfold",
+      "config_median_us": {
+        "128": {
+          "original_acq_rel": 64.44700062274933,
+          "native_relaxed": 54.79099974036217,
+          "manual_relaxed": 54.79399859905243
+        },
+        "256": {
+          "original_acq_rel": 44.50400173664093,
+          "native_relaxed": 38.00100088119507,
+          "manual_relaxed": 37.98399865627289
+        }
+      },
+      "best": {
+        "original_acq_rel": {
+          "median_us": 44.50400173664093,
+          "block_d": 256
+        },
+        "native_relaxed": {
+          "median_us": 38.00100088119507,
+          "block_d": 256
+        },
+        "manual_relaxed": {
+          "median_us": 37.98399865627289,
+          "block_d": 256
+        }
+      },
+      "original_over_native": 1.1711270941461938,
+      "manual_over_native": 0.9995525848128228
+    },
+    {
+      "shape_n_d_v": [
+        8192,
+        1024,
+        16384
+      ],
+      "frequency": true,
+      "index_kind": "unique",
+      "config_median_us": {
+        "128": {
+          "original_acq_rel": 76.9909992814064,
+          "native_relaxed": 61.12699955701828,
+          "manual_relaxed": 61.12400069832802
+        },
+        "256": {
+          "original_acq_rel": 54.03300002217293,
+          "native_relaxed": 44.42699998617172,
+          "manual_relaxed": 44.44099962711334
+        }
+      },
+      "best": {
+        "original_acq_rel": {
+          "median_us": 54.03300002217293,
+          "block_d": 256
+        },
+        "native_relaxed": {
+          "median_us": 44.42699998617172,
+          "block_d": 256
+        },
+        "manual_relaxed": {
+          "median_us": 44.44099962711334,
+          "block_d": 256
+        }
+      },
+      "original_over_native": 1.2162198671751672,
+      "manual_over_native": 1.0003151156041592
+    },
+    {
+      "shape_n_d_v": [
+        8192,
+        1024,
+        16384
+      ],
+      "frequency": true,
+      "index_kind": "fourfold",
+      "config_median_us": {
+        "128": {
+          "original_acq_rel": 75.05399733781815,
+          "native_relaxed": 60.798998922109604,
+          "manual_relaxed": 60.76899915933609
+        },
+        "256": {
+          "original_acq_rel": 52.74299904704094,
+          "native_relaxed": 44.02099922299385,
+          "manual_relaxed": 44.02700066566467
+        }
+      },
+      "best": {
+        "original_acq_rel": {
+          "median_us": 52.74299904704094,
+          "block_d": 256
+        },
+        "native_relaxed": {
+          "median_us": 44.02099922299385,
+          "block_d": 256
+        },
+        "manual_relaxed": {
+          "median_us": 44.02700066566467,
+          "block_d": 256
+        }
+      },
+      "original_over_native": 1.198132708888881,
+      "manual_over_native": 1.0001363313595046
+    }
+  ],
+  "limits": [
+    "Opt-in NVIDIA one-CTA prototype; unsupported effects/regions remain unchanged",
+    "Uniform fourfold duplicates establish applicability beyond uniqueness but do not cover arbitrary training skew or all multiplicities",
+    "Nondeterministic floating-point atomics may choose different permitted accumulation orders; no bitwise normal-gradient guarantee",
+    "GPU operation timings, not ordinary-call or model-level speedups",
+    "Frequency counting is deliberately unchanged"
+  ],
+  "artifacts": {
+    "raw_results": "results.json",
+    "smoke": "smoke_results.json",
+    "representative_code": "code/",
+    "native_source_snapshots": "sources/",
+    "reproducer": "../../native_private_atomic_experiment.py"
+  },
+  "reproduce": "From the Triton checkout after make: ../.venv-semantic/bin/python experiment_notes/semantic_candidate_experiments/native_private_atomic_experiment.py --mode confirm --output UNUSED_DIRECTORY"
+}

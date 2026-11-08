@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://raw.githubusercontent.com/flagos-ai/FlagGems/3f1f896fd90f5db42d167d64fcb9691326071bc2/src/flag_gems/ops/scatter_add.py",
+    "revision": "3f1f896fd90f5db42d167d64fcb9691326071bc2",
+    "local": "flag_scatter.py",
+    "sha256": "6f4f0a89f755379b41406e726f57a3c62e65bfb92579d2a595db07c34b8c43a6"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/flagos-ai/FlagGems/3f1f896fd90f5db42d167d64fcb9691326071bc2/LICENSE",
+    "revision": "3f1f896fd90f5db42d167d64fcb9691326071bc2",
+    "local": "flag_LICENSE",
+    "sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594"
+  }
+]

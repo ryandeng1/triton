@@ -1,0 +1,5083 @@
+{
+  "status": "passed",
+  "mode": "confirm",
+  "gpu": "NVIDIA B300 SXM6 PC",
+  "torch": "2.14.1+cu130",
+  "triton": "3.9.0",
+  "compiler_sha256": "deff9f6bf2707b7992472fc9ddee3507f882fceda3d9611ebd3424a3e06ab028",
+  "git_revision": "c596ded1a3c0318fd05b0f06401aaf6681acb067",
+  "source_sha256": {
+    "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/native_atomic_ordering_experiment.py": "5557ea03b353e8d9f4be3108dc773f7e8eeb21f43f92ae37d25d8d61f46ae5b0",
+    "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/native_indexed_update_experiment.py": "4a45f90c8e1ac4722bac06a845c5cf450b955920d0b3118066aabcf252979279",
+    "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/irregular_kernels.py": "ac5bb1ae6da6c5dd384a0fcb1a807c04988aca1008dc0badcd1f94660ba58d25",
+    "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/coverage_experiment.py": "db50502fc3f549eb7550f594521835097e0d14d994f477e77da7bbaa812330d2",
+    "/home/ryandeng/tpaa/triton/python/triton/experimental/semantic_contracts/native.py": "2f06c8ee37abe6a8aea27331cdc2620609db9320e05b70164165c1b15a141835",
+    "/home/ryandeng/tpaa/triton/lib/Dialect/Triton/Transforms/SpecializeIndexedUpdates.cpp": "8ad54e4894b0dc9aa80db59d7a3ab771bc8a6d720eb1dfedb04b654f67f26c79",
+    "/home/ryandeng/tpaa/triton/include/triton/Dialect/Triton/Transforms/Passes.td": "292e8732199c5fe908c78cc996b8753bbc850e6f6478644af87aded691e880d5",
+    "/home/ryandeng/tpaa/triton/third_party/nvidia/backend/compiler.py": "03a78ea296b30d2a960d1bd42bf84ce7e6866befe7e3f0c914e695906051aa69"
+  },
+  "source_audit": {
+    "upstream": {
+      "_embedding_dense_backward_kernel": {
+        "ast_identical_to_pinned_upstream": true,
+        "ast_sha256": "d0ec650fe2662e96af902bce223638f02eede96fd53fb35fadad1cd421ad1d84"
+      },
+      "_embedding_dense_backward_kernel_scale_by_freq": {
+        "ast_identical_to_pinned_upstream": true,
+        "ast_sha256": "40b7b414d34a1bb68e8a1f4cd7c4ea3481234b5abc698554f04af83e4701df90"
+      }
+    },
+    "relaxed_controls": {
+      "_embedding_dense_backward_kernel": "Only sem='relaxed' added, apart from function name; AST audited",
+      "_embedding_dense_backward_kernel_scale_by_freq": "Only sem='relaxed' added, apart from function name; AST audited"
+    }
+  },
+  "settings": {
+    "rounds": 15,
+    "repetitions": 32,
+    "warmup_ms": 200
+  },
+  "cases": [
+    {
+      "shape_n_d_v": [
+        4096,
+        128,
+        8192
+      ],
+      "frequency": false,
+      "block_d": 128,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "original_acq_rel": [
+            7.393999956548214,
+            7.369999773800373,
+            7.37799983471632,
+            7.323000114411116,
+            7.342999801039696,
+            7.35200010240078,
+            7.352999877184629,
+            7.37100001424551,
+            7.313000038266182,
+            7.342999801039696,
+            7.410999853163958,
+            7.337000221014023,
+            7.337000221014023,
+            7.329999934881926,
+            7.362000178545713
+          ],
+          "relaxed_atomic": [
+            5.814000032842159,
+            5.8189998380839825,
+            5.8189998380839825,
+            5.836000200361013,
+            5.816000048071146,
+            5.795999895781279,
+            5.799000151455402,
+            5.826999898999929,
+            5.824999883770943,
+            5.841999780386686,
+            5.828999914228916,
+            5.8120000176131725,
+            5.824000108987093,
+            5.805000197142363,
+            5.872000008821487
+          ],
+          "native_rmw": [
+            6.0270000249147415,
+            5.83899999037385,
+            5.872000008821487,
+            5.867999978363514,
+            5.896999966353178,
+            5.880999844521284,
+            5.907000042498112,
+            5.853999871760607,
+            5.890999920666218,
+            5.853000096976757,
+            5.861999932676554,
+            5.8570001274347305,
+            5.849000066518784,
+            5.884000100195408,
+            5.878000054508448
+          ],
+          "native_zero": [
+            5.688000004738569,
+            5.688999779522419,
+            5.690000019967556,
+            5.714000202715397,
+            5.671999882906675,
+            5.735999904572964,
+            5.70600014179945,
+            5.677999928593636,
+            5.692000035196543,
+            5.671999882906675,
+            5.7219997979700565,
+            5.6940000504255295,
+            5.669000092893839,
+            5.698000080883503,
+            5.688000004738569
+          ]
+        },
+        "median_us": {
+          "original_acq_rel": 7.35200010240078,
+          "relaxed_atomic": 5.8189998380839825,
+          "native_rmw": 5.872000008821487,
+          "native_zero": 5.690000019967556
+        },
+        "rounds": 15,
+        "repetitions": 32,
+        "warmup_ms": 200,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "code": {
+        "original_acq_rel": {
+          "ptx_sha256": "76e923a80fa640d946df5d6458f870aaaa60ea46a9b2ea22178c37d7357d8611",
+          "atomic_sites": 1,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "retained_prefix": "code/n4096-d128-v8192-freq0-original_acq_rel",
+          "atomic_instructions": [
+            "atom.global.gpu.acq_rel.add.f32"
+          ]
+        },
+        "relaxed_atomic": {
+          "ptx_sha256": "8d89343d1836785a3be875151f2cc15ec9e5987419548aeebaa192fb58a733e1",
+          "atomic_sites": 1,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "retained_prefix": "code/n4096-d128-v8192-freq0-relaxed_atomic",
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.f32"
+          ]
+        },
+        "native_rmw": {
+          "ptx_sha256": "e5cc4930ce3cfdca5a219b3f846d2021731f6f5099a2686d9cb02861cb62b318",
+          "atomic_sites": 0,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "retained_prefix": "code/n4096-d128-v8192-freq0-native_rmw",
+          "atomic_instructions": []
+        },
+        "native_zero": {
+          "ptx_sha256": "b868578b464d03a49bea24ae818684a3c23b74df11be7d7407f0dca40d054eb3",
+          "atomic_sites": 0,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "retained_prefix": "code/n4096-d128-v8192-freq0-native_zero",
+          "atomic_instructions": []
+        }
+      },
+      "validation": "Exact FP32 scratch and BF16 output; poisoned output; changed gradients",
+      "scope": "Scratch zero + optional unchanged frequency-count reset/kernel + update + BF16 conversion"
+    },
+    {
+      "shape_n_d_v": [
+        4096,
+        128,
+        8192
+      ],
+      "frequency": false,
+      "block_d": 128,
+      "seed": 1,
+      "device": {
+        "samples_us": {
+          "original_acq_rel": [
+            7.387999910861254,
+            7.422999944537878,
+            7.406000047922134,
+            7.393999956548214,
+            7.406000047922134,
+            7.3819998651742935,
+            7.416000124067068,
+            7.354999892413616,
+            7.393999956548214,
+            7.410999853163958,
+            7.360999938100576,
+            7.402000017464161,
+            7.389000151306391,
+            7.385999895632267,
+            7.402999792248011
+          ],
+          "relaxed_atomic": [
+            5.855000112205744,
+            5.876000039279461,
+            5.884000100195408,
+            5.880999844521284,
+            5.896999966353178,
+            5.878000054508448,
+            5.843000020831823,
+            5.85100008174777,
+            5.884999874979258,
+            5.876999814063311,
+            5.8650001883506775,
+            5.863000173121691,
+            5.861000157892704,
+            5.901999771595001,
+            5.87099976837635
+          ],
+          "native_rmw": [
+            5.882000084966421,
+            5.874000024050474,
+            5.872000008821487,
+            5.869000218808651,
+            5.884999874979258,
+            5.85799990221858,
+            5.880000069737434,
+            5.874999798834324,
+            5.849999841302633,
+            5.859000142663717,
+            5.863000173121691,
+            5.8650001883506775,
+            5.876000039279461,
+            5.890000145882368,
+            5.876000039279461
+          ],
+          "native_zero": [
+            5.847000051289797,
+            5.714000202715397,
+            5.752999801188707,
+            5.71900000795722,
+            5.71900000795722,
+            5.704999901354313,
+            5.729000084102154,
+            5.694999825209379,
+            5.756000056862831,
+            5.735000129789114,
+            5.733999889343977,
+            5.745999980717897,
+            5.743999965488911,
+            5.733000114560127,
+            5.694999825209379
+          ]
+        },
+        "median_us": {
+          "original_acq_rel": 7.393999956548214,
+          "relaxed_atomic": 5.876000039279461,
+          "native_rmw": 5.874000024050474,
+          "native_zero": 5.733000114560127
+        },
+        "rounds": 15,
+        "repetitions": 32,
+        "warmup_ms": 200,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "code": {
+        "original_acq_rel": {
+          "ptx_sha256": "76e923a80fa640d946df5d6458f870aaaa60ea46a9b2ea22178c37d7357d8611",
+          "atomic_sites": 1,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "atom.global.gpu.acq_rel.add.f32"
+          ]
+        },
+        "relaxed_atomic": {
+          "ptx_sha256": "8d89343d1836785a3be875151f2cc15ec9e5987419548aeebaa192fb58a733e1",
+          "atomic_sites": 1,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.f32"
+          ]
+        },
+        "native_rmw": {
+          "ptx_sha256": "e5cc4930ce3cfdca5a219b3f846d2021731f6f5099a2686d9cb02861cb62b318",
+          "atomic_sites": 0,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        },
+        "native_zero": {
+          "ptx_sha256": "b868578b464d03a49bea24ae818684a3c23b74df11be7d7407f0dca40d054eb3",
+          "atomic_sites": 0,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        }
+      },
+      "validation": "Exact FP32 scratch and BF16 output; poisoned output; changed gradients",
+      "scope": "Scratch zero + optional unchanged frequency-count reset/kernel + update + BF16 conversion"
+    },
+    {
+      "shape_n_d_v": [
+        4096,
+        128,
+        8192
+      ],
+      "frequency": false,
+      "block_d": 128,
+      "seed": 2,
+      "device": {
+        "samples_us": {
+          "original_acq_rel": [
+            7.350999861955643,
+            7.327000144869089,
+            7.36499996855855,
+            7.342999801039696,
+            7.356000132858753,
+            7.344000041484833,
+            7.327999919652939,
+            7.3449998162686825,
+            7.329000160098076,
+            7.325999904423952,
+            7.338999770581722,
+            7.35800014808774,
+            7.323999889194965,
+            7.325999904423952,
+            7.319000083953142
+          ],
+          "relaxed_atomic": [
+            5.905999802052975,
+            5.822999868541956,
+            5.789000075310469,
+            5.816999822854996,
+            5.810000002384186,
+            5.805000197142363,
+            5.787000060081482,
+            5.8109997771680355,
+            5.816999822854996,
+            5.801000166684389,
+            5.795000120997429,
+            5.795000120997429,
+            5.826999898999929,
+            5.801000166684389,
+            5.799999926239252
+          ],
+          "native_rmw": [
+            5.869000218808651,
+            5.880999844521284,
+            5.886999890208244,
+            5.886000115424395,
+            5.824999883770943,
+            5.830999929457903,
+            5.814999807626009,
+            5.8650001883506775,
+            5.874999798834324,
+            5.859999917447567,
+            5.87099976837635,
+            5.876999814063311,
+            5.87099976837635,
+            5.822999868541956,
+            5.853000096976757
+          ],
+          "native_zero": [
+            5.754999816417694,
+            5.774000193923712,
+            5.675999913364649,
+            5.71900000795722,
+            5.729000084102154,
+            5.7379999198019505,
+            5.758000072091818,
+            5.673999898135662,
+            5.70600014179945,
+            5.683999974280596,
+            5.696000065654516,
+            5.716999992728233,
+            5.710000172257423,
+            5.717999767512083,
+            5.727000068873167
+          ]
+        },
+        "median_us": {
+          "original_acq_rel": 7.338999770581722,
+          "relaxed_atomic": 5.805000197142363,
+          "native_rmw": 5.869000218808651,
+          "native_zero": 5.717999767512083
+        },
+        "rounds": 15,
+        "repetitions": 32,
+        "warmup_ms": 200,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "code": {
+        "original_acq_rel": {
+          "ptx_sha256": "76e923a80fa640d946df5d6458f870aaaa60ea46a9b2ea22178c37d7357d8611",
+          "atomic_sites": 1,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "atom.global.gpu.acq_rel.add.f32"
+          ]
+        },
+        "relaxed_atomic": {
+          "ptx_sha256": "8d89343d1836785a3be875151f2cc15ec9e5987419548aeebaa192fb58a733e1",
+          "atomic_sites": 1,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.f32"
+          ]
+        },
+        "native_rmw": {
+          "ptx_sha256": "e5cc4930ce3cfdca5a219b3f846d2021731f6f5099a2686d9cb02861cb62b318",
+          "atomic_sites": 0,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        },
+        "native_zero": {
+          "ptx_sha256": "b868578b464d03a49bea24ae818684a3c23b74df11be7d7407f0dca40d054eb3",
+          "atomic_sites": 0,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        }
+      },
+      "validation": "Exact FP32 scratch and BF16 output; poisoned output; changed gradients",
+      "scope": "Scratch zero + optional unchanged frequency-count reset/kernel + update + BF16 conversion"
+    },
+    {
+      "shape_n_d_v": [
+        4096,
+        128,
+        8192
+      ],
+      "frequency": false,
+      "block_d": 256,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "original_acq_rel": [
+            7.294000126421452,
+            7.313000038266182,
+            7.294999901205301,
+            7.278000004589558,
+            7.269999943673611,
+            7.313999813050032,
+            7.269000168889761,
+            7.300000172108412,
+            7.3009999468922615,
+            7.269000168889761,
+            7.271999958902597,
+            7.271000184118748,
+            7.48400017619133,
+            7.278999779373407,
+            7.294999901205301
+          ],
+          "relaxed_atomic": [
+            5.816999822854996,
+            5.853999871760607,
+            5.787000060081482,
+            5.778999999165535,
+            5.787000060081482,
+            5.82600012421608,
+            5.801999941468239,
+            5.793000105768442,
+            5.750000011175871,
+            5.789000075310469,
+            5.750000011175871,
+            5.795999895781279,
+            5.787000060081482,
+            5.789000075310469,
+            5.8109997771680355
+          ],
+          "native_rmw": [
+            6.029000040143728,
+            5.898000206798315,
+            5.890999920666218,
+            5.8559998869895935,
+            5.872999783605337,
+            5.853000096976757,
+            5.872000008821487,
+            5.874000024050474,
+            5.872000008821487,
+            5.85100008174777,
+            5.888000130653381,
+            5.874999798834324,
+            5.849000066518784,
+            5.890000145882368,
+            5.882999859750271
+          ],
+          "native_zero": [
+            5.727999843657017,
+            5.690999794751406,
+            5.752999801188707,
+            5.70600014179945,
+            5.7069999165833,
+            5.729000084102154,
+            5.692000035196543,
+            5.70000009611249,
+            5.704999901354313,
+            5.754999816417694,
+            5.73199987411499,
+            5.7069999165833,
+            5.696000065654516,
+            5.677999928593636,
+            5.758000072091818
+          ]
+        },
+        "median_us": {
+          "original_acq_rel": 7.294000126421452,
+          "relaxed_atomic": 5.789000075310469,
+          "native_rmw": 5.874000024050474,
+          "native_zero": 5.7069999165833
+        },
+        "rounds": 15,
+        "repetitions": 32,
+        "warmup_ms": 200,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "code": {
+        "original_acq_rel": {
+          "ptx_sha256": "0d1cd42538a837b87d4028fdfa18e3dd1a463ad9420f150e115ca0a3cde41fbb",
+          "atomic_sites": 1,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "atom.global.gpu.acq_rel.add.v2.f32"
+          ]
+        },
+        "relaxed_atomic": {
+          "ptx_sha256": "2206339169a3265efb8df54f10cb8956ad330349de941f9e83795857f662f3ea",
+          "atomic_sites": 1,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.v2.f32"
+          ]
+        },
+        "native_rmw": {
+          "ptx_sha256": "45819c61ee7593c6515cb529a230222fd74d26a8ffffc23a880b1a0027fd5d15",
+          "atomic_sites": 0,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        },
+        "native_zero": {
+          "ptx_sha256": "6da8abe78ecb37d2123e791066789ebe74577ba871c8975a351275424774a90f",
+          "atomic_sites": 0,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        }
+      },
+      "validation": "Exact FP32 scratch and BF16 output; poisoned output; changed gradients",
+      "scope": "Scratch zero + optional unchanged frequency-count reset/kernel + update + BF16 conversion"
+    },
+    {
+      "shape_n_d_v": [
+        4096,
+        128,
+        8192
+      ],
+      "frequency": false,
+      "block_d": 256,
+      "seed": 1,
+      "device": {
+        "samples_us": {
+          "original_acq_rel": [
+            7.37199978902936,
+            7.348000071942806,
+            7.35899992287159,
+            7.337000221014023,
+            7.524999789893627,
+            7.344000041484833,
+            7.362999953329563,
+            7.375999819487333,
+            7.335999980568886,
+            7.385000120848417,
+            7.340999785810709,
+            7.3449998162686825,
+            7.404999807476997,
+            7.350999861955643,
+            7.356999907642603
+          ],
+          "relaxed_atomic": [
+            5.896999966353178,
+            5.890000145882368,
+            5.894999951124191,
+            5.87099976837635,
+            5.820999853312969,
+            5.905000027269125,
+            5.878000054508448,
+            5.867000203579664,
+            5.85799990221858,
+            5.894000176340342,
+            5.874000024050474,
+            5.8639999479055405,
+            5.859999917447567,
+            5.876999814063311,
+            5.869000218808651
+          ],
+          "native_rmw": [
+            5.869000218808651,
+            5.888999905437231,
+            5.853000096976757,
+            5.867000203579664,
+            5.903000012040138,
+            5.907000042498112,
+            5.874000024050474,
+            5.872999783605337,
+            5.888999905437231,
+            5.900000222027302,
+            5.882999859750271,
+            5.886999890208244,
+            5.869000218808651,
+            5.861999932676554,
+            5.884999874979258
+          ],
+          "native_zero": [
+            5.8559998869895935,
+            5.6859999895095825,
+            5.727999843657017,
+            5.735000129789114,
+            5.681000184267759,
+            5.698000080883503,
+            5.758999846875668,
+            5.700999870896339,
+            5.733999889343977,
+            5.681999959051609,
+            5.692000035196543,
+            5.727999843657017,
+            5.677999928593636,
+            5.762999877333641,
+            5.743000190705061
+          ]
+        },
+        "median_us": {
+          "original_acq_rel": 7.356999907642603,
+          "relaxed_atomic": 5.874000024050474,
+          "native_rmw": 5.882999859750271,
+          "native_zero": 5.727999843657017
+        },
+        "rounds": 15,
+        "repetitions": 32,
+        "warmup_ms": 200,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "code": {
+        "original_acq_rel": {
+          "ptx_sha256": "0d1cd42538a837b87d4028fdfa18e3dd1a463ad9420f150e115ca0a3cde41fbb",
+          "atomic_sites": 1,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "atom.global.gpu.acq_rel.add.v2.f32"
+          ]
+        },
+        "relaxed_atomic": {
+          "ptx_sha256": "2206339169a3265efb8df54f10cb8956ad330349de941f9e83795857f662f3ea",
+          "atomic_sites": 1,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.v2.f32"
+          ]
+        },
+        "native_rmw": {
+          "ptx_sha256": "45819c61ee7593c6515cb529a230222fd74d26a8ffffc23a880b1a0027fd5d15",
+          "atomic_sites": 0,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        },
+        "native_zero": {
+          "ptx_sha256": "6da8abe78ecb37d2123e791066789ebe74577ba871c8975a351275424774a90f",
+          "atomic_sites": 0,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        }
+      },
+      "validation": "Exact FP32 scratch and BF16 output; poisoned output; changed gradients",
+      "scope": "Scratch zero + optional unchanged frequency-count reset/kernel + update + BF16 conversion"
+    },
+    {
+      "shape_n_d_v": [
+        4096,
+        128,
+        8192
+      ],
+      "frequency": false,
+      "block_d": 256,
+      "seed": 2,
+      "device": {
+        "samples_us": {
+          "original_acq_rel": [
+            7.327000144869089,
+            7.284999825060368,
+            7.2730001993477345,
+            7.340999785810709,
+            7.261999882757664,
+            7.282999809831381,
+            7.277000229805708,
+            7.267999928444624,
+            7.280000019818544,
+            7.294999901205301,
+            7.275000214576721,
+            7.2730001993477345,
+            7.282000035047531,
+            7.290000095963478,
+            7.278999779373407
+          ],
+          "relaxed_atomic": [
+            5.942999850958586,
+            5.822999868541956,
+            5.816000048071146,
+            5.791999865323305,
+            5.830999929457903,
+            5.801000166684389,
+            5.801999941468239,
+            5.795999895781279,
+            5.787000060081482,
+            5.799000151455402,
+            5.8200000785291195,
+            5.805000197142363,
+            5.799000151455402,
+            5.7830000296235085,
+            5.797999911010265
+          ],
+          "native_rmw": [
+            5.923999939113855,
+            5.859999917447567,
+            5.8559998869895935,
+            5.85100008174777,
+            5.863000173121691,
+            5.863000173121691,
+            5.880000069737434,
+            5.884999874979258,
+            5.840000230818987,
+            5.861000157892704,
+            5.863000173121691,
+            5.853000096976757,
+            5.867000203579664,
+            5.8559998869895935,
+            5.880999844521284
+          ],
+          "native_zero": [
+            5.747000221163034,
+            5.747999995946884,
+            5.696999840438366,
+            5.735999904572964,
+            5.754000041633844,
+            5.690999794751406,
+            5.741999950259924,
+            5.733999889343977,
+            5.673999898135662,
+            5.702000111341476,
+            5.735999904572964,
+            5.690999794751406,
+            5.741000175476074,
+            5.675999913364649,
+            5.73199987411499
+          ]
+        },
+        "median_us": {
+          "original_acq_rel": 7.280000019818544,
+          "relaxed_atomic": 5.801000166684389,
+          "native_rmw": 5.863000173121691,
+          "native_zero": 5.733999889343977
+        },
+        "rounds": 15,
+        "repetitions": 32,
+        "warmup_ms": 200,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "code": {
+        "original_acq_rel": {
+          "ptx_sha256": "0d1cd42538a837b87d4028fdfa18e3dd1a463ad9420f150e115ca0a3cde41fbb",
+          "atomic_sites": 1,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "atom.global.gpu.acq_rel.add.v2.f32"
+          ]
+        },
+        "relaxed_atomic": {
+          "ptx_sha256": "2206339169a3265efb8df54f10cb8956ad330349de941f9e83795857f662f3ea",
+          "atomic_sites": 1,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.v2.f32"
+          ]
+        },
+        "native_rmw": {
+          "ptx_sha256": "45819c61ee7593c6515cb529a230222fd74d26a8ffffc23a880b1a0027fd5d15",
+          "atomic_sites": 0,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        },
+        "native_zero": {
+          "ptx_sha256": "6da8abe78ecb37d2123e791066789ebe74577ba871c8975a351275424774a90f",
+          "atomic_sites": 0,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        }
+      },
+      "validation": "Exact FP32 scratch and BF16 output; poisoned output; changed gradients",
+      "scope": "Scratch zero + optional unchanged frequency-count reset/kernel + update + BF16 conversion"
+    },
+    {
+      "shape_n_d_v": [
+        4096,
+        128,
+        8192
+      ],
+      "frequency": true,
+      "block_d": 128,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "original_acq_rel": [
+            12.772999703884125,
+            12.741000391542912,
+            12.728000059723854,
+            12.745999731123447,
+            12.7379996702075,
+            12.71700020879507,
+            12.78000045567751,
+            12.752999551594257,
+            12.73099984973669,
+            12.746999971568584,
+            12.7379996702075,
+            12.745000422000885,
+            12.744000181555748,
+            12.749999761581421,
+            12.721999548375607
+          ],
+          "relaxed_atomic": [
+            11.05399988591671,
+            11.087999679148197,
+            11.07299979776144,
+            11.070000007748604,
+            11.092999950051308,
+            11.080999858677387,
+            11.06599997729063,
+            11.057999916374683,
+            11.091000400483608,
+            11.068000458180904,
+            11.075000278651714,
+            11.075999587774277,
+            11.083999648690224,
+            11.068999767303467,
+            11.05900015681982
+          ],
+          "native_rmw": [
+            11.076999828219414,
+            10.974000208079815,
+            11.051000095903873,
+            11.00200042128563,
+            11.006000451743603,
+            10.998999699950218,
+            11.04000024497509,
+            11.00900024175644,
+            11.009999550879002,
+            11.020000092685223,
+            11.02100033313036,
+            11.003999970853329,
+            11.05900015681982,
+            10.983999818563461,
+            10.998000390827656
+          ],
+          "native_zero": [
+            10.956999845802784,
+            10.993000119924545,
+            10.92700008302927,
+            10.995999909937382,
+            10.941999964416027,
+            10.948999784886837,
+            10.999999940395355,
+            10.93900017440319,
+            11.002999730408192,
+            11.017000302672386,
+            10.93399990350008,
+            10.998000390827656,
+            10.94099972397089,
+            10.990000329911709,
+            10.955000296235085
+          ]
+        },
+        "median_us": {
+          "original_acq_rel": 12.744000181555748,
+          "relaxed_atomic": 11.07299979776144,
+          "native_rmw": 11.00900024175644,
+          "native_zero": 10.956999845802784
+        },
+        "rounds": 15,
+        "repetitions": 32,
+        "warmup_ms": 200,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "code": {
+        "original_acq_rel": {
+          "ptx_sha256": "cb50c21bd78c7e53e8e34ef8b604bde1174a8b5783ee31cadc2d588c0f6f2b70",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "retained_prefix": "code/n4096-d128-v8192-freq1-original_acq_rel",
+          "atomic_instructions": [
+            "atom.global.gpu.acq_rel.add.f32"
+          ]
+        },
+        "relaxed_atomic": {
+          "ptx_sha256": "7b13bb6b3634543984a3e13f9f3f54d324b8df5c7a89afd347478a0472a74d6d",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "retained_prefix": "code/n4096-d128-v8192-freq1-relaxed_atomic",
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.f32"
+          ]
+        },
+        "native_rmw": {
+          "ptx_sha256": "98dd9c9771f68d623371554e00282a826c9c777593385316185bebf1ac10f305",
+          "atomic_sites": 0,
+          "registers": 16,
+          "spills": 0,
+          "shared_bytes": 0,
+          "retained_prefix": "code/n4096-d128-v8192-freq1-native_rmw",
+          "atomic_instructions": []
+        },
+        "native_zero": {
+          "ptx_sha256": "68e3ec5d3f9fb49d27c0e9f392b52c1316efd76c3c939afe0f040d2d6c050722",
+          "atomic_sites": 0,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "retained_prefix": "code/n4096-d128-v8192-freq1-native_zero",
+          "atomic_instructions": []
+        }
+      },
+      "validation": "Exact FP32 scratch and BF16 output; poisoned output; changed gradients",
+      "scope": "Scratch zero + optional unchanged frequency-count reset/kernel + update + BF16 conversion"
+    },
+    {
+      "shape_n_d_v": [
+        4096,
+        128,
+        8192
+      ],
+      "frequency": true,
+      "block_d": 128,
+      "seed": 1,
+      "device": {
+        "samples_us": {
+          "original_acq_rel": [
+            12.830999679863453,
+            12.798000127077103,
+            12.8389997407794,
+            12.854999862611294,
+            12.864000163972378,
+            12.849999591708183,
+            12.787999585270882,
+            12.872000224888325,
+            12.864000163972378,
+            12.865999713540077,
+            12.798000127077103,
+            12.799999676644802,
+            12.861999683082104,
+            12.814000248908997,
+            12.802000157535076
+          ],
+          "relaxed_atomic": [
+            11.133999563753605,
+            11.145999655127525,
+            11.142999865114689,
+            11.106000281870365,
+            11.145000346004963,
+            11.149000376462936,
+            11.16700004786253,
+            11.142999865114689,
+            11.145999655127525,
+            11.136000044643879,
+            11.189999990165234,
+            11.133999563753605,
+            11.137999594211578,
+            11.138999834656715,
+            11.14100031554699
+          ],
+          "native_rmw": [
+            11.07800006866455,
+            11.06599997729063,
+            11.057999916374683,
+            11.005000211298466,
+            11.063000187277794,
+            11.075999587774277,
+            11.071999557316303,
+            11.056999675929546,
+            11.071999557316303,
+            11.044999584555626,
+            11.044000275433064,
+            11.048000305891037,
+            11.074000038206577,
+            11.07299979776144,
+            11.080999858677387
+          ],
+          "native_zero": [
+            11.099000461399555,
+            10.995999909937382,
+            11.168000288307667,
+            11.025999672710896,
+            10.994000360369682,
+            11.009999550879002,
+            11.012000031769276,
+            10.985000059008598,
+            11.014999821782112,
+            11.029000394046307,
+            11.006999760866165,
+            10.979999788105488,
+            11.009999550879002,
+            11.017000302672386,
+            10.995999909937382
+          ]
+        },
+        "median_us": {
+          "original_acq_rel": 12.8389997407794,
+          "relaxed_atomic": 11.142999865114689,
+          "native_rmw": 11.06599997729063,
+          "native_zero": 11.009999550879002
+        },
+        "rounds": 15,
+        "repetitions": 32,
+        "warmup_ms": 200,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "code": {
+        "original_acq_rel": {
+          "ptx_sha256": "cb50c21bd78c7e53e8e34ef8b604bde1174a8b5783ee31cadc2d588c0f6f2b70",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "atom.global.gpu.acq_rel.add.f32"
+          ]
+        },
+        "relaxed_atomic": {
+          "ptx_sha256": "7b13bb6b3634543984a3e13f9f3f54d324b8df5c7a89afd347478a0472a74d6d",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.f32"
+          ]
+        },
+        "native_rmw": {
+          "ptx_sha256": "98dd9c9771f68d623371554e00282a826c9c777593385316185bebf1ac10f305",
+          "atomic_sites": 0,
+          "registers": 16,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        },
+        "native_zero": {
+          "ptx_sha256": "68e3ec5d3f9fb49d27c0e9f392b52c1316efd76c3c939afe0f040d2d6c050722",
+          "atomic_sites": 0,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        }
+      },
+      "validation": "Exact FP32 scratch and BF16 output; poisoned output; changed gradients",
+      "scope": "Scratch zero + optional unchanged frequency-count reset/kernel + update + BF16 conversion"
+    },
+    {
+      "shape_n_d_v": [
+        4096,
+        128,
+        8192
+      ],
+      "frequency": true,
+      "block_d": 128,
+      "seed": 2,
+      "device": {
+        "samples_us": {
+          "original_acq_rel": [
+            12.740000151097775,
+            12.703999876976013,
+            12.73099984973669,
+            12.729000300168991,
+            12.7379996702075,
+            12.75699958205223,
+            12.72599957883358,
+            12.722999788820744,
+            12.755000032484531,
+            12.741000391542912,
+            12.71000038832426,
+            12.748000212013721,
+            12.726999819278717,
+            12.737000361084938,
+            12.710999697446823
+          ],
+          "relaxed_atomic": [
+            11.177999898791313,
+            11.118000373244286,
+            11.074000038206577,
+            11.083999648690224,
+            11.07100024819374,
+            11.064000427722931,
+            11.075000278651714,
+            11.080999858677387,
+            11.079000309109688,
+            11.068999767303467,
+            11.05900015681982,
+            11.101000010967255,
+            11.080999858677387,
+            11.07800006866455,
+            11.083000339567661
+          ],
+          "native_rmw": [
+            11.02800015360117,
+            11.00200042128563,
+            11.026999913156033,
+            11.017999611794949,
+            11.020000092685223,
+            10.97899954766035,
+            11.029999703168869,
+            11.012000031769276,
+            11.005000211298466,
+            11.18400041013956,
+            11.029000394046307,
+            10.968999937176704,
+            11.001000180840492,
+            11.00200042128563,
+            11.00900024175644
+          ],
+          "native_zero": [
+            10.990000329911709,
+            10.997000150382519,
+            10.994000360369682,
+            10.966000147163868,
+            10.982999578118324,
+            10.993000119924545,
+            10.981000028550625,
+            11.00900024175644,
+            11.013999581336975,
+            10.997000150382519,
+            11.037000454962254,
+            10.951000265777111,
+            11.00900024175644,
+            10.971000418066978,
+            11.006999760866165
+          ]
+        },
+        "median_us": {
+          "original_acq_rel": 12.73099984973669,
+          "relaxed_atomic": 11.079000309109688,
+          "native_rmw": 11.012000031769276,
+          "native_zero": 10.994000360369682
+        },
+        "rounds": 15,
+        "repetitions": 32,
+        "warmup_ms": 200,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "code": {
+        "original_acq_rel": {
+          "ptx_sha256": "cb50c21bd78c7e53e8e34ef8b604bde1174a8b5783ee31cadc2d588c0f6f2b70",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "atom.global.gpu.acq_rel.add.f32"
+          ]
+        },
+        "relaxed_atomic": {
+          "ptx_sha256": "7b13bb6b3634543984a3e13f9f3f54d324b8df5c7a89afd347478a0472a74d6d",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.f32"
+          ]
+        },
+        "native_rmw": {
+          "ptx_sha256": "98dd9c9771f68d623371554e00282a826c9c777593385316185bebf1ac10f305",
+          "atomic_sites": 0,
+          "registers": 16,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        },
+        "native_zero": {
+          "ptx_sha256": "68e3ec5d3f9fb49d27c0e9f392b52c1316efd76c3c939afe0f040d2d6c050722",
+          "atomic_sites": 0,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        }
+      },
+      "validation": "Exact FP32 scratch and BF16 output; poisoned output; changed gradients",
+      "scope": "Scratch zero + optional unchanged frequency-count reset/kernel + update + BF16 conversion"
+    },
+    {
+      "shape_n_d_v": [
+        4096,
+        128,
+        8192
+      ],
+      "frequency": true,
+      "block_d": 256,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "original_acq_rel": [
+            12.996000237762928,
+            12.752000242471695,
+            12.798000127077103,
+            12.784999795258045,
+            12.796999886631966,
+            12.773999944329262,
+            12.73099984973669,
+            12.745999731123447,
+            12.744000181555748,
+            12.791000306606293,
+            12.796999886631966,
+            12.79400009661913,
+            12.796999886631966,
+            12.78000045567751,
+            12.759000062942505
+          ],
+          "relaxed_atomic": [
+            11.082000099122524,
+            11.126999743282795,
+            11.068000458180904,
+            11.095999740064144,
+            11.06599997729063,
+            11.071999557316303,
+            11.095000430941582,
+            11.118000373244286,
+            11.06099970638752,
+            11.071999557316303,
+            11.074000038206577,
+            11.055000126361847,
+            11.086000129580498,
+            11.09199970960617,
+            11.133999563753605
+          ],
+          "native_rmw": [
+            11.140000075101852,
+            11.00900024175644,
+            11.00900024175644,
+            11.067000217735767,
+            11.022999882698059,
+            11.021999642252922,
+            11.013000272214413,
+            11.003999970853329,
+            11.00900024175644,
+            11.045999825000763,
+            11.075999587774277,
+            11.003999970853329,
+            10.998999699950218,
+            11.055000126361847,
+            11.009999550879002
+          ],
+          "native_zero": [
+            11.032000184059143,
+            10.998000390827656,
+            10.982000268995762,
+            11.021999642252922,
+            11.006000451743603,
+            11.012000031769276,
+            11.013000272214413,
+            11.00200042128563,
+            11.001000180840492,
+            10.986000299453735,
+            10.986999608576298,
+            11.025000363588333,
+            10.989000089466572,
+            11.00900024175644,
+            11.024000123143196
+          ]
+        },
+        "median_us": {
+          "original_acq_rel": 12.784999795258045,
+          "relaxed_atomic": 11.082000099122524,
+          "native_rmw": 11.013000272214413,
+          "native_zero": 11.006000451743603
+        },
+        "rounds": 15,
+        "repetitions": 32,
+        "warmup_ms": 200,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "code": {
+        "original_acq_rel": {
+          "ptx_sha256": "0fb4b2d7ee36758c086307cf45a83fe07d478a45d48772cb0f12152f95f19aeb",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "atom.global.gpu.acq_rel.add.v2.f32"
+          ]
+        },
+        "relaxed_atomic": {
+          "ptx_sha256": "378e7ec2b0d64b73bf25505404931a36e033f24135c81b818e6492d18b9e3d7e",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.v2.f32"
+          ]
+        },
+        "native_rmw": {
+          "ptx_sha256": "0f4d20519609b8e49eadbe9ca5ba03c7c80bfbfc93c8f7ad582e4911fc03989c",
+          "atomic_sites": 0,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        },
+        "native_zero": {
+          "ptx_sha256": "f2d881a8fc501ac2a8f4aa844eccec36a8f1cdaa365eb10720ac313e2af289fb",
+          "atomic_sites": 0,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        }
+      },
+      "validation": "Exact FP32 scratch and BF16 output; poisoned output; changed gradients",
+      "scope": "Scratch zero + optional unchanged frequency-count reset/kernel + update + BF16 conversion"
+    },
+    {
+      "shape_n_d_v": [
+        4096,
+        128,
+        8192
+      ],
+      "frequency": true,
+      "block_d": 256,
+      "seed": 1,
+      "device": {
+        "samples_us": {
+          "original_acq_rel": [
+            12.827999889850616,
+            12.861999683082104,
+            12.887000106275082,
+            12.872000224888325,
+            12.869000434875488,
+            12.866999953985214,
+            12.864000163972378,
+            12.861999683082104,
+            12.804999947547913,
+            12.861000373959541,
+            12.881999835371971,
+            12.852000072598457,
+            12.861000373959541,
+            12.858999893069267,
+            12.85600010305643
+          ],
+          "relaxed_atomic": [
+            11.164000257849693,
+            11.138999834656715,
+            11.160999536514282,
+            11.165999807417393,
+            11.177999898791313,
+            11.134999804198742,
+            11.153999716043472,
+            11.110999621450901,
+            11.125000193715096,
+            11.133000254631042,
+            11.126999743282795,
+            11.176000349223614,
+            11.140000075101852,
+            11.137999594211578,
+            11.133999563753605
+          ],
+          "native_rmw": [
+            11.07100024819374,
+            11.030999943614006,
+            11.061999946832657,
+            11.05399988591671,
+            11.06599997729063,
+            11.006000451743603,
+            11.05399988591671,
+            11.044999584555626,
+            11.061999946832657,
+            11.07100024819374,
+            11.076999828219414,
+            11.07800006866455,
+            11.051000095903873,
+            10.999999940395355,
+            11.074000038206577
+          ],
+          "native_zero": [
+            11.094000190496445,
+            11.003999970853329,
+            11.009999550879002,
+            10.989000089466572,
+            11.00200042128563,
+            11.040999554097652,
+            11.021999642252922,
+            10.999999940395355,
+            10.985000059008598,
+            11.048000305891037,
+            11.02100033313036,
+            11.00200042128563,
+            11.014999821782112,
+            11.026999913156033,
+            11.002999730408192
+          ]
+        },
+        "median_us": {
+          "original_acq_rel": 12.861999683082104,
+          "relaxed_atomic": 11.138999834656715,
+          "native_rmw": 11.061999946832657,
+          "native_zero": 11.009999550879002
+        },
+        "rounds": 15,
+        "repetitions": 32,
+        "warmup_ms": 200,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "code": {
+        "original_acq_rel": {
+          "ptx_sha256": "0fb4b2d7ee36758c086307cf45a83fe07d478a45d48772cb0f12152f95f19aeb",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "atom.global.gpu.acq_rel.add.v2.f32"
+          ]
+        },
+        "relaxed_atomic": {
+          "ptx_sha256": "378e7ec2b0d64b73bf25505404931a36e033f24135c81b818e6492d18b9e3d7e",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.v2.f32"
+          ]
+        },
+        "native_rmw": {
+          "ptx_sha256": "0f4d20519609b8e49eadbe9ca5ba03c7c80bfbfc93c8f7ad582e4911fc03989c",
+          "atomic_sites": 0,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        },
+        "native_zero": {
+          "ptx_sha256": "f2d881a8fc501ac2a8f4aa844eccec36a8f1cdaa365eb10720ac313e2af289fb",
+          "atomic_sites": 0,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        }
+      },
+      "validation": "Exact FP32 scratch and BF16 output; poisoned output; changed gradients",
+      "scope": "Scratch zero + optional unchanged frequency-count reset/kernel + update + BF16 conversion"
+    },
+    {
+      "shape_n_d_v": [
+        4096,
+        128,
+        8192
+      ],
+      "frequency": true,
+      "block_d": 256,
+      "seed": 2,
+      "device": {
+        "samples_us": {
+          "original_acq_rel": [
+            12.772000394761562,
+            12.814999558031559,
+            12.80600018799305,
+            12.783000245690346,
+            12.779000215232372,
+            12.807000428438187,
+            12.78000045567751,
+            12.80600018799305,
+            12.767000123858452,
+            12.790000066161156,
+            12.742999941110611,
+            12.757999822497368,
+            12.773999944329262,
+            12.783999554812908,
+            12.764999642968178
+          ],
+          "relaxed_atomic": [
+            11.203000321984291,
+            11.080999858677387,
+            11.075000278651714,
+            11.080999858677387,
+            11.118000373244286,
+            11.123999953269958,
+            11.080999858677387,
+            11.087000370025635,
+            11.099000461399555,
+            11.080999858677387,
+            11.103999800980091,
+            11.090000160038471,
+            11.082000099122524,
+            11.092999950051308,
+            11.101000010967255
+          ],
+          "native_rmw": [
+            11.075999587774277,
+            11.068999767303467,
+            11.03499997407198,
+            11.008000001311302,
+            11.029000394046307,
+            11.05200033634901,
+            10.995999909937382,
+            11.013000272214413,
+            11.055000126361847,
+            11.010999791324139,
+            11.05399988591671,
+            11.029999703168869,
+            11.020000092685223,
+            11.05399988591671,
+            11.07299979776144
+          ],
+          "native_zero": [
+            11.029000394046307,
+            11.025000363588333,
+            11.043000034987926,
+            11.040999554097652,
+            11.020000092685223,
+            10.974000208079815,
+            10.986999608576298,
+            11.018999852240086,
+            11.040999554097652,
+            11.048000305891037,
+            10.993000119924545,
+            11.020000092685223,
+            11.029000394046307,
+            11.052999645471573,
+            10.999999940395355
+          ]
+        },
+        "median_us": {
+          "original_acq_rel": 12.78000045567751,
+          "relaxed_atomic": 11.090000160038471,
+          "native_rmw": 11.03499997407198,
+          "native_zero": 11.025000363588333
+        },
+        "rounds": 15,
+        "repetitions": 32,
+        "warmup_ms": 200,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "code": {
+        "original_acq_rel": {
+          "ptx_sha256": "0fb4b2d7ee36758c086307cf45a83fe07d478a45d48772cb0f12152f95f19aeb",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "atom.global.gpu.acq_rel.add.v2.f32"
+          ]
+        },
+        "relaxed_atomic": {
+          "ptx_sha256": "378e7ec2b0d64b73bf25505404931a36e033f24135c81b818e6492d18b9e3d7e",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.v2.f32"
+          ]
+        },
+        "native_rmw": {
+          "ptx_sha256": "0f4d20519609b8e49eadbe9ca5ba03c7c80bfbfc93c8f7ad582e4911fc03989c",
+          "atomic_sites": 0,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        },
+        "native_zero": {
+          "ptx_sha256": "f2d881a8fc501ac2a8f4aa844eccec36a8f1cdaa365eb10720ac313e2af289fb",
+          "atomic_sites": 0,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        }
+      },
+      "validation": "Exact FP32 scratch and BF16 output; poisoned output; changed gradients",
+      "scope": "Scratch zero + optional unchanged frequency-count reset/kernel + update + BF16 conversion"
+    },
+    {
+      "shape_n_d_v": [
+        16384,
+        256,
+        32768
+      ],
+      "frequency": false,
+      "block_d": 128,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "original_acq_rel": [
+            31.209999695420265,
+            31.25,
+            31.190000474452972,
+            31.207000836730003,
+            31.25,
+            31.202999874949455,
+            31.256001442670822,
+            31.175000593066216,
+            31.240999698638916,
+            31.21200017631054,
+            31.199000775814056,
+            31.163999810814857,
+            31.17300011217594,
+            31.230999156832695,
+            31.23600035905838
+          ],
+          "relaxed_atomic": [
+            28.039000928401947,
+            27.98200026154518,
+            27.984999120235443,
+            28.037000447511673,
+            28.036000207066536,
+            28.037000447511673,
+            27.98900008201599,
+            27.984999120235443,
+            28.03800068795681,
+            28.04799936711788,
+            28.049999848008156,
+            27.98300050199032,
+            28.05499918758869,
+            28.04799936711788,
+            28.057999908924103
+          ],
+          "native_rmw": [
+            28.196999803185463,
+            28.05200032889843,
+            28.064999729394913,
+            28.075000271201134,
+            28.04199978709221,
+            28.031999245285988,
+            28.04899960756302,
+            28.037000447511673,
+            28.033999726176262,
+            27.987999841570854,
+            28.06299924850464,
+            28.03800068795681,
+            28.039000928401947,
+            28.05200032889843,
+            28.05499918758869
+          ],
+          "native_zero": [
+            27.79500000178814,
+            27.782000601291656,
+            27.79500000178814,
+            27.813000604510307,
+            27.844000607728958,
+            27.790000662207603,
+            27.792999520897865,
+            27.775999158620834,
+            27.790000662207603,
+            27.79800072312355,
+            27.827000245451927,
+            27.813000604510307,
+            27.80899964272976,
+            27.775999158620834,
+            27.772000059485435
+          ]
+        },
+        "median_us": {
+          "original_acq_rel": 31.209999695420265,
+          "relaxed_atomic": 28.037000447511673,
+          "native_rmw": 28.04899960756302,
+          "native_zero": 27.79500000178814
+        },
+        "rounds": 15,
+        "repetitions": 32,
+        "warmup_ms": 200,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "code": {
+        "original_acq_rel": {
+          "ptx_sha256": "bf5966f460214f3b8041a090399b5863b5ec5a30cbea0c6b9b9ea28e766ef72f",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "atom.global.gpu.acq_rel.add.f32"
+          ]
+        },
+        "relaxed_atomic": {
+          "ptx_sha256": "38aecc3f8a29dd1c570888b26534754d669b4e3fbcdc644dbf8e83a9d794d95a",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.f32"
+          ]
+        },
+        "native_rmw": {
+          "ptx_sha256": "a3ae0e53cf245a4fa52a13e9519c8d3718a8f9c55044d7ddea4dfa281be0d00d",
+          "atomic_sites": 0,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        },
+        "native_zero": {
+          "ptx_sha256": "1fcaafd933e58b3e10182bb0682a42036e3703c50e4eded8a4ab440a4a2ecae7",
+          "atomic_sites": 0,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        }
+      },
+      "validation": "Exact FP32 scratch and BF16 output; poisoned output; changed gradients",
+      "scope": "Scratch zero + optional unchanged frequency-count reset/kernel + update + BF16 conversion"
+    },
+    {
+      "shape_n_d_v": [
+        16384,
+        256,
+        32768
+      ],
+      "frequency": false,
+      "block_d": 128,
+      "seed": 1,
+      "device": {
+        "samples_us": {
+          "original_acq_rel": [
+            31.146999448537827,
+            31.156999990344048,
+            31.184999272227287,
+            31.154999509453773,
+            31.113000586628914,
+            31.151000410318375,
+            31.16299957036972,
+            31.147999688982964,
+            31.177999451756477,
+            31.09000064432621,
+            31.161999329924583,
+            31.150000169873238,
+            31.113000586628914,
+            31.144000589847565,
+            31.091999262571335
+          ],
+          "relaxed_atomic": [
+            27.96499989926815,
+            27.97600068151951,
+            28.05200032889843,
+            28.040999546647072,
+            28.02100032567978,
+            28.04500050842762,
+            27.97899954020977,
+            27.95100025832653,
+            27.962999418377876,
+            28.039999306201935,
+            27.95800007879734,
+            27.984999120235443,
+            28.003999963402748,
+            27.96499989926815,
+            27.96199917793274
+          ],
+          "native_rmw": [
+            28.039999306201935,
+            27.984999120235443,
+            28.0349999666214,
+            28.039999306201935,
+            28.03800068795681,
+            28.116000816226006,
+            27.96499989926815,
+            28.037000447511673,
+            28.008000925183296,
+            28.012000024318695,
+            28.084000572562218,
+            28.008999302983284,
+            28.02399918437004,
+            28.026999905705452,
+            28.099000453948975
+          ],
+          "native_zero": [
+            27.969999238848686,
+            27.83999964594841,
+            27.830999344587326,
+            27.917999774217606,
+            27.89199911057949,
+            27.8949998319149,
+            27.827000245451927,
+            27.837000787258148,
+            27.834000065922737,
+            27.842000126838684,
+            27.8290007263422,
+            27.90199965238571,
+            27.8290007263422,
+            27.845000848174095,
+            27.827000245451927
+          ]
+        },
+        "median_us": {
+          "original_acq_rel": 31.150000169873238,
+          "relaxed_atomic": 27.97899954020977,
+          "native_rmw": 28.0349999666214,
+          "native_zero": 27.83999964594841
+        },
+        "rounds": 15,
+        "repetitions": 32,
+        "warmup_ms": 200,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "code": {
+        "original_acq_rel": {
+          "ptx_sha256": "bf5966f460214f3b8041a090399b5863b5ec5a30cbea0c6b9b9ea28e766ef72f",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "atom.global.gpu.acq_rel.add.f32"
+          ]
+        },
+        "relaxed_atomic": {
+          "ptx_sha256": "38aecc3f8a29dd1c570888b26534754d669b4e3fbcdc644dbf8e83a9d794d95a",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.f32"
+          ]
+        },
+        "native_rmw": {
+          "ptx_sha256": "a3ae0e53cf245a4fa52a13e9519c8d3718a8f9c55044d7ddea4dfa281be0d00d",
+          "atomic_sites": 0,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        },
+        "native_zero": {
+          "ptx_sha256": "1fcaafd933e58b3e10182bb0682a42036e3703c50e4eded8a4ab440a4a2ecae7",
+          "atomic_sites": 0,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        }
+      },
+      "validation": "Exact FP32 scratch and BF16 output; poisoned output; changed gradients",
+      "scope": "Scratch zero + optional unchanged frequency-count reset/kernel + update + BF16 conversion"
+    },
+    {
+      "shape_n_d_v": [
+        16384,
+        256,
+        32768
+      ],
+      "frequency": false,
+      "block_d": 128,
+      "seed": 2,
+      "device": {
+        "samples_us": {
+          "original_acq_rel": [
+            31.151000410318375,
+            31.10400028526783,
+            31.20199963450432,
+            31.15599974989891,
+            31.22599981725216,
+            31.153999269008636,
+            31.168999150395393,
+            31.15900047123432,
+            31.108999624848366,
+            31.103000044822693,
+            31.103000044822693,
+            31.191999092698097,
+            31.098999083042145,
+            31.150000169873238,
+            31.10799938440323
+          ],
+          "relaxed_atomic": [
+            28.06599996984005,
+            27.97199971973896,
+            27.952000498771667,
+            28.010999783873558,
+            28.005000203847885,
+            28.03800068795681,
+            27.955999597907066,
+            28.04199978709221,
+            28.031000867486,
+            27.948999777436256,
+            27.97899954020977,
+            28.017999604344368,
+            27.959000319242477,
+            27.98200026154518,
+            27.984999120235443
+          ],
+          "native_rmw": [
+            28.02100032567978,
+            27.974000200629234,
+            28.013000264763832,
+            28.015999123454094,
+            28.053000569343567,
+            28.031999245285988,
+            27.963999658823013,
+            28.03800068795681,
+            28.05200032889843,
+            28.015999123454094,
+            28.029000386595726,
+            28.02800014615059,
+            28.020000085234642,
+            28.010999783873558,
+            28.003999963402748
+          ],
+          "native_zero": [
+            27.828000485897064,
+            27.78100036084652,
+            27.840999886393547,
+            27.84300036728382,
+            27.786999940872192,
+            27.79100090265274,
+            27.824999764561653,
+            27.782000601291656,
+            27.758000418543816,
+            27.76000089943409,
+            27.85700000822544,
+            27.783000841736794,
+            27.7709998190403,
+            27.78800018131733,
+            27.83600054681301
+          ]
+        },
+        "median_us": {
+          "original_acq_rel": 31.151000410318375,
+          "relaxed_atomic": 27.984999120235443,
+          "native_rmw": 28.020000085234642,
+          "native_zero": 27.78800018131733
+        },
+        "rounds": 15,
+        "repetitions": 32,
+        "warmup_ms": 200,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "code": {
+        "original_acq_rel": {
+          "ptx_sha256": "bf5966f460214f3b8041a090399b5863b5ec5a30cbea0c6b9b9ea28e766ef72f",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "atom.global.gpu.acq_rel.add.f32"
+          ]
+        },
+        "relaxed_atomic": {
+          "ptx_sha256": "38aecc3f8a29dd1c570888b26534754d669b4e3fbcdc644dbf8e83a9d794d95a",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.f32"
+          ]
+        },
+        "native_rmw": {
+          "ptx_sha256": "a3ae0e53cf245a4fa52a13e9519c8d3718a8f9c55044d7ddea4dfa281be0d00d",
+          "atomic_sites": 0,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        },
+        "native_zero": {
+          "ptx_sha256": "1fcaafd933e58b3e10182bb0682a42036e3703c50e4eded8a4ab440a4a2ecae7",
+          "atomic_sites": 0,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        }
+      },
+      "validation": "Exact FP32 scratch and BF16 output; poisoned output; changed gradients",
+      "scope": "Scratch zero + optional unchanged frequency-count reset/kernel + update + BF16 conversion"
+    },
+    {
+      "shape_n_d_v": [
+        16384,
+        256,
+        32768
+      ],
+      "frequency": false,
+      "block_d": 256,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "original_acq_rel": [
+            22.474000230431557,
+            22.478999570012093,
+            22.539999336004257,
+            22.44199998676777,
+            22.484000772237778,
+            22.520000115036964,
+            22.47699908912182,
+            22.53199927508831,
+            22.446999326348305,
+            22.464999929070473,
+            22.474000230431557,
+            22.51500077545643,
+            22.51500077545643,
+            22.44899980723858,
+            22.515999153256416
+          ],
+          "relaxed_atomic": [
+            19.64700035750866,
+            19.633999094367027,
+            19.63300071656704,
+            19.62600089609623,
+            19.62899975478649,
+            19.646000117063522,
+            19.641999155282974,
+            19.596999511122704,
+            19.63699981570244,
+            19.572999328374863,
+            19.585000351071358,
+            19.589999690651894,
+            19.651999697089195,
+            19.58099938929081,
+            19.638000056147575
+          ],
+          "native_rmw": [
+            19.70599964261055,
+            19.683999940752983,
+            19.633999094367027,
+            19.639000296592712,
+            19.64700035750866,
+            19.652999937534332,
+            19.641000777482986,
+            19.62899975478649,
+            19.65099945664406,
+            19.627999514341354,
+            19.694000482559204,
+            19.672999158501625,
+            19.627999514341354,
+            19.641999155282974,
+            19.632000476121902
+          ],
+          "native_zero": [
+            19.46300081908703,
+            19.43100057542324,
+            19.44899931550026,
+            19.473999738693237,
+            19.440999254584312,
+            19.44199949502945,
+            19.44199949502945,
+            19.44899931550026,
+            19.449999555945396,
+            19.440999254584312,
+            19.426999613642693,
+            19.449999555945396,
+            19.46599967777729,
+            19.432999193668365,
+            19.45599913597107
+          ]
+        },
+        "median_us": {
+          "original_acq_rel": 22.478999570012093,
+          "relaxed_atomic": 19.63300071656704,
+          "native_rmw": 19.641999155282974,
+          "native_zero": 19.44899931550026
+        },
+        "rounds": 15,
+        "repetitions": 32,
+        "warmup_ms": 200,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "code": {
+        "original_acq_rel": {
+          "ptx_sha256": "dccbdb9d88e82f415ce44ae24249f755c281ac0b5aa35b7fad954547ac0b5a72",
+          "atomic_sites": 1,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "atom.global.gpu.acq_rel.add.v2.f32"
+          ]
+        },
+        "relaxed_atomic": {
+          "ptx_sha256": "ed3682305ffc74e1b29be0a4e30d439cfbd46302a7c680dafbd7f7c4797a4b7a",
+          "atomic_sites": 1,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.v2.f32"
+          ]
+        },
+        "native_rmw": {
+          "ptx_sha256": "efc0633fc8cca2633e19bf3f7a32e8f2a16a1666a582fdb3b2c9148d4bb666d9",
+          "atomic_sites": 0,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        },
+        "native_zero": {
+          "ptx_sha256": "bd0789abc45d7d69e7cbac5b66361d2831a06e8349850011470fa4fd09a057cb",
+          "atomic_sites": 0,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        }
+      },
+      "validation": "Exact FP32 scratch and BF16 output; poisoned output; changed gradients",
+      "scope": "Scratch zero + optional unchanged frequency-count reset/kernel + update + BF16 conversion"
+    },
+    {
+      "shape_n_d_v": [
+        16384,
+        256,
+        32768
+      ],
+      "frequency": false,
+      "block_d": 256,
+      "seed": 1,
+      "device": {
+        "samples_us": {
+          "original_acq_rel": [
+            22.471999749541283,
+            22.445999085903168,
+            22.51099981367588,
+            22.431999444961548,
+            22.444000467658043,
+            22.440999746322632,
+            22.440999746322632,
+            22.509999573230743,
+            22.43800088763237,
+            22.44500070810318,
+            22.464999929070473,
+            22.4590003490448,
+            22.464999929070473,
+            22.474000230431557,
+            22.45599962770939
+          ],
+          "relaxed_atomic": [
+            19.550999626517296,
+            19.574999809265137,
+            19.59500089287758,
+            19.572999328374863,
+            19.60499957203865,
+            19.53200064599514,
+            19.58799920976162,
+            19.56699974834919,
+            19.57700029015541,
+            19.632000476121902,
+            19.589999690651894,
+            19.5700004696846,
+            19.554000347852707,
+            19.598999992012978,
+            19.588999450206757
+          ],
+          "native_rmw": [
+            19.632000476121902,
+            19.686000421643257,
+            19.69500072300434,
+            19.65099945664406,
+            19.58400011062622,
+            19.627999514341354,
+            19.63699981570244,
+            19.634999334812164,
+            19.62600089609623,
+            19.6359995752573,
+            19.646000117063522,
+            19.655000418424606,
+            19.649000838398933,
+            19.64000053703785,
+            19.64299939572811
+          ],
+          "native_zero": [
+            19.541999325156212,
+            19.39000003039837,
+            19.392000511288643,
+            19.46300081908703,
+            19.384000450372696,
+            19.404999911785126,
+            19.42799985408783,
+            19.380999729037285,
+            19.442999735474586,
+            19.426999613642693,
+            19.38300020992756,
+            19.442999735474586,
+            19.40299943089485,
+            19.439000636339188,
+            19.388999789953232
+          ]
+        },
+        "median_us": {
+          "original_acq_rel": 22.45599962770939,
+          "relaxed_atomic": 19.57700029015541,
+          "native_rmw": 19.64000053703785,
+          "native_zero": 19.404999911785126
+        },
+        "rounds": 15,
+        "repetitions": 32,
+        "warmup_ms": 200,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "code": {
+        "original_acq_rel": {
+          "ptx_sha256": "dccbdb9d88e82f415ce44ae24249f755c281ac0b5aa35b7fad954547ac0b5a72",
+          "atomic_sites": 1,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "atom.global.gpu.acq_rel.add.v2.f32"
+          ]
+        },
+        "relaxed_atomic": {
+          "ptx_sha256": "ed3682305ffc74e1b29be0a4e30d439cfbd46302a7c680dafbd7f7c4797a4b7a",
+          "atomic_sites": 1,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.v2.f32"
+          ]
+        },
+        "native_rmw": {
+          "ptx_sha256": "efc0633fc8cca2633e19bf3f7a32e8f2a16a1666a582fdb3b2c9148d4bb666d9",
+          "atomic_sites": 0,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        },
+        "native_zero": {
+          "ptx_sha256": "bd0789abc45d7d69e7cbac5b66361d2831a06e8349850011470fa4fd09a057cb",
+          "atomic_sites": 0,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        }
+      },
+      "validation": "Exact FP32 scratch and BF16 output; poisoned output; changed gradients",
+      "scope": "Scratch zero + optional unchanged frequency-count reset/kernel + update + BF16 conversion"
+    },
+    {
+      "shape_n_d_v": [
+        16384,
+        256,
+        32768
+      ],
+      "frequency": false,
+      "block_d": 256,
+      "seed": 2,
+      "device": {
+        "samples_us": {
+          "original_acq_rel": [
+            22.464999929070473,
+            22.46999926865101,
+            22.446999326348305,
+            22.44799956679344,
+            22.391999140381813,
+            22.40999974310398,
+            22.468000650405884,
+            22.401999682188034,
+            22.408999502658844,
+            22.461000829935074,
+            22.431999444961548,
+            22.460000589489937,
+            22.4629994481802,
+            22.45499938726425,
+            22.4629994481802
+          ],
+          "relaxed_atomic": [
+            19.68800090253353,
+            19.64399963617325,
+            19.56699974834919,
+            19.579999148845673,
+            19.63699981570244,
+            19.602999091148376,
+            19.631000235676765,
+            19.564000889658928,
+            19.62199993431568,
+            19.585000351071358,
+            19.593000411987305,
+            19.586000591516495,
+            19.569000229239464,
+            19.53200064599514,
+            19.565999507904053
+          ],
+          "native_rmw": [
+            19.664999097585678,
+            19.664999097585678,
+            19.644999876618385,
+            19.65700089931488,
+            19.69500072300434,
+            19.66099999845028,
+            19.641999155282974,
+            19.62899975478649,
+            19.624000415205956,
+            19.644999876618385,
+            19.638000056147575,
+            19.69899982213974,
+            19.632000476121902,
+            19.66400071978569,
+            19.655000418424606
+          ],
+          "native_zero": [
+            19.45899985730648,
+            19.478999078273773,
+            19.42799985408783,
+            19.4729994982481,
+            19.471000880002975,
+            19.50100064277649,
+            19.433999434113503,
+            19.4690003991127,
+            19.46599967777729,
+            19.45200003683567,
+            19.442999735474586,
+            19.47000063955784,
+            19.45899985730648,
+            19.46200057864189,
+            19.446000456809998
+          ]
+        },
+        "median_us": {
+          "original_acq_rel": 22.45499938726425,
+          "relaxed_atomic": 19.586000591516495,
+          "native_rmw": 19.655000418424606,
+          "native_zero": 19.46200057864189
+        },
+        "rounds": 15,
+        "repetitions": 32,
+        "warmup_ms": 200,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "code": {
+        "original_acq_rel": {
+          "ptx_sha256": "dccbdb9d88e82f415ce44ae24249f755c281ac0b5aa35b7fad954547ac0b5a72",
+          "atomic_sites": 1,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "atom.global.gpu.acq_rel.add.v2.f32"
+          ]
+        },
+        "relaxed_atomic": {
+          "ptx_sha256": "ed3682305ffc74e1b29be0a4e30d439cfbd46302a7c680dafbd7f7c4797a4b7a",
+          "atomic_sites": 1,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.v2.f32"
+          ]
+        },
+        "native_rmw": {
+          "ptx_sha256": "efc0633fc8cca2633e19bf3f7a32e8f2a16a1666a582fdb3b2c9148d4bb666d9",
+          "atomic_sites": 0,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        },
+        "native_zero": {
+          "ptx_sha256": "bd0789abc45d7d69e7cbac5b66361d2831a06e8349850011470fa4fd09a057cb",
+          "atomic_sites": 0,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        }
+      },
+      "validation": "Exact FP32 scratch and BF16 output; poisoned output; changed gradients",
+      "scope": "Scratch zero + optional unchanged frequency-count reset/kernel + update + BF16 conversion"
+    },
+    {
+      "shape_n_d_v": [
+        16384,
+        256,
+        32768
+      ],
+      "frequency": true,
+      "block_d": 128,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "original_acq_rel": [
+            39.027001708745956,
+            38.920000195503235,
+            39.00900110602379,
+            39.01800140738487,
+            38.9459989964962,
+            38.94500061869621,
+            38.99500146508217,
+            38.993000984191895,
+            39.0079990029335,
+            38.979001343250275,
+            39.014000445604324,
+            39.00099918246269,
+            38.97799924015999,
+            38.91700133681297,
+            38.982998579740524
+          ],
+          "relaxed_atomic": [
+            33.64900127053261,
+            33.61000120639801,
+            33.608000725507736,
+            33.5719995200634,
+            33.62800180912018,
+            33.59600156545639,
+            33.58900174498558,
+            33.63100066781044,
+            33.633001148700714,
+            33.65600109100342,
+            33.619001507759094,
+            33.53999927639961,
+            33.594001084566116,
+            33.608000725507736,
+            33.604998141527176
+          ],
+          "native_rmw": [
+            33.47700089216232,
+            33.413998782634735,
+            33.43600034713745,
+            33.38100016117096,
+            33.40600058436394,
+            33.38100016117096,
+            33.4089994430542,
+            33.4319993853569,
+            33.378999680280685,
+            33.58199819922447,
+            33.38000178337097,
+            33.355001360177994,
+            33.42999890446663,
+            33.424001187086105,
+            33.45600143074989
+          ],
+          "native_zero": [
+            33.35599973797798,
+            33.365000039339066,
+            33.36000069975853,
+            33.34200009703636,
+            33.35599973797798,
+            33.35599973797798,
+            33.37100148200989,
+            33.303000032901764,
+            33.33999961614609,
+            33.34200009703636,
+            33.302001655101776,
+            33.34899991750717,
+            33.348001539707184,
+            33.37299823760986,
+            33.348001539707184
+          ]
+        },
+        "median_us": {
+          "original_acq_rel": 38.993000984191895,
+          "relaxed_atomic": 33.608000725507736,
+          "native_rmw": 33.413998782634735,
+          "native_zero": 33.34899991750717
+        },
+        "rounds": 15,
+        "repetitions": 32,
+        "warmup_ms": 200,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "code": {
+        "original_acq_rel": {
+          "ptx_sha256": "21c445304c03525076b211492e3800b04271c726310d523429c2c0e8ed29b957",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "atom.global.gpu.acq_rel.add.f32"
+          ]
+        },
+        "relaxed_atomic": {
+          "ptx_sha256": "a51acca8c6a179afe4f4b8212f6e6d405ddbfc84533cc2dcab1c36a82d71d54b",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.f32"
+          ]
+        },
+        "native_rmw": {
+          "ptx_sha256": "0317540b3b31364913320c82e62ee3344acbc495f9cf1f3b06df2d8778588b45",
+          "atomic_sites": 0,
+          "registers": 16,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        },
+        "native_zero": {
+          "ptx_sha256": "619fdba88ca815697170980e137c395e3ef1f546bd900d441148584226af5e16",
+          "atomic_sites": 0,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        }
+      },
+      "validation": "Exact FP32 scratch and BF16 output; poisoned output; changed gradients",
+      "scope": "Scratch zero + optional unchanged frequency-count reset/kernel + update + BF16 conversion"
+    },
+    {
+      "shape_n_d_v": [
+        16384,
+        256,
+        32768
+      ],
+      "frequency": true,
+      "block_d": 128,
+      "seed": 1,
+      "device": {
+        "samples_us": {
+          "original_acq_rel": [
+            38.899000734090805,
+            38.881998509168625,
+            38.93699869513512,
+            38.86200115084648,
+            38.87199983000755,
+            38.8760007917881,
+            38.89299929141998,
+            38.86500000953674,
+            38.920000195503235,
+            38.88599947094917,
+            38.86299952864647,
+            38.920000195503235,
+            38.85100036859512,
+            38.8839989900589,
+            38.93600031733513
+          ],
+          "relaxed_atomic": [
+            33.54699909687042,
+            33.61000120639801,
+            33.560000360012054,
+            33.55500102043152,
+            33.55799987912178,
+            33.5719995200634,
+            33.53999927639961,
+            33.576998859643936,
+            33.48900005221367,
+            33.53000059723854,
+            33.553000539541245,
+            33.587001264095306,
+            33.48400071263313,
+            33.51699933409691,
+            33.52700173854828
+          ],
+          "native_rmw": [
+            33.74800086021423,
+            33.49599987268448,
+            33.49899873137474,
+            33.560000360012054,
+            33.504001796245575,
+            33.50299969315529,
+            33.49800035357475,
+            33.59900042414665,
+            33.56900066137314,
+            33.53099897503853,
+            33.48800167441368,
+            33.486999571323395,
+            33.54699909687042,
+            33.53700041770935,
+            33.53499993681908
+          ],
+          "native_zero": [
+            33.59699994325638,
+            33.525001257658005,
+            33.46899896860123,
+            33.50299969315529,
+            33.48600119352341,
+            33.500999212265015,
+            33.4790013730526,
+            33.4790013730526,
+            33.50700065493584,
+            33.48600119352341,
+            33.48999843001366,
+            33.48499909043312,
+            33.49699825048447,
+            33.48900005221367,
+            33.43300148844719
+          ]
+        },
+        "median_us": {
+          "original_acq_rel": 38.8839989900589,
+          "relaxed_atomic": 33.553000539541245,
+          "native_rmw": 33.53099897503853,
+          "native_zero": 33.48900005221367
+        },
+        "rounds": 15,
+        "repetitions": 32,
+        "warmup_ms": 200,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "code": {
+        "original_acq_rel": {
+          "ptx_sha256": "21c445304c03525076b211492e3800b04271c726310d523429c2c0e8ed29b957",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "atom.global.gpu.acq_rel.add.f32"
+          ]
+        },
+        "relaxed_atomic": {
+          "ptx_sha256": "a51acca8c6a179afe4f4b8212f6e6d405ddbfc84533cc2dcab1c36a82d71d54b",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.f32"
+          ]
+        },
+        "native_rmw": {
+          "ptx_sha256": "0317540b3b31364913320c82e62ee3344acbc495f9cf1f3b06df2d8778588b45",
+          "atomic_sites": 0,
+          "registers": 16,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        },
+        "native_zero": {
+          "ptx_sha256": "619fdba88ca815697170980e137c395e3ef1f546bd900d441148584226af5e16",
+          "atomic_sites": 0,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        }
+      },
+      "validation": "Exact FP32 scratch and BF16 output; poisoned output; changed gradients",
+      "scope": "Scratch zero + optional unchanged frequency-count reset/kernel + update + BF16 conversion"
+    },
+    {
+      "shape_n_d_v": [
+        16384,
+        256,
+        32768
+      ],
+      "frequency": true,
+      "block_d": 128,
+      "seed": 2,
+      "device": {
+        "samples_us": {
+          "original_acq_rel": [
+            38.92200067639351,
+            38.97500038146973,
+            38.906000554561615,
+            38.9229990541935,
+            38.98400068283081,
+            38.91599923372269,
+            38.95200043916702,
+            38.90199959278107,
+            38.92200067639351,
+            38.91700133681297,
+            38.98800164461136,
+            38.91599923372269,
+            38.92099857330322,
+            38.95099833607674,
+            38.94300013780594
+          ],
+          "relaxed_atomic": [
+            33.6729995906353,
+            33.55100005865097,
+            33.562999218702316,
+            33.636998385190964,
+            33.56499969959259,
+            33.548999577760696,
+            33.52800011634827,
+            33.76999869942665,
+            33.55399891734123,
+            33.59699994325638,
+            33.587999641895294,
+            33.608999103307724,
+            33.528998494148254,
+            33.5410013794899,
+            33.58599916100502
+          ],
+          "native_rmw": [
+            33.45400094985962,
+            33.44300016760826,
+            33.40600058436394,
+            33.42200070619583,
+            33.46800059080124,
+            33.40499848127365,
+            33.42000022530556,
+            33.45099836587906,
+            33.358000218868256,
+            33.45699980854988,
+            33.39799866080284,
+            33.36099907755852,
+            33.42200070619583,
+            33.39499980211258,
+            33.42499956488609
+          ],
+          "native_zero": [
+            33.35399925708771,
+            33.365000039339066,
+            33.33999961614609,
+            33.3469994366169,
+            33.369001001119614,
+            33.28600153326988,
+            33.34299847483635,
+            33.33599865436554,
+            33.3390012383461,
+            33.33299979567528,
+            33.28299894928932,
+            33.27900171279907,
+            33.34899991750717,
+            33.351000398397446,
+            33.3469994366169
+          ]
+        },
+        "median_us": {
+          "original_acq_rel": 38.92200067639351,
+          "relaxed_atomic": 33.56499969959259,
+          "native_rmw": 33.42200070619583,
+          "native_zero": 33.34299847483635
+        },
+        "rounds": 15,
+        "repetitions": 32,
+        "warmup_ms": 200,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "code": {
+        "original_acq_rel": {
+          "ptx_sha256": "21c445304c03525076b211492e3800b04271c726310d523429c2c0e8ed29b957",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "atom.global.gpu.acq_rel.add.f32"
+          ]
+        },
+        "relaxed_atomic": {
+          "ptx_sha256": "a51acca8c6a179afe4f4b8212f6e6d405ddbfc84533cc2dcab1c36a82d71d54b",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.f32"
+          ]
+        },
+        "native_rmw": {
+          "ptx_sha256": "0317540b3b31364913320c82e62ee3344acbc495f9cf1f3b06df2d8778588b45",
+          "atomic_sites": 0,
+          "registers": 16,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        },
+        "native_zero": {
+          "ptx_sha256": "619fdba88ca815697170980e137c395e3ef1f546bd900d441148584226af5e16",
+          "atomic_sites": 0,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        }
+      },
+      "validation": "Exact FP32 scratch and BF16 output; poisoned output; changed gradients",
+      "scope": "Scratch zero + optional unchanged frequency-count reset/kernel + update + BF16 conversion"
+    },
+    {
+      "shape_n_d_v": [
+        16384,
+        256,
+        32768
+      ],
+      "frequency": true,
+      "block_d": 256,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "original_acq_rel": [
+            29.071999713778496,
+            29.039999470114708,
+            28.9900004863739,
+            28.97600084543228,
+            28.98400090634823,
+            29.001999646425247,
+            29.008999466896057,
+            28.9939995855093,
+            28.992999345064163,
+            29.059000313282013,
+            29.006000608205795,
+            28.97999994456768,
+            28.994999825954437,
+            28.98300066590309,
+            29.015999287366867
+          ],
+          "relaxed_atomic": [
+            25.172000750899315,
+            25.1460000872612,
+            25.138000026345253,
+            25.141000747680664,
+            25.162000209093094,
+            25.164000689983368,
+            25.211000815033913,
+            25.16300044953823,
+            25.22199973464012,
+            25.144999846816063,
+            25.167999789118767,
+            25.14900080859661,
+            25.198999792337418,
+            25.205999612808228,
+            25.186000391840935
+          ],
+          "native_rmw": [
+            25.276999920606613,
+            25.151999667286873,
+            25.13599954545498,
+            25.07700026035309,
+            25.113999843597412,
+            25.09099990129471,
+            25.109000504016876,
+            25.155000388622284,
+            25.143999606370926,
+            25.15999972820282,
+            25.109000504016876,
+            25.15600062906742,
+            25.09699948132038,
+            25.158999487757683,
+            25.097999721765518
+          ],
+          "native_zero": [
+            25.110999122262,
+            25.097999721765518,
+            25.097999721765518,
+            25.07299929857254,
+            25.085000321269035,
+            25.023000314831734,
+            25.07600001990795,
+            25.097999721765518,
+            25.036999955773354,
+            25.103000923991203,
+            25.092000141739845,
+            25.088999420404434,
+            25.085000321269035,
+            25.02799965441227,
+            25.08299984037876
+          ]
+        },
+        "median_us": {
+          "original_acq_rel": 28.994999825954437,
+          "relaxed_atomic": 25.164000689983368,
+          "native_rmw": 25.13599954545498,
+          "native_zero": 25.085000321269035
+        },
+        "rounds": 15,
+        "repetitions": 32,
+        "warmup_ms": 200,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "code": {
+        "original_acq_rel": {
+          "ptx_sha256": "00cb21341713aa1c26157393127ed18c65b9ac94cae16a0f698d798a9d7ce7d2",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "atom.global.gpu.acq_rel.add.v2.f32"
+          ]
+        },
+        "relaxed_atomic": {
+          "ptx_sha256": "b9bab54764935c0d65b85d82869ebcf79500da0c7b3ebc243ffbe60800443349",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.v2.f32"
+          ]
+        },
+        "native_rmw": {
+          "ptx_sha256": "69685c6033a5df3e166f799c756d534ae67f4ea93799a9bbb0d8f34a08168ab6",
+          "atomic_sites": 0,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        },
+        "native_zero": {
+          "ptx_sha256": "01518ae64701751e1edcbb3ed95217639e6a4c06aed1d3be4cfae0fa4ab361d2",
+          "atomic_sites": 0,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        }
+      },
+      "validation": "Exact FP32 scratch and BF16 output; poisoned output; changed gradients",
+      "scope": "Scratch zero + optional unchanged frequency-count reset/kernel + update + BF16 conversion"
+    },
+    {
+      "shape_n_d_v": [
+        16384,
+        256,
+        32768
+      ],
+      "frequency": true,
+      "block_d": 256,
+      "seed": 1,
+      "device": {
+        "samples_us": {
+          "original_acq_rel": [
+            29.045000672340393,
+            29.00400012731552,
+            28.996000066399574,
+            29.027000069618225,
+            29.00400012731552,
+            28.968000784516335,
+            28.977999463677406,
+            28.97999994456768,
+            28.98300066590309,
+            28.929999098181725,
+            28.94899994134903,
+            28.98400090634823,
+            28.93799915909767,
+            28.994999825954437,
+            28.99100072681904
+          ],
+          "relaxed_atomic": [
+            25.17000027000904,
+            25.22199973464012,
+            25.162000209093094,
+            25.157000869512558,
+            25.23599937558174,
+            25.21499991416931,
+            25.196999311447144,
+            25.160999968647957,
+            25.154000148177147,
+            25.217000395059586,
+            25.15299990773201,
+            25.220999494194984,
+            25.19799955189228,
+            25.38199909031391,
+            25.224000215530396
+          ],
+          "native_rmw": [
+            24.994999170303345,
+            24.968000128865242,
+            25.032000616192818,
+            24.958999827504158,
+            25.016000494360924,
+            24.963000789284706,
+            24.946000427007675,
+            24.952000007033348,
+            25.02099983394146,
+            25.20499937236309,
+            25.023000314831734,
+            24.981999769806862,
+            25.002000853419304,
+            25.01000091433525,
+            25.01400001347065
+          ],
+          "native_zero": [
+            25.05199983716011,
+            24.90900084376335,
+            24.94800090789795,
+            24.918999522924423,
+            24.94800090789795,
+            24.890000000596046,
+            24.910999462008476,
+            24.900000542402267,
+            24.910999462008476,
+            24.886999279260635,
+            24.886999279260635,
+            24.954000487923622,
+            24.90299940109253,
+            24.87899921834469,
+            24.90600012242794
+          ]
+        },
+        "median_us": {
+          "original_acq_rel": 28.98400090634823,
+          "relaxed_atomic": 25.19799955189228,
+          "native_rmw": 25.002000853419304,
+          "native_zero": 24.90900084376335
+        },
+        "rounds": 15,
+        "repetitions": 32,
+        "warmup_ms": 200,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "code": {
+        "original_acq_rel": {
+          "ptx_sha256": "00cb21341713aa1c26157393127ed18c65b9ac94cae16a0f698d798a9d7ce7d2",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "atom.global.gpu.acq_rel.add.v2.f32"
+          ]
+        },
+        "relaxed_atomic": {
+          "ptx_sha256": "b9bab54764935c0d65b85d82869ebcf79500da0c7b3ebc243ffbe60800443349",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.v2.f32"
+          ]
+        },
+        "native_rmw": {
+          "ptx_sha256": "69685c6033a5df3e166f799c756d534ae67f4ea93799a9bbb0d8f34a08168ab6",
+          "atomic_sites": 0,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        },
+        "native_zero": {
+          "ptx_sha256": "01518ae64701751e1edcbb3ed95217639e6a4c06aed1d3be4cfae0fa4ab361d2",
+          "atomic_sites": 0,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        }
+      },
+      "validation": "Exact FP32 scratch and BF16 output; poisoned output; changed gradients",
+      "scope": "Scratch zero + optional unchanged frequency-count reset/kernel + update + BF16 conversion"
+    },
+    {
+      "shape_n_d_v": [
+        16384,
+        256,
+        32768
+      ],
+      "frequency": true,
+      "block_d": 256,
+      "seed": 2,
+      "device": {
+        "samples_us": {
+          "original_acq_rel": [
+            28.99700030684471,
+            28.92499975860119,
+            28.94500084221363,
+            28.965000063180923,
+            28.978999704122543,
+            28.97600084543228,
+            28.93799915909767,
+            28.929999098181725,
+            28.931999579072,
+            28.906000778079033,
+            28.94200012087822,
+            28.91799993813038,
+            28.919000178575516,
+            28.920000419020653,
+            28.905000537633896
+          ],
+          "relaxed_atomic": [
+            25.210000574588776,
+            25.095999240875244,
+            25.111999362707138,
+            25.335000827908516,
+            25.143999606370926,
+            25.165999308228493,
+            25.12500062584877,
+            25.144999846816063,
+            25.14900080859661,
+            25.158999487757683,
+            25.10100044310093,
+            25.08299984037876,
+            25.078000500798225,
+            25.104999542236328,
+            25.134000927209854
+          ],
+          "native_rmw": [
+            25.133000686764717,
+            25.16300044953823,
+            25.148000568151474,
+            25.138000026345253,
+            25.07000043988228,
+            25.1499991863966,
+            25.129999965429306,
+            25.134999305009842,
+            25.088999420404434,
+            25.11800080537796,
+            25.116000324487686,
+            25.147000327706337,
+            25.151999667286873,
+            25.160999968647957,
+            25.079000741243362
+          ],
+          "native_zero": [
+            25.16300044953823,
+            25.035999715328217,
+            25.008000433444977,
+            25.040000677108765,
+            25.06300061941147,
+            25.07299929857254,
+            25.074999779462814,
+            25.032000616192818,
+            25.054000318050385,
+            25.06599947810173,
+            25.092000141739845,
+            25.035999715328217,
+            25.011999532580376,
+            25.03100037574768,
+            25.0410009175539
+          ]
+        },
+        "median_us": {
+          "original_acq_rel": 28.931999579072,
+          "relaxed_atomic": 25.134000927209854,
+          "native_rmw": 25.134999305009842,
+          "native_zero": 25.0410009175539
+        },
+        "rounds": 15,
+        "repetitions": 32,
+        "warmup_ms": 200,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "code": {
+        "original_acq_rel": {
+          "ptx_sha256": "00cb21341713aa1c26157393127ed18c65b9ac94cae16a0f698d798a9d7ce7d2",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "atom.global.gpu.acq_rel.add.v2.f32"
+          ]
+        },
+        "relaxed_atomic": {
+          "ptx_sha256": "b9bab54764935c0d65b85d82869ebcf79500da0c7b3ebc243ffbe60800443349",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.v2.f32"
+          ]
+        },
+        "native_rmw": {
+          "ptx_sha256": "69685c6033a5df3e166f799c756d534ae67f4ea93799a9bbb0d8f34a08168ab6",
+          "atomic_sites": 0,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        },
+        "native_zero": {
+          "ptx_sha256": "01518ae64701751e1edcbb3ed95217639e6a4c06aed1d3be4cfae0fa4ab361d2",
+          "atomic_sites": 0,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        }
+      },
+      "validation": "Exact FP32 scratch and BF16 output; poisoned output; changed gradients",
+      "scope": "Scratch zero + optional unchanged frequency-count reset/kernel + update + BF16 conversion"
+    },
+    {
+      "shape_n_d_v": [
+        8192,
+        1024,
+        16384
+      ],
+      "frequency": false,
+      "block_d": 128,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "original_acq_rel": [
+            66.48600101470947,
+            66.54399633407593,
+            66.53899699449539,
+            66.56499952077866,
+            66.53100252151489,
+            66.50999933481216,
+            66.54000282287598,
+            66.54199957847595,
+            66.5149986743927,
+            66.5540024638176,
+            66.57300144433975,
+            66.55199825763702,
+            66.53100252151489,
+            66.48600101470947,
+            66.48299843072891
+          ],
+          "relaxed_atomic": [
+            55.077001452445984,
+            55.027998983860016,
+            54.98199909925461,
+            55.01899868249893,
+            55.02999946475029,
+            55.038999766111374,
+            55.055998265743256,
+            55.048998445272446,
+            55.06100133061409,
+            54.99900132417679,
+            55.048998445272446,
+            55.01599982380867,
+            55.052001029253006,
+            55.04700168967247,
+            55.05499988794327
+          ],
+          "native_rmw": [
+            55.48899993300438,
+            55.435001850128174,
+            55.49100041389465,
+            55.43600022792816,
+            55.41199818253517,
+            55.4330013692379,
+            55.385999381542206,
+            55.48899993300438,
+            55.4409995675087,
+            55.42299896478653,
+            55.442001670598984,
+            55.47000095248222,
+            55.4019995033741,
+            55.4409995675087,
+            55.39799854159355
+          ],
+          "native_zero": [
+            55.020999163389206,
+            55.020999163389206,
+            55.027998983860016,
+            55.073000490665436,
+            55.02299964427948,
+            55.091001093387604,
+            55.146001279354095,
+            55.04399910569191,
+            55.04399910569191,
+            55.052001029253006,
+            55.14499917626381,
+            55.0680011510849,
+            55.059000849723816,
+            55.052001029253006,
+            55.05499988794327
+          ]
+        },
+        "median_us": {
+          "original_acq_rel": 66.53899699449539,
+          "relaxed_atomic": 55.04700168967247,
+          "native_rmw": 55.43600022792816,
+          "native_zero": 55.052001029253006
+        },
+        "rounds": 15,
+        "repetitions": 32,
+        "warmup_ms": 200,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "code": {
+        "original_acq_rel": {
+          "ptx_sha256": "852016f3b9742bfddde5dccf654bb9ef1950e0faf8d433f31e8cc3ac02cfad98",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "atom.global.gpu.acq_rel.add.f32"
+          ]
+        },
+        "relaxed_atomic": {
+          "ptx_sha256": "d3777a4a6ecd983c195bc7e22f2f8ee3190acede0537c7f777a85ecdfd5a5572",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.f32"
+          ]
+        },
+        "native_rmw": {
+          "ptx_sha256": "39139097892fdc6d37ca8ebe959c56a38d611245be83cde50dbe5474874d7d9a",
+          "atomic_sites": 0,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        },
+        "native_zero": {
+          "ptx_sha256": "a23001ad836e625f4730e5107ec3a3099122d0319e664e3954c91b9e9c6aafe3",
+          "atomic_sites": 0,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        }
+      },
+      "validation": "Exact FP32 scratch and BF16 output; poisoned output; changed gradients",
+      "scope": "Scratch zero + optional unchanged frequency-count reset/kernel + update + BF16 conversion"
+    },
+    {
+      "shape_n_d_v": [
+        8192,
+        1024,
+        16384
+      ],
+      "frequency": false,
+      "block_d": 128,
+      "seed": 1,
+      "device": {
+        "samples_us": {
+          "original_acq_rel": [
+            66.5149986743927,
+            66.55299663543701,
+            66.55199825763702,
+            66.49500131607056,
+            66.58799946308136,
+            66.52799993753433,
+            66.55500084161758,
+            66.47399812936783,
+            66.61900132894516,
+            66.55500084161758,
+            66.56999886035919,
+            66.53600186109543,
+            66.50800257921219,
+            66.56499952077866,
+            66.60900264978409
+          ],
+          "relaxed_atomic": [
+            55.12300133705139,
+            55.04800006747246,
+            55.038001388311386,
+            55.0680011510849,
+            55.05400151014328,
+            55.12800067663193,
+            55.14200031757355,
+            55.24900183081627,
+            55.07799983024597,
+            55.063001811504364,
+            55.063001811504364,
+            55.05499988794327,
+            55.17899990081787,
+            55.045001208782196,
+            55.06100133061409
+          ],
+          "native_rmw": [
+            55.44599890708923,
+            55.43699860572815,
+            55.45999854803085,
+            55.51400035619736,
+            55.514998733997345,
+            55.39799854159355,
+            55.449001491069794,
+            55.5340014398098,
+            55.44799938797951,
+            55.50200119614601,
+            55.47599866986275,
+            55.4720014333725,
+            55.54300174117088,
+            55.45099824666977,
+            55.376000702381134
+          ],
+          "native_zero": [
+            55.15399947762489,
+            55.04100024700165,
+            55.066999047994614,
+            55.027998983860016,
+            55.059999227523804,
+            55.06100133061409,
+            55.059000849723816,
+            55.059000849723816,
+            55.052999407052994,
+            55.05499988794327,
+            55.059999227523804,
+            55.03600090742111,
+            55.080000311136246,
+            55.105000734329224,
+            54.993998259305954
+          ]
+        },
+        "median_us": {
+          "original_acq_rel": 66.55299663543701,
+          "relaxed_atomic": 55.063001811504364,
+          "native_rmw": 55.45999854803085,
+          "native_zero": 55.059000849723816
+        },
+        "rounds": 15,
+        "repetitions": 32,
+        "warmup_ms": 200,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "code": {
+        "original_acq_rel": {
+          "ptx_sha256": "852016f3b9742bfddde5dccf654bb9ef1950e0faf8d433f31e8cc3ac02cfad98",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "atom.global.gpu.acq_rel.add.f32"
+          ]
+        },
+        "relaxed_atomic": {
+          "ptx_sha256": "d3777a4a6ecd983c195bc7e22f2f8ee3190acede0537c7f777a85ecdfd5a5572",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.f32"
+          ]
+        },
+        "native_rmw": {
+          "ptx_sha256": "39139097892fdc6d37ca8ebe959c56a38d611245be83cde50dbe5474874d7d9a",
+          "atomic_sites": 0,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        },
+        "native_zero": {
+          "ptx_sha256": "a23001ad836e625f4730e5107ec3a3099122d0319e664e3954c91b9e9c6aafe3",
+          "atomic_sites": 0,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        }
+      },
+      "validation": "Exact FP32 scratch and BF16 output; poisoned output; changed gradients",
+      "scope": "Scratch zero + optional unchanged frequency-count reset/kernel + update + BF16 conversion"
+    },
+    {
+      "shape_n_d_v": [
+        8192,
+        1024,
+        16384
+      ],
+      "frequency": false,
+      "block_d": 128,
+      "seed": 2,
+      "device": {
+        "samples_us": {
+          "original_acq_rel": [
+            66.53500348329544,
+            66.47499650716782,
+            66.55599921941757,
+            66.47700071334839,
+            66.55299663543701,
+            66.55099987983704,
+            66.5230005979538,
+            66.54799729585648,
+            66.54500216245651,
+            66.44999980926514,
+            66.51400029659271,
+            66.53700023889542,
+            66.48200005292892,
+            66.48900359869003,
+            66.52600318193436
+          ],
+          "relaxed_atomic": [
+            55.13099953532219,
+            55.107999593019485,
+            55.05099892616272,
+            55.038999766111374,
+            55.048998445272446,
+            55.2310012280941,
+            55.23800104856491,
+            55.09600043296814,
+            55.17100170254707,
+            55.05499988794327,
+            55.03400042653084,
+            55.04399910569191,
+            54.98899891972542,
+            55.05700036883354,
+            55.05400151014328
+          ],
+          "native_rmw": [
+            55.61299994587898,
+            55.424999445676804,
+            55.504001677036285,
+            55.438000708818436,
+            55.49300089478493,
+            55.55000156164169,
+            55.48600107431412,
+            55.44000118970871,
+            55.40100112557411,
+            55.51699921488762,
+            55.438000708818436,
+            55.45099824666977,
+            55.442001670598984,
+            55.49100041389465,
+            55.42999878525734
+          ],
+          "native_zero": [
+            55.055998265743256,
+            55.03999814391136,
+            55.02200126647949,
+            55.045001208782196,
+            55.0369992852211,
+            55.04300072789192,
+            55.066999047994614,
+            55.05499988794327,
+            55.06199970841408,
+            55.16500025987625,
+            55.00999838113785,
+            55.18599972128868,
+            55.025000125169754,
+            55.04800006747246,
+            55.07100000977516
+          ]
+        },
+        "median_us": {
+          "original_acq_rel": 66.52600318193436,
+          "relaxed_atomic": 55.05499988794327,
+          "native_rmw": 55.45099824666977,
+          "native_zero": 55.04800006747246
+        },
+        "rounds": 15,
+        "repetitions": 32,
+        "warmup_ms": 200,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "code": {
+        "original_acq_rel": {
+          "ptx_sha256": "852016f3b9742bfddde5dccf654bb9ef1950e0faf8d433f31e8cc3ac02cfad98",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "atom.global.gpu.acq_rel.add.f32"
+          ]
+        },
+        "relaxed_atomic": {
+          "ptx_sha256": "d3777a4a6ecd983c195bc7e22f2f8ee3190acede0537c7f777a85ecdfd5a5572",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.f32"
+          ]
+        },
+        "native_rmw": {
+          "ptx_sha256": "39139097892fdc6d37ca8ebe959c56a38d611245be83cde50dbe5474874d7d9a",
+          "atomic_sites": 0,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        },
+        "native_zero": {
+          "ptx_sha256": "a23001ad836e625f4730e5107ec3a3099122d0319e664e3954c91b9e9c6aafe3",
+          "atomic_sites": 0,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        }
+      },
+      "validation": "Exact FP32 scratch and BF16 output; poisoned output; changed gradients",
+      "scope": "Scratch zero + optional unchanged frequency-count reset/kernel + update + BF16 conversion"
+    },
+    {
+      "shape_n_d_v": [
+        8192,
+        1024,
+        16384
+      ],
+      "frequency": false,
+      "block_d": 256,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "original_acq_rel": [
+            45.92299833893776,
+            45.85599899291992,
+            45.8809994161129,
+            45.896001160144806,
+            45.89200019836426,
+            45.855000615119934,
+            45.958999544382095,
+            45.885998755693436,
+            45.896999537944794,
+            45.90199887752533,
+            45.8730012178421,
+            45.89200019836426,
+            45.830000191926956,
+            45.9510013461113,
+            45.823000371456146
+          ],
+          "relaxed_atomic": [
+            38.325000554323196,
+            38.27900066971779,
+            38.270000368356705,
+            38.28100115060806,
+            38.31399977207184,
+            38.42199966311455,
+            38.24000060558319,
+            38.32700103521347,
+            38.26399892568588,
+            38.25899958610535,
+            38.27099874615669,
+            38.32700103521347,
+            38.238998502492905,
+            38.346998393535614,
+            38.21999952197075
+          ],
+          "native_rmw": [
+            38.87400031089783,
+            38.7750007212162,
+            38.82699832320213,
+            38.8219989836216,
+            38.802001625299454,
+            38.812000304460526,
+            38.85199874639511,
+            38.80700096487999,
+            38.84200006723404,
+            38.8219989836216,
+            38.83900120854378,
+            38.79600018262863,
+            38.805000483989716,
+            38.81999850273132,
+            38.853999227285385
+          ],
+          "native_zero": [
+            38.228001445531845,
+            38.189999759197235,
+            38.235001266002655,
+            38.221001625061035,
+            38.2240004837513,
+            38.27900066971779,
+            38.24099898338318,
+            38.134001195430756,
+            38.21500018239021,
+            38.21200132369995,
+            38.19499909877777,
+            38.221001625061035,
+            38.20899873971939,
+            38.297999650239944,
+            38.22600096464157
+          ]
+        },
+        "median_us": {
+          "original_acq_rel": 45.89200019836426,
+          "relaxed_atomic": 38.27900066971779,
+          "native_rmw": 38.8219989836216,
+          "native_zero": 38.221001625061035
+        },
+        "rounds": 15,
+        "repetitions": 32,
+        "warmup_ms": 200,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "code": {
+        "original_acq_rel": {
+          "ptx_sha256": "eb963f62f9e16dea85bd41cf36814f1ba10f39c4ef816cf749842a2647cc7911",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "atom.global.gpu.acq_rel.add.v2.f32"
+          ]
+        },
+        "relaxed_atomic": {
+          "ptx_sha256": "e197ad7c7033dde8996069f6422a792429a4455f7770386609c174fb97c4c695",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.v2.f32"
+          ]
+        },
+        "native_rmw": {
+          "ptx_sha256": "83be6ffd4363ab11c23fb4d0ce86114fd4a8ca7d0f9bbdb347b9d3032603845c",
+          "atomic_sites": 0,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        },
+        "native_zero": {
+          "ptx_sha256": "5d41a8da777dba312b26a413bcc7c894c49ede6c7d7c60d4fd679109c1eb4ec4",
+          "atomic_sites": 0,
+          "registers": 16,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        }
+      },
+      "validation": "Exact FP32 scratch and BF16 output; poisoned output; changed gradients",
+      "scope": "Scratch zero + optional unchanged frequency-count reset/kernel + update + BF16 conversion"
+    },
+    {
+      "shape_n_d_v": [
+        8192,
+        1024,
+        16384
+      ],
+      "frequency": false,
+      "block_d": 256,
+      "seed": 1,
+      "device": {
+        "samples_us": {
+          "original_acq_rel": [
+            45.88000103831291,
+            45.87800055742264,
+            45.8419993519783,
+            45.9429994225502,
+            45.88799923658371,
+            45.798998326063156,
+            45.87699845433235,
+            45.89499905705452,
+            45.9510013461113,
+            45.8730012178421,
+            45.878998935222626,
+            45.8809994161129,
+            45.83600163459778,
+            45.8730012178421,
+            45.83600163459778
+          ],
+          "relaxed_atomic": [
+            38.3480004966259,
+            38.343001157045364,
+            38.26199844479561,
+            38.23100030422211,
+            38.26199844479561,
+            38.357000797986984,
+            38.27999904751778,
+            38.27400133013725,
+            38.31399977207184,
+            38.307998329401016,
+            38.25100138783455,
+            38.26799988746643,
+            38.24000060558319,
+            38.286998867988586,
+            38.286998867988586
+          ],
+          "native_rmw": [
+            38.85599970817566,
+            38.85500133037567,
+            38.90100121498108,
+            38.79899904131889,
+            38.84200006723404,
+            38.78900036215782,
+            38.82500156760216,
+            38.798000663518906,
+            38.84400054812431,
+            38.8530008494854,
+            38.83099928498268,
+            38.8530008494854,
+            38.8370007276535,
+            38.86200115084648,
+            38.84200006723404
+          ],
+          "native_zero": [
+            38.36200013756752,
+            38.26199844479561,
+            38.169000297784805,
+            38.20199891924858,
+            38.27099874615669,
+            38.22699934244156,
+            38.28100115060806,
+            38.30200061202049,
+            38.22200000286102,
+            38.29000145196915,
+            38.28100115060806,
+            38.25899958610535,
+            38.26500102877617,
+            38.28800097107887,
+            38.27499970793724
+          ]
+        },
+        "median_us": {
+          "original_acq_rel": 45.87800055742264,
+          "relaxed_atomic": 38.27999904751778,
+          "native_rmw": 38.84200006723404,
+          "native_zero": 38.27099874615669
+        },
+        "rounds": 15,
+        "repetitions": 32,
+        "warmup_ms": 200,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "code": {
+        "original_acq_rel": {
+          "ptx_sha256": "eb963f62f9e16dea85bd41cf36814f1ba10f39c4ef816cf749842a2647cc7911",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "atom.global.gpu.acq_rel.add.v2.f32"
+          ]
+        },
+        "relaxed_atomic": {
+          "ptx_sha256": "e197ad7c7033dde8996069f6422a792429a4455f7770386609c174fb97c4c695",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.v2.f32"
+          ]
+        },
+        "native_rmw": {
+          "ptx_sha256": "83be6ffd4363ab11c23fb4d0ce86114fd4a8ca7d0f9bbdb347b9d3032603845c",
+          "atomic_sites": 0,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        },
+        "native_zero": {
+          "ptx_sha256": "5d41a8da777dba312b26a413bcc7c894c49ede6c7d7c60d4fd679109c1eb4ec4",
+          "atomic_sites": 0,
+          "registers": 16,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        }
+      },
+      "validation": "Exact FP32 scratch and BF16 output; poisoned output; changed gradients",
+      "scope": "Scratch zero + optional unchanged frequency-count reset/kernel + update + BF16 conversion"
+    },
+    {
+      "shape_n_d_v": [
+        8192,
+        1024,
+        16384
+      ],
+      "frequency": false,
+      "block_d": 256,
+      "seed": 2,
+      "device": {
+        "samples_us": {
+          "original_acq_rel": [
+            45.910000801086426,
+            45.882999897003174,
+            45.90199887752533,
+            45.87800055742264,
+            45.910000801086426,
+            45.90500146150589,
+            45.89200019836426,
+            45.89200019836426,
+            45.88000103831291,
+            45.84699869155884,
+            45.89400067925453,
+            45.82599923014641,
+            45.889001339673996,
+            45.81499844789505,
+            45.83499953150749
+          ],
+          "relaxed_atomic": [
+            38.391001522541046,
+            38.28199952840805,
+            38.23100030422211,
+            38.304999470710754,
+            38.30400109291077,
+            38.27299922704697,
+            38.3559986948967,
+            38.378000259399414,
+            38.35099935531616,
+            38.297999650239944,
+            38.252998143434525,
+            38.286998867988586,
+            38.284000009298325,
+            38.35799917578697,
+            38.36999833583832
+          ],
+          "native_rmw": [
+            38.860999047756195,
+            38.892000913619995,
+            38.92600163817406,
+            38.802001625299454,
+            38.846999406814575,
+            38.85800018906593,
+            38.90100121498108,
+            38.80000114440918,
+            38.857001811265945,
+            38.85500133037567,
+            38.84800150990486,
+            38.78699988126755,
+            38.81299868226051,
+            38.78999873995781,
+            38.89299929141998
+          ],
+          "native_zero": [
+            38.29000145196915,
+            38.29900175333023,
+            38.27200084924698,
+            38.26000168919563,
+            38.27299922704697,
+            38.29700127243996,
+            38.28100115060806,
+            38.22299838066101,
+            38.22699934244156,
+            38.224998861551285,
+            38.22299838066101,
+            38.26399892568588,
+            38.29700127243996,
+            38.25699910521507,
+            38.2549986243248
+          ]
+        },
+        "median_us": {
+          "original_acq_rel": 45.889001339673996,
+          "relaxed_atomic": 38.30400109291077,
+          "native_rmw": 38.85500133037567,
+          "native_zero": 38.26399892568588
+        },
+        "rounds": 15,
+        "repetitions": 32,
+        "warmup_ms": 200,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "code": {
+        "original_acq_rel": {
+          "ptx_sha256": "eb963f62f9e16dea85bd41cf36814f1ba10f39c4ef816cf749842a2647cc7911",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "atom.global.gpu.acq_rel.add.v2.f32"
+          ]
+        },
+        "relaxed_atomic": {
+          "ptx_sha256": "e197ad7c7033dde8996069f6422a792429a4455f7770386609c174fb97c4c695",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.v2.f32"
+          ]
+        },
+        "native_rmw": {
+          "ptx_sha256": "83be6ffd4363ab11c23fb4d0ce86114fd4a8ca7d0f9bbdb347b9d3032603845c",
+          "atomic_sites": 0,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        },
+        "native_zero": {
+          "ptx_sha256": "5d41a8da777dba312b26a413bcc7c894c49ede6c7d7c60d4fd679109c1eb4ec4",
+          "atomic_sites": 0,
+          "registers": 16,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        }
+      },
+      "validation": "Exact FP32 scratch and BF16 output; poisoned output; changed gradients",
+      "scope": "Scratch zero + optional unchanged frequency-count reset/kernel + update + BF16 conversion"
+    },
+    {
+      "shape_n_d_v": [
+        8192,
+        1024,
+        16384
+      ],
+      "frequency": true,
+      "block_d": 128,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "original_acq_rel": [
+            77.14799791574478,
+            77.08700001239777,
+            77.00099796056747,
+            77.05400139093399,
+            77.02600210905075,
+            77.05499976873398,
+            77.115997672081,
+            77.03399658203125,
+            77.05599814653397,
+            77.10900157690048,
+            77.04000174999237,
+            77.10500061511993,
+            77.053003013134,
+            77.05400139093399,
+            77.10999995470047
+          ],
+          "relaxed_atomic": [
+            61.15499883890152,
+            61.02899834513664,
+            61.128001660108566,
+            61.08799949288368,
+            61.06700003147125,
+            61.12999841570854,
+            61.0789991915226,
+            61.039999127388,
+            61.18699908256531,
+            61.08099967241287,
+            61.090998351573944,
+            61.131998896598816,
+            61.131998896598816,
+            61.055999249219894,
+            61.066001653671265
+          ],
+          "native_rmw": [
+            61.29699945449829,
+            61.18600070476532,
+            61.18699908256531,
+            61.15499883890152,
+            61.22199818491936,
+            61.21800094842911,
+            61.163000762462616,
+            61.19300052523613,
+            61.131998896598816,
+            61.08799949288368,
+            61.25200167298317,
+            61.069998890161514,
+            61.170998960733414,
+            61.09299883246422,
+            61.10600009560585
+          ],
+          "native_zero": [
+            61.034999787807465,
+            61.06900051236153,
+            61.01299822330475,
+            61.076000332832336,
+            61.10500171780586,
+            61.03400141000748,
+            61.080001294612885,
+            60.986001044511795,
+            61.00200116634369,
+            61.16800010204315,
+            61.20700016617775,
+            61.062999069690704,
+            61.0169991850853,
+            61.149999499320984,
+            61.128001660108566
+          ]
+        },
+        "median_us": {
+          "original_acq_rel": 77.05499976873398,
+          "relaxed_atomic": 61.08799949288368,
+          "native_rmw": 61.170998960733414,
+          "native_zero": 61.06900051236153
+        },
+        "rounds": 15,
+        "repetitions": 32,
+        "warmup_ms": 200,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "code": {
+        "original_acq_rel": {
+          "ptx_sha256": "b06a51a40e1636182754f7ae2c7c6f2e0ba3a7123863b12cfe2072dec690cb29",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "atom.global.gpu.acq_rel.add.f32"
+          ]
+        },
+        "relaxed_atomic": {
+          "ptx_sha256": "fe22a17a0d8e7d69e0a5b4780584bb2c0546c60e390c21df5c4363e129bcc3b3",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.f32"
+          ]
+        },
+        "native_rmw": {
+          "ptx_sha256": "a150bac64752d6b363f434a42954b10059643a3f300b4396cb22b542f172a62f",
+          "atomic_sites": 0,
+          "registers": 16,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        },
+        "native_zero": {
+          "ptx_sha256": "4a3e6b66be6c29bd485b98b115f4192a3367914d6365bd230cb9624624173f13",
+          "atomic_sites": 0,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        }
+      },
+      "validation": "Exact FP32 scratch and BF16 output; poisoned output; changed gradients",
+      "scope": "Scratch zero + optional unchanged frequency-count reset/kernel + update + BF16 conversion"
+    },
+    {
+      "shape_n_d_v": [
+        8192,
+        1024,
+        16384
+      ],
+      "frequency": true,
+      "block_d": 128,
+      "seed": 1,
+      "device": {
+        "samples_us": {
+          "original_acq_rel": [
+            77.04400271177292,
+            77.03900337219238,
+            77.00199633836746,
+            77.0770013332367,
+            77.05900073051453,
+            77.0149976015091,
+            77.07499712705612,
+            76.96200162172318,
+            77.05800235271454,
+            77.02600210905075,
+            76.98000222444534,
+            77.03900337219238,
+            76.94700360298157,
+            77.01999694108963,
+            76.99300348758698
+          ],
+          "relaxed_atomic": [
+            61.1799992620945,
+            61.13699823617935,
+            61.129000037908554,
+            61.090998351573944,
+            61.15400046110153,
+            61.03099882602692,
+            61.09299883246422,
+            61.07499822974205,
+            61.06900051236153,
+            61.115000396966934,
+            61.08200177550316,
+            61.07499822974205,
+            61.04300171136856,
+            61.083998531103134,
+            61.0789991915226
+          ],
+          "native_rmw": [
+            61.184998601675034,
+            61.089999973773956,
+            61.149999499320984,
+            61.18899956345558,
+            61.14799901843071,
+            61.1100010573864,
+            61.25599890947342,
+            61.16100028157234,
+            61.083998531103134,
+            61.108000576496124,
+            61.229001730680466,
+            61.14500015974045,
+            61.202000826597214,
+            61.22500076889992,
+            61.17900088429451
+          ],
+          "native_zero": [
+            61.18899956345558,
+            61.10500171780586,
+            61.041999608278275,
+            61.08799949288368,
+            61.0320009291172,
+            61.0710009932518,
+            61.06099858880043,
+            61.08900159597397,
+            61.01899966597557,
+            61.080001294612885,
+            61.00500002503395,
+            60.99700182676315,
+            61.039999127388,
+            61.10899895429611,
+            61.048999428749084
+          ]
+        },
+        "median_us": {
+          "original_acq_rel": 77.02600210905075,
+          "relaxed_atomic": 61.083998531103134,
+          "native_rmw": 61.16100028157234,
+          "native_zero": 61.06099858880043
+        },
+        "rounds": 15,
+        "repetitions": 32,
+        "warmup_ms": 200,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "code": {
+        "original_acq_rel": {
+          "ptx_sha256": "b06a51a40e1636182754f7ae2c7c6f2e0ba3a7123863b12cfe2072dec690cb29",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "atom.global.gpu.acq_rel.add.f32"
+          ]
+        },
+        "relaxed_atomic": {
+          "ptx_sha256": "fe22a17a0d8e7d69e0a5b4780584bb2c0546c60e390c21df5c4363e129bcc3b3",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.f32"
+          ]
+        },
+        "native_rmw": {
+          "ptx_sha256": "a150bac64752d6b363f434a42954b10059643a3f300b4396cb22b542f172a62f",
+          "atomic_sites": 0,
+          "registers": 16,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        },
+        "native_zero": {
+          "ptx_sha256": "4a3e6b66be6c29bd485b98b115f4192a3367914d6365bd230cb9624624173f13",
+          "atomic_sites": 0,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        }
+      },
+      "validation": "Exact FP32 scratch and BF16 output; poisoned output; changed gradients",
+      "scope": "Scratch zero + optional unchanged frequency-count reset/kernel + update + BF16 conversion"
+    },
+    {
+      "shape_n_d_v": [
+        8192,
+        1024,
+        16384
+      ],
+      "frequency": true,
+      "block_d": 128,
+      "seed": 2,
+      "device": {
+        "samples_us": {
+          "original_acq_rel": [
+            77.05599814653397,
+            77.0450010895729,
+            77.04000174999237,
+            77.03900337219238,
+            77.114999294281,
+            76.98400318622589,
+            77.01800018548965,
+            77.04299688339233,
+            77.08299905061722,
+            76.95899903774261,
+            76.97100192308426,
+            77.08100229501724,
+            76.99300348758698,
+            77.03699916601181,
+            76.9210010766983
+          ],
+          "relaxed_atomic": [
+            61.20799854397774,
+            61.14500015974045,
+            61.05000153183937,
+            61.051998287439346,
+            61.076998710632324,
+            61.06799840927124,
+            61.138998717069626,
+            61.211999505758286,
+            61.177000403404236,
+            61.14500015974045,
+            61.066001653671265,
+            61.16100028157234,
+            61.15100160241127,
+            61.20000034570694,
+            61.06799840927124
+          ],
+          "native_rmw": [
+            61.16899847984314,
+            61.18600070476532,
+            61.17299944162369,
+            61.059001833200455,
+            61.142001301050186,
+            61.128001660108566,
+            61.149999499320984,
+            61.13699823617935,
+            61.129000037908554,
+            61.145998537540436,
+            61.20000034570694,
+            61.18300184607506,
+            61.06499955058098,
+            61.216000467538834,
+            61.21499836444855
+          ],
+          "native_zero": [
+            61.142999678850174,
+            61.13100051879883,
+            61.083000153303146,
+            61.11700087785721,
+            61.14000082015991,
+            61.121001839637756,
+            61.0789991915226,
+            61.06499955058098,
+            61.0320009291172,
+            61.05700135231018,
+            61.01499870419502,
+            61.07199937105179,
+            61.076998710632324,
+            61.1330009996891,
+            61.110999435186386
+          ]
+        },
+        "median_us": {
+          "original_acq_rel": 77.03900337219238,
+          "relaxed_atomic": 61.14500015974045,
+          "native_rmw": 61.149999499320984,
+          "native_zero": 61.083000153303146
+        },
+        "rounds": 15,
+        "repetitions": 32,
+        "warmup_ms": 200,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "code": {
+        "original_acq_rel": {
+          "ptx_sha256": "b06a51a40e1636182754f7ae2c7c6f2e0ba3a7123863b12cfe2072dec690cb29",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "atom.global.gpu.acq_rel.add.f32"
+          ]
+        },
+        "relaxed_atomic": {
+          "ptx_sha256": "fe22a17a0d8e7d69e0a5b4780584bb2c0546c60e390c21df5c4363e129bcc3b3",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.f32"
+          ]
+        },
+        "native_rmw": {
+          "ptx_sha256": "a150bac64752d6b363f434a42954b10059643a3f300b4396cb22b542f172a62f",
+          "atomic_sites": 0,
+          "registers": 16,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        },
+        "native_zero": {
+          "ptx_sha256": "4a3e6b66be6c29bd485b98b115f4192a3367914d6365bd230cb9624624173f13",
+          "atomic_sites": 0,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        }
+      },
+      "validation": "Exact FP32 scratch and BF16 output; poisoned output; changed gradients",
+      "scope": "Scratch zero + optional unchanged frequency-count reset/kernel + update + BF16 conversion"
+    },
+    {
+      "shape_n_d_v": [
+        8192,
+        1024,
+        16384
+      ],
+      "frequency": true,
+      "block_d": 256,
+      "seed": 0,
+      "device": {
+        "samples_us": {
+          "original_acq_rel": [
+            54.08100038766861,
+            54.07999828457832,
+            54.033998399972916,
+            54.06399816274643,
+            54.05699834227562,
+            54.02199923992157,
+            54.08700183033943,
+            54.07299846410751,
+            54.106999188661575,
+            54.1049987077713,
+            54.08399924635887,
+            54.055001586675644,
+            54.0740005671978,
+            54.03599888086319,
+            54.010000079870224
+          ],
+          "relaxed_atomic": [
+            44.37499865889549,
+            44.47599872946739,
+            44.37100142240524,
+            44.26499828696251,
+            44.449999928474426,
+            44.52599957585335,
+            44.43199932575226,
+            44.43100094795227,
+            44.44099962711334,
+            44.360000640153885,
+            44.353000819683075,
+            44.41799968481064,
+            44.32300105690956,
+            44.4130003452301,
+            44.43499818444252
+          ],
+          "native_rmw": [
+            44.50000077486038,
+            44.45299878716469,
+            44.49300095438957,
+            44.440001249313354,
+            44.50700059533119,
+            44.443998485803604,
+            44.50400173664093,
+            44.43399980664253,
+            44.429000467062,
+            44.40600052475929,
+            44.47399824857712,
+            44.46899890899658,
+            44.461000710725784,
+            44.468000531196594,
+            44.49699819087982
+          ],
+          "native_zero": [
+            44.224999845027924,
+            44.39299926161766,
+            44.36099901795387,
+            44.33500021696091,
+            44.38399896025658,
+            44.31900009512901,
+            44.30700093507767,
+            44.36200112104416,
+            44.23600062727928,
+            44.411998242139816,
+            44.34499889612198,
+            44.41399872303009,
+            44.3900004029274,
+            44.40400004386902,
+            44.24099996685982
+          ]
+        },
+        "median_us": {
+          "original_acq_rel": 54.07299846410751,
+          "relaxed_atomic": 44.41799968481064,
+          "native_rmw": 44.468000531196594,
+          "native_zero": 44.36099901795387
+        },
+        "rounds": 15,
+        "repetitions": 32,
+        "warmup_ms": 200,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "code": {
+        "original_acq_rel": {
+          "ptx_sha256": "1859c19e7a592ff39bf284071665553f9e0039a241cb0fec44456eff8c1a938d",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "atom.global.gpu.acq_rel.add.v2.f32"
+          ]
+        },
+        "relaxed_atomic": {
+          "ptx_sha256": "693b2c8d5d16809ba9874f62569335d9f78abfc85d39164af34ee2b70b2c3ccf",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.v2.f32"
+          ]
+        },
+        "native_rmw": {
+          "ptx_sha256": "cf18c0afa202cdaa122ad414599374b97d3832deba00ebdc9488fdb766537af6",
+          "atomic_sites": 0,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        },
+        "native_zero": {
+          "ptx_sha256": "39947ede7f419a472a4cedfff7cdcacbadd2f93a507e9477aca9de3499a9b806",
+          "atomic_sites": 0,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        }
+      },
+      "validation": "Exact FP32 scratch and BF16 output; poisoned output; changed gradients",
+      "scope": "Scratch zero + optional unchanged frequency-count reset/kernel + update + BF16 conversion"
+    },
+    {
+      "shape_n_d_v": [
+        8192,
+        1024,
+        16384
+      ],
+      "frequency": true,
+      "block_d": 256,
+      "seed": 1,
+      "device": {
+        "samples_us": {
+          "original_acq_rel": [
+            54.010000079870224,
+            54.01499941945076,
+            54.0740005671978,
+            54.09900099039078,
+            54.009001702070236,
+            53.99800091981888,
+            54.048001766204834,
+            54.005999118089676,
+            53.975000977516174,
+            53.98000031709671,
+            53.97599935531616,
+            54.01499941945076,
+            54.037000983953476,
+            53.961001336574554,
+            53.96600067615509
+          ],
+          "relaxed_atomic": [
+            44.3589985370636,
+            44.436998665332794,
+            44.39299926161766,
+            44.415999203920364,
+            44.3819984793663,
+            44.349998235702515,
+            44.35199871659279,
+            44.37100142240524,
+            44.367000460624695,
+            44.349998235702515,
+            44.374000281095505,
+            44.45299878716469,
+            44.42799836397171,
+            44.40699890255928,
+            44.31699961423874
+          ],
+          "native_rmw": [
+            44.447001069784164,
+            44.498998671770096,
+            44.512998312711716,
+            44.436998665332794,
+            44.39099878072739,
+            44.477999210357666,
+            44.47399824857712,
+            44.43399980664253,
+            44.41399872303009,
+            44.411998242139816,
+            44.491998851299286,
+            44.4829985499382,
+            44.408999383449554,
+            44.49699819087982,
+            44.443000108003616
+          ],
+          "native_zero": [
+            44.39200088381767,
+            44.34200003743172,
+            44.28299888968468,
+            44.224999845027924,
+            44.28200051188469,
+            44.23300176858902,
+            44.29500177502632,
+            44.241998344659805,
+            44.34200003743172,
+            44.2500002682209,
+            44.29300129413605,
+            44.218000024557114,
+            44.30599883198738,
+            44.266000390052795,
+            44.218000024557114
+          ]
+        },
+        "median_us": {
+          "original_acq_rel": 54.009001702070236,
+          "relaxed_atomic": 44.374000281095505,
+          "native_rmw": 44.447001069784164,
+          "native_zero": 44.28200051188469
+        },
+        "rounds": 15,
+        "repetitions": 32,
+        "warmup_ms": 200,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "code": {
+        "original_acq_rel": {
+          "ptx_sha256": "1859c19e7a592ff39bf284071665553f9e0039a241cb0fec44456eff8c1a938d",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "atom.global.gpu.acq_rel.add.v2.f32"
+          ]
+        },
+        "relaxed_atomic": {
+          "ptx_sha256": "693b2c8d5d16809ba9874f62569335d9f78abfc85d39164af34ee2b70b2c3ccf",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.v2.f32"
+          ]
+        },
+        "native_rmw": {
+          "ptx_sha256": "cf18c0afa202cdaa122ad414599374b97d3832deba00ebdc9488fdb766537af6",
+          "atomic_sites": 0,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        },
+        "native_zero": {
+          "ptx_sha256": "39947ede7f419a472a4cedfff7cdcacbadd2f93a507e9477aca9de3499a9b806",
+          "atomic_sites": 0,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        }
+      },
+      "validation": "Exact FP32 scratch and BF16 output; poisoned output; changed gradients",
+      "scope": "Scratch zero + optional unchanged frequency-count reset/kernel + update + BF16 conversion"
+    },
+    {
+      "shape_n_d_v": [
+        8192,
+        1024,
+        16384
+      ],
+      "frequency": true,
+      "block_d": 256,
+      "seed": 2,
+      "device": {
+        "samples_us": {
+          "original_acq_rel": [
+            54.01499941945076,
+            53.975000977516174,
+            54.05399948358536,
+            54.030001163482666,
+            54.0120005607605,
+            54.0350005030632,
+            54.023999720811844,
+            54.10199984908104,
+            54.02500182390213,
+            54.05599996447563,
+            53.97000163793564,
+            54.03900146484375,
+            54.037999361753464,
+            54.033998399972916,
+            53.998999297618866
+          ],
+          "relaxed_atomic": [
+            44.54300180077553,
+            44.534001499414444,
+            44.293999671936035,
+            44.40600052475929,
+            44.40699890255928,
+            44.422999024391174,
+            44.41099986433983,
+            44.367000460624695,
+            44.509001076221466,
+            44.33500021696091,
+            44.482000172138214,
+            44.408999383449554,
+            44.482000172138214,
+            44.4130003452301,
+            44.449999928474426
+          ],
+          "native_rmw": [
+            44.534001499414444,
+            44.401999562978745,
+            44.447001069784164,
+            44.443998485803604,
+            44.447001069784164,
+            44.419001787900925,
+            44.4130003452301,
+            44.447001069784164,
+            44.408999383449554,
+            44.488001614809036,
+            44.47599872946739,
+            44.44099962711334,
+            44.38300058245659,
+            44.41099986433983,
+            44.43899914622307
+          ],
+          "native_zero": [
+            44.27700117230415,
+            44.32399943470955,
+            44.2500002682209,
+            44.36299949884415,
+            44.24399882555008,
+            44.27099972963333,
+            44.41000148653984,
+            44.3120002746582,
+            44.37199980020523,
+            44.36799883842468,
+            44.3120002746582,
+            44.41799968481064,
+            44.24099996685982,
+            44.37100142240524,
+            44.34800148010254
+          ]
+        },
+        "median_us": {
+          "original_acq_rel": 54.030001163482666,
+          "relaxed_atomic": 44.4130003452301,
+          "native_rmw": 44.44099962711334,
+          "native_zero": 44.32399943470955
+        },
+        "rounds": 15,
+        "repetitions": 32,
+        "warmup_ms": 200,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "code": {
+        "original_acq_rel": {
+          "ptx_sha256": "1859c19e7a592ff39bf284071665553f9e0039a241cb0fec44456eff8c1a938d",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "atom.global.gpu.acq_rel.add.v2.f32"
+          ]
+        },
+        "relaxed_atomic": {
+          "ptx_sha256": "693b2c8d5d16809ba9874f62569335d9f78abfc85d39164af34ee2b70b2c3ccf",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.v2.f32"
+          ]
+        },
+        "native_rmw": {
+          "ptx_sha256": "cf18c0afa202cdaa122ad414599374b97d3832deba00ebdc9488fdb766537af6",
+          "atomic_sites": 0,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        },
+        "native_zero": {
+          "ptx_sha256": "39947ede7f419a472a4cedfff7cdcacbadd2f93a507e9477aca9de3499a9b806",
+          "atomic_sites": 0,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": []
+        }
+      },
+      "validation": "Exact FP32 scratch and BF16 output; poisoned output; changed gradients",
+      "scope": "Scratch zero + optional unchanged frequency-count reset/kernel + update + BF16 conversion"
+    }
+  ],
+  "scope": "Ordering/lowering control of original indexed-update result; no FX or Inductor",
+  "limits": "Unique immutable randperm subsets, finite ordinary BF16 gradients; device timings exclude producers, allocations and host guards",
+  "summary": [
+    {
+      "shape_n_d_v": [
+        4096,
+        128,
+        8192
+      ],
+      "frequency": false,
+      "config_median_us": {
+        "128": {
+          "original_acq_rel": 7.35200010240078,
+          "relaxed_atomic": 5.8189998380839825,
+          "native_rmw": 5.872000008821487,
+          "native_zero": 5.717999767512083
+        },
+        "256": {
+          "original_acq_rel": 7.294000126421452,
+          "relaxed_atomic": 5.801000166684389,
+          "native_rmw": 5.874000024050474,
+          "native_zero": 5.727999843657017
+        }
+      },
+      "best": {
+        "original_acq_rel": {
+          "median_us": 7.294000126421452,
+          "block_d": 256
+        },
+        "relaxed_atomic": {
+          "median_us": 5.801000166684389,
+          "block_d": 256
+        },
+        "native_rmw": {
+          "median_us": 5.872000008821487,
+          "block_d": 128
+        },
+        "native_zero": {
+          "median_us": 5.717999767512083,
+          "block_d": 128
+        }
+      },
+      "original_over_relaxed": 1.2573694047298052,
+      "relaxed_over_native_rmw": 0.9879087462482229,
+      "relaxed_over_native_zero": 1.014515635282794,
+      "original_over_native_rmw": 1.2421662321974962,
+      "original_over_native_zero": 1.275620920424607
+    },
+    {
+      "shape_n_d_v": [
+        4096,
+        128,
+        8192
+      ],
+      "frequency": true,
+      "config_median_us": {
+        "128": {
+          "original_acq_rel": 12.744000181555748,
+          "relaxed_atomic": 11.079000309109688,
+          "native_rmw": 11.012000031769276,
+          "native_zero": 10.994000360369682
+        },
+        "256": {
+          "original_acq_rel": 12.784999795258045,
+          "relaxed_atomic": 11.090000160038471,
+          "native_rmw": 11.03499997407198,
+          "native_zero": 11.009999550879002
+        }
+      },
+      "best": {
+        "original_acq_rel": {
+          "median_us": 12.744000181555748,
+          "block_d": 128
+        },
+        "relaxed_atomic": {
+          "median_us": 11.079000309109688,
+          "block_d": 128
+        },
+        "native_rmw": {
+          "median_us": 11.012000031769276,
+          "block_d": 128
+        },
+        "native_zero": {
+          "median_us": 10.994000360369682,
+          "block_d": 128
+        }
+      },
+      "original_over_relaxed": 1.1502843059835477,
+      "relaxed_over_native_rmw": 1.006084296871333,
+      "relaxed_over_native_zero": 1.0077314849876127,
+      "original_over_native_rmw": 1.1572829771875868,
+      "original_over_native_zero": 1.159177711826746
+    },
+    {
+      "shape_n_d_v": [
+        16384,
+        256,
+        32768
+      ],
+      "frequency": false,
+      "config_median_us": {
+        "128": {
+          "original_acq_rel": 31.151000410318375,
+          "relaxed_atomic": 27.984999120235443,
+          "native_rmw": 28.0349999666214,
+          "native_zero": 27.79500000178814
+        },
+        "256": {
+          "original_acq_rel": 22.45599962770939,
+          "relaxed_atomic": 19.586000591516495,
+          "native_rmw": 19.641999155282974,
+          "native_zero": 19.44899931550026
+        }
+      },
+      "best": {
+        "original_acq_rel": {
+          "median_us": 22.45599962770939,
+          "block_d": 256
+        },
+        "relaxed_atomic": {
+          "median_us": 19.586000591516495,
+          "block_d": 256
+        },
+        "native_rmw": {
+          "median_us": 19.641999155282974,
+          "block_d": 256
+        },
+        "native_zero": {
+          "median_us": 19.44899931550026,
+          "block_d": 256
+        }
+      },
+      "original_over_relaxed": 1.1465331843927344,
+      "relaxed_over_native_rmw": 0.9971490394982825,
+      "relaxed_over_native_zero": 1.0070441298183939,
+      "original_over_native_rmw": 1.1432644635701226,
+      "original_over_native_zero": 1.1546095129846934
+    },
+    {
+      "shape_n_d_v": [
+        16384,
+        256,
+        32768
+      ],
+      "frequency": true,
+      "config_median_us": {
+        "128": {
+          "original_acq_rel": 38.92200067639351,
+          "relaxed_atomic": 33.56499969959259,
+          "native_rmw": 33.42200070619583,
+          "native_zero": 33.34899991750717
+        },
+        "256": {
+          "original_acq_rel": 28.98400090634823,
+          "relaxed_atomic": 25.164000689983368,
+          "native_rmw": 25.134999305009842,
+          "native_zero": 25.0410009175539
+        }
+      },
+      "best": {
+        "original_acq_rel": {
+          "median_us": 28.98400090634823,
+          "block_d": 256
+        },
+        "relaxed_atomic": {
+          "median_us": 25.164000689983368,
+          "block_d": 256
+        },
+        "native_rmw": {
+          "median_us": 25.134999305009842,
+          "block_d": 256
+        },
+        "native_zero": {
+          "median_us": 25.0410009175539,
+          "block_d": 256
+        }
+      },
+      "original_over_relaxed": 1.1518041691155025,
+      "relaxed_over_native_rmw": 1.00115382477722,
+      "relaxed_over_native_zero": 1.0049119351432652,
+      "original_over_native_rmw": 1.1531331493043333,
+      "original_over_native_zero": 1.1574617564919403
+    },
+    {
+      "shape_n_d_v": [
+        8192,
+        1024,
+        16384
+      ],
+      "frequency": false,
+      "config_median_us": {
+        "128": {
+          "original_acq_rel": 66.53899699449539,
+          "relaxed_atomic": 55.05499988794327,
+          "native_rmw": 55.45099824666977,
+          "native_zero": 55.052001029253006
+        },
+        "256": {
+          "original_acq_rel": 45.889001339673996,
+          "relaxed_atomic": 38.27999904751778,
+          "native_rmw": 38.84200006723404,
+          "native_zero": 38.26399892568588
+        }
+      },
+      "best": {
+        "original_acq_rel": {
+          "median_us": 45.889001339673996,
+          "block_d": 256
+        },
+        "relaxed_atomic": {
+          "median_us": 38.27999904751778,
+          "block_d": 256
+        },
+        "native_rmw": {
+          "median_us": 38.84200006723404,
+          "block_d": 256
+        },
+        "native_zero": {
+          "median_us": 38.26399892568588,
+          "block_d": 256
+        }
+      },
+      "original_over_relaxed": 1.1987722696312244,
+      "relaxed_over_native_rmw": 0.985531099872729,
+      "relaxed_over_native_zero": 1.0004181508018273,
+      "original_over_native_rmw": 1.1814273533865882,
+      "original_over_native_zero": 1.1992735372169792
+    },
+    {
+      "shape_n_d_v": [
+        8192,
+        1024,
+        16384
+      ],
+      "frequency": true,
+      "config_median_us": {
+        "128": {
+          "original_acq_rel": 77.03900337219238,
+          "relaxed_atomic": 61.08799949288368,
+          "native_rmw": 61.16100028157234,
+          "native_zero": 61.06900051236153
+        },
+        "256": {
+          "original_acq_rel": 54.030001163482666,
+          "relaxed_atomic": 44.4130003452301,
+          "native_rmw": 44.447001069784164,
+          "native_zero": 44.32399943470955
+        }
+      },
+      "best": {
+        "original_acq_rel": {
+          "median_us": 54.030001163482666,
+          "block_d": 256
+        },
+        "relaxed_atomic": {
+          "median_us": 44.4130003452301,
+          "block_d": 256
+        },
+        "native_rmw": {
+          "median_us": 44.447001069784164,
+          "block_d": 256
+        },
+        "native_zero": {
+          "median_us": 44.32399943470955,
+          "block_d": 256
+        }
+      },
+      "original_over_relaxed": 1.2165357157475944,
+      "relaxed_over_native_rmw": 0.9992350277018538,
+      "relaxed_over_native_zero": 1.0020079620895144,
+      "original_over_native_rmw": 1.215605099625342,
+      "original_over_native_zero": 1.218978473345356
+    }
+  ],
+  "geometric_mean_ratios": {
+    "original_over_relaxed": 1.186176052002577,
+    "relaxed_over_native_rmw": 0.9961506248474269,
+    "relaxed_over_native_zero": 1.0060945636060175,
+    "original_over_native_rmw": 1.181610015381421,
+    "original_over_native_zero": 1.1934052773994412
+  }
+}

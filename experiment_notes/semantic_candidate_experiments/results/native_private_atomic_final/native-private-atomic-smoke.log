@@ -1,0 +1,4 @@
+{"shape": [32, 137, 67], "frequency": false, "kind": "unique", "block": 128, "seed": 0, "device_us": {"original_acq_rel": 4.575999919325113, "native_relaxed": 3.7360000424087048, "manual_relaxed": 3.684000112116337}}
+{"shape": [32, 137, 67], "frequency": false, "kind": "fourfold", "block": 128, "seed": 0, "device_us": {"original_acq_rel": 4.639999940991402, "native_relaxed": 3.768000053241849, "manual_relaxed": 3.8159999530762434}}
+{"shape": [32, 137, 67], "frequency": true, "kind": "unique", "block": 128, "seed": 0, "device_us": {"original_acq_rel": 7.124000228941441, "native_relaxed": 6.335999816656113, "manual_relaxed": 6.351999938488007}}
+{"shape": [32, 137, 67], "frequency": true, "kind": "fourfold", "block": 128, "seed": 0, "device_us": {"original_acq_rel": 6.748000159859657, "native_relaxed": 5.803999956697226, "manual_relaxed": 5.923999939113855}}

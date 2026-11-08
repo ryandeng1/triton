@@ -357,5 +357,11 @@
   "additional_source_sha256": {
     "test/Triton/combine.mlir": "032ead9f30323178ddc47f8a42e13ca50af19259c2b70cd54f73d5344d4868e9",
     "lib/Dialect/Triton/Transforms/CMakeLists.txt": "3de90c2e06766f1c9514894256dab3b9aabe018c1ec9a067160749ec42acc219"
+  },
+  "followup": {
+    "date": "2026-11-08",
+    "evidence": "../native_atomic_ordering_final/results.json",
+    "static_analysis": "../native_atomic_ordering_final/synchronization_analysis.json",
+    "correction": "The recorded speedups combine weaker ordering with atomic elimination. A later sem=relaxed-only control recovers essentially all of the gain while retaining atomics: original/relaxed geometric mean 1.1862; relaxed/native RMW 0.9962; relaxed/native zero 1.0061. These native timings do not establish a material profitability benefit from uniqueness alone. Original measurements and source fingerprints are preserved."
   }
 }

@@ -1,0 +1,916 @@
+{
+  "status": "passed",
+  "mode": "smoke",
+  "gpu": "NVIDIA B300 SXM6 PC",
+  "torch": "2.14.1+cu130",
+  "triton": "3.9.0",
+  "compiler_sha256": "37070dd90c060d7c56ab48ff3e4194e4948addc4bb66038e5a014be59da77185",
+  "git_revision": "c596ded1a3c0318fd05b0f06401aaf6681acb067",
+  "source_sha256": {
+    "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/native_private_atomic_experiment.py": "3b6c0c1ec29b9918a710f5c86ad50dcd03d2c538047ecbd0b29bfa554c6606b6",
+    "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/native_atomic_ordering_experiment.py": "5557ea03b353e8d9f4be3108dc773f7e8eeb21f43f92ae37d25d8d61f46ae5b0",
+    "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/native_indexed_update_experiment.py": "4a45f90c8e1ac4722bac06a845c5cf450b955920d0b3118066aabcf252979279",
+    "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/irregular_kernels.py": "ac5bb1ae6da6c5dd384a0fcb1a807c04988aca1008dc0badcd1f94660ba58d25",
+    "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/coverage_experiment.py": "db50502fc3f549eb7550f594521835097e0d14d994f477e77da7bbaa812330d2",
+    "/home/ryandeng/tpaa/triton/python/triton/experimental/semantic_contracts/native.py": "05ff7f9b428e1b91eb5dea21f43763253b4b9aca39323d19578ead1a8c854bbd",
+    "/home/ryandeng/tpaa/triton/lib/Dialect/Triton/Transforms/SpecializeIndexedUpdates.cpp": "e6f2e1210c2c5ff460001440713039c42a2bf4a538022e4955f9dbedb9927f31",
+    "/home/ryandeng/tpaa/triton/include/triton/Dialect/Triton/Transforms/Passes.td": "9cd3630a3b119724bbbc5429d624b31fd37010da529c43cf3c9feaaede298241",
+    "/home/ryandeng/tpaa/triton/python/src/passes.cc": "2d94bbf681f5da59e5484e1f9b52b0e36ee1be684b84741f051c425fab4efc6d",
+    "/home/ryandeng/tpaa/triton/third_party/nvidia/backend/compiler.py": "d1eaf0482966046765543ba0fe705e32c2256f390a0f9678d4a3a92931308d4d",
+    "/home/ryandeng/tpaa/triton/python/test/unit/runtime/test_specialize.py": "ae73a0ca0b92754a4f789b9361d469b2a115eba719446daf3334ec73807f1114",
+    "/home/ryandeng/tpaa/triton/test/Triton/combine.mlir": "c93e0f793b3a3aa0fa3fd77f3ef30c74e59c8ebd7d65655cbf1154dd070c641f"
+  },
+  "source_audit": {
+    "upstream": {
+      "_embedding_dense_backward_kernel": {
+        "ast_identical_to_pinned_upstream": true,
+        "ast_sha256": "d0ec650fe2662e96af902bce223638f02eede96fd53fb35fadad1cd421ad1d84"
+      },
+      "_embedding_dense_backward_kernel_scale_by_freq": {
+        "ast_identical_to_pinned_upstream": true,
+        "ast_sha256": "40b7b414d34a1bb68e8a1f4cd7c4ea3481234b5abc698554f04af83e4701df90"
+      }
+    },
+    "relaxed_controls": {
+      "_embedding_dense_backward_kernel": "Only sem='relaxed' added, apart from function name; AST audited",
+      "_embedding_dense_backward_kernel_scale_by_freq": "Only sem='relaxed' added, apart from function name; AST audited"
+    }
+  },
+  "settings": {
+    "rounds": 3,
+    "repetitions": 8,
+    "warmup_ms": 20
+  },
+  "cases": [
+    {
+      "shape_n_d_v": [
+        32,
+        137,
+        67
+      ],
+      "frequency": false,
+      "block_d": 128,
+      "seed": 0,
+      "index_kind": "unique",
+      "nonpadding_index_multiplicity": 1,
+      "device": {
+        "samples_us": {
+          "original_acq_rel": [
+            4.9680001102387905,
+            4.45199990645051,
+            4.575999919325113
+          ],
+          "native_relaxed": [
+            3.871999913826585,
+            3.7360000424087048,
+            3.6959999706596136
+          ],
+          "manual_relaxed": [
+            4.027999937534332,
+            3.6639999598264694,
+            3.684000112116337
+          ]
+        },
+        "median_us": {
+          "original_acq_rel": 4.575999919325113,
+          "native_relaxed": 3.7360000424087048,
+          "manual_relaxed": 3.684000112116337
+        },
+        "rounds": 3,
+        "repetitions": 8,
+        "warmup_ms": 20,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "code": {
+        "original_acq_rel": {
+          "ptx_sha256": "f1a81e2dcf87a27947fbfc74a6872fd77f7923120e98c31234d7c7b06de21cec",
+          "atomic_sites": 1,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "atom.global.gpu.acq_rel.add.f32"
+          ],
+          "bar_sync_sites": 2
+        },
+        "native_relaxed": {
+          "ptx_sha256": "bf5519d5d3cac61621dc5d12e60fa5468135057737f1fc29212ee2f95b81d985",
+          "atomic_sites": 1,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.f32"
+          ],
+          "bar_sync_sites": 0
+        },
+        "manual_relaxed": {
+          "ptx_sha256": "4fc814f0d23cb49c1575f178ea6c10fcdd43ae09126616e3d341fc1c3ddc0f93",
+          "atomic_sites": 1,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.f32"
+          ],
+          "bar_sync_sites": 0
+        }
+      },
+      "native_report": {
+        "transformed": true,
+        "grid": [
+          32,
+          2,
+          1
+        ],
+        "native_attributes": {
+          "(0,)": [
+            [
+              "tt.divisibility",
+              16
+            ],
+            [
+              "tt.experimental_alias_group",
+              0
+            ]
+          ],
+          "(1,)": [
+            [
+              "tt.divisibility",
+              16
+            ],
+            [
+              "tt.experimental_alias_group",
+              0
+            ]
+          ],
+          "(2,)": [
+            [
+              "tt.divisibility",
+              16
+            ],
+            [
+              "tt.experimental_alias_group",
+              1
+            ],
+            [
+              "tt.experimental_private",
+              1
+            ],
+            [
+              "tt.experimental_num_ctas",
+              1
+            ]
+          ],
+          "(3,)": [],
+          "(4,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(5,)": [],
+          "(6,)": []
+        },
+        "proof": "private output plus closed memory effects and disjoint read footprints; atomicity retained",
+        "scope": "unchanged source; no uniqueness or immutable-index assumptions; no host launch removal",
+        "variants": {
+          "baseline": {
+            "atomic_instruction_sites": 1,
+            "atomic_instructions": [
+              "atom.global.gpu.acq_rel.add.f32"
+            ],
+            "bar_sync_sites": 2,
+            "registers": 12,
+            "spills": 0,
+            "shared_bytes": 0
+          },
+          "optimized": {
+            "atomic_instruction_sites": 1,
+            "atomic_instructions": [
+              "red.global.gpu.relaxed.add.f32"
+            ],
+            "bar_sync_sites": 0,
+            "registers": 12,
+            "spills": 0,
+            "shared_bytes": 0
+          }
+        }
+      },
+      "native_ir_change": "Only atomic ordering changes in normalized TTIR body; source function object identical",
+      "validation": {
+        "exact": "Small integer BF16 gradients; exact FP32 scratch/BF16 output, including duplicate indices and power-of-two frequency division",
+        "ordinary": "Random ordinary BF16 gradients; gamma_m FP32 accumulation bound plus FP64 reference/sum_abs rounding bound; actual FP32-to-BF16 conversion checked exactly",
+        "normal_max_error_and_bound_fraction": {
+          "original_acq_rel": [
+            0.0,
+            0.0
+          ],
+          "native_relaxed": [
+            0.0,
+            0.0
+          ],
+          "manual_relaxed": [
+            0.0,
+            0.0
+          ]
+        },
+        "mutation": "Poisoned output and changed gradient/index contents checked; atomicity retained for multiplicity four"
+      },
+      "scope": "Scratch zero + optional unchanged frequency-count reset/kernel + update + BF16 conversion"
+    },
+    {
+      "shape_n_d_v": [
+        32,
+        137,
+        67
+      ],
+      "frequency": false,
+      "block_d": 128,
+      "seed": 0,
+      "index_kind": "fourfold",
+      "nonpadding_index_multiplicity": 4,
+      "device": {
+        "samples_us": {
+          "original_acq_rel": [
+            4.776000045239925,
+            4.45199990645051,
+            4.639999940991402
+          ],
+          "native_relaxed": [
+            3.751999931409955,
+            3.843999933451414,
+            3.768000053241849
+          ],
+          "manual_relaxed": [
+            3.903999924659729,
+            3.8159999530762434,
+            3.7960000336170197
+          ]
+        },
+        "median_us": {
+          "original_acq_rel": 4.639999940991402,
+          "native_relaxed": 3.768000053241849,
+          "manual_relaxed": 3.8159999530762434
+        },
+        "rounds": 3,
+        "repetitions": 8,
+        "warmup_ms": 20,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "code": {
+        "original_acq_rel": {
+          "ptx_sha256": "f1a81e2dcf87a27947fbfc74a6872fd77f7923120e98c31234d7c7b06de21cec",
+          "atomic_sites": 1,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "atom.global.gpu.acq_rel.add.f32"
+          ],
+          "bar_sync_sites": 2
+        },
+        "native_relaxed": {
+          "ptx_sha256": "bf5519d5d3cac61621dc5d12e60fa5468135057737f1fc29212ee2f95b81d985",
+          "atomic_sites": 1,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.f32"
+          ],
+          "bar_sync_sites": 0
+        },
+        "manual_relaxed": {
+          "ptx_sha256": "4fc814f0d23cb49c1575f178ea6c10fcdd43ae09126616e3d341fc1c3ddc0f93",
+          "atomic_sites": 1,
+          "registers": 12,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.f32"
+          ],
+          "bar_sync_sites": 0
+        }
+      },
+      "native_report": {
+        "transformed": true,
+        "grid": [
+          32,
+          2,
+          1
+        ],
+        "native_attributes": {
+          "(0,)": [
+            [
+              "tt.divisibility",
+              16
+            ],
+            [
+              "tt.experimental_alias_group",
+              0
+            ]
+          ],
+          "(1,)": [
+            [
+              "tt.divisibility",
+              16
+            ],
+            [
+              "tt.experimental_alias_group",
+              0
+            ]
+          ],
+          "(2,)": [
+            [
+              "tt.divisibility",
+              16
+            ],
+            [
+              "tt.experimental_alias_group",
+              1
+            ],
+            [
+              "tt.experimental_private",
+              1
+            ],
+            [
+              "tt.experimental_num_ctas",
+              1
+            ]
+          ],
+          "(3,)": [],
+          "(4,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(5,)": [],
+          "(6,)": []
+        },
+        "proof": "private output plus closed memory effects and disjoint read footprints; atomicity retained",
+        "scope": "unchanged source; no uniqueness or immutable-index assumptions; no host launch removal",
+        "variants": {
+          "baseline": {
+            "atomic_instruction_sites": 1,
+            "atomic_instructions": [
+              "atom.global.gpu.acq_rel.add.f32"
+            ],
+            "bar_sync_sites": 2,
+            "registers": 12,
+            "spills": 0,
+            "shared_bytes": 0
+          },
+          "optimized": {
+            "atomic_instruction_sites": 1,
+            "atomic_instructions": [
+              "red.global.gpu.relaxed.add.f32"
+            ],
+            "bar_sync_sites": 0,
+            "registers": 12,
+            "spills": 0,
+            "shared_bytes": 0
+          }
+        }
+      },
+      "native_ir_change": "Only atomic ordering changes in normalized TTIR body; source function object identical",
+      "validation": {
+        "exact": "Small integer BF16 gradients; exact FP32 scratch/BF16 output, including duplicate indices and power-of-two frequency division",
+        "ordinary": "Random ordinary BF16 gradients; gamma_m FP32 accumulation bound plus FP64 reference/sum_abs rounding bound; actual FP32-to-BF16 conversion checked exactly",
+        "normal_max_error_and_bound_fraction": {
+          "original_acq_rel": [
+            0.0,
+            0.0
+          ],
+          "native_relaxed": [
+            0.0,
+            0.0
+          ],
+          "manual_relaxed": [
+            0.0,
+            0.0
+          ]
+        },
+        "mutation": "Poisoned output and changed gradient/index contents checked; atomicity retained for multiplicity four"
+      },
+      "scope": "Scratch zero + optional unchanged frequency-count reset/kernel + update + BF16 conversion"
+    },
+    {
+      "shape_n_d_v": [
+        32,
+        137,
+        67
+      ],
+      "frequency": true,
+      "block_d": 128,
+      "seed": 0,
+      "index_kind": "unique",
+      "nonpadding_index_multiplicity": 1,
+      "device": {
+        "samples_us": {
+          "original_acq_rel": [
+            7.331999950110912,
+            7.124000228941441,
+            7.063999772071838
+          ],
+          "native_relaxed": [
+            6.335999816656113,
+            6.947999820113182,
+            6.308000069111586
+          ],
+          "manual_relaxed": [
+            6.424000021070242,
+            6.351999938488007,
+            6.3240001909434795
+          ]
+        },
+        "median_us": {
+          "original_acq_rel": 7.124000228941441,
+          "native_relaxed": 6.335999816656113,
+          "manual_relaxed": 6.351999938488007
+        },
+        "rounds": 3,
+        "repetitions": 8,
+        "warmup_ms": 20,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "code": {
+        "original_acq_rel": {
+          "ptx_sha256": "59599f387472834d27f17571500b401523e08bfeaf7165b315c17f8e089d1be5",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "atom.global.gpu.acq_rel.add.f32"
+          ],
+          "bar_sync_sites": 2
+        },
+        "native_relaxed": {
+          "ptx_sha256": "15b3c32270869e09fe959ace2e3f507f87bdb9cea18a7f70fcd3185f682325c9",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.f32"
+          ],
+          "bar_sync_sites": 0
+        },
+        "manual_relaxed": {
+          "ptx_sha256": "d0afebbf7b3966337e8a6f53e11f4969b0b6c1fcb158eb0f5e4f610eda1e4571",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.f32"
+          ],
+          "bar_sync_sites": 0
+        }
+      },
+      "native_report": {
+        "transformed": true,
+        "grid": [
+          32,
+          2,
+          1
+        ],
+        "native_attributes": {
+          "(0,)": [
+            [
+              "tt.divisibility",
+              16
+            ],
+            [
+              "tt.experimental_alias_group",
+              0
+            ]
+          ],
+          "(1,)": [
+            [
+              "tt.divisibility",
+              16
+            ],
+            [
+              "tt.experimental_alias_group",
+              0
+            ]
+          ],
+          "(2,)": [
+            [
+              "tt.divisibility",
+              16
+            ],
+            [
+              "tt.experimental_alias_group",
+              0
+            ]
+          ],
+          "(3,)": [
+            [
+              "tt.divisibility",
+              16
+            ],
+            [
+              "tt.experimental_alias_group",
+              1
+            ],
+            [
+              "tt.experimental_private",
+              1
+            ],
+            [
+              "tt.experimental_num_ctas",
+              1
+            ]
+          ],
+          "(4,)": [],
+          "(5,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(6,)": [],
+          "(7,)": []
+        },
+        "proof": "private output plus closed memory effects and disjoint read footprints; atomicity retained",
+        "scope": "unchanged source; no uniqueness or immutable-index assumptions; no host launch removal",
+        "variants": {
+          "baseline": {
+            "atomic_instruction_sites": 1,
+            "atomic_instructions": [
+              "atom.global.gpu.acq_rel.add.f32"
+            ],
+            "bar_sync_sites": 2,
+            "registers": 14,
+            "spills": 0,
+            "shared_bytes": 0
+          },
+          "optimized": {
+            "atomic_instruction_sites": 1,
+            "atomic_instructions": [
+              "red.global.gpu.relaxed.add.f32"
+            ],
+            "bar_sync_sites": 0,
+            "registers": 14,
+            "spills": 0,
+            "shared_bytes": 0
+          }
+        }
+      },
+      "native_ir_change": "Only atomic ordering changes in normalized TTIR body; source function object identical",
+      "validation": {
+        "exact": "Small integer BF16 gradients; exact FP32 scratch/BF16 output, including duplicate indices and power-of-two frequency division",
+        "ordinary": "Random ordinary BF16 gradients; gamma_m FP32 accumulation bound plus FP64 reference/sum_abs rounding bound; actual FP32-to-BF16 conversion checked exactly",
+        "normal_max_error_and_bound_fraction": {
+          "original_acq_rel": [
+            0.0,
+            0.0
+          ],
+          "native_relaxed": [
+            0.0,
+            0.0
+          ],
+          "manual_relaxed": [
+            0.0,
+            0.0
+          ]
+        },
+        "mutation": "Poisoned output and changed gradient/index contents checked; atomicity retained for multiplicity four"
+      },
+      "scope": "Scratch zero + optional unchanged frequency-count reset/kernel + update + BF16 conversion"
+    },
+    {
+      "shape_n_d_v": [
+        32,
+        137,
+        67
+      ],
+      "frequency": true,
+      "block_d": 128,
+      "seed": 0,
+      "index_kind": "fourfold",
+      "nonpadding_index_multiplicity": 4,
+      "device": {
+        "samples_us": {
+          "original_acq_rel": [
+            6.988000124692917,
+            6.587999872863293,
+            6.748000159859657
+          ],
+          "native_relaxed": [
+            5.803999956697226,
+            5.764000117778778,
+            5.8200000785291195
+          ],
+          "manual_relaxed": [
+            5.940000060945749,
+            5.923999939113855,
+            5.787999834865332
+          ]
+        },
+        "median_us": {
+          "original_acq_rel": 6.748000159859657,
+          "native_relaxed": 5.803999956697226,
+          "manual_relaxed": 5.923999939113855
+        },
+        "rounds": 3,
+        "repetitions": 8,
+        "warmup_ms": 20,
+        "order": "randomized interleaving; clocks not locked"
+      },
+      "code": {
+        "original_acq_rel": {
+          "ptx_sha256": "59599f387472834d27f17571500b401523e08bfeaf7165b315c17f8e089d1be5",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "atom.global.gpu.acq_rel.add.f32"
+          ],
+          "bar_sync_sites": 2
+        },
+        "native_relaxed": {
+          "ptx_sha256": "15b3c32270869e09fe959ace2e3f507f87bdb9cea18a7f70fcd3185f682325c9",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.f32"
+          ],
+          "bar_sync_sites": 0
+        },
+        "manual_relaxed": {
+          "ptx_sha256": "d0afebbf7b3966337e8a6f53e11f4969b0b6c1fcb158eb0f5e4f610eda1e4571",
+          "atomic_sites": 1,
+          "registers": 14,
+          "spills": 0,
+          "shared_bytes": 0,
+          "atomic_instructions": [
+            "red.global.gpu.relaxed.add.f32"
+          ],
+          "bar_sync_sites": 0
+        }
+      },
+      "native_report": {
+        "transformed": true,
+        "grid": [
+          32,
+          2,
+          1
+        ],
+        "native_attributes": {
+          "(0,)": [
+            [
+              "tt.divisibility",
+              16
+            ],
+            [
+              "tt.experimental_alias_group",
+              0
+            ]
+          ],
+          "(1,)": [
+            [
+              "tt.divisibility",
+              16
+            ],
+            [
+              "tt.experimental_alias_group",
+              0
+            ]
+          ],
+          "(2,)": [
+            [
+              "tt.divisibility",
+              16
+            ],
+            [
+              "tt.experimental_alias_group",
+              0
+            ]
+          ],
+          "(3,)": [
+            [
+              "tt.divisibility",
+              16
+            ],
+            [
+              "tt.experimental_alias_group",
+              1
+            ],
+            [
+              "tt.experimental_private",
+              1
+            ],
+            [
+              "tt.experimental_num_ctas",
+              1
+            ]
+          ],
+          "(4,)": [],
+          "(5,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(6,)": [],
+          "(7,)": []
+        },
+        "proof": "private output plus closed memory effects and disjoint read footprints; atomicity retained",
+        "scope": "unchanged source; no uniqueness or immutable-index assumptions; no host launch removal",
+        "variants": {
+          "baseline": {
+            "atomic_instruction_sites": 1,
+            "atomic_instructions": [
+              "atom.global.gpu.acq_rel.add.f32"
+            ],
+            "bar_sync_sites": 2,
+            "registers": 14,
+            "spills": 0,
+            "shared_bytes": 0
+          },
+          "optimized": {
+            "atomic_instruction_sites": 1,
+            "atomic_instructions": [
+              "red.global.gpu.relaxed.add.f32"
+            ],
+            "bar_sync_sites": 0,
+            "registers": 14,
+            "spills": 0,
+            "shared_bytes": 0
+          }
+        }
+      },
+      "native_ir_change": "Only atomic ordering changes in normalized TTIR body; source function object identical",
+      "validation": {
+        "exact": "Small integer BF16 gradients; exact FP32 scratch/BF16 output, including duplicate indices and power-of-two frequency division",
+        "ordinary": "Random ordinary BF16 gradients; gamma_m FP32 accumulation bound plus FP64 reference/sum_abs rounding bound; actual FP32-to-BF16 conversion checked exactly",
+        "normal_max_error_and_bound_fraction": {
+          "original_acq_rel": [
+            0.0,
+            0.0
+          ],
+          "native_relaxed": [
+            0.0,
+            0.0
+          ],
+          "manual_relaxed": [
+            0.0,
+            0.0
+          ]
+        },
+        "mutation": "Poisoned output and changed gradient/index contents checked; atomicity retained for multiplicity four"
+      },
+      "scope": "Scratch zero + optional unchanged frequency-count reset/kernel + update + BF16 conversion"
+    }
+  ],
+  "scope": "Native private-atomic ordering relaxation of unchanged FlagGems source; no uniqueness required",
+  "limits": "NVIDIA B300 device operation times; producers, allocation and host guards excluded. Duplicate inputs use shuffled uniform fourfold repetition, not arbitrary training distributions. Frequency count kernel remains unchanged.",
+  "summary": [
+    {
+      "shape_n_d_v": [
+        32,
+        137,
+        67
+      ],
+      "frequency": false,
+      "index_kind": "unique",
+      "config_median_us": {
+        "128": {
+          "original_acq_rel": 4.575999919325113,
+          "native_relaxed": 3.7360000424087048,
+          "manual_relaxed": 3.684000112116337
+        }
+      },
+      "best": {
+        "original_acq_rel": {
+          "median_us": 4.575999919325113,
+          "block_d": 128
+        },
+        "native_relaxed": {
+          "median_us": 3.7360000424087048,
+          "block_d": 128
+        },
+        "manual_relaxed": {
+          "median_us": 3.684000112116337,
+          "block_d": 128
+        }
+      },
+      "original_over_native": 1.2248393649307447,
+      "manual_over_native": 0.9860813892660338
+    },
+    {
+      "shape_n_d_v": [
+        32,
+        137,
+        67
+      ],
+      "frequency": false,
+      "index_kind": "fourfold",
+      "config_median_us": {
+        "128": {
+          "original_acq_rel": 4.639999940991402,
+          "native_relaxed": 3.768000053241849,
+          "manual_relaxed": 3.8159999530762434
+        }
+      },
+      "best": {
+        "original_acq_rel": {
+          "median_us": 4.639999940991402,
+          "block_d": 128
+        },
+        "native_relaxed": {
+          "median_us": 3.768000053241849,
+          "block_d": 128
+        },
+        "manual_relaxed": {
+          "median_us": 3.8159999530762434,
+          "block_d": 128
+        }
+      },
+      "original_over_native": 1.2314224722473972,
+      "manual_over_native": 1.0127388267399564
+    },
+    {
+      "shape_n_d_v": [
+        32,
+        137,
+        67
+      ],
+      "frequency": true,
+      "index_kind": "unique",
+      "config_median_us": {
+        "128": {
+          "original_acq_rel": 7.124000228941441,
+          "native_relaxed": 6.335999816656113,
+          "manual_relaxed": 6.351999938488007
+        }
+      },
+      "best": {
+        "original_acq_rel": {
+          "median_us": 7.124000228941441,
+          "block_d": 128
+        },
+        "native_relaxed": {
+          "median_us": 6.335999816656113,
+          "block_d": 128
+        },
+        "manual_relaxed": {
+          "median_us": 6.351999938488007,
+          "block_d": 128
+        }
+      },
+      "original_over_native": 1.1243687555378123,
+      "manual_over_native": 1.0025252718268445
+    },
+    {
+      "shape_n_d_v": [
+        32,
+        137,
+        67
+      ],
+      "frequency": true,
+      "index_kind": "fourfold",
+      "config_median_us": {
+        "128": {
+          "original_acq_rel": 6.748000159859657,
+          "native_relaxed": 5.803999956697226,
+          "manual_relaxed": 5.923999939113855
+        }
+      },
+      "best": {
+        "original_acq_rel": {
+          "median_us": 6.748000159859657,
+          "block_d": 128
+        },
+        "native_relaxed": {
+          "median_us": 5.803999956697226,
+          "block_d": 128
+        },
+        "manual_relaxed": {
+          "median_us": 5.923999939113855,
+          "block_d": 128
+        }
+      },
+      "original_over_native": 1.1626464869409847,
+      "manual_over_native": 1.0206753934031585
+    }
+  ],
+  "geometric_mean_ratios": {
+    "unique": {
+      "original_over_native": 1.1735293402727116,
+      "manual_over_native": 0.9942693361546071
+    },
+    "fourfold": {
+      "original_over_native": 1.1965404344603732,
+      "manual_over_native": 1.0166993657898378
+    }
+  }
+}
