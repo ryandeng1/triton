@@ -1,0 +1,65 @@
+{
+  "gpu": "NVIDIA B300 SXM6 PC",
+  "capability": [
+    10,
+    3
+  ],
+  "torch": "2.14.1+cu130",
+  "triton": "3.9.0",
+  "native_library_sha256": "e7e15b9337405e632e887ceae9c96d9ea85e38aa1e9c35dec937d7b148d06178",
+  "harness_sha256": "cadaf55ba6b1c480ed22088c1e603d0199818e20acf1b48216d860843ac93070",
+  "sources": {
+    "upsample": {
+      "repository": "flagos-ai/FlagGems",
+      "revision": "3f1f896fd90f5db42d167d64fcb9691326071bc2",
+      "source_path": "src/flag_gems/ops/upsample_bilinear2d.py",
+      "source_url": "https://github.com/flagos-ai/FlagGems/blob/3f1f896fd90f5db42d167d64fcb9691326071bc2/src/flag_gems/ops/upsample_bilinear2d.py",
+      "audited_functions": {
+        "upsample_bilinear2d_kernel": {
+          "body_ast_equal": true,
+          "body_ast_sha256": "34187ae258d7f58357654a7f2bd1070ce59d68c3dd92a8d8c3cfacdcfc9f4bb2"
+        },
+        "bilinear_reciprocal_scale": {
+          "body_ast_equal": true,
+          "body_ast_sha256": "1f7b2373460709020db513cb675d3a40b2177b1b7273cb13a48a24a1129a807c"
+        }
+      },
+      "files_sha256": {
+        "vendor/cross_pipeline/upsample_LICENSE": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594",
+        "vendor/cross_pipeline/upsample_benchmark.upstream.py": "4c39ce620f1a3d70413219113e17815310e0b827c5a939d8239a2f03e25fcc89",
+        "vendor/cross_pipeline/upsample_bilinear2d.upstream.py": "62a02c203a3e54a09f6479ca8526168bf1529821284cd1b42bc6cbdf3c980a12",
+        "vendor/cross_pipeline/upsample_bilinear2d_kernel.py": "1a4fc3340e3fd3660bbeb3a86497c351f575006cc4a553dff62287cc9f5e2827",
+        "vendor/cross_pipeline/upsample_nvidia_tune_configs.yaml": "e421467e7b0cf93ef30ceda596ad9f56d4a4d6b6ab20fb3cbc8b4bf081d86b02",
+        "vendor/cross_pipeline/upsample_test.upstream.py": "3b74d34d4ec329d8d9efec9750a1fb597fe028952f5d860b7fcd48ba8044aeb6"
+      },
+      "wrapper_changes": "Remove runtime autotune wrapper/imports; preserve jit function bodies and bind tle.program_id to tl.program_id.",
+      "source_loop_stages": false,
+      "provider_config_domain": {
+        "BLOCK_X": [
+          512,
+          256,
+          128,
+          64
+        ],
+        "BLOCK_Y": [
+          2,
+          1
+        ],
+        "num_warps": [
+          4,
+          8
+        ]
+      },
+      "configurations": "Four predeclared members of the pinned NVIDIA autotune domain, all exact tilings. The provider has no single fixed default.",
+      "scope": "Complete NCHW bilinear output; no antialiasing, contiguous input, default scales_h/scales_w=None. Tile dimensions divide output dimensions exactly.",
+      "limitation": "Partial modulo tiles excluded because the unchanged source may overlap output writes. No strongest-provider or full dispatch claim.",
+      "oracle": "torch.nn.functional.interpolate on the actual input converted to float64, mode=bilinear, same size and align_corners, antialias=False.",
+      "oracle_tolerance": {
+        "atol": 0.0003,
+        "rtol": 0.0001
+      },
+      "timed_reset_required": false
+    }
+  },
+  "scope": "Complete kernel outputs including required reduction kernels; allocation, calibration, metadata generation and host dispatch excluded. Per-shape calibrated choices, not a static profitability model."
+}

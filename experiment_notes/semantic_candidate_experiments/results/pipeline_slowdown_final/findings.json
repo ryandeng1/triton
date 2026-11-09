@@ -1,0 +1,1307 @@
+{
+  "fixed_config_causal_controls": true,
+  "cases": {
+    "logsoftmax": {
+      "case": {
+        "id": "fg_logsoftmax_m256_k8192_f32",
+        "family": "log_softmax_backward",
+        "M": 256,
+        "K": 8192,
+        "dtype": "float32",
+        "boundary": false
+      },
+      "config": {
+        "block": 1024,
+        "warps": 8
+      },
+      "variants": {
+        "baseline": {
+          "median_us_across_seeds": 6.22399989515543,
+          "time_us_range": [
+            6.219999864697456,
+            6.22900016605854
+          ],
+          "speedup_range": [
+            1.0,
+            1.0
+          ],
+          "resources": {
+            "registers": 28,
+            "spills": 0,
+            "shared": 32,
+            "async_copies": 0,
+            "loops": 2,
+            "ptx_sha256": "5cf2527658ae07a426175c2007c2d2c1404d9ef7cea06cd920e947f2072deeb8",
+            "cubin_sha256": "b0047b30ee622f909e581a05a5a3cbcfa8fefad3b41bee3f20c7e60921c3c3d7",
+            "wait_groups": [],
+            "barriers": 2,
+            "commits": 0,
+            "copy_cg": 0,
+            "copy_ca": 0
+          }
+        },
+        "stages2": {
+          "median_us_across_seeds": 7.083000149577856,
+          "time_us_range": [
+            7.056999951601028,
+            7.110999897122383
+          ],
+          "speedup_range": [
+            0.8759668480067392,
+            0.8819611644950324
+          ],
+          "resources": {
+            "registers": 23,
+            "spills": 0,
+            "shared": 8192,
+            "async_copies": 6,
+            "loops": 2,
+            "ptx_sha256": "3bfc7bbe85c0980dbaeadcb31bf1cdd4e27600f06b29ef9f103fa027a5a57b2b",
+            "cubin_sha256": "518a4fc791b42a197cf44681e3bd182ab8369bfd0031d78d69aa969ce7d4cf98",
+            "wait_groups": [
+              "0",
+              "0",
+              "0",
+              "0"
+            ],
+            "barriers": 6,
+            "commits": 6,
+            "copy_cg": 6,
+            "copy_ca": 0
+          }
+        },
+        "stages3": {
+          "median_us_across_seeds": 5.58600015938282,
+          "time_us_range": [
+            5.582000128924847,
+            5.59299997985363
+          ],
+          "speedup_range": [
+            1.1134979747986053,
+            1.115012495772593
+          ],
+          "resources": {
+            "registers": 32,
+            "spills": 0,
+            "shared": 16384,
+            "async_copies": 9,
+            "loops": 2,
+            "ptx_sha256": "1dd92a9575f53e46df0e582187a4daf40e928bbca92d8ea572911ddf6d69ec0f",
+            "cubin_sha256": "ded6e1a78cff575d7e3ee1331a421cb811b1713b01d7e7a81956b499c2febd84",
+            "wait_groups": [
+              "1",
+              "0",
+              "2",
+              "0"
+            ],
+            "barriers": 6,
+            "commits": 9,
+            "copy_cg": 9,
+            "copy_ca": 0
+          }
+        },
+        "stages4": {
+          "median_us_across_seeds": 5.650999955832958,
+          "time_us_range": [
+            5.638999864459038,
+            5.652999971061945
+          ],
+          "speedup_range": [
+            1.101397972712957,
+            1.1030324550813153
+          ],
+          "resources": {
+            "registers": 32,
+            "spills": 0,
+            "shared": 24576,
+            "async_copies": 12,
+            "loops": 2,
+            "ptx_sha256": "a660e0ffc771f09fe9f67f7c1785b78876a201aaf8a284b0b535f5e7d3a63979",
+            "cubin_sha256": "ea8d8ef83f63013d8355637f3a9d653d1139cde044fb8b419592a1d96151794b",
+            "wait_groups": [
+              "2",
+              "0",
+              "4",
+              "0"
+            ],
+            "barriers": 6,
+            "commits": 12,
+            "copy_cg": 12,
+            "copy_ca": 0
+          }
+        },
+        "sum_only2": {
+          "median_us_across_seeds": 6.451999768614769,
+          "time_us_range": [
+            6.442000158131123,
+            6.461000069975853
+          ],
+          "speedup_range": [
+            0.964042171072935,
+            0.9661595377794998
+          ],
+          "resources": {
+            "registers": 28,
+            "spills": 0,
+            "shared": 4128,
+            "async_copies": 2,
+            "loops": 2,
+            "ptx_sha256": "579aea46e2d0a22504c6462c45bbdbc6fd3f11a58dd892058c9b8dd37f15b6d4",
+            "cubin_sha256": "5abeccce8856abe4459c7a2fb8af0d216ededd06d4e554113ef35181a171985a",
+            "wait_groups": [
+              "0",
+              "0",
+              "0"
+            ],
+            "barriers": 4,
+            "commits": 2,
+            "copy_cg": 2,
+            "copy_ca": 0
+          }
+        },
+        "output_only2": {
+          "median_us_across_seeds": 6.895000115036964,
+          "time_us_range": [
+            6.856000050902367,
+            6.901000160723925
+          ],
+          "speedup_range": [
+            0.9021029384948909,
+            0.9078179476291347
+          ],
+          "resources": {
+            "registers": 23,
+            "spills": 0,
+            "shared": 8192,
+            "async_copies": 4,
+            "loops": 2,
+            "ptx_sha256": "a07632a8dfe78c5f6bcf22bac863943a5a3016cdd1e7a22598d15355ca867c61",
+            "cubin_sha256": "152c27941ee138bab03fe309310221d1c668f9376c7a28b53e81c1413205a060",
+            "wait_groups": [
+              "0",
+              "0"
+            ],
+            "barriers": 6,
+            "commits": 4,
+            "copy_cg": 4,
+            "copy_ca": 0
+          }
+        },
+        "cache_ca_baseline": {
+          "median_us_across_seeds": 6.21799984946847,
+          "time_us_range": [
+            6.211999803781509,
+            6.22300012037158
+          ],
+          "speedup_range": [
+            1.000964172516616,
+            1.0012878398532912
+          ],
+          "resources": {
+            "registers": 28,
+            "spills": 0,
+            "shared": 32,
+            "async_copies": 0,
+            "loops": 2,
+            "ptx_sha256": "ac2f3d1fc7bea4e47bbc7ebafe1b512ba5d0caea108086c45fa7d840681e4a61",
+            "cubin_sha256": "42ac9920fb861e4c3f38d2aa455b52d108101c533c8d3a12f4b0e3ccca8d6cfa",
+            "wait_groups": [],
+            "barriers": 2,
+            "commits": 0,
+            "copy_cg": 0,
+            "copy_ca": 0
+          }
+        },
+        "cache_ca_stages2": {
+          "median_us_across_seeds": 7.538999896496534,
+          "time_us_range": [
+            7.532000076025724,
+            7.5610000640153885
+          ],
+          "speedup_range": [
+            0.8238328413332312,
+            0.8258098515553192
+          ],
+          "resources": {
+            "registers": 23,
+            "spills": 0,
+            "shared": 8192,
+            "async_copies": 6,
+            "loops": 2,
+            "ptx_sha256": "eef77ae1c6867c1f4a87b3f7d9b7952e04509109af9faa0b05650cc0a9e0713f",
+            "cubin_sha256": "d772439785cc80946ad472da08df0c871c968773c39b8f49bd36717ad11c8f61",
+            "wait_groups": [
+              "0",
+              "0",
+              "0",
+              "0"
+            ],
+            "barriers": 6,
+            "commits": 6,
+            "copy_cg": 0,
+            "copy_ca": 6
+          }
+        },
+        "cache_ca_stages3": {
+          "median_us_across_seeds": 6.033000070601702,
+          "time_us_range": [
+            6.029999814927578,
+            6.037999875843525
+          ],
+          "speedup_range": [
+            1.0301424300424493,
+            1.0330017176183532
+          ],
+          "resources": {
+            "registers": 32,
+            "spills": 0,
+            "shared": 16384,
+            "async_copies": 9,
+            "loops": 2,
+            "ptx_sha256": "d76407592fbff6ba73c22eaefd39df03a0ce06bf6049afde885e459a38cb4faf",
+            "cubin_sha256": "95fc656d0d6a8e5ca848af560035742bec61c27553d1e15b8729d893547c61ca",
+            "wait_groups": [
+              "1",
+              "0",
+              "2",
+              "0"
+            ],
+            "barriers": 6,
+            "commits": 9,
+            "copy_cg": 0,
+            "copy_ca": 9
+          }
+        }
+      }
+    },
+    "rms_persistent": {
+      "case": {
+        "id": "rms_forward_4096x1024",
+        "family": "aiter_rmsnorm",
+        "operation": "forward",
+        "M": 4096,
+        "N": 1024,
+        "dtype": "bfloat16",
+        "epsilon": 1e-06,
+        "source_has_explicit_loop_stages": true,
+        "auto_inference_expected": false,
+        "boundary": false
+      },
+      "config": {
+        "warps": 4,
+        "grid": "4sm"
+      },
+      "variants": {
+        "baseline": {
+          "median_us_across_seeds": 4.765999969094992,
+          "time_us_range": [
+            4.741999786347151,
+            4.7690002247691154
+          ],
+          "speedup_range": [
+            1.0,
+            1.0
+          ],
+          "resources": {
+            "registers": 35,
+            "spills": 0,
+            "shared": 16,
+            "async_copies": 0,
+            "loops": 1,
+            "ptx_sha256": "340b7caa69010d0baf1da87945e0afcd85f94abe7939514052be60b9e2fd803e",
+            "cubin_sha256": "936af5bcac64a0ecd95fc765f9aefdda51c83d9aa5df4efc0bce4b601c799d75",
+            "wait_groups": [],
+            "barriers": 2,
+            "commits": 0,
+            "copy_cg": 0,
+            "copy_ca": 0
+          }
+        },
+        "stages2": {
+          "median_us_across_seeds": 5.446999799460173,
+          "time_us_range": [
+            5.429999902844429,
+            5.528999958187342
+          ],
+          "speedup_range": [
+            0.8620003626582597,
+            0.878268933719675
+          ],
+          "resources": {
+            "registers": 36,
+            "spills": 0,
+            "shared": 4112,
+            "async_copies": 4,
+            "loops": 1,
+            "ptx_sha256": "d8bd35521f1f401356d006ed823c1fe6ab1c95ce9fc72c022c31da1445880b5b",
+            "cubin_sha256": "8d4f70f49913b6a341d9f4e18157e36d703a2c04f0391f3d18d0954b11992d5a",
+            "wait_groups": [
+              "0",
+              "0"
+            ],
+            "barriers": 3,
+            "commits": 4,
+            "copy_cg": 4,
+            "copy_ca": 0
+          }
+        },
+        "stages3": {
+          "median_us_across_seeds": 5.348000209778547,
+          "time_us_range": [
+            5.324999801814556,
+            5.472000222653151
+          ],
+          "speedup_range": [
+            0.8709794910761447,
+            0.8955869300021425
+          ],
+          "resources": {
+            "registers": 35,
+            "spills": 0,
+            "shared": 8208,
+            "async_copies": 6,
+            "loops": 1,
+            "ptx_sha256": "52502d3ef55d3c5bf15b69898b1075d966f65ee50955a0cf32980608f5f3fec5",
+            "cubin_sha256": "8cbf5f429c988170eabf3f6001f81b8c2456d2a72e9ae68b536957ebeb576aed",
+            "wait_groups": [
+              "2",
+              "0"
+            ],
+            "barriers": 3,
+            "commits": 6,
+            "copy_cg": 6,
+            "copy_ca": 0
+          }
+        },
+        "stages4": {
+          "median_us_across_seeds": 5.400999914854765,
+          "time_us_range": [
+            5.371999926865101,
+            5.499000195413828
+          ],
+          "speedup_range": [
+            0.8667030004963158,
+            0.8877513569796578
+          ],
+          "resources": {
+            "registers": 35,
+            "spills": 0,
+            "shared": 12304,
+            "async_copies": 8,
+            "loops": 1,
+            "ptx_sha256": "da3941d45a480823c3b2e44eab09e0237474764dfbe64829cdcbf178ce72fe49",
+            "cubin_sha256": "47e87a34ae53bf9a9c4810c50ff244eb3c9671808e2db5707fb1ad479571e4b4",
+            "wait_groups": [
+              "4",
+              "0"
+            ],
+            "barriers": 3,
+            "commits": 8,
+            "copy_cg": 8,
+            "copy_ca": 0
+          }
+        }
+      }
+    },
+    "rms_rows": {
+      "case": {
+        "id": "rms_forward_4096x1024",
+        "family": "aiter_rmsnorm",
+        "operation": "forward",
+        "M": 4096,
+        "N": 1024,
+        "dtype": "bfloat16",
+        "epsilon": 1e-06,
+        "source_has_explicit_loop_stages": true,
+        "auto_inference_expected": false,
+        "boundary": false
+      },
+      "config": {
+        "warps": 4,
+        "grid": "rows"
+      },
+      "variants": {
+        "baseline": {
+          "median_us_across_seeds": 3.6700000055134296,
+          "time_us_range": [
+            3.6639999598264694,
+            3.6730000283569098
+          ],
+          "speedup_range": [
+            1.0,
+            1.0
+          ],
+          "resources": {
+            "registers": 35,
+            "spills": 0,
+            "shared": 16,
+            "async_copies": 0,
+            "loops": 1,
+            "ptx_sha256": "340b7caa69010d0baf1da87945e0afcd85f94abe7939514052be60b9e2fd803e",
+            "cubin_sha256": "936af5bcac64a0ecd95fc765f9aefdda51c83d9aa5df4efc0bce4b601c799d75",
+            "wait_groups": [],
+            "barriers": 2,
+            "commits": 0,
+            "copy_cg": 0,
+            "copy_ca": 0
+          }
+        },
+        "stages2": {
+          "median_us_across_seeds": 4.9760001711547375,
+          "time_us_range": [
+            4.774000030010939,
+            4.987999796867371
+          ],
+          "speedup_range": [
+            0.7357658690800892,
+            0.7674905607024208
+          ],
+          "resources": {
+            "registers": 36,
+            "spills": 0,
+            "shared": 4112,
+            "async_copies": 4,
+            "loops": 1,
+            "ptx_sha256": "d8bd35521f1f401356d006ed823c1fe6ab1c95ce9fc72c022c31da1445880b5b",
+            "cubin_sha256": "8d4f70f49913b6a341d9f4e18157e36d703a2c04f0391f3d18d0954b11992d5a",
+            "wait_groups": [
+              "0",
+              "0"
+            ],
+            "barriers": 3,
+            "commits": 4,
+            "copy_cg": 4,
+            "copy_ca": 0
+          }
+        },
+        "stages3": {
+          "median_us_across_seeds": 4.995000082999468,
+          "time_us_range": [
+            4.81799989938736,
+            5.001000128686428
+          ],
+          "speedup_range": [
+            0.734453096149323,
+            0.760481535147473
+          ],
+          "resources": {
+            "registers": 35,
+            "spills": 0,
+            "shared": 8208,
+            "async_copies": 6,
+            "loops": 1,
+            "ptx_sha256": "52502d3ef55d3c5bf15b69898b1075d966f65ee50955a0cf32980608f5f3fec5",
+            "cubin_sha256": "8cbf5f429c988170eabf3f6001f81b8c2456d2a72e9ae68b536957ebeb576aed",
+            "wait_groups": [
+              "2",
+              "0"
+            ],
+            "barriers": 3,
+            "commits": 6,
+            "copy_cg": 6,
+            "copy_ca": 0
+          }
+        },
+        "stages4": {
+          "median_us_across_seeds": 5.344000179320574,
+          "time_us_range": [
+            5.332999862730503,
+            5.34699996933341
+          ],
+          "speedup_range": [
+            0.6867514749934059,
+            0.6870429503349915
+          ],
+          "resources": {
+            "registers": 35,
+            "spills": 0,
+            "shared": 12304,
+            "async_copies": 8,
+            "loops": 1,
+            "ptx_sha256": "da3941d45a480823c3b2e44eab09e0237474764dfbe64829cdcbf178ce72fe49",
+            "cubin_sha256": "47e87a34ae53bf9a9c4810c50ff244eb3c9671808e2db5707fb1ad479571e4b4",
+            "wait_groups": [
+              "4",
+              "0"
+            ],
+            "barriers": 3,
+            "commits": 8,
+            "copy_cg": 8,
+            "copy_ca": 0
+          }
+        }
+      }
+    },
+    "rotary_w2": {
+      "case": {
+        "id": "fg_rotary_t128_q32_k8_d128_f32",
+        "family": "rotary_embedding",
+        "tokens": 128,
+        "qheads": 32,
+        "kheads": 8,
+        "dim": 128,
+        "dtype": "float32",
+        "interleaved": false,
+        "boundary": false
+      },
+      "config": {
+        "warps": 2
+      },
+      "variants": {
+        "baseline": {
+          "median_us_across_seeds": 8.400999940931797,
+          "time_us_range": [
+            8.334999904036522,
+            8.410999551415443
+          ],
+          "speedup_range": [
+            1.0,
+            1.0
+          ],
+          "resources": {
+            "registers": 26,
+            "spills": 0,
+            "shared": 0,
+            "async_copies": 0,
+            "loops": 2,
+            "ptx_sha256": "911505c3bd08d16b1a9bd75aaad21ee10a4bf74c70070b9df4e8a92ea9980c27",
+            "cubin_sha256": "5c8293fa29ccd2c31355bcc60c1378117841a3f53852abbb6cad20cd82c2c900",
+            "wait_groups": [],
+            "barriers": 0,
+            "commits": 0,
+            "copy_cg": 0,
+            "copy_ca": 0
+          }
+        },
+        "stages2": {
+          "median_us_across_seeds": 9.620999917387962,
+          "time_us_range": [
+            9.57299955189228,
+            9.631000459194183
+          ],
+          "speedup_range": [
+            0.8706779791281778,
+            0.8742334085477234
+          ],
+          "resources": {
+            "registers": 26,
+            "spills": 0,
+            "shared": 1024,
+            "async_copies": 8,
+            "loops": 2,
+            "ptx_sha256": "aa903e0ef7552962d03c805a3bd88703eed0ede50c078bab72c4bf37e658c6c5",
+            "cubin_sha256": "ab073aaeadc41f5033c5e5b3d8a0d2b5daab86cb83a9d21a3be0bac0b1cffddf",
+            "wait_groups": [
+              "0",
+              "0",
+              "0",
+              "0"
+            ],
+            "barriers": 6,
+            "commits": 8,
+            "copy_cg": 0,
+            "copy_ca": 8
+          }
+        },
+        "stages3": {
+          "median_us_across_seeds": 5.58000011369586,
+          "time_us_range": [
+            5.568999797105789,
+            5.58600015938282
+          ],
+          "speedup_range": [
+            1.496678076441702,
+            1.5057284839649465
+          ],
+          "resources": {
+            "registers": 28,
+            "spills": 0,
+            "shared": 2048,
+            "async_copies": 12,
+            "loops": 2,
+            "ptx_sha256": "7d88a1cf9c9036f0a2567daa3c40373323881f16dfe5befe0cdb2ff54b1f374c",
+            "cubin_sha256": "8ae5679eebcb6ca4f63da1a8b55a8cff4e2912caef903626a5fc3fe25e9d79ee",
+            "wait_groups": [
+              "2",
+              "0",
+              "2",
+              "0"
+            ],
+            "barriers": 6,
+            "commits": 12,
+            "copy_cg": 0,
+            "copy_ca": 12
+          }
+        },
+        "stages4": {
+          "median_us_across_seeds": 4.358000122010708,
+          "time_us_range": [
+            4.3379999697208405,
+            4.364000167697668
+          ],
+          "speedup_range": [
+            1.921392337993238,
+            1.930013610815309
+          ],
+          "resources": {
+            "registers": 28,
+            "spills": 0,
+            "shared": 3072,
+            "async_copies": 16,
+            "loops": 2,
+            "ptx_sha256": "2d609a13db1d28fa73fec2a68e52af4117969bf71ad8954676fe19a042497ba2",
+            "cubin_sha256": "5cb2b3a40391aba134c2558037c8280f47c869baea8f1d66b69fd7cc005818a5",
+            "wait_groups": [
+              "4",
+              "0",
+              "4",
+              "0"
+            ],
+            "barriers": 6,
+            "commits": 16,
+            "copy_cg": 0,
+            "copy_ca": 16
+          }
+        },
+        "q_only2": {
+          "median_us_across_seeds": 9.29499976336956,
+          "time_us_range": [
+            9.259999729692936,
+            9.301000274717808
+          ],
+          "speedup_range": [
+            0.9001080072723623,
+            0.904895079670916
+          ],
+          "resources": {
+            "registers": 30,
+            "spills": 0,
+            "shared": 1024,
+            "async_copies": 4,
+            "loops": 2,
+            "ptx_sha256": "0f63ad9d5b0e6598eb9c7ab59f812103c25e87c07a81e68e20a616d4e201fba9",
+            "cubin_sha256": "e7f9daf5a18269e2ec15d4960fc5c8bb03f42a8a98611e6f9687d41b5bc50c2d",
+            "wait_groups": [
+              "0",
+              "0"
+            ],
+            "barriers": 11,
+            "commits": 4,
+            "copy_cg": 0,
+            "copy_ca": 4
+          }
+        },
+        "k_only2": {
+          "median_us_across_seeds": 8.674000389873981,
+          "time_us_range": [
+            8.63999966531992,
+            8.679999969899654
+          ],
+          "speedup_range": [
+            0.9646991003358906,
+            0.9690091682699256
+          ],
+          "resources": {
+            "registers": 29,
+            "spills": 0,
+            "shared": 1024,
+            "async_copies": 4,
+            "loops": 2,
+            "ptx_sha256": "21189b6b8ddfc44547b3dd3a037f51ac6a51aa66127c502ca787d7142c5a4254",
+            "cubin_sha256": "fd3d13246a3ade61cd59a157cb39b36a6cf5dbf4f2354f02578400153bae5819",
+            "wait_groups": [
+              "0",
+              "0"
+            ],
+            "barriers": 3,
+            "commits": 4,
+            "copy_cg": 0,
+            "copy_ca": 4
+          }
+        },
+        "cache_ca_baseline": {
+          "median_us_across_seeds": 8.400999940931797,
+          "time_us_range": [
+            8.351000025868416,
+            8.403999730944633
+          ],
+          "speedup_range": [
+            0.9980840472060435,
+            1.0008329153611268
+          ],
+          "resources": {
+            "registers": 26,
+            "spills": 0,
+            "shared": 0,
+            "async_copies": 0,
+            "loops": 2,
+            "ptx_sha256": "d80d6f62978e575d73b4757876c5db467594ca835ee84caf79a93d64783cb092",
+            "cubin_sha256": "41ede2ed94a958140eb6ddc7cfe2aadc96e8da75822175a59322145853dd1be7",
+            "wait_groups": [],
+            "barriers": 0,
+            "commits": 0,
+            "copy_cg": 0,
+            "copy_ca": 0
+          }
+        },
+        "cache_ca_stages2": {
+          "median_us_across_seeds": 9.6220001578331,
+          "time_us_range": [
+            9.611000306904316,
+            9.624999947845936
+          ],
+          "speedup_range": [
+            0.8672354216916272,
+            0.8741425289385594
+          ],
+          "resources": {
+            "registers": 26,
+            "spills": 0,
+            "shared": 1024,
+            "async_copies": 8,
+            "loops": 2,
+            "ptx_sha256": "d150a055e004e6b78dcae3403915a730619d69597b4d8109805459749e3208da",
+            "cubin_sha256": "5ae42c4729e12e4f63e5426362d3ac68c187a42e674051e20fcf43886b03766a",
+            "wait_groups": [
+              "0",
+              "0",
+              "0",
+              "0"
+            ],
+            "barriers": 6,
+            "commits": 8,
+            "copy_cg": 0,
+            "copy_ca": 8
+          }
+        },
+        "cache_ca_stages3": {
+          "median_us_across_seeds": 5.578000098466873,
+          "time_us_range": [
+            5.545000080019236,
+            5.578999873250723
+          ],
+          "speedup_range": [
+            1.503155957394974,
+            1.5076178065074226
+          ],
+          "resources": {
+            "registers": 28,
+            "spills": 0,
+            "shared": 2048,
+            "async_copies": 12,
+            "loops": 2,
+            "ptx_sha256": "57e0da329baea9414159714473128e571cf1a89dabf8efff4ef9cf367ba1ea73",
+            "cubin_sha256": "6db20983610686682a557845da82f2cc70b936223a2cd379313f7b5608ec6bf1",
+            "wait_groups": [
+              "2",
+              "0",
+              "2",
+              "0"
+            ],
+            "barriers": 6,
+            "commits": 12,
+            "copy_cg": 0,
+            "copy_ca": 12
+          }
+        }
+      }
+    },
+    "rotary_w8": {
+      "case": {
+        "id": "fg_rotary_t128_q32_k8_d128_f32",
+        "family": "rotary_embedding",
+        "tokens": 128,
+        "qheads": 32,
+        "kheads": 8,
+        "dim": 128,
+        "dtype": "float32",
+        "interleaved": false,
+        "boundary": false
+      },
+      "config": {
+        "warps": 8
+      },
+      "variants": {
+        "baseline": {
+          "median_us_across_seeds": 8.018000051379204,
+          "time_us_range": [
+            8.016999810934067,
+            8.080000057816505
+          ],
+          "speedup_range": [
+            1.0,
+            1.0
+          ],
+          "resources": {
+            "registers": 23,
+            "spills": 0,
+            "shared": 0,
+            "async_copies": 0,
+            "loops": 2,
+            "ptx_sha256": "a311a1bee41fc04b11522e341012556ac5419460bf940a2ab908d29e2fa6945c",
+            "cubin_sha256": "18aa470d92e27e83333d28bbf64fa76e39cd661b1c6d2d1864537458f5df3e49",
+            "wait_groups": [],
+            "barriers": 0,
+            "commits": 0,
+            "copy_cg": 0,
+            "copy_ca": 0
+          }
+        },
+        "stages2": {
+          "median_us_across_seeds": 10.273999534547329,
+          "time_us_range": [
+            10.25800034403801,
+            10.32199990004301
+          ],
+          "speedup_range": [
+            0.7804166259126151,
+            0.7827940453460803
+          ],
+          "resources": {
+            "registers": 25,
+            "spills": 0,
+            "shared": 1024,
+            "async_copies": 8,
+            "loops": 2,
+            "ptx_sha256": "c70486798c676428c081dc8d69f521fc5c893dbc0aeb775e1be1052f4c32dbef",
+            "cubin_sha256": "295726a0451641fca984c88c1942ca182c8b7a9563a31eba2a5122f06ad949ea",
+            "wait_groups": [
+              "0",
+              "0",
+              "0",
+              "0"
+            ],
+            "barriers": 6,
+            "commits": 8,
+            "copy_cg": 0,
+            "copy_ca": 8
+          }
+        },
+        "stages3": {
+          "median_us_across_seeds": 6.0789999552071095,
+          "time_us_range": [
+            6.060000043362379,
+            6.09799986705184
+          ],
+          "speedup_range": [
+            1.3188024132270175,
+            1.325024636598244
+          ],
+          "resources": {
+            "registers": 26,
+            "spills": 0,
+            "shared": 2048,
+            "async_copies": 12,
+            "loops": 2,
+            "ptx_sha256": "263ea568a32a667c9bd5c2e5405fd2b20a2a7b8dd4e80fd5590af88168576aad",
+            "cubin_sha256": "d8bf212057b628f90f90ead76af175182e30caa8b505457be523fbd04a8f5e11",
+            "wait_groups": [
+              "2",
+              "0",
+              "2",
+              "0"
+            ],
+            "barriers": 6,
+            "commits": 12,
+            "copy_cg": 0,
+            "copy_ca": 12
+          }
+        },
+        "stages4": {
+          "median_us_across_seeds": 4.778999835252762,
+          "time_us_range": [
+            4.765000194311142,
+            4.800000227987766
+          ],
+          "speedup_range": [
+            1.6775476223698274,
+            1.6833332654243989
+          ],
+          "resources": {
+            "registers": 26,
+            "spills": 0,
+            "shared": 3072,
+            "async_copies": 16,
+            "loops": 2,
+            "ptx_sha256": "25efe448ea7c9d58aaf977ea2a811c84dc93c087bec22a988b5f78ec3a2e421c",
+            "cubin_sha256": "88e0fce3570b10ab4e8e7c2e8c0a55f4cd8315527cfa4658576d6288649dceba",
+            "wait_groups": [
+              "4",
+              "0",
+              "4",
+              "0"
+            ],
+            "barriers": 6,
+            "commits": 16,
+            "copy_cg": 0,
+            "copy_ca": 16
+          }
+        },
+        "q_only2": {
+          "median_us_across_seeds": 9.832000359892845,
+          "time_us_range": [
+            9.831000119447708,
+            9.883999824523926
+          ],
+          "speedup_range": [
+            0.8154816105713211,
+            0.8174828208483591
+          ],
+          "resources": {
+            "registers": 26,
+            "spills": 0,
+            "shared": 1024,
+            "async_copies": 4,
+            "loops": 2,
+            "ptx_sha256": "8821296ac0e6f70d908e33955af7dc68603d26ceae1f59cd1dee5588d91df247",
+            "cubin_sha256": "ebbdf47f022b45967a7063cdfc22d5e67f7056124f9c3e872de7852f29ffecdd",
+            "wait_groups": [
+              "0",
+              "0"
+            ],
+            "barriers": 11,
+            "commits": 4,
+            "copy_cg": 0,
+            "copy_ca": 4
+          }
+        },
+        "k_only2": {
+          "median_us_across_seeds": 8.53899959474802,
+          "time_us_range": [
+            8.51999968290329,
+            8.600999601185322
+          ],
+          "speedup_range": [
+            0.9389858803027393,
+            0.9409624541443856
+          ],
+          "resources": {
+            "registers": 27,
+            "spills": 0,
+            "shared": 1024,
+            "async_copies": 4,
+            "loops": 2,
+            "ptx_sha256": "b79cfa9800d2d77622e040659699b190ad95ba69a4000a1ecc2a88a6aa55057b",
+            "cubin_sha256": "356f52833bee864ac5eb7bfd9b938e2e508d0650dbdcaee001fc3962a015a50d",
+            "wait_groups": [
+              "0",
+              "0"
+            ],
+            "barriers": 3,
+            "commits": 4,
+            "copy_cg": 0,
+            "copy_ca": 4
+          }
+        },
+        "cache_ca_baseline": {
+          "median_us_across_seeds": 8.039000444114208,
+          "time_us_range": [
+            8.023000322282314,
+            8.080000057816505
+          ],
+          "speedup_range": [
+            0.997263262599239,
+            1.0
+          ],
+          "resources": {
+            "registers": 23,
+            "spills": 0,
+            "shared": 0,
+            "async_copies": 0,
+            "loops": 2,
+            "ptx_sha256": "1d8567d2f2fee9899dec67704188e0d2934051ac0a100700bb8fb008e7ba3c66",
+            "cubin_sha256": "aee06da53101bc33ddc32fd327b22e812659dfb321eafd660ff3077957470bb4",
+            "wait_groups": [],
+            "barriers": 0,
+            "commits": 0,
+            "copy_cg": 0,
+            "copy_ca": 0
+          }
+        },
+        "cache_ca_stages2": {
+          "median_us_across_seeds": 10.277999565005302,
+          "time_us_range": [
+            10.267999954521656,
+            10.329999960958958
+          ],
+          "speedup_range": [
+            0.7800155818482885,
+            0.7821878110700806
+          ],
+          "resources": {
+            "registers": 25,
+            "spills": 0,
+            "shared": 1024,
+            "async_copies": 8,
+            "loops": 2,
+            "ptx_sha256": "c76aa5c8dbe192a40d6b4d7d670ad4bffcfbe18d08ca4423a7c027ec7827ac6c",
+            "cubin_sha256": "190243bc64dad7fda603d49c5ac3df3fd10f02e90679096a906d104f636d0483",
+            "wait_groups": [
+              "0",
+              "0",
+              "0",
+              "0"
+            ],
+            "barriers": 6,
+            "commits": 8,
+            "copy_cg": 0,
+            "copy_ca": 8
+          }
+        },
+        "cache_ca_stages3": {
+          "median_us_across_seeds": 6.0800001956522465,
+          "time_us_range": [
+            6.047999951988459,
+            6.09700009226799
+          ],
+          "speedup_range": [
+            1.318585452787806,
+            1.3257275322469289
+          ],
+          "resources": {
+            "registers": 26,
+            "spills": 0,
+            "shared": 2048,
+            "async_copies": 12,
+            "loops": 2,
+            "ptx_sha256": "679dce9845b95b58e1056865f61ebce499947a3dd4cd0d9691df9a77343617e9",
+            "cubin_sha256": "9494ee2f4eda5e5d2962559558c6a7663616a72ab5fc6bd01ce438e6e6a3d701",
+            "wait_groups": [
+              "2",
+              "0",
+              "2",
+              "0"
+            ],
+            "barriers": 6,
+            "commits": 12,
+            "copy_cg": 0,
+            "copy_ca": 12
+          }
+        }
+      }
+    },
+    "upsample": {
+      "case": {
+        "id": "upsample_2x64_64x256_to128x512",
+        "family": "upsample_bilinear2d",
+        "shape": [
+          2,
+          64,
+          64,
+          256
+        ],
+        "output_size": [
+          128,
+          512
+        ],
+        "align_corners": true,
+        "dtype": "float32",
+        "boundary": false,
+        "cohort": "calibration",
+        "origin": "Independent align-corners 2x resize with batch and channel loops."
+      },
+      "config": [
+        64,
+        2,
+        4
+      ],
+      "variants": {
+        "baseline": {
+          "median_us_across_seeds": 24.740999564528465,
+          "time_us_range": [
+            24.728000164031982,
+            24.748999625444412
+          ],
+          "speedup_range": [
+            1.0,
+            1.0
+          ],
+          "resources": {
+            "registers": 28,
+            "spills": 0,
+            "shared": 0,
+            "async_copies": 0,
+            "loops": 2,
+            "ptx_sha256": "a5b80b3d8ee80586569dc44cfdc338b6dd4aa7027c026c22d917687231934ddb",
+            "cubin_sha256": "3a59c94aba567e431a40a48056096609e6be7c2e8b2d5e5e50d0f77480f8af4b",
+            "wait_groups": [],
+            "barriers": 0,
+            "commits": 0,
+            "copy_cg": 0,
+            "copy_ca": 0
+          }
+        },
+        "stages2": {
+          "median_us_across_seeds": 37.79799863696098,
+          "time_us_range": [
+            37.79099881649017,
+            37.84000128507614
+          ],
+          "speedup_range": [
+            0.6534883542349283,
+            0.6548913868517584
+          ],
+          "resources": {
+            "registers": 32,
+            "spills": 0,
+            "shared": 2048,
+            "async_copies": 8,
+            "loops": 2,
+            "ptx_sha256": "8098496b5cd5b8f589097ea81dc5c6d469a59d1d3821241be50ffa63a98e0cdc",
+            "cubin_sha256": "3da7d00209d3d043caa31de9cc944c3bb3846014d6d8b1881331fbb925337832",
+            "wait_groups": [
+              "0",
+              "0"
+            ],
+            "barriers": 4,
+            "commits": 8,
+            "copy_cg": 0,
+            "copy_ca": 8
+          }
+        },
+        "stages3": {
+          "median_us_across_seeds": 32.38600119948387,
+          "time_us_range": [
+            32.363999634981155,
+            32.409001141786575
+          ],
+          "speedup_range": [
+            0.7633990154861217,
+            0.7641881896131972
+          ],
+          "resources": {
+            "registers": 32,
+            "spills": 0,
+            "shared": 4096,
+            "async_copies": 12,
+            "loops": 2,
+            "ptx_sha256": "6e9c7c37a079361be899ff28d36e186cbad744343d8cceaf199c9d2952be5c55",
+            "cubin_sha256": "e8bf6bdb58f7ef766715d3ae6688a389dbba160c191c6443c176285e000920e7",
+            "wait_groups": [
+              "0",
+              "4"
+            ],
+            "barriers": 4,
+            "commits": 12,
+            "copy_cg": 0,
+            "copy_ca": 12
+          }
+        },
+        "stages4": {
+          "median_us_across_seeds": 32.5470007956028,
+          "time_us_range": [
+            32.54399821162224,
+            32.55699947476387
+          ],
+          "speedup_range": [
+            0.7598328884863638,
+            0.7604079952211167
+          ],
+          "resources": {
+            "registers": 32,
+            "spills": 0,
+            "shared": 6144,
+            "async_copies": 16,
+            "loops": 2,
+            "ptx_sha256": "8f46db658be63656e76e90d0078f6c9e1a11d0ca31481ed1276399707c9c37af",
+            "cubin_sha256": "af6e2845d70c6db4284b9d32160a60efacd5834117d2d7709a704e5b33076485",
+            "wait_groups": [
+              "0",
+              "8"
+            ],
+            "barriers": 4,
+            "commits": 16,
+            "copy_cg": 0,
+            "copy_ca": 16
+          }
+        },
+        "cache_ca_baseline": {
+          "median_us_across_seeds": 24.740999564528465,
+          "time_us_range": [
+            24.716999381780624,
+            24.74300004541874
+          ],
+          "speedup_range": [
+            0.9999191496226568,
+            1.0004450694876608
+          ],
+          "resources": {
+            "registers": 28,
+            "spills": 0,
+            "shared": 0,
+            "async_copies": 0,
+            "loops": 2,
+            "ptx_sha256": "939aaa982acc7a557c57ba6c352cf6d1016e431edc90274879e0c9e6839c75b3",
+            "cubin_sha256": "2a6ee51f906c9ffa21d97ca64d337ef94e15032b124d7d531af1dca16386bffc",
+            "wait_groups": [],
+            "barriers": 0,
+            "commits": 0,
+            "copy_cg": 0,
+            "copy_ca": 0
+          }
+        },
+        "cache_ca_stages2": {
+          "median_us_across_seeds": 37.790000438690186,
+          "time_us_range": [
+            37.790000438690186,
+            37.80600056052208
+          ],
+          "speedup_range": [
+            0.6540760672223431,
+            0.6549086884927864
+          ],
+          "resources": {
+            "registers": 32,
+            "spills": 0,
+            "shared": 2048,
+            "async_copies": 8,
+            "loops": 2,
+            "ptx_sha256": "36b93072c8df5a6629b870f566b0e9217735fe5036479701ecfcb1e22b6110dc",
+            "cubin_sha256": "68e0d4e15a22721220fe8fe1c3042aa39ce02de5b82a86ac3c5a54cc563a3e3e",
+            "wait_groups": [
+              "0",
+              "0"
+            ],
+            "barriers": 4,
+            "commits": 8,
+            "copy_cg": 0,
+            "copy_ca": 8
+          }
+        },
+        "cache_ca_stages3": {
+          "median_us_across_seeds": 32.38600119948387,
+          "time_us_range": [
+            32.3759987950325,
+            32.38699957728386
+          ],
+          "speedup_range": [
+            0.7635162406762782,
+            0.7641881896131972
+          ],
+          "resources": {
+            "registers": 32,
+            "spills": 0,
+            "shared": 4096,
+            "async_copies": 12,
+            "loops": 2,
+            "ptx_sha256": "00dcbf26ba3795a78854f272ce3a5680f678d0dec39541e4e88f6319bcf0589c",
+            "cubin_sha256": "949a75b33214e815538a8939a4584f90e0d0fa612080774f9b7f4b5f5c3c7ac8",
+            "wait_groups": [
+              "0",
+              "4"
+            ],
+            "barriers": 4,
+            "commits": 12,
+            "copy_cg": 0,
+            "copy_ca": 12
+          }
+        }
+      }
+    }
+  },
+  "variant_validations": 126,
+  "bitwise_output_comparisons": 204,
+  "all_passed": true,
+  "native_sha256": "e7e15b9337405e632e887ceae9c96d9ea85e38aa1e9c35dec937d7b148d06178",
+  "native_unchanged": true
+}

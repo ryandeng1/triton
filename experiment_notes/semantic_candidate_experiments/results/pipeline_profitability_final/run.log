@@ -1,0 +1,31 @@
+CALIBRATE fg_logsoftmax_m256_k8192_f32 {'block': 256, 'warps': 4} stages4
+CALIBRATE fg_logsoftmax_m256_k8192_f32 {'block': 512, 'warps': 4} stages4
+CALIBRATE fg_logsoftmax_m256_k8192_f32 {'block': 1024, 'warps': 4} stages3
+CALIBRATE fg_logsoftmax_m256_k8192_f32 {'block': 1024, 'warps': 8} stages3
+CONFIRM fg_logsoftmax_m256_k8192_f32 stages3 1.1149073823095776
+CONFIRM fg_logsoftmax_m256_k8192_f32 stages3 1.129505542938214
+CONFIRM fg_logsoftmax_m256_k8192_f32 stages3 1.1204819196398104
+CALIBRATE fg_rotary_t128_q32_k8_d128_f32 {'warps': 1} stages4
+CALIBRATE fg_rotary_t128_q32_k8_d128_f32 {'warps': 2} stages4
+CALIBRATE fg_rotary_t128_q32_k8_d128_f32 {'warps': 4} stages4
+CALIBRATE fg_rotary_t128_q32_k8_d128_f32 {'warps': 8} stages4
+CONFIRM fg_rotary_t128_q32_k8_d128_f32 stages4 1.853198405136889
+CONFIRM fg_rotary_t128_q32_k8_d128_f32 stages4 1.8609452945238105
+CONFIRM fg_rotary_t128_q32_k8_d128_f32 stages4 1.8542816772682147
+CALIBRATE fg_rotary_t1024_q32_k8_d128_bf16 {'warps': 1} stages4
+CALIBRATE fg_rotary_t1024_q32_k8_d128_bf16 {'warps': 2} stages4
+CALIBRATE fg_rotary_t1024_q32_k8_d128_bf16 {'warps': 4} baseline
+CALIBRATE fg_rotary_t1024_q32_k8_d128_bf16 {'warps': 8} baseline
+CONFIRM fg_rotary_t1024_q32_k8_d128_bf16 stages4 1.5310490144771338
+CONFIRM fg_rotary_t1024_q32_k8_d128_bf16 stages4 1.5239916757378327
+CONFIRM fg_rotary_t1024_q32_k8_d128_bf16 stages4 1.5366659788409227
+CALIBRATE upsample_2x64_64x256_to128x512 (64, 2, 4) baseline
+CALIBRATE upsample_2x64_64x256_to128x512 (128, 2, 4) stages3
+CALIBRATE upsample_2x64_64x256_to128x512 (256, 2, 4) stages4
+CALIBRATE upsample_2x64_64x256_to128x512 (512, 2, 4) stages3
+CONFIRM upsample_2x64_64x256_to128x512 baseline 0.9993533213985121
+CONFIRM upsample_2x64_64x256_to128x512 baseline 1.0008499119559056
+CONFIRM upsample_2x64_64x256_to128x512 baseline 0.999152256187368
+CALIBRATE fg_logsoftmax_masked {'block': 256, 'warps': 4} stages4
+CALIBRATE fg_rotary_masked {'warps': 1} stages4
+CALIBRATE upsample_boundary_single_height (64, 1, 4) stages4

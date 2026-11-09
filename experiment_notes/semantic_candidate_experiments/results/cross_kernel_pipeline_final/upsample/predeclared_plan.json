@@ -1,0 +1,187 @@
+{
+  "cases": [
+    {
+      "id": "upsample_1x64_32x128_to64x256",
+      "family": "upsample_bilinear2d",
+      "shape": [
+        1,
+        64,
+        32,
+        128
+      ],
+      "output_size": [
+        64,
+        256
+      ],
+      "align_corners": false,
+      "dtype": "float32",
+      "boundary": false,
+      "cohort": "calibration",
+      "origin": "Independent 2x resize with a persistent channel loop."
+    },
+    {
+      "id": "upsample_2x64_64x256_to128x512",
+      "family": "upsample_bilinear2d",
+      "shape": [
+        2,
+        64,
+        64,
+        256
+      ],
+      "output_size": [
+        128,
+        512
+      ],
+      "align_corners": true,
+      "dtype": "float32",
+      "boundary": false,
+      "cohort": "calibration",
+      "origin": "Independent align-corners 2x resize with batch and channel loops."
+    },
+    {
+      "id": "upsample_32x16_128x128_to256x256",
+      "family": "upsample_bilinear2d",
+      "shape": [
+        32,
+        16,
+        128,
+        128
+      ],
+      "output_size": [
+        256,
+        256
+      ],
+      "align_corners": false,
+      "dtype": "float32",
+      "boundary": false,
+      "cohort": "calibration",
+      "origin": "Exact first upstream UPSAMPLE_SHAPES input and its supported 2x scale."
+    },
+    {
+      "id": "upsample_boundary_single_height",
+      "family": "upsample_bilinear2d",
+      "shape": [
+        2,
+        3,
+        1,
+        33
+      ],
+      "output_size": [
+        1,
+        64
+      ],
+      "align_corners": true,
+      "dtype": "float32",
+      "boundary": true,
+      "cohort": "boundary",
+      "origin": "IH=OH=1 branch, odd input width, few batch/channel iterations; exact output tile."
+    }
+  ],
+  "configurations": {
+    "upsample_1x64_32x128_to64x256": [
+      [
+        64,
+        1,
+        4
+      ],
+      [
+        128,
+        1,
+        4
+      ],
+      [
+        256,
+        1,
+        4
+      ],
+      [
+        256,
+        2,
+        4
+      ]
+    ],
+    "upsample_2x64_64x256_to128x512": [
+      [
+        64,
+        2,
+        4
+      ],
+      [
+        128,
+        2,
+        4
+      ],
+      [
+        256,
+        2,
+        4
+      ],
+      [
+        512,
+        2,
+        4
+      ]
+    ],
+    "upsample_32x16_128x128_to256x256": [
+      [
+        64,
+        1,
+        4
+      ],
+      [
+        128,
+        1,
+        4
+      ],
+      [
+        256,
+        1,
+        4
+      ],
+      [
+        256,
+        2,
+        4
+      ]
+    ],
+    "upsample_boundary_single_height": [
+      [
+        64,
+        1,
+        4
+      ]
+    ]
+  },
+  "variants": {
+    "no_contract": [
+      false,
+      0
+    ],
+    "contracts": [
+      false,
+      0
+    ],
+    "licm": [
+      true,
+      0
+    ],
+    "pipeline": [
+      false,
+      2
+    ],
+    "both": [
+      true,
+      2
+    ]
+  },
+  "screening_rounds": 5,
+  "confirmation_rounds": 13,
+  "confirmation_seeds": [
+    39019,
+    49031,
+    59051
+  ],
+  "selection_minimum_gain": 1.02,
+  "baseline": "contracts only; no-contract is a separate safety-restoration control",
+  "no_native_or_kernel_body_edits": true
+}

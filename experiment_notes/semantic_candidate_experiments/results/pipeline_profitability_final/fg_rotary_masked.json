@@ -1,0 +1,540 @@
+{
+  "case": {
+    "id": "fg_rotary_masked",
+    "family": "rotary_embedding",
+    "tokens": 17,
+    "qheads": 5,
+    "kheads": 2,
+    "dim": 96,
+    "dtype": "float32",
+    "interleaved": true,
+    "boundary": true
+  },
+  "configurations": [
+    {
+      "warps": 1
+    }
+  ],
+  "calibration": [
+    {
+      "wall_compile_and_calibration_seconds": 0.505246916996839,
+      "all_argument_backing_storage_preserved": true,
+      "checked_allocation_count": 7,
+      "mutable_args": [
+        0,
+        1
+      ],
+      "report": {
+        "selected": "stages4",
+        "grid": [
+          17,
+          1,
+          1
+        ],
+        "device": 0,
+        "alias_groups": {
+          "0": 1,
+          "1": 2,
+          "2": 0,
+          "3": 0,
+          "4": 0,
+          "5": 0,
+          "6": 0
+        },
+        "immutable_args": [],
+        "mutable_args": [
+          0,
+          1
+        ],
+        "variants": {
+          "baseline": {
+            "depth": 0,
+            "licm": false,
+            "equivalent_to": "baseline",
+            "registers": 34,
+            "spills": 0,
+            "shared_bytes": 0,
+            "cubin_sha256": "09def2e31ae195b61be30246cef89873a1f9f8073d30bef7dcec11d105df4ccb",
+            "async_copy_sites": 0
+          },
+          "stages2": {
+            "depth": 2,
+            "licm": false,
+            "equivalent_to": "stages2",
+            "registers": 35,
+            "spills": 0,
+            "shared_bytes": 1024,
+            "cubin_sha256": "9466986d9524d7921ddf2d8670084d59814708e6a3b5773cddc72516ee945bd1",
+            "async_copy_sites": 8
+          },
+          "stages3": {
+            "depth": 3,
+            "licm": false,
+            "equivalent_to": "stages3",
+            "registers": 32,
+            "spills": 0,
+            "shared_bytes": 2048,
+            "cubin_sha256": "e95c8b6e09888f90012821ad04b1222e2f55ffca02b32c69a3d982b0fea61854",
+            "async_copy_sites": 12
+          },
+          "stages4": {
+            "depth": 4,
+            "licm": false,
+            "equivalent_to": "stages4",
+            "registers": 32,
+            "spills": 0,
+            "shared_bytes": 3072,
+            "cubin_sha256": "15a26f9b9278412ed3e6c43d849ea630c9d4b390faed7ffd308bc88fc86b8000",
+            "async_copy_sites": 16
+          }
+        },
+        "compile_seconds": 0.4934866349940421,
+        "calibration_seconds": 0.010197448005783372,
+        "total_seconds": 0.5036844099959126,
+        "calibration": {
+          "screen_samples_us": {
+            "baseline": [
+              2.4419999681413174,
+              2.4109999649226665,
+              2.4049999192357063,
+              2.4270000867545605,
+              2.420000033453107,
+              2.4580000899732113,
+              2.3980000987648964,
+              2.4300001095980406,
+              2.4210000410676003
+            ],
+            "stages2": [
+              2.715999959036708,
+              2.7260000351816416,
+              2.7389999013394117,
+              2.715999959036708,
+              2.7310000732541084,
+              2.686999971047044,
+              2.7000000700354576,
+              2.725000027567148,
+              2.761000068858266
+            ],
+            "stages3": [
+              2.116000046953559,
+              2.0910000894218683,
+              2.1250001154839993,
+              2.119000069797039,
+              2.094999887049198,
+              2.107999986037612,
+              2.1210000850260258,
+              2.102999947965145,
+              2.1540001034736633
+            ],
+            "stages4": [
+              2.176000038161874,
+              2.002999885007739,
+              1.9729998894035816,
+              2.001000102609396,
+              2.015999983996153,
+              2.0200000144541264,
+              2.022000029683113,
+              2.0210000220686197,
+              2.03399988822639
+            ]
+          },
+          "confirmation_samples_us": {
+            "baseline": [
+              2.4759999942034483,
+              2.403999911621213,
+              2.3739999160170555,
+              2.4220000486820936,
+              2.41199997253716,
+              2.3870000150054693,
+              2.3950000759214163,
+              2.4250000715255737,
+              2.4309998843818903
+            ],
+            "stages4": [
+              2.0280000753700733,
+              1.9710001070052385,
+              1.984999980777502,
+              1.9950000569224358,
+              2.015999983996153,
+              1.9620000384747982,
+              2.03999993391335,
+              1.9839999731630087,
+              2.019000006839633
+            ]
+          },
+          "screen_medians_us": {
+            "baseline": 2.4210000410676003,
+            "stages2": 2.725000027567148,
+            "stages3": 2.116000046953559,
+            "stages4": 2.0200000144541264
+          },
+          "confirmation_medians_us": {
+            "baseline": 2.41199997253716,
+            "stages4": 1.9950000569224358
+          },
+          "min_gain": 0.02,
+          "rounds": 9,
+          "repetitions": 32,
+          "reset_copies_included": false,
+          "state_restored": true,
+          "executed": true,
+          "reason": "confirmed_gain",
+          "screen_winner": "stages4"
+        },
+        "scope": "inferred pipeline depth at fixed launch; explicit source schedules are preserved",
+        "cached": true,
+        "baseline": "same contracts, no inferred pipeline or contract LICM",
+        "native_attributes": {
+          "(0,)": [
+            [
+              "tt.divisibility",
+              16
+            ],
+            [
+              "tt.experimental_alias_group",
+              1
+            ]
+          ],
+          "(1,)": [
+            [
+              "tt.divisibility",
+              16
+            ],
+            [
+              "tt.experimental_alias_group",
+              2
+            ]
+          ],
+          "(2,)": [
+            [
+              "tt.divisibility",
+              16
+            ],
+            [
+              "tt.experimental_alias_group",
+              0
+            ]
+          ],
+          "(3,)": [
+            [
+              "tt.divisibility",
+              16
+            ],
+            [
+              "tt.experimental_alias_group",
+              0
+            ]
+          ],
+          "(4,)": [
+            [
+              "tt.divisibility",
+              16
+            ],
+            [
+              "tt.experimental_alias_group",
+              0
+            ]
+          ],
+          "(5,)": [
+            [
+              "tt.divisibility",
+              16
+            ],
+            [
+              "tt.experimental_alias_group",
+              0
+            ]
+          ],
+          "(6,)": [
+            [
+              "tt.divisibility",
+              16
+            ],
+            [
+              "tt.experimental_alias_group",
+              0
+            ]
+          ],
+          "(7,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(8,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(9,)": [],
+          "(10,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(11,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(12,)": [],
+          "(13,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(14,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(15,)": [],
+          "(16,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(17,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(18,)": [],
+          "(19,)": [],
+          "(20,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(21,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(22,)": [],
+          "(23,)": [],
+          "(24,)": [],
+          "(25,)": [],
+          "(26,)": [],
+          "(27,)": [],
+          "(28,)": []
+        }
+      },
+      "selected_name": "stages4",
+      "resources": {
+        "baseline": {
+          "registers": 34,
+          "spills": 0,
+          "shared": 0,
+          "async_copies": 0,
+          "loops": 2,
+          "ptx_sha256": "ea3b8245b853a1e6867348687884b09b3030a92e8f311f7ccbde83128a8869c2",
+          "cubin_sha256": "09def2e31ae195b61be30246cef89873a1f9f8073d30bef7dcec11d105df4ccb"
+        },
+        "stages2": {
+          "registers": 35,
+          "spills": 0,
+          "shared": 1024,
+          "async_copies": 8,
+          "loops": 2,
+          "ptx_sha256": "6d8c605a76c10d4c40fb148d0f6fe4768824c906e7a4bdf02d24a9b26f7939a0",
+          "cubin_sha256": "9466986d9524d7921ddf2d8670084d59814708e6a3b5773cddc72516ee945bd1"
+        },
+        "stages3": {
+          "registers": 32,
+          "spills": 0,
+          "shared": 2048,
+          "async_copies": 12,
+          "loops": 2,
+          "ptx_sha256": "fb63faf37bf20c29c608c4da3f7c88f5a4ddfee546b3ad77a02909c3a018538f",
+          "cubin_sha256": "e95c8b6e09888f90012821ad04b1222e2f55ffca02b32c69a3d982b0fea61854"
+        },
+        "stages4": {
+          "registers": 32,
+          "spills": 0,
+          "shared": 3072,
+          "async_copies": 16,
+          "loops": 2,
+          "ptx_sha256": "d2fe2c9e33bace07681a7a71f427fef0ceac587817f16f892e0f4d93dbaa1d01",
+          "cubin_sha256": "15a26f9b9278412ed3e6c43d849ea630c9d4b390faed7ffd308bc88fc86b8000"
+        }
+      },
+      "config": {
+        "warps": 1
+      },
+      "validation": {
+        "baseline_oracle": {
+          "outputs": {
+            "oq": {
+              "max_absolute_error": 2.321229484181231e-07,
+              "finite": true,
+              "atol": 3e-06,
+              "rtol": 2e-05,
+              "guards": true
+            },
+            "ok": {
+              "max_absolute_error": 2.257779514458491e-07,
+              "finite": true,
+              "atol": 3e-06,
+              "rtol": 2e-05,
+              "guards": true
+            }
+          },
+          "inputs_unchanged": true,
+          "complete_outputs_checked": true,
+          "oracle": "FP64 torch mathematics from stored input values"
+        },
+        "variants": {
+          "baseline": {
+            "oracle": {
+              "outputs": {
+                "oq": {
+                  "max_absolute_error": 2.321229484181231e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                },
+                "ok": {
+                  "max_absolute_error": 2.257779514458491e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                }
+              },
+              "inputs_unchanged": true,
+              "complete_outputs_checked": true,
+              "oracle": "FP64 torch mathematics from stored input values"
+            },
+            "bitwise_equal_to_baseline": {
+              "oq": true,
+              "ok": true
+            }
+          },
+          "stages2": {
+            "oracle": {
+              "outputs": {
+                "oq": {
+                  "max_absolute_error": 2.321229484181231e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                },
+                "ok": {
+                  "max_absolute_error": 2.257779514458491e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                }
+              },
+              "inputs_unchanged": true,
+              "complete_outputs_checked": true,
+              "oracle": "FP64 torch mathematics from stored input values"
+            },
+            "bitwise_equal_to_baseline": {
+              "oq": true,
+              "ok": true
+            }
+          },
+          "stages3": {
+            "oracle": {
+              "outputs": {
+                "oq": {
+                  "max_absolute_error": 2.321229484181231e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                },
+                "ok": {
+                  "max_absolute_error": 2.257779514458491e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                }
+              },
+              "inputs_unchanged": true,
+              "complete_outputs_checked": true,
+              "oracle": "FP64 torch mathematics from stored input values"
+            },
+            "bitwise_equal_to_baseline": {
+              "oq": true,
+              "ok": true
+            }
+          },
+          "stages4": {
+            "oracle": {
+              "outputs": {
+                "oq": {
+                  "max_absolute_error": 2.321229484181231e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                },
+                "ok": {
+                  "max_absolute_error": 2.257779514458491e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                }
+              },
+              "inputs_unchanged": true,
+              "complete_outputs_checked": true,
+              "oracle": "FP64 torch mathematics from stored input values"
+            },
+            "bitwise_equal_to_baseline": {
+              "oq": true,
+              "ok": true
+            }
+          },
+          "guarded_selected": {
+            "oracle": {
+              "outputs": {
+                "oq": {
+                  "max_absolute_error": 2.321229484181231e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                },
+                "ok": {
+                  "max_absolute_error": 2.257779514458491e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                }
+              },
+              "inputs_unchanged": true,
+              "complete_outputs_checked": true,
+              "oracle": "FP64 torch mathematics from stored input values"
+            },
+            "bitwise_equal_to_baseline": {
+              "oq": true,
+              "ok": true
+            }
+          }
+        },
+        "cached_selection_unchanged": true,
+        "selected_name": "stages4"
+      }
+    }
+  ],
+  "confirmations": [],
+  "boundary_passed": true
+}

@@ -350,6 +350,21 @@ void inferContractPipelineStages(ModuleOp module, int stages) {
     APInt step;
     if (!matchPattern(loop.getStep(), m_ConstantInt(&step)) || !step.isOne())
       return;
+    APInt lower, upper;
+    if (matchPattern(loop.getLowerBound(), m_ConstantInt(&lower)) &&
+        matchPattern(loop.getUpperBound(), m_ConstantInt(&upper))) {
+      // A zero- or one-trip loop has no useful next iteration to prefetch.
+      // Widen before adding one so this test also works at the integer limits.
+      // Respect scf.for's signed/unsigned comparison rather than interpreting
+      // the bounds as host integers. Explicit source schedules were excluded
+      // above and remain unchanged by this automatic profitability gate.
+      unsigned width = lower.getBitWidth() + 1;
+      lower = loop.getUnsignedCmp() ? lower.zext(width) : lower.sext(width);
+      upper = loop.getUnsignedCmp() ? upper.zext(width) : upper.sext(width);
+      APInt afterOne = lower + 1;
+      if (loop.getUnsignedCmp() ? upper.ule(afterOne) : upper.sle(afterOne))
+        return;
+    }
     auto function = loop->getParentOfType<tt::FuncOp>();
     if (!function)
       return;

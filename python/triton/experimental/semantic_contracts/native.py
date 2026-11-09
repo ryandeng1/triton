@@ -27,6 +27,12 @@ in-allocation accesses and absence of external observers remain caller promises.
 lock/count zeros and exact launch/scalar facts. A bounded native TTIR proof can
 then assign reduction owners while preserving a permitted lock serialization.
 Its implementation is currently connected to the Triton CUDA pipeline only.
+
+``compile_pipeline`` binds alias/immutability contracts and measures a bounded
+set of inferred pipeline depths, optionally with independent LICM candidates.
+It preserves declared mutable allocations during calibration, caches a choice
+for one specialization/launch, and retains the baseline for marginal gains.
+Explicit source scheduling annotations are preserved.
 """
 
 import copy
@@ -37,6 +43,17 @@ import torch
 import triton
 
 _I32_MAX = (1 << 31) - 1
+
+
+def compile_pipeline(*args, **kwargs):
+    """Select a cached contract-licensed pipeline; see ``pipeline.compile_pipeline``.
+
+    Uses the same memory contracts for baseline and depth/LICM candidates.
+    Calibration preserves declared mutable allocations; subsequent guarded calls
+    launch once. Explicit source scheduling annotations remain authoritative.
+    """
+    from .pipeline import compile_pipeline as compile_with_profitability
+    return compile_with_profitability(*args, **kwargs)
 
 
 def _grid_tuple(grid):

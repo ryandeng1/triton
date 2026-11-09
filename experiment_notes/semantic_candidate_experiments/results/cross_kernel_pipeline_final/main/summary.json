@@ -1,0 +1,840 @@
+{
+  "records": [
+    {
+      "case": {
+        "id": "rms_forward_4096x1024",
+        "family": "aiter_rmsnorm",
+        "operation": "forward",
+        "M": 4096,
+        "N": 1024,
+        "dtype": "bfloat16",
+        "epsilon": 1e-06,
+        "source_has_explicit_loop_stages": true,
+        "auto_inference_expected": false,
+        "boundary": false
+      },
+      "pipeline_changes_contracts_ptx": false,
+      "contracts_change_source_ptx": true,
+      "selection": {
+        "variant": "both",
+        "config": {
+          "warps": 4,
+          "grid": "rows"
+        },
+        "baseline_config": {
+          "warps": 4,
+          "grid": "rows"
+        },
+        "screening_speedup": 1.2788270843608394,
+        "minimum_screen_gain": 1.02,
+        "calibration_seconds": 2.9969434419981553,
+        "selected_configs": {
+          "no_contract": {
+            "warps": 4,
+            "grid": "rows"
+          },
+          "contracts": {
+            "warps": 4,
+            "grid": "rows"
+          },
+          "licm": {
+            "warps": 4,
+            "grid": "rows"
+          },
+          "pipeline": {
+            "warps": 4,
+            "grid": "rows"
+          },
+          "both": {
+            "warps": 4,
+            "grid": "rows"
+          }
+        },
+        "comparison_baseline": "same-contracts, no LICM or auto-stage inference"
+      },
+      "speedups_vs_contracts": [
+        {
+          "no_contract": 1.3187727609210649,
+          "contracts": 1.0,
+          "licm": 1.261761763453165,
+          "pipeline": 0.9941633797080032,
+          "both": 1.2568305954045267
+        },
+        {
+          "no_contract": 1.329186075255112,
+          "contracts": 1.0,
+          "licm": 1.2636317152827279,
+          "pipeline": 0.9848307803014229,
+          "both": 1.2592223456144733
+        },
+        {
+          "no_contract": 1.3133712405347941,
+          "contracts": 1.0,
+          "licm": 1.2554781875478735,
+          "pipeline": 0.9996042708162304,
+          "both": 1.2655622795662478
+        }
+      ],
+      "contracts_vs_no_contract": [
+        0.7582807513415535,
+        0.7523401114535969,
+        0.7613993432601799
+      ]
+    },
+    {
+      "case": {
+        "id": "rms_forward_16384x4096",
+        "family": "aiter_rmsnorm",
+        "operation": "forward",
+        "M": 16384,
+        "N": 4096,
+        "dtype": "bfloat16",
+        "epsilon": 1e-06,
+        "source_has_explicit_loop_stages": true,
+        "auto_inference_expected": false,
+        "boundary": false
+      },
+      "pipeline_changes_contracts_ptx": false,
+      "contracts_change_source_ptx": true,
+      "selection": {
+        "variant": "contracts",
+        "config": {
+          "warps": 4,
+          "grid": "rows"
+        },
+        "baseline_config": {
+          "warps": 4,
+          "grid": "rows"
+        },
+        "screening_speedup": 1.0,
+        "minimum_screen_gain": 1.02,
+        "calibration_seconds": 25.228229350999754,
+        "selected_configs": {
+          "no_contract": {
+            "warps": 4,
+            "grid": "rows"
+          },
+          "contracts": {
+            "warps": 4,
+            "grid": "rows"
+          },
+          "licm": {
+            "warps": 4,
+            "grid": "rows"
+          },
+          "pipeline": {
+            "warps": 4,
+            "grid": "rows"
+          },
+          "both": {
+            "warps": 4,
+            "grid": "rows"
+          }
+        },
+        "comparison_baseline": "same-contracts, no LICM or auto-stage inference"
+      },
+      "speedups_vs_contracts": [
+        {
+          "no_contract": 1.0403812178455694,
+          "contracts": 1.0,
+          "licm": 0.915711786286403,
+          "pipeline": 1.0000926920996296,
+          "both": 0.9142760195513409
+        },
+        {
+          "no_contract": 1.0417955770276157,
+          "contracts": 1.0,
+          "licm": 0.9148413748867167,
+          "pipeline": 1.0007882580895342,
+          "both": 0.9153066933473938
+        },
+        {
+          "no_contract": 1.039601016885577,
+          "contracts": 1.0,
+          "licm": 0.9140691239193866,
+          "pipeline": 0.9997218592714957,
+          "both": 0.9149720323088917
+        }
+      ],
+      "contracts_vs_no_contract": [
+        0.9611861333587017,
+        0.9598812109119679,
+        0.9619074854272331
+      ]
+    },
+    {
+      "case": {
+        "id": "rms_forward_31x1008",
+        "family": "aiter_rmsnorm",
+        "operation": "forward",
+        "M": 31,
+        "N": 1008,
+        "dtype": "bfloat16",
+        "epsilon": 1e-06,
+        "source_has_explicit_loop_stages": true,
+        "auto_inference_expected": false,
+        "boundary": true
+      },
+      "pipeline_changes_contracts_ptx": false,
+      "contracts_change_source_ptx": true
+    },
+    {
+      "case": {
+        "id": "rms_backward_4096x1024",
+        "family": "aiter_rmsnorm",
+        "operation": "backward",
+        "M": 4096,
+        "N": 1024,
+        "dtype": "bfloat16",
+        "epsilon": 1e-06,
+        "source_has_explicit_loop_stages": true,
+        "auto_inference_expected": false,
+        "boundary": false
+      },
+      "pipeline_changes_contracts_ptx": false,
+      "contracts_change_source_ptx": true,
+      "selection": {
+        "variant": "both",
+        "config": {
+          "warps": 4,
+          "grid": "1sm"
+        },
+        "baseline_config": {
+          "warps": 4,
+          "grid": "1sm"
+        },
+        "screening_speedup": 1.0553473444758898,
+        "minimum_screen_gain": 1.02,
+        "calibration_seconds": 4.330147206001129,
+        "selected_configs": {
+          "no_contract": {
+            "warps": 8,
+            "grid": "1sm"
+          },
+          "contracts": {
+            "warps": 4,
+            "grid": "1sm"
+          },
+          "licm": {
+            "warps": 4,
+            "grid": "1sm"
+          },
+          "pipeline": {
+            "warps": 4,
+            "grid": "1sm"
+          },
+          "both": {
+            "warps": 4,
+            "grid": "1sm"
+          }
+        },
+        "comparison_baseline": "same-contracts, no LICM or auto-stage inference"
+      },
+      "speedups_vs_contracts": [
+        {
+          "no_contract": 1.1107230633826994,
+          "contracts": 1.0,
+          "licm": 1.0399087238921247,
+          "pipeline": 0.9942196631368645,
+          "both": 1.0380081303089808
+        },
+        {
+          "no_contract": 1.1137127366310786,
+          "contracts": 1.0,
+          "licm": 1.0356068149552948,
+          "pipeline": 0.9974469417935802,
+          "both": 1.0351087436932487
+        },
+        {
+          "no_contract": 1.1126160871920738,
+          "contracts": 1.0,
+          "licm": 1.037432575485176,
+          "pipeline": 0.9989564737343586,
+          "both": 1.0380389209838976
+        }
+      ],
+      "contracts_vs_no_contract": [
+        0.9003144284719423,
+        0.8978976060065061,
+        0.8987826182917373
+      ]
+    },
+    {
+      "case": {
+        "id": "rms_backward_16384x4096",
+        "family": "aiter_rmsnorm",
+        "operation": "backward",
+        "M": 16384,
+        "N": 4096,
+        "dtype": "bfloat16",
+        "epsilon": 1e-06,
+        "source_has_explicit_loop_stages": true,
+        "auto_inference_expected": false,
+        "boundary": false
+      },
+      "pipeline_changes_contracts_ptx": false,
+      "contracts_change_source_ptx": true,
+      "selection": {
+        "variant": "both",
+        "config": {
+          "warps": 4,
+          "grid": "4sm"
+        },
+        "baseline_config": {
+          "warps": 4,
+          "grid": "4sm"
+        },
+        "screening_speedup": 1.042452196403344,
+        "minimum_screen_gain": 1.02,
+        "calibration_seconds": 33.324331666000944,
+        "selected_configs": {
+          "no_contract": {
+            "warps": 8,
+            "grid": "4sm"
+          },
+          "contracts": {
+            "warps": 4,
+            "grid": "4sm"
+          },
+          "licm": {
+            "warps": 4,
+            "grid": "4sm"
+          },
+          "pipeline": {
+            "warps": 4,
+            "grid": "4sm"
+          },
+          "both": {
+            "warps": 4,
+            "grid": "4sm"
+          }
+        },
+        "comparison_baseline": "same-contracts, no LICM or auto-stage inference"
+      },
+      "speedups_vs_contracts": [
+        {
+          "no_contract": 1.0432247581860221,
+          "contracts": 1.0,
+          "licm": 1.0426939247303197,
+          "pipeline": 0.9996160268783569,
+          "both": 1.0425623993277167
+        },
+        {
+          "no_contract": 1.0452143997881087,
+          "contracts": 1.0,
+          "licm": 1.0445368877342809,
+          "pipeline": 0.9998562504745043,
+          "both": 1.0460325338733196
+        },
+        {
+          "no_contract": 1.044505464710777,
+          "contracts": 1.0,
+          "licm": 1.0438693518851723,
+          "pipeline": 1.000559472338273,
+          "both": 1.0442336208896965
+        }
+      ],
+      "contracts_vs_no_contract": [
+        0.9585662074765345,
+        0.9567415070082513,
+        0.9573908742324286
+      ]
+    },
+    {
+      "case": {
+        "id": "rms_backward_31x1008",
+        "family": "aiter_rmsnorm",
+        "operation": "backward",
+        "M": 31,
+        "N": 1008,
+        "dtype": "bfloat16",
+        "epsilon": 1e-06,
+        "source_has_explicit_loop_stages": true,
+        "auto_inference_expected": false,
+        "boundary": true
+      },
+      "pipeline_changes_contracts_ptx": false,
+      "contracts_change_source_ptx": true
+    },
+    {
+      "case": {
+        "id": "fg_logsoftmax_m64_k16384_f32",
+        "family": "log_softmax_backward",
+        "M": 64,
+        "K": 16384,
+        "dtype": "float32",
+        "boundary": false
+      },
+      "pipeline_changes_contracts_ptx": true,
+      "contracts_change_source_ptx": false,
+      "selection": {
+        "variant": "contracts",
+        "config": {
+          "block": 1024,
+          "warps": 8
+        },
+        "baseline_config": {
+          "block": 1024,
+          "warps": 8
+        },
+        "screening_speedup": 1.0024894419198584,
+        "minimum_screen_gain": 1.02,
+        "calibration_seconds": 1.6165356570018048,
+        "selected_configs": {
+          "no_contract": {
+            "block": 1024,
+            "warps": 8
+          },
+          "contracts": {
+            "block": 1024,
+            "warps": 8
+          },
+          "licm": {
+            "block": 1024,
+            "warps": 8
+          },
+          "pipeline": {
+            "block": 1024,
+            "warps": 4
+          },
+          "both": {
+            "block": 1024,
+            "warps": 4
+          }
+        },
+        "comparison_baseline": "same-contracts, no LICM or auto-stage inference"
+      },
+      "speedups_vs_contracts": [
+        {
+          "no_contract": 0.9988573518390605,
+          "contracts": 1.0,
+          "licm": 0.9986661927237939,
+          "pipeline": 0.8799661417408379,
+          "both": 0.8788539363751232
+        },
+        {
+          "no_contract": 1.0015319025232385,
+          "contracts": 1.0,
+          "licm": 1.000191031413106,
+          "pipeline": 0.8822932239077889,
+          "both": 0.8805794843920716
+        },
+        {
+          "no_contract": 1.0,
+          "contracts": 1.0,
+          "licm": 1.0032560614455281,
+          "pipeline": 0.8821747581947297,
+          "both": 0.881432895985555
+        }
+      ],
+      "contracts_vs_no_contract": [
+        1.0011439552993584,
+        0.9984704406126464,
+        1.0
+      ]
+    },
+    {
+      "case": {
+        "id": "fg_logsoftmax_m256_k8192_f32",
+        "family": "log_softmax_backward",
+        "M": 256,
+        "K": 8192,
+        "dtype": "float32",
+        "boundary": false
+      },
+      "pipeline_changes_contracts_ptx": true,
+      "contracts_change_source_ptx": false,
+      "selection": {
+        "variant": "contracts",
+        "config": {
+          "block": 1024,
+          "warps": 8
+        },
+        "baseline_config": {
+          "block": 1024,
+          "warps": 8
+        },
+        "screening_speedup": 1.0,
+        "minimum_screen_gain": 1.02,
+        "calibration_seconds": 0.49558916699970723,
+        "selected_configs": {
+          "no_contract": {
+            "block": 1024,
+            "warps": 8
+          },
+          "contracts": {
+            "block": 1024,
+            "warps": 8
+          },
+          "licm": {
+            "block": 1024,
+            "warps": 8
+          },
+          "pipeline": {
+            "block": 1024,
+            "warps": 8
+          },
+          "both": {
+            "block": 1024,
+            "warps": 4
+          }
+        },
+        "comparison_baseline": "same-contracts, no LICM or auto-stage inference"
+      },
+      "speedups_vs_contracts": [
+        {
+          "no_contract": 0.9987468576617035,
+          "contracts": 1.0,
+          "licm": 0.999065704503036,
+          "pipeline": 0.8795047925962545,
+          "both": 0.8752393999148305
+        },
+        {
+          "no_contract": 0.9949748361556736,
+          "contracts": 1.0,
+          "licm": 0.9962429270586959,
+          "pipeline": 0.8787630282257782,
+          "both": 0.8705882652715089
+        },
+        {
+          "no_contract": 1.0003126978250574,
+          "contracts": 1.0,
+          "licm": 0.9971518771196521,
+          "pipeline": 0.8806380507387667,
+          "both": 0.8722418749494587
+        }
+      ],
+      "contracts_vs_no_contract": [
+        1.0012547146743775,
+        1.0050505436536892,
+        0.9996873999243063
+      ]
+    },
+    {
+      "case": {
+        "id": "fg_logsoftmax_m512_k4096_bf16",
+        "family": "log_softmax_backward",
+        "M": 512,
+        "K": 4096,
+        "dtype": "bfloat16",
+        "boundary": false
+      },
+      "pipeline_changes_contracts_ptx": true,
+      "contracts_change_source_ptx": false,
+      "selection": {
+        "variant": "contracts",
+        "config": {
+          "block": 1024,
+          "warps": 4
+        },
+        "baseline_config": {
+          "block": 1024,
+          "warps": 4
+        },
+        "screening_speedup": 1.0,
+        "minimum_screen_gain": 1.02,
+        "calibration_seconds": 1.7977405929996166,
+        "selected_configs": {
+          "no_contract": {
+            "block": 1024,
+            "warps": 4
+          },
+          "contracts": {
+            "block": 1024,
+            "warps": 4
+          },
+          "licm": {
+            "block": 1024,
+            "warps": 4
+          },
+          "pipeline": {
+            "block": 1024,
+            "warps": 4
+          },
+          "both": {
+            "block": 1024,
+            "warps": 4
+          }
+        },
+        "comparison_baseline": "same-contracts, no LICM or auto-stage inference"
+      },
+      "speedups_vs_contracts": [
+        {
+          "no_contract": 1.0023958015961671,
+          "contracts": 1.0,
+          "licm": 0.9971181337047291,
+          "pipeline": 0.9523593012038316,
+          "both": 0.9442139276737203
+        },
+        {
+          "no_contract": 1.0019483830462095,
+          "contracts": 1.0,
+          "licm": 1.0048780859004236,
+          "pipeline": 0.9440110168747183,
+          "both": 0.9350000338662756
+        },
+        {
+          "no_contract": 1.0088149547057732,
+          "contracts": 1.0,
+          "licm": 0.9846889906312963,
+          "pipeline": 0.9427917554300153,
+          "both": 0.9419296710891716
+        }
+      ],
+      "contracts_vs_no_contract": [
+        0.9976099245504099,
+        0.9980554057682234,
+        0.9912620697535713
+      ]
+    },
+    {
+      "case": {
+        "id": "fg_logsoftmax_masked",
+        "family": "log_softmax_backward",
+        "M": 7,
+        "K": 2053,
+        "dtype": "float32",
+        "boundary": true
+      },
+      "pipeline_changes_contracts_ptx": true,
+      "contracts_change_source_ptx": false
+    },
+    {
+      "case": {
+        "id": "fg_rotary_t128_q32_k8_d128_f32",
+        "family": "rotary_embedding",
+        "tokens": 128,
+        "qheads": 32,
+        "kheads": 8,
+        "dim": 128,
+        "dtype": "float32",
+        "interleaved": false,
+        "boundary": false
+      },
+      "pipeline_changes_contracts_ptx": true,
+      "contracts_change_source_ptx": false,
+      "selection": {
+        "variant": "contracts",
+        "config": {
+          "warps": 8
+        },
+        "baseline_config": {
+          "warps": 8
+        },
+        "screening_speedup": 1.0,
+        "minimum_screen_gain": 1.02,
+        "calibration_seconds": 1.9577935799970874,
+        "selected_configs": {
+          "no_contract": {
+            "warps": 4
+          },
+          "contracts": {
+            "warps": 8
+          },
+          "licm": {
+            "warps": 8
+          },
+          "pipeline": {
+            "warps": 2
+          },
+          "both": {
+            "warps": 2
+          }
+        },
+        "comparison_baseline": "same-contracts, no LICM or auto-stage inference"
+      },
+      "speedups_vs_contracts": [
+        {
+          "no_contract": 0.9995114764920668,
+          "contracts": 1.0,
+          "licm": 1.0007350624683289,
+          "pipeline": 0.8404669086299726,
+          "both": 0.8401374811319183
+        },
+        {
+          "no_contract": 1.0007276875337063,
+          "contracts": 1.0,
+          "licm": 1.0014648549077414,
+          "pipeline": 0.8429394901076216,
+          "both": 0.8444581032447975
+        },
+        {
+          "no_contract": 0.9987826137239129,
+          "contracts": 1.0,
+          "licm": 0.9956310348767857,
+          "pipeline": 0.8415637365234899,
+          "both": 0.8411946327045003
+        }
+      ],
+      "contracts_vs_no_contract": [
+        1.0004887622797967,
+        0.9992728416103889,
+        1.0012188701118336
+      ]
+    },
+    {
+      "case": {
+        "id": "fg_rotary_t1024_q32_k8_d128_bf16",
+        "family": "rotary_embedding",
+        "tokens": 1024,
+        "qheads": 32,
+        "kheads": 8,
+        "dim": 128,
+        "dtype": "bfloat16",
+        "interleaved": false,
+        "boundary": false
+      },
+      "pipeline_changes_contracts_ptx": true,
+      "contracts_change_source_ptx": false,
+      "selection": {
+        "variant": "contracts",
+        "config": {
+          "warps": 4
+        },
+        "baseline_config": {
+          "warps": 4
+        },
+        "screening_speedup": 1.0035195018960896,
+        "minimum_screen_gain": 1.02,
+        "calibration_seconds": 2.8556991269979335,
+        "selected_configs": {
+          "no_contract": {
+            "warps": 4
+          },
+          "contracts": {
+            "warps": 4
+          },
+          "licm": {
+            "warps": 4
+          },
+          "pipeline": {
+            "warps": 4
+          },
+          "both": {
+            "warps": 4
+          }
+        },
+        "comparison_baseline": "same-contracts, no LICM or auto-stage inference"
+      },
+      "speedups_vs_contracts": [
+        {
+          "no_contract": 1.0006629369857916,
+          "contracts": 1.0,
+          "licm": 1.0004412122890618,
+          "pipeline": 1.0017829420598834,
+          "both": 1.0015514818907088
+        },
+        {
+          "no_contract": 0.9993366231689044,
+          "contracts": 1.0,
+          "licm": 0.9958295925075552,
+          "pipeline": 0.9993379408212412,
+          "both": 1.0013258739715833
+        },
+        {
+          "no_contract": 1.0046780858281499,
+          "contracts": 1.0,
+          "licm": 1.0066741331318887,
+          "pipeline": 1.007558972981809,
+          "both": 1.0022286775748543
+        }
+      ],
+      "contracts_vs_no_contract": [
+        0.9993375022084974,
+        1.000663817192041,
+        0.9953436967580578
+      ]
+    },
+    {
+      "case": {
+        "id": "fg_rotary_t4096_q16_k4_d64_bf16",
+        "family": "rotary_embedding",
+        "tokens": 4096,
+        "qheads": 16,
+        "kheads": 4,
+        "dim": 64,
+        "dtype": "bfloat16",
+        "interleaved": true,
+        "boundary": false
+      },
+      "pipeline_changes_contracts_ptx": true,
+      "contracts_change_source_ptx": false,
+      "selection": {
+        "variant": "contracts",
+        "config": {
+          "warps": 2
+        },
+        "baseline_config": {
+          "warps": 2
+        },
+        "screening_speedup": 1.0066016746386093,
+        "minimum_screen_gain": 1.02,
+        "calibration_seconds": 2.6164823360013543,
+        "selected_configs": {
+          "no_contract": {
+            "warps": 1
+          },
+          "contracts": {
+            "warps": 2
+          },
+          "licm": {
+            "warps": 1
+          },
+          "pipeline": {
+            "warps": 2
+          },
+          "both": {
+            "warps": 2
+          }
+        },
+        "comparison_baseline": "same-contracts, no LICM or auto-stage inference"
+      },
+      "speedups_vs_contracts": [
+        {
+          "no_contract": 1.0131157536219837,
+          "contracts": 1.0,
+          "licm": 1.0169112750352367,
+          "pipeline": 0.9949732573928484,
+          "both": 0.9940901572385344
+        },
+        {
+          "no_contract": 1.0191815824414734,
+          "contracts": 1.0,
+          "licm": 1.0088272323188905,
+          "pipeline": 0.9993730359932811,
+          "both": 1.0028177318097238
+        },
+        {
+          "no_contract": 1.014410991006552,
+          "contracts": 1.0,
+          "licm": 1.0191815824414734,
+          "pipeline": 0.9981244723281609,
+          "both": 0.9978090600776641
+        }
+      ],
+      "contracts_vs_no_contract": [
+        0.9870540423687089,
+        0.9811794259512387,
+        0.9857937353456191
+      ]
+    },
+    {
+      "case": {
+        "id": "fg_rotary_masked",
+        "family": "rotary_embedding",
+        "tokens": 17,
+        "qheads": 5,
+        "kheads": 2,
+        "dim": 96,
+        "dtype": "float32",
+        "interleaved": true,
+        "boundary": true
+      },
+      "pipeline_changes_contracts_ptx": true,
+      "contracts_change_source_ptx": false
+    }
+  ],
+  "native_library_sha256": "e7e15b9337405e632e887ceae9c96d9ea85e38aa1e9c35dec937d7b148d06178",
+  "native_unchanged": true,
+  "completed": true
+}

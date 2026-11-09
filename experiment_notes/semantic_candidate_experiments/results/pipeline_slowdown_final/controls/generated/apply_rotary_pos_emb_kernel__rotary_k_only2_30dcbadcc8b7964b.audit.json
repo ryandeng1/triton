@@ -1,0 +1,37 @@
+{
+  "alias_contracts": "Caller supplies the same independently validated alias facts as the baseline.",
+  "audit_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/generated/apply_rotary_pos_emb_kernel__rotary_k_only2_30dcbadcc8b7964b.audit.json",
+  "computations_and_memory_operations_unchanged": true,
+  "inverse_edit_recovers_original_function_ast": true,
+  "label": "rotary_k_only2",
+  "load_cache_controls": [],
+  "original_function": "apply_rotary_pos_emb_kernel",
+  "original_function_ast_sha256": "526f852e26f6796a48943c97d907fa935d1a469a0e355054500c04a722a6f819",
+  "original_source_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/vendor/cross_pipeline/flag_gems/kernels.py",
+  "original_source_sha256": "4c2ef75ca65061de2aeed2e6149bac625949bfe9d2d68a3c0fbfcdad65b149bd",
+  "permitted_edit": "ordinary loop range callee and num_stages annotation",
+  "required_contract_pipeline_stages": 0,
+  "signature_unchanged": true,
+  "source_loop_controls": [
+    {
+      "induction_variable": "off_h",
+      "ordinal": 0,
+      "original_iterator": "range(0, NUM_Q_HEADS)",
+      "original_line": 64,
+      "source_num_stages": 1,
+      "variant_iterator": "tl.range(0, NUM_Q_HEADS, num_stages=1)"
+    },
+    {
+      "induction_variable": "off_h",
+      "ordinal": 1,
+      "original_iterator": "range(0, NUM_K_HEADS)",
+      "original_line": 77,
+      "source_num_stages": 2,
+      "variant_iterator": "tl.range(0, NUM_K_HEADS, num_stages=2)"
+    }
+  ],
+  "variant_function": "apply_rotary_pos_emb_kernel__rotary_k_only2",
+  "variant_function_ast_sha256": "2b7791943bb5ecca8eff7508de54a3dc7716879250a98eb66e8fa9889f30ca8e",
+  "variant_source_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/generated/apply_rotary_pos_emb_kernel__rotary_k_only2_30dcbadcc8b7964b.py",
+  "variant_source_sha256": "30dcbadcc8b7964bf6b448d72b48db9c9e5d658a6d34fde337442a87bc5f338e"
+}

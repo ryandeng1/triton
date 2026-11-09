@@ -1,0 +1,2623 @@
+{
+  "case": {
+    "id": "fg_logsoftmax_m256_k8192_f32",
+    "family": "log_softmax_backward",
+    "M": 256,
+    "K": 8192,
+    "dtype": "float32",
+    "boundary": false
+  },
+  "tuning": [
+    {
+      "resources": {
+        "no_contract": {
+          "registers": 26,
+          "spills": 0,
+          "shared": 16,
+          "async_copies": 0,
+          "loops": 2,
+          "ptx_sha256": "dba3dd7c6703c7c8962786655add2ef4ee6c81d39d4b83134565dbe6d4845412",
+          "cubin_sha256": "2fcebd704238fa19d69f29f992d7778e65f0c3fece1403b7f917ab09ae081904"
+        },
+        "contracts": {
+          "registers": 26,
+          "spills": 0,
+          "shared": 16,
+          "async_copies": 0,
+          "loops": 2,
+          "ptx_sha256": "dba3dd7c6703c7c8962786655add2ef4ee6c81d39d4b83134565dbe6d4845412",
+          "cubin_sha256": "2fcebd704238fa19d69f29f992d7778e65f0c3fece1403b7f917ab09ae081904"
+        },
+        "licm": {
+          "registers": 26,
+          "spills": 0,
+          "shared": 16,
+          "async_copies": 0,
+          "loops": 2,
+          "ptx_sha256": "dba3dd7c6703c7c8962786655add2ef4ee6c81d39d4b83134565dbe6d4845412",
+          "cubin_sha256": "2fcebd704238fa19d69f29f992d7778e65f0c3fece1403b7f917ab09ae081904"
+        },
+        "pipeline": {
+          "registers": 30,
+          "spills": 0,
+          "shared": 2048,
+          "async_copies": 6,
+          "loops": 2,
+          "ptx_sha256": "7bb394e02864412e8e65e0574a21b34fb136fc11398ff52c09597870f4684955",
+          "cubin_sha256": "1bbad2de897f83913194b664ed58655f393a48f3d719abb5807e48e9346b3423"
+        },
+        "both": {
+          "registers": 30,
+          "spills": 0,
+          "shared": 2048,
+          "async_copies": 6,
+          "loops": 2,
+          "ptx_sha256": "7bb394e02864412e8e65e0574a21b34fb136fc11398ff52c09597870f4684955",
+          "cubin_sha256": "1bbad2de897f83913194b664ed58655f393a48f3d719abb5807e48e9346b3423"
+        }
+      },
+      "trailing_resources": [],
+      "config": {
+        "block": 256,
+        "warps": 4
+      },
+      "grid": [
+        256,
+        1,
+        1
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "enable_private_reduction_ownership": false,
+        "enable_contract_load_reuse": false,
+        "enable_contract_licm": false,
+        "contract_pipeline_stages": 0
+      },
+      "groups": {
+        "0": 0,
+        "1": 0,
+        "2": 1
+      },
+      "compile_seconds": 0.004168662999290973,
+      "no_contract_matches_contracts_ptx": true,
+      "pipeline_changes_contracts_ptx": true,
+      "pipeline_changes_licm_ptx": true,
+      "validation": {
+        "contracts": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 2.585608264160655e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_contracts": {
+            "dx": true
+          },
+          "max_absolute_difference_to_contracts": {
+            "dx": 0.0
+          }
+        },
+        "no_contract": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 2.585608264160655e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_contracts": {
+            "dx": true
+          },
+          "max_absolute_difference_to_contracts": {
+            "dx": 0.0
+          }
+        },
+        "licm": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 2.585608264160655e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_contracts": {
+            "dx": true
+          },
+          "max_absolute_difference_to_contracts": {
+            "dx": 0.0
+          }
+        },
+        "pipeline": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 2.585608264160655e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_contracts": {
+            "dx": true
+          },
+          "max_absolute_difference_to_contracts": {
+            "dx": 0.0
+          }
+        },
+        "both": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 2.585608264160655e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_contracts": {
+            "dx": true
+          },
+          "max_absolute_difference_to_contracts": {
+            "dx": 0.0
+          }
+        }
+      },
+      "timing": {
+        "samples_us": {
+          "no_contract": [
+            17.348000779747963,
+            17.371999099850655,
+            17.30399951338768,
+            17.281999811530113,
+            17.190000042319298
+          ],
+          "contracts": [
+            17.61399954557419,
+            17.316000536084175,
+            17.338000237941742,
+            17.187999561429024,
+            17.29400083422661
+          ],
+          "licm": [
+            17.165999859571457,
+            17.295999452471733,
+            17.24799908697605,
+            17.30399951338768,
+            17.184000462293625
+          ],
+          "pipeline": [
+            19.147999584674835,
+            19.11200024187565,
+            19.155999645590782,
+            19.101999700069427,
+            19.039999693632126
+          ],
+          "both": [
+            19.13199946284294,
+            19.120000302791595,
+            19.120000302791595,
+            19.082000479102135,
+            19.068000838160515
+          ]
+        },
+        "orders": [
+          [
+            "contracts",
+            "no_contract",
+            "licm",
+            "pipeline",
+            "both"
+          ],
+          [
+            "both",
+            "no_contract",
+            "pipeline",
+            "contracts",
+            "licm"
+          ],
+          [
+            "no_contract",
+            "contracts",
+            "both",
+            "pipeline",
+            "licm"
+          ],
+          [
+            "contracts",
+            "pipeline",
+            "both",
+            "licm",
+            "no_contract"
+          ],
+          [
+            "licm",
+            "pipeline",
+            "both",
+            "no_contract",
+            "contracts"
+          ]
+        ],
+        "median_us": {
+          "no_contract": 17.30399951338768,
+          "contracts": 17.316000536084175,
+          "licm": 17.24799908697605,
+          "pipeline": 19.11200024187565,
+          "both": 19.120000302791595
+        }
+      }
+    },
+    {
+      "resources": {
+        "no_contract": {
+          "registers": 28,
+          "spills": 0,
+          "shared": 16,
+          "async_copies": 0,
+          "loops": 2,
+          "ptx_sha256": "893706680aadac89d98e679cbd1dadc3f2a6b850badf9b4a31d6f5c8b55c624d",
+          "cubin_sha256": "3c9dce6aa717881f1e4a9102a6971a6524708e9121a6756f0c6ecd04aac1e57a"
+        },
+        "contracts": {
+          "registers": 28,
+          "spills": 0,
+          "shared": 16,
+          "async_copies": 0,
+          "loops": 2,
+          "ptx_sha256": "893706680aadac89d98e679cbd1dadc3f2a6b850badf9b4a31d6f5c8b55c624d",
+          "cubin_sha256": "3c9dce6aa717881f1e4a9102a6971a6524708e9121a6756f0c6ecd04aac1e57a"
+        },
+        "licm": {
+          "registers": 28,
+          "spills": 0,
+          "shared": 16,
+          "async_copies": 0,
+          "loops": 2,
+          "ptx_sha256": "893706680aadac89d98e679cbd1dadc3f2a6b850badf9b4a31d6f5c8b55c624d",
+          "cubin_sha256": "3c9dce6aa717881f1e4a9102a6971a6524708e9121a6756f0c6ecd04aac1e57a"
+        },
+        "pipeline": {
+          "registers": 23,
+          "spills": 0,
+          "shared": 4096,
+          "async_copies": 6,
+          "loops": 2,
+          "ptx_sha256": "cd58b6507c0402ff1a530976399a9f31af5fd9e3c50a18e4b1b53a26d973f945",
+          "cubin_sha256": "e939c1c97475e7dfb962626d8c8c571c5ed99d84734a429d4b482f13c7fb0f33"
+        },
+        "both": {
+          "registers": 23,
+          "spills": 0,
+          "shared": 4096,
+          "async_copies": 6,
+          "loops": 2,
+          "ptx_sha256": "cd58b6507c0402ff1a530976399a9f31af5fd9e3c50a18e4b1b53a26d973f945",
+          "cubin_sha256": "e939c1c97475e7dfb962626d8c8c571c5ed99d84734a429d4b482f13c7fb0f33"
+        }
+      },
+      "trailing_resources": [],
+      "config": {
+        "block": 512,
+        "warps": 4
+      },
+      "grid": [
+        256,
+        1,
+        1
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "enable_private_reduction_ownership": false,
+        "enable_contract_load_reuse": false,
+        "enable_contract_licm": false,
+        "contract_pipeline_stages": 0
+      },
+      "groups": {
+        "0": 0,
+        "1": 0,
+        "2": 1
+      },
+      "compile_seconds": 0.004127738997340202,
+      "no_contract_matches_contracts_ptx": true,
+      "pipeline_changes_contracts_ptx": true,
+      "pipeline_changes_licm_ptx": true,
+      "validation": {
+        "contracts": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 2.9563825088008144e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_contracts": {
+            "dx": true
+          },
+          "max_absolute_difference_to_contracts": {
+            "dx": 0.0
+          }
+        },
+        "no_contract": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 2.9563825088008144e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_contracts": {
+            "dx": true
+          },
+          "max_absolute_difference_to_contracts": {
+            "dx": 0.0
+          }
+        },
+        "licm": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 2.9563825088008144e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_contracts": {
+            "dx": true
+          },
+          "max_absolute_difference_to_contracts": {
+            "dx": 0.0
+          }
+        },
+        "pipeline": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 2.9563825088008144e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_contracts": {
+            "dx": true
+          },
+          "max_absolute_difference_to_contracts": {
+            "dx": 0.0
+          }
+        },
+        "both": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 2.9563825088008144e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_contracts": {
+            "dx": true
+          },
+          "max_absolute_difference_to_contracts": {
+            "dx": 0.0
+          }
+        }
+      },
+      "timing": {
+        "samples_us": {
+          "no_contract": [
+            10.209999978542328,
+            10.114000178873539,
+            10.231999680399895,
+            10.208000428974628,
+            10.201999917626381
+          ],
+          "contracts": [
+            10.247999802231789,
+            10.098000057041645,
+            10.147999972105026,
+            10.088000446557999,
+            10.200000368058681
+          ],
+          "licm": [
+            10.452000424265862,
+            10.089999996125698,
+            10.098000057041645,
+            10.25800034403801,
+            10.226000100374222
+          ],
+          "pipeline": [
+            11.153999716043472,
+            11.207999661564827,
+            11.132000014185905,
+            11.127999983727932,
+            11.153999716043472
+          ],
+          "both": [
+            11.180000379681587,
+            11.19800005108118,
+            11.203999631106853,
+            11.16199977695942,
+            11.119999922811985
+          ]
+        },
+        "orders": [
+          [
+            "licm",
+            "no_contract",
+            "pipeline",
+            "contracts",
+            "both"
+          ],
+          [
+            "both",
+            "pipeline",
+            "licm",
+            "contracts",
+            "no_contract"
+          ],
+          [
+            "no_contract",
+            "pipeline",
+            "contracts",
+            "licm",
+            "both"
+          ],
+          [
+            "contracts",
+            "both",
+            "pipeline",
+            "licm",
+            "no_contract"
+          ],
+          [
+            "licm",
+            "no_contract",
+            "contracts",
+            "both",
+            "pipeline"
+          ]
+        ],
+        "median_us": {
+          "no_contract": 10.208000428974628,
+          "contracts": 10.147999972105026,
+          "licm": 10.226000100374222,
+          "pipeline": 11.153999716043472,
+          "both": 11.180000379681587
+        }
+      }
+    },
+    {
+      "resources": {
+        "no_contract": {
+          "registers": 32,
+          "spills": 0,
+          "shared": 16,
+          "async_copies": 0,
+          "loops": 2,
+          "ptx_sha256": "ecc495eaade90a36e18dec01640da1db023caeb139d656be5d29620f4b16737b",
+          "cubin_sha256": "7b7bb815c9560338b82425442cbada047a429eaabcff6640d3c650ab769787c1"
+        },
+        "contracts": {
+          "registers": 32,
+          "spills": 0,
+          "shared": 16,
+          "async_copies": 0,
+          "loops": 2,
+          "ptx_sha256": "ecc495eaade90a36e18dec01640da1db023caeb139d656be5d29620f4b16737b",
+          "cubin_sha256": "7b7bb815c9560338b82425442cbada047a429eaabcff6640d3c650ab769787c1"
+        },
+        "licm": {
+          "registers": 32,
+          "spills": 0,
+          "shared": 16,
+          "async_copies": 0,
+          "loops": 2,
+          "ptx_sha256": "ecc495eaade90a36e18dec01640da1db023caeb139d656be5d29620f4b16737b",
+          "cubin_sha256": "7b7bb815c9560338b82425442cbada047a429eaabcff6640d3c650ab769787c1"
+        },
+        "pipeline": {
+          "registers": 31,
+          "spills": 0,
+          "shared": 8192,
+          "async_copies": 6,
+          "loops": 2,
+          "ptx_sha256": "9b4ba638ac4464a6fb25eeff8e72740b2bb1e61c7bcae4b22fa8ecbc1375832a",
+          "cubin_sha256": "b462cacb97c43adb55aeebdceb0f1ea1ca49a06be881f9f5b2f9a620d029270c"
+        },
+        "both": {
+          "registers": 31,
+          "spills": 0,
+          "shared": 8192,
+          "async_copies": 6,
+          "loops": 2,
+          "ptx_sha256": "9b4ba638ac4464a6fb25eeff8e72740b2bb1e61c7bcae4b22fa8ecbc1375832a",
+          "cubin_sha256": "b462cacb97c43adb55aeebdceb0f1ea1ca49a06be881f9f5b2f9a620d029270c"
+        }
+      },
+      "trailing_resources": [],
+      "config": {
+        "block": 1024,
+        "warps": 4
+      },
+      "grid": [
+        256,
+        1,
+        1
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 1,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "enable_private_reduction_ownership": false,
+        "enable_contract_load_reuse": false,
+        "enable_contract_licm": false,
+        "contract_pipeline_stages": 0
+      },
+      "groups": {
+        "0": 0,
+        "1": 0,
+        "2": 1
+      },
+      "compile_seconds": 0.004103049999685027,
+      "no_contract_matches_contracts_ptx": true,
+      "pipeline_changes_contracts_ptx": true,
+      "pipeline_changes_licm_ptx": true,
+      "validation": {
+        "contracts": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 3.2462033860980455e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_contracts": {
+            "dx": true
+          },
+          "max_absolute_difference_to_contracts": {
+            "dx": 0.0
+          }
+        },
+        "no_contract": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 3.2462033860980455e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_contracts": {
+            "dx": true
+          },
+          "max_absolute_difference_to_contracts": {
+            "dx": 0.0
+          }
+        },
+        "licm": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 3.2462033860980455e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_contracts": {
+            "dx": true
+          },
+          "max_absolute_difference_to_contracts": {
+            "dx": 0.0
+          }
+        },
+        "pipeline": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 3.2462033860980455e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_contracts": {
+            "dx": true
+          },
+          "max_absolute_difference_to_contracts": {
+            "dx": 0.0
+          }
+        },
+        "both": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 3.2462033860980455e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_contracts": {
+            "dx": true
+          },
+          "max_absolute_difference_to_contracts": {
+            "dx": 0.0
+          }
+        }
+      },
+      "timing": {
+        "samples_us": {
+          "no_contract": [
+            7.590000052005053,
+            7.557999808341265,
+            7.466000039130449,
+            7.567999884486198,
+            7.4280002154409885
+          ],
+          "contracts": [
+            7.542000152170658,
+            7.536000106483698,
+            7.447999902069569,
+            7.447999902069569,
+            7.443999871611595
+          ],
+          "licm": [
+            7.75599991902709,
+            7.571999914944172,
+            7.4640000239014626,
+            7.468000054359436,
+            7.521999999880791
+          ],
+          "pipeline": [
+            7.261999882757664,
+            7.3540001176297665,
+            7.311999797821045,
+            7.313999813050032,
+            7.340000011026859
+          ],
+          "both": [
+            7.2559998370707035,
+            7.2280000895261765,
+            7.304000202566385,
+            7.292000111192465,
+            7.269999943673611
+          ]
+        },
+        "orders": [
+          [
+            "licm",
+            "contracts",
+            "pipeline",
+            "both",
+            "no_contract"
+          ],
+          [
+            "no_contract",
+            "pipeline",
+            "licm",
+            "both",
+            "contracts"
+          ],
+          [
+            "no_contract",
+            "both",
+            "pipeline",
+            "licm",
+            "contracts"
+          ],
+          [
+            "both",
+            "licm",
+            "no_contract",
+            "contracts",
+            "pipeline"
+          ],
+          [
+            "licm",
+            "both",
+            "contracts",
+            "pipeline",
+            "no_contract"
+          ]
+        ],
+        "median_us": {
+          "no_contract": 7.557999808341265,
+          "contracts": 7.447999902069569,
+          "licm": 7.521999999880791,
+          "pipeline": 7.313999813050032,
+          "both": 7.269999943673611
+        }
+      }
+    },
+    {
+      "resources": {
+        "no_contract": {
+          "registers": 28,
+          "spills": 0,
+          "shared": 32,
+          "async_copies": 0,
+          "loops": 2,
+          "ptx_sha256": "5cf2527658ae07a426175c2007c2d2c1404d9ef7cea06cd920e947f2072deeb8",
+          "cubin_sha256": "b0047b30ee622f909e581a05a5a3cbcfa8fefad3b41bee3f20c7e60921c3c3d7"
+        },
+        "contracts": {
+          "registers": 28,
+          "spills": 0,
+          "shared": 32,
+          "async_copies": 0,
+          "loops": 2,
+          "ptx_sha256": "5cf2527658ae07a426175c2007c2d2c1404d9ef7cea06cd920e947f2072deeb8",
+          "cubin_sha256": "b0047b30ee622f909e581a05a5a3cbcfa8fefad3b41bee3f20c7e60921c3c3d7"
+        },
+        "licm": {
+          "registers": 28,
+          "spills": 0,
+          "shared": 32,
+          "async_copies": 0,
+          "loops": 2,
+          "ptx_sha256": "5cf2527658ae07a426175c2007c2d2c1404d9ef7cea06cd920e947f2072deeb8",
+          "cubin_sha256": "b0047b30ee622f909e581a05a5a3cbcfa8fefad3b41bee3f20c7e60921c3c3d7"
+        },
+        "pipeline": {
+          "registers": 23,
+          "spills": 0,
+          "shared": 8192,
+          "async_copies": 6,
+          "loops": 2,
+          "ptx_sha256": "3bfc7bbe85c0980dbaeadcb31bf1cdd4e27600f06b29ef9f103fa027a5a57b2b",
+          "cubin_sha256": "518a4fc791b42a197cf44681e3bd182ab8369bfd0031d78d69aa969ce7d4cf98"
+        },
+        "both": {
+          "registers": 23,
+          "spills": 0,
+          "shared": 8192,
+          "async_copies": 6,
+          "loops": 2,
+          "ptx_sha256": "3bfc7bbe85c0980dbaeadcb31bf1cdd4e27600f06b29ef9f103fa027a5a57b2b",
+          "cubin_sha256": "518a4fc791b42a197cf44681e3bd182ab8369bfd0031d78d69aa969ce7d4cf98"
+        }
+      },
+      "trailing_resources": [],
+      "config": {
+        "block": 1024,
+        "warps": 8
+      },
+      "grid": [
+        256,
+        1,
+        1
+      ],
+      "options": {
+        "num_warps": 8,
+        "num_stages": 1,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "enable_private_reduction_ownership": false,
+        "enable_contract_load_reuse": false,
+        "enable_contract_licm": false,
+        "contract_pipeline_stages": 0
+      },
+      "groups": {
+        "0": 0,
+        "1": 0,
+        "2": 1
+      },
+      "compile_seconds": 0.003977862001192989,
+      "no_contract_matches_contracts_ptx": true,
+      "pipeline_changes_contracts_ptx": true,
+      "pipeline_changes_licm_ptx": true,
+      "validation": {
+        "contracts": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 2.4368697859600275e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_contracts": {
+            "dx": true
+          },
+          "max_absolute_difference_to_contracts": {
+            "dx": 0.0
+          }
+        },
+        "no_contract": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 2.4368697859600275e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_contracts": {
+            "dx": true
+          },
+          "max_absolute_difference_to_contracts": {
+            "dx": 0.0
+          }
+        },
+        "licm": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 2.4368697859600275e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_contracts": {
+            "dx": true
+          },
+          "max_absolute_difference_to_contracts": {
+            "dx": 0.0
+          }
+        },
+        "pipeline": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 2.4368697859600275e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_contracts": {
+            "dx": true
+          },
+          "max_absolute_difference_to_contracts": {
+            "dx": 0.0
+          }
+        },
+        "both": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 2.4368697859600275e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_contracts": {
+            "dx": true
+          },
+          "max_absolute_difference_to_contracts": {
+            "dx": 0.0
+          }
+        }
+      },
+      "timing": {
+        "samples_us": {
+          "no_contract": [
+            6.647999864071608,
+            6.4039998687803745,
+            6.409999914467335,
+            6.401999853551388,
+            6.374000106006861
+          ],
+          "contracts": [
+            6.3240001909434795,
+            6.374000106006861,
+            6.442000158131123,
+            6.426000036299229,
+            6.390000227838755
+          ],
+          "licm": [
+            6.453999783843756,
+            6.4500002190470695,
+            6.4039998687803745,
+            6.390000227838755,
+            6.422000005841255
+          ],
+          "pipeline": [
+            7.23800016567111,
+            7.292000111192465,
+            7.284000050276518,
+            7.278000004589558,
+            7.335999980568886
+          ],
+          "both": [
+            7.294000126421452,
+            7.313999813050032,
+            7.348000071942806,
+            7.271999958902597,
+            7.265999913215637
+          ]
+        },
+        "orders": [
+          [
+            "no_contract",
+            "licm",
+            "pipeline",
+            "contracts",
+            "both"
+          ],
+          [
+            "no_contract",
+            "pipeline",
+            "licm",
+            "both",
+            "contracts"
+          ],
+          [
+            "both",
+            "contracts",
+            "no_contract",
+            "licm",
+            "pipeline"
+          ],
+          [
+            "both",
+            "no_contract",
+            "pipeline",
+            "licm",
+            "contracts"
+          ],
+          [
+            "pipeline",
+            "no_contract",
+            "licm",
+            "contracts",
+            "both"
+          ]
+        ],
+        "median_us": {
+          "no_contract": 6.4039998687803745,
+          "contracts": 6.390000227838755,
+          "licm": 6.422000005841255,
+          "pipeline": 7.284000050276518,
+          "both": 7.294000126421452
+        }
+      }
+    }
+  ],
+  "confirmations": [
+    {
+      "seed": 39726,
+      "validation": {
+        "2": {
+          "contracts": {
+            "oracle": {
+              "outputs": {
+                "dx": {
+                  "max_absolute_error": 2.4641577434092454e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                }
+              },
+              "inputs_unchanged": true,
+              "complete_outputs_checked": true,
+              "oracle": "FP64 torch mathematics from stored input values"
+            },
+            "bitwise_equal_to_contracts": {
+              "dx": true
+            },
+            "max_absolute_difference_to_contracts": {
+              "dx": 0.0
+            }
+          },
+          "no_contract": {
+            "oracle": {
+              "outputs": {
+                "dx": {
+                  "max_absolute_error": 2.4641577434092454e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                }
+              },
+              "inputs_unchanged": true,
+              "complete_outputs_checked": true,
+              "oracle": "FP64 torch mathematics from stored input values"
+            },
+            "bitwise_equal_to_contracts": {
+              "dx": true
+            },
+            "max_absolute_difference_to_contracts": {
+              "dx": 0.0
+            }
+          },
+          "licm": {
+            "oracle": {
+              "outputs": {
+                "dx": {
+                  "max_absolute_error": 2.4641577434092454e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                }
+              },
+              "inputs_unchanged": true,
+              "complete_outputs_checked": true,
+              "oracle": "FP64 torch mathematics from stored input values"
+            },
+            "bitwise_equal_to_contracts": {
+              "dx": true
+            },
+            "max_absolute_difference_to_contracts": {
+              "dx": 0.0
+            }
+          },
+          "pipeline": {
+            "oracle": {
+              "outputs": {
+                "dx": {
+                  "max_absolute_error": 2.4641577434092454e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                }
+              },
+              "inputs_unchanged": true,
+              "complete_outputs_checked": true,
+              "oracle": "FP64 torch mathematics from stored input values"
+            },
+            "bitwise_equal_to_contracts": {
+              "dx": true
+            },
+            "max_absolute_difference_to_contracts": {
+              "dx": 0.0
+            }
+          },
+          "both": {
+            "oracle": {
+              "outputs": {
+                "dx": {
+                  "max_absolute_error": 2.4641577434092454e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                }
+              },
+              "inputs_unchanged": true,
+              "complete_outputs_checked": true,
+              "oracle": "FP64 torch mathematics from stored input values"
+            },
+            "bitwise_equal_to_contracts": {
+              "dx": true
+            },
+            "max_absolute_difference_to_contracts": {
+              "dx": 0.0
+            }
+          }
+        },
+        "3": {
+          "contracts": {
+            "oracle": {
+              "outputs": {
+                "dx": {
+                  "max_absolute_error": 3.1966898350610506e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                }
+              },
+              "inputs_unchanged": true,
+              "complete_outputs_checked": true,
+              "oracle": "FP64 torch mathematics from stored input values"
+            },
+            "bitwise_equal_to_contracts": {
+              "dx": true
+            },
+            "max_absolute_difference_to_contracts": {
+              "dx": 0.0
+            }
+          },
+          "no_contract": {
+            "oracle": {
+              "outputs": {
+                "dx": {
+                  "max_absolute_error": 3.1966898350610506e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                }
+              },
+              "inputs_unchanged": true,
+              "complete_outputs_checked": true,
+              "oracle": "FP64 torch mathematics from stored input values"
+            },
+            "bitwise_equal_to_contracts": {
+              "dx": true
+            },
+            "max_absolute_difference_to_contracts": {
+              "dx": 0.0
+            }
+          },
+          "licm": {
+            "oracle": {
+              "outputs": {
+                "dx": {
+                  "max_absolute_error": 3.1966898350610506e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                }
+              },
+              "inputs_unchanged": true,
+              "complete_outputs_checked": true,
+              "oracle": "FP64 torch mathematics from stored input values"
+            },
+            "bitwise_equal_to_contracts": {
+              "dx": true
+            },
+            "max_absolute_difference_to_contracts": {
+              "dx": 0.0
+            }
+          },
+          "pipeline": {
+            "oracle": {
+              "outputs": {
+                "dx": {
+                  "max_absolute_error": 3.1966898350610506e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                }
+              },
+              "inputs_unchanged": true,
+              "complete_outputs_checked": true,
+              "oracle": "FP64 torch mathematics from stored input values"
+            },
+            "bitwise_equal_to_contracts": {
+              "dx": true
+            },
+            "max_absolute_difference_to_contracts": {
+              "dx": 0.0
+            }
+          },
+          "both": {
+            "oracle": {
+              "outputs": {
+                "dx": {
+                  "max_absolute_error": 3.1966898350610506e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                }
+              },
+              "inputs_unchanged": true,
+              "complete_outputs_checked": true,
+              "oracle": "FP64 torch mathematics from stored input values"
+            },
+            "bitwise_equal_to_contracts": {
+              "dx": true
+            },
+            "max_absolute_difference_to_contracts": {
+              "dx": 0.0
+            }
+          }
+        }
+      },
+      "timing": {
+        "samples_us": {
+          "no_contract": [
+            6.407999899238348,
+            6.465999875217676,
+            6.4119999296963215,
+            6.506000179797411,
+            6.374000106006861,
+            6.479999981820583,
+            6.3760001212358475,
+            6.384000182151794,
+            6.4119999296963215,
+            6.448000203818083,
+            6.378000136464834,
+            6.335999816656113,
+            6.384000182151794
+          ],
+          "contracts": [
+            6.415999960154295,
+            6.393999792635441,
+            6.397999823093414,
+            6.4039998687803745,
+            6.380000151693821,
+            6.393999792635441,
+            6.415999960154295,
+            6.3760001212358475,
+            6.4039998687803745,
+            6.357999984174967,
+            6.4119999296963215,
+            6.405999884009361,
+            6.34399987757206
+          ],
+          "licm": [
+            6.4039998687803745,
+            6.390000227838755,
+            6.378000136464834,
+            6.395999807864428,
+            6.440000142902136,
+            6.430000066757202,
+            6.422000005841255,
+            6.390000227838755,
+            6.370000075548887,
+            6.380000151693821,
+            6.459999829530716,
+            6.382000166922808,
+            6.395999807864428
+          ],
+          "pipeline": [
+            7.249999791383743,
+            7.269999943673611,
+            7.348000071942806,
+            7.197999861091375,
+            7.189999800175428,
+            7.292000111192465,
+            7.275999989360571,
+            7.280000019818544,
+            7.288000080734491,
+            7.273999974131584,
+            7.265999913215637,
+            7.284000050276518,
+            7.193999830633402
+          ],
+          "both": [
+            7.488000206649303,
+            7.313999813050032,
+            7.309999782592058,
+            7.286000065505505,
+            7.286000065505505,
+            7.261999882757664,
+            7.296000141650438,
+            7.313999813050032,
+            7.315999828279018,
+            7.282000035047531,
+            7.362000178545713,
+            7.290000095963478,
+            7.309999782592058
+          ]
+        },
+        "orders": [
+          [
+            "both",
+            "licm",
+            "pipeline",
+            "no_contract",
+            "contracts"
+          ],
+          [
+            "contracts",
+            "no_contract",
+            "both",
+            "licm",
+            "pipeline"
+          ],
+          [
+            "no_contract",
+            "licm",
+            "both",
+            "contracts",
+            "pipeline"
+          ],
+          [
+            "licm",
+            "pipeline",
+            "both",
+            "no_contract",
+            "contracts"
+          ],
+          [
+            "both",
+            "contracts",
+            "licm",
+            "no_contract",
+            "pipeline"
+          ],
+          [
+            "both",
+            "no_contract",
+            "pipeline",
+            "licm",
+            "contracts"
+          ],
+          [
+            "licm",
+            "pipeline",
+            "no_contract",
+            "both",
+            "contracts"
+          ],
+          [
+            "pipeline",
+            "licm",
+            "no_contract",
+            "both",
+            "contracts"
+          ],
+          [
+            "no_contract",
+            "both",
+            "licm",
+            "contracts",
+            "pipeline"
+          ],
+          [
+            "contracts",
+            "no_contract",
+            "pipeline",
+            "both",
+            "licm"
+          ],
+          [
+            "licm",
+            "pipeline",
+            "no_contract",
+            "contracts",
+            "both"
+          ],
+          [
+            "licm",
+            "contracts",
+            "pipeline",
+            "both",
+            "no_contract"
+          ],
+          [
+            "both",
+            "licm",
+            "pipeline",
+            "no_contract",
+            "contracts"
+          ]
+        ],
+        "median_us": {
+          "no_contract": 6.407999899238348,
+          "contracts": 6.397999823093414,
+          "licm": 6.395999807864428,
+          "pipeline": 7.273999974131584,
+          "both": 7.309999782592058
+        }
+      },
+      "speedup_vs_contracts": {
+        "no_contract": 0.9987468576617035,
+        "contracts": 1.0,
+        "licm": 0.999065704503036,
+        "pipeline": 0.8795047925962545,
+        "both": 0.8752393999148305
+      },
+      "speedup_samples_vs_contracts": {
+        "no_contract": [
+          1.0012484489765516,
+          0.9888648184392655,
+          0.9978165772369916,
+          0.9843221167847842,
+          1.000941331281326,
+          0.9867283658292573,
+          1.006273500338437,
+          0.9987468576617035,
+          0.9987523298497095,
+          0.9860421500002708,
+          1.0053307921768613,
+          1.0110479907479215,
+          0.9937342883085175
+        ],
+        "contracts": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "licm": [
+          1.0018738431636174,
+          1.000625909961515,
+          1.0031357300408692,
+          1.0012507913002295,
+          0.99068323138557,
+          0.994401201594401,
+          0.999065704503036,
+          0.9978090600776641,
+          1.0053374871001957,
+          0.9965516979630458,
+          0.9925696747521615,
+          1.003760532193487,
+          0.9918699293535892
+        ],
+        "pipeline": [
+          0.884965537209999,
+          0.8795047925962545,
+          0.8707130866156603,
+          0.8896915799341774,
+          0.8873435784432366,
+          0.8768513021305792,
+          0.8818031843782542,
+          0.8758241900931713,
+          0.8787046923488746,
+          0.874072038326344,
+          0.8824662821745933,
+          0.8794618121626968,
+          0.881845986506438
+        ],
+        "both": [
+          0.8568375778698459,
+          0.8742138304716556,
+          0.8752393999148305,
+          0.8789458977771863,
+          0.8756519481654952,
+          0.8804736843657714,
+          0.8793859423778633,
+          0.8717528417022168,
+          0.8753417193951495,
+          0.8731117761019712,
+          0.8709589478661145,
+          0.8787379697781357,
+          0.8678522662448748
+        ]
+      },
+      "contracts_vs_no_contract": 1.0012547146743775
+    },
+    {
+      "seed": 49738,
+      "validation": {
+        "2": {
+          "contracts": {
+            "oracle": {
+              "outputs": {
+                "dx": {
+                  "max_absolute_error": 2.606944127236943e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                }
+              },
+              "inputs_unchanged": true,
+              "complete_outputs_checked": true,
+              "oracle": "FP64 torch mathematics from stored input values"
+            },
+            "bitwise_equal_to_contracts": {
+              "dx": true
+            },
+            "max_absolute_difference_to_contracts": {
+              "dx": 0.0
+            }
+          },
+          "no_contract": {
+            "oracle": {
+              "outputs": {
+                "dx": {
+                  "max_absolute_error": 2.606944127236943e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                }
+              },
+              "inputs_unchanged": true,
+              "complete_outputs_checked": true,
+              "oracle": "FP64 torch mathematics from stored input values"
+            },
+            "bitwise_equal_to_contracts": {
+              "dx": true
+            },
+            "max_absolute_difference_to_contracts": {
+              "dx": 0.0
+            }
+          },
+          "licm": {
+            "oracle": {
+              "outputs": {
+                "dx": {
+                  "max_absolute_error": 2.606944127236943e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                }
+              },
+              "inputs_unchanged": true,
+              "complete_outputs_checked": true,
+              "oracle": "FP64 torch mathematics from stored input values"
+            },
+            "bitwise_equal_to_contracts": {
+              "dx": true
+            },
+            "max_absolute_difference_to_contracts": {
+              "dx": 0.0
+            }
+          },
+          "pipeline": {
+            "oracle": {
+              "outputs": {
+                "dx": {
+                  "max_absolute_error": 2.606944127236943e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                }
+              },
+              "inputs_unchanged": true,
+              "complete_outputs_checked": true,
+              "oracle": "FP64 torch mathematics from stored input values"
+            },
+            "bitwise_equal_to_contracts": {
+              "dx": true
+            },
+            "max_absolute_difference_to_contracts": {
+              "dx": 0.0
+            }
+          },
+          "both": {
+            "oracle": {
+              "outputs": {
+                "dx": {
+                  "max_absolute_error": 2.606944127236943e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                }
+              },
+              "inputs_unchanged": true,
+              "complete_outputs_checked": true,
+              "oracle": "FP64 torch mathematics from stored input values"
+            },
+            "bitwise_equal_to_contracts": {
+              "dx": true
+            },
+            "max_absolute_difference_to_contracts": {
+              "dx": 0.0
+            }
+          }
+        },
+        "3": {
+          "contracts": {
+            "oracle": {
+              "outputs": {
+                "dx": {
+                  "max_absolute_error": 2.9882186836083235e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                }
+              },
+              "inputs_unchanged": true,
+              "complete_outputs_checked": true,
+              "oracle": "FP64 torch mathematics from stored input values"
+            },
+            "bitwise_equal_to_contracts": {
+              "dx": true
+            },
+            "max_absolute_difference_to_contracts": {
+              "dx": 0.0
+            }
+          },
+          "no_contract": {
+            "oracle": {
+              "outputs": {
+                "dx": {
+                  "max_absolute_error": 2.9882186836083235e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                }
+              },
+              "inputs_unchanged": true,
+              "complete_outputs_checked": true,
+              "oracle": "FP64 torch mathematics from stored input values"
+            },
+            "bitwise_equal_to_contracts": {
+              "dx": true
+            },
+            "max_absolute_difference_to_contracts": {
+              "dx": 0.0
+            }
+          },
+          "licm": {
+            "oracle": {
+              "outputs": {
+                "dx": {
+                  "max_absolute_error": 2.9882186836083235e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                }
+              },
+              "inputs_unchanged": true,
+              "complete_outputs_checked": true,
+              "oracle": "FP64 torch mathematics from stored input values"
+            },
+            "bitwise_equal_to_contracts": {
+              "dx": true
+            },
+            "max_absolute_difference_to_contracts": {
+              "dx": 0.0
+            }
+          },
+          "pipeline": {
+            "oracle": {
+              "outputs": {
+                "dx": {
+                  "max_absolute_error": 2.9882186836083235e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                }
+              },
+              "inputs_unchanged": true,
+              "complete_outputs_checked": true,
+              "oracle": "FP64 torch mathematics from stored input values"
+            },
+            "bitwise_equal_to_contracts": {
+              "dx": true
+            },
+            "max_absolute_difference_to_contracts": {
+              "dx": 0.0
+            }
+          },
+          "both": {
+            "oracle": {
+              "outputs": {
+                "dx": {
+                  "max_absolute_error": 2.9882186836083235e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                }
+              },
+              "inputs_unchanged": true,
+              "complete_outputs_checked": true,
+              "oracle": "FP64 torch mathematics from stored input values"
+            },
+            "bitwise_equal_to_contracts": {
+              "dx": true
+            },
+            "max_absolute_difference_to_contracts": {
+              "dx": 0.0
+            }
+          }
+        }
+      },
+      "timing": {
+        "samples_us": {
+          "no_contract": [
+            6.448000203818083,
+            6.428000051528215,
+            6.413999944925308,
+            6.36200001463294,
+            6.399999838322401,
+            6.391999777406454,
+            6.390000227838755,
+            6.424000021070242,
+            6.380000151693821,
+            6.35599996894598,
+            6.802000105381012,
+            6.424000021070242,
+            6.3680000603199005
+          ],
+          "contracts": [
+            6.364000029861927,
+            6.36200001463294,
+            6.374000106006861,
+            6.422000005841255,
+            6.3760001212358475,
+            6.415999960154295,
+            6.436000112444162,
+            6.353999953716993,
+            6.397999823093414,
+            6.397999823093414,
+            6.388000212609768,
+            6.3599999994039536,
+            6.335999816656113
+          ],
+          "licm": [
+            6.388000212609768,
+            6.434000097215176,
+            6.436000112444162,
+            6.448000203818083,
+            6.395999807864428,
+            6.3599999994039536,
+            6.388000212609768,
+            6.409999914467335,
+            6.417999975383282,
+            6.440000142902136,
+            6.4199999906122684,
+            6.335999816656113,
+            6.3299997709691525
+          ],
+          "pipeline": [
+            7.50999990850687,
+            7.265999913215637,
+            7.290000095963478,
+            7.307999767363071,
+            7.25199980661273,
+            7.185999769717455,
+            7.25799985229969,
+            7.313999813050032,
+            7.265999913215637,
+            7.172000128775835,
+            7.25799985229969,
+            7.284000050276518,
+            7.280000019818544
+          ],
+          "both": [
+            7.309999782592058,
+            7.317999843508005,
+            7.3640001937747,
+            7.387999910861254,
+            7.288000080734491,
+            7.416000124067068,
+            7.319999858736992,
+            7.300000172108412,
+            7.271999958902597,
+            7.319999858736992,
+            7.284000050276518,
+            7.236000150442123,
+            7.300000172108412
+          ]
+        },
+        "orders": [
+          [
+            "pipeline",
+            "both",
+            "no_contract",
+            "licm",
+            "contracts"
+          ],
+          [
+            "no_contract",
+            "licm",
+            "pipeline",
+            "contracts",
+            "both"
+          ],
+          [
+            "both",
+            "pipeline",
+            "contracts",
+            "no_contract",
+            "licm"
+          ],
+          [
+            "pipeline",
+            "no_contract",
+            "contracts",
+            "both",
+            "licm"
+          ],
+          [
+            "both",
+            "no_contract",
+            "licm",
+            "pipeline",
+            "contracts"
+          ],
+          [
+            "no_contract",
+            "both",
+            "pipeline",
+            "contracts",
+            "licm"
+          ],
+          [
+            "both",
+            "pipeline",
+            "no_contract",
+            "licm",
+            "contracts"
+          ],
+          [
+            "contracts",
+            "pipeline",
+            "licm",
+            "no_contract",
+            "both"
+          ],
+          [
+            "contracts",
+            "pipeline",
+            "licm",
+            "no_contract",
+            "both"
+          ],
+          [
+            "pipeline",
+            "licm",
+            "no_contract",
+            "contracts",
+            "both"
+          ],
+          [
+            "no_contract",
+            "both",
+            "pipeline",
+            "contracts",
+            "licm"
+          ],
+          [
+            "contracts",
+            "both",
+            "pipeline",
+            "no_contract",
+            "licm"
+          ],
+          [
+            "pipeline",
+            "both",
+            "no_contract",
+            "contracts",
+            "licm"
+          ]
+        ],
+        "median_us": {
+          "no_contract": 6.399999838322401,
+          "contracts": 6.3760001212358475,
+          "licm": 6.409999914467335,
+          "pipeline": 7.265999913215637,
+          "both": 7.309999782592058
+        }
+      },
+      "speedup_vs_contracts": {
+        "no_contract": 0.9949748361556736,
+        "contracts": 1.0,
+        "licm": 0.9962429270586959,
+        "pipeline": 0.8787630282257782,
+        "both": 0.8705882652715089
+      },
+      "speedup_samples_vs_contracts": {
+        "no_contract": [
+          0.9869726781481154,
+          0.9897324150021461,
+          0.9937636670935591,
+          1.0094309951383702,
+          0.9962500441104941,
+          1.0037547220875498,
+          1.0071987297285223,
+          0.989103351942146,
+          1.0028212650425745,
+          1.0066079066004776,
+          0.9391355650753767,
+          0.9900373565603404,
+          0.9949748361556736
+        ],
+        "contracts": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "licm": [
+          0.9962429270586959,
+          0.9888094371317465,
+          0.9903666865515706,
+          0.9959677113593403,
+          0.9968730945545076,
+          1.008805025276036,
+          1.0075140729863539,
+          0.9912636565526389,
+          0.9968837406720817,
+          0.9934782113545428,
+          0.9950156108957489,
+          1.0037879077402667,
+          1.0009478745504032
+        ],
+        "pipeline": [
+          0.8474034763506689,
+          0.875584928519133,
+          0.8743484255283052,
+          0.8787630282257782,
+          0.8792057765117282,
+          0.8928472259617904,
+          0.8867456934991425,
+          0.8687448887242033,
+          0.8805394852065059,
+          0.8920802716418059,
+          0.8801323150462363,
+          0.873146616626192,
+          0.8703296427757481
+        ],
+        "both": [
+          0.8705882652715089,
+          0.8693632345834008,
+          0.8655621860785996,
+          0.8692474395404551,
+          0.874862795088398,
+          0.8651563987077774,
+          0.8792350050064951,
+          0.8704109320427329,
+          0.8798129619432675,
+          0.8740437085469205,
+          0.8769906876053994,
+          0.8789386217764733,
+          0.8679451599007465
+        ]
+      },
+      "contracts_vs_no_contract": 1.0050505436536892
+    },
+    {
+      "seed": 59758,
+      "validation": {
+        "2": {
+          "contracts": {
+            "oracle": {
+              "outputs": {
+                "dx": {
+                  "max_absolute_error": 3.940014532410885e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                }
+              },
+              "inputs_unchanged": true,
+              "complete_outputs_checked": true,
+              "oracle": "FP64 torch mathematics from stored input values"
+            },
+            "bitwise_equal_to_contracts": {
+              "dx": true
+            },
+            "max_absolute_difference_to_contracts": {
+              "dx": 0.0
+            }
+          },
+          "no_contract": {
+            "oracle": {
+              "outputs": {
+                "dx": {
+                  "max_absolute_error": 3.940014532410885e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                }
+              },
+              "inputs_unchanged": true,
+              "complete_outputs_checked": true,
+              "oracle": "FP64 torch mathematics from stored input values"
+            },
+            "bitwise_equal_to_contracts": {
+              "dx": true
+            },
+            "max_absolute_difference_to_contracts": {
+              "dx": 0.0
+            }
+          },
+          "licm": {
+            "oracle": {
+              "outputs": {
+                "dx": {
+                  "max_absolute_error": 3.940014532410885e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                }
+              },
+              "inputs_unchanged": true,
+              "complete_outputs_checked": true,
+              "oracle": "FP64 torch mathematics from stored input values"
+            },
+            "bitwise_equal_to_contracts": {
+              "dx": true
+            },
+            "max_absolute_difference_to_contracts": {
+              "dx": 0.0
+            }
+          },
+          "pipeline": {
+            "oracle": {
+              "outputs": {
+                "dx": {
+                  "max_absolute_error": 3.940014532410885e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                }
+              },
+              "inputs_unchanged": true,
+              "complete_outputs_checked": true,
+              "oracle": "FP64 torch mathematics from stored input values"
+            },
+            "bitwise_equal_to_contracts": {
+              "dx": true
+            },
+            "max_absolute_difference_to_contracts": {
+              "dx": 0.0
+            }
+          },
+          "both": {
+            "oracle": {
+              "outputs": {
+                "dx": {
+                  "max_absolute_error": 3.940014532410885e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                }
+              },
+              "inputs_unchanged": true,
+              "complete_outputs_checked": true,
+              "oracle": "FP64 torch mathematics from stored input values"
+            },
+            "bitwise_equal_to_contracts": {
+              "dx": true
+            },
+            "max_absolute_difference_to_contracts": {
+              "dx": 0.0
+            }
+          }
+        },
+        "3": {
+          "contracts": {
+            "oracle": {
+              "outputs": {
+                "dx": {
+                  "max_absolute_error": 3.205590703991845e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                }
+              },
+              "inputs_unchanged": true,
+              "complete_outputs_checked": true,
+              "oracle": "FP64 torch mathematics from stored input values"
+            },
+            "bitwise_equal_to_contracts": {
+              "dx": true
+            },
+            "max_absolute_difference_to_contracts": {
+              "dx": 0.0
+            }
+          },
+          "no_contract": {
+            "oracle": {
+              "outputs": {
+                "dx": {
+                  "max_absolute_error": 3.205590703991845e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                }
+              },
+              "inputs_unchanged": true,
+              "complete_outputs_checked": true,
+              "oracle": "FP64 torch mathematics from stored input values"
+            },
+            "bitwise_equal_to_contracts": {
+              "dx": true
+            },
+            "max_absolute_difference_to_contracts": {
+              "dx": 0.0
+            }
+          },
+          "licm": {
+            "oracle": {
+              "outputs": {
+                "dx": {
+                  "max_absolute_error": 3.205590703991845e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                }
+              },
+              "inputs_unchanged": true,
+              "complete_outputs_checked": true,
+              "oracle": "FP64 torch mathematics from stored input values"
+            },
+            "bitwise_equal_to_contracts": {
+              "dx": true
+            },
+            "max_absolute_difference_to_contracts": {
+              "dx": 0.0
+            }
+          },
+          "pipeline": {
+            "oracle": {
+              "outputs": {
+                "dx": {
+                  "max_absolute_error": 3.205590703991845e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                }
+              },
+              "inputs_unchanged": true,
+              "complete_outputs_checked": true,
+              "oracle": "FP64 torch mathematics from stored input values"
+            },
+            "bitwise_equal_to_contracts": {
+              "dx": true
+            },
+            "max_absolute_difference_to_contracts": {
+              "dx": 0.0
+            }
+          },
+          "both": {
+            "oracle": {
+              "outputs": {
+                "dx": {
+                  "max_absolute_error": 3.205590703991845e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                }
+              },
+              "inputs_unchanged": true,
+              "complete_outputs_checked": true,
+              "oracle": "FP64 torch mathematics from stored input values"
+            },
+            "bitwise_equal_to_contracts": {
+              "dx": true
+            },
+            "max_absolute_difference_to_contracts": {
+              "dx": 0.0
+            }
+          }
+        }
+      },
+      "timing": {
+        "samples_us": {
+          "no_contract": [
+            6.384000182151794,
+            6.397999823093414,
+            6.395999807864428,
+            6.461999844759703,
+            6.417999975383282,
+            6.405999884009361,
+            6.372000090777874,
+            6.434000097215176,
+            6.413999944925308,
+            6.384000182151794,
+            6.393999792635441,
+            6.428000051528215,
+            6.401999853551388
+          ],
+          "contracts": [
+            6.424000021070242,
+            6.444000173360109,
+            6.397999823093414,
+            6.328000221401453,
+            6.302000023424625,
+            6.436000112444162,
+            6.428000051528215,
+            6.306000053882599,
+            6.283999886363745,
+            6.438000127673149,
+            6.4039998687803745,
+            6.4199999906122684,
+            6.4039998687803745
+          ],
+          "licm": [
+            6.577999796718359,
+            6.424000021070242,
+            6.440000142902136,
+            6.3680000603199005,
+            6.320000160485506,
+            6.382000166922808,
+            6.453999783843756,
+            6.473999936133623,
+            6.374000106006861,
+            6.391999777406454,
+            6.357999984174967,
+            6.3680000603199005,
+            6.3760001212358475
+          ],
+          "pipeline": [
+            7.209999952465296,
+            7.24400021135807,
+            7.317999843508005,
+            7.191999815404415,
+            7.278000004589558,
+            7.294000126421452,
+            7.253999821841717,
+            7.292000111192465,
+            7.25199980661273,
+            7.273999974131584,
+            7.271999958902597,
+            7.282000035047531,
+            7.296000141650438
+          ],
+          "both": [
+            7.350000087171793,
+            7.282000035047531,
+            7.414000108838081,
+            7.286000065505505,
+            7.2559998370707035,
+            7.201999891549349,
+            7.375999819487333,
+            7.292000111192465,
+            7.282000035047531,
+            7.269999943673611,
+            7.342000026255846,
+            7.271999958902597,
+            7.329999934881926
+          ]
+        },
+        "orders": [
+          [
+            "licm",
+            "contracts",
+            "pipeline",
+            "both",
+            "no_contract"
+          ],
+          [
+            "licm",
+            "both",
+            "contracts",
+            "pipeline",
+            "no_contract"
+          ],
+          [
+            "no_contract",
+            "licm",
+            "pipeline",
+            "contracts",
+            "both"
+          ],
+          [
+            "no_contract",
+            "both",
+            "pipeline",
+            "contracts",
+            "licm"
+          ],
+          [
+            "licm",
+            "contracts",
+            "pipeline",
+            "both",
+            "no_contract"
+          ],
+          [
+            "pipeline",
+            "no_contract",
+            "contracts",
+            "both",
+            "licm"
+          ],
+          [
+            "licm",
+            "both",
+            "contracts",
+            "no_contract",
+            "pipeline"
+          ],
+          [
+            "pipeline",
+            "contracts",
+            "no_contract",
+            "licm",
+            "both"
+          ],
+          [
+            "licm",
+            "pipeline",
+            "contracts",
+            "no_contract",
+            "both"
+          ],
+          [
+            "licm",
+            "contracts",
+            "both",
+            "pipeline",
+            "no_contract"
+          ],
+          [
+            "licm",
+            "contracts",
+            "pipeline",
+            "no_contract",
+            "both"
+          ],
+          [
+            "both",
+            "no_contract",
+            "pipeline",
+            "licm",
+            "contracts"
+          ],
+          [
+            "pipeline",
+            "licm",
+            "both",
+            "no_contract",
+            "contracts"
+          ]
+        ],
+        "median_us": {
+          "no_contract": 6.401999853551388,
+          "contracts": 6.4039998687803745,
+          "licm": 6.382000166922808,
+          "pipeline": 7.273999974131584,
+          "both": 7.286000065505505
+        }
+      },
+      "speedup_vs_contracts": {
+        "no_contract": 1.0003126978250574,
+        "contracts": 1.0,
+        "licm": 0.9971518771196521,
+        "pipeline": 0.8806380507387667,
+        "both": 0.8722418749494587
+      },
+      "speedup_samples_vs_contracts": {
+        "no_contract": [
+          1.0062656387495537,
+          1.007189801740953,
+          1.0003126978250574,
+          0.9792634437360881,
+          0.9819258410091021,
+          1.0046831453290668,
+          1.0087884431815042,
+          0.9801056820953454,
+          0.979731827303114,
+          1.0084586378415725,
+          1.0015639781778616,
+          0.9987554354617585,
+          1.0003124047601903
+        ],
+        "contracts": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "licm": [
+          0.9765886621454527,
+          1.0031133487273145,
+          0.9934782113545428,
+          0.9937186183197935,
+          0.9971518771196521,
+          1.0084612886413307,
+          0.9959715318893215,
+          0.9740500642711843,
+          0.9858801038364747,
+          1.0071965506678036,
+          1.0072349614218152,
+          1.008165818121829,
+          1.004391428326871
+        ],
+        "pipeline": [
+          0.890984752208452,
+          0.8895637748955862,
+          0.8742825853937742,
+          0.8798665717214874,
+          0.8658972271847404,
+          0.8823690705914153,
+          0.8861318182244194,
+          0.8647833183934737,
+          0.8665195882429126,
+          0.8850701334298201,
+          0.8806380507387667,
+          0.8816259214108015,
+          0.8777411930438528
+        ],
+        "both": [
+          0.8740135979429808,
+          0.8849217443485013,
+          0.8629619273226725,
+          0.8685149827764124,
+          0.8685226247150504,
+          0.8936406844432209,
+          0.8714750825434526,
+          0.8647833183934737,
+          0.8629497193242911,
+          0.8855571083292136,
+          0.8722418749494587,
+          0.8828382875267642,
+          0.8736698397915514
+        ]
+      },
+      "contracts_vs_no_contract": 0.9996873999243063
+    }
+  ],
+  "failures": [],
+  "selection": {
+    "variant": "contracts",
+    "config": {
+      "block": 1024,
+      "warps": 8
+    },
+    "baseline_config": {
+      "block": 1024,
+      "warps": 8
+    },
+    "screening_speedup": 1.0,
+    "minimum_screen_gain": 1.02,
+    "calibration_seconds": 0.49558916699970723,
+    "selected_configs": {
+      "no_contract": {
+        "block": 1024,
+        "warps": 8
+      },
+      "contracts": {
+        "block": 1024,
+        "warps": 8
+      },
+      "licm": {
+        "block": 1024,
+        "warps": 8
+      },
+      "pipeline": {
+        "block": 1024,
+        "warps": 8
+      },
+      "both": {
+        "block": 1024,
+        "warps": 4
+      }
+    },
+    "comparison_baseline": "same-contracts, no LICM or auto-stage inference"
+  }
+}

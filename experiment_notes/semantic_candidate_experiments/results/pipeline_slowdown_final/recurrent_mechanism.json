@@ -1,0 +1,1114 @@
+{
+  "analysis": "Read-only comparison of the prior profitable recurrent stage2 case and newly measured pipeline slowdowns",
+  "native_library_sha256": "e7e15b9337405e632e887ceae9c96d9ea85e38aa1e9c35dec937d7b148d06178",
+  "gpu_runs_performed_for_this_analysis": false,
+  "native_changes": false,
+  "conclusions": [
+    "Two stages do not imply useful compute/read-ahead overlap. The profitable T63 and T500 recurrent loops also have one-slot shared allocations and wait0/local-load/compute/store/next-copy TTGIR ordering. Their PTX issues next-iteration copies after the output store.",
+    "Stage2 changes layout transport as well as timing. Recurrent q and k each feed two register layouts. Baseline uses convert_layout for each after normalization; the transformed code loads each shared tensor directly into both layouts, eliminating those two explicit conversions.",
+    "At the same BV8/one-warp/launch-stages3 configuration, T63 improves 1.207-1.210x over three fresh confirmations. Registers change only 64 to 63, shared bytes increase 256 to 724, and neither variant spills. This rules out changed launch selection as the sole source of that gain.",
+    "On the audited T63 PTX loop path, baseline executes three CTA barrier sites and three warp barrier sites per iteration. Pipeline executes two CTA sites and one warp site per iteration, plus async wait/commit work. Its two remaining CTA barriers are outside the recurrent loop. Four explicit scalar shared-store sites for q/k layout conversion disappear; the output-conversion shared store remains.",
+    "The new log-softmax and rotary cases have zero explicit convert_layout operations before and after staging, so this specific offsetting benefit is absent. Upsample retains all eight explicit conversions, which already lower without shared stores or barriers at this launch.",
+    "The layout/synchronization changes are a code-based explanation, not a causally isolated attribution. Grouping scalar loads into async copies, L1 cache behavior, instruction scheduling, and data layout can also contribute. No recurrent counter profile or direct layout-only ablation was performed here."
+  ],
+  "limits": [
+    "The PTX counts are source instruction sites, not measured dynamic hardware counters. Per-iteration counts follow the inspected recurrent loop control flow; whole-file totals include epilogues.",
+    "Retained PTX and TTGIR do not establish the final SASS scheduling or latency overlap by themselves.",
+    "T500 fresh confirmations compare independently selected BV32/w2 baseline with BV8/w1 pipeline; only its earlier screening measurements compare BV8/w1 directly. T63 confirms identical baseline and pipeline launch configurations.",
+    "The profitable stage2 examples prevent a universal claim that one-slot stage2 is useless. Profitability depends on the other transformations induced by staging and on workload/launch geometry."
+  ],
+  "recurrent_cases": {
+    "upstream63": {
+      "measurement_source": {
+        "path": "experiment_notes/semantic_candidate_experiments/results/contract_pipeline_final/upstream63.json",
+        "compressed_file_sha256": "e317e77af97488f97785a4701ac49c6a2757a3c008c28cfd0698908edf8000fa",
+        "decoded_sha256": "e317e77af97488f97785a4701ac49c6a2757a3c008c28cfd0698908edf8000fa"
+      },
+      "fixed_configuration": {
+        "BV": 8,
+        "num_warps": 1,
+        "launch_num_stages": 3,
+        "automatic_loop_stages": 2
+      },
+      "same_configuration_screen_median_us": {
+        "baseline": 45.82799971103668,
+        "pipeline": 37.97600045800209
+      },
+      "same_configuration_screen_speedup": 1.2067621434152385,
+      "resources": {
+        "baseline": {
+          "registers": 64,
+          "spills": 0,
+          "shared": 256,
+          "async_copies": 0
+        },
+        "pipeline": {
+          "registers": 63,
+          "spills": 0,
+          "shared": 724,
+          "async_copies": 14
+        }
+      },
+      "independently_selected_configurations": {
+        "baseline": [
+          8,
+          1,
+          3
+        ],
+        "pipeline": [
+          8,
+          1,
+          3
+        ]
+      },
+      "fresh_confirmations_compare_same_configuration": true,
+      "fresh_confirmation_speedups": [
+        1.2080000219596068,
+        1.2101602899664319,
+        1.2072876898866853
+      ],
+      "counts": {
+        "baseline": {
+          "ttgir": {
+            "source": {
+              "path": "experiment_notes/semantic_candidate_experiments/results/contract_pipeline_final/code/upstream63.baseline.ttgir.gz",
+              "compressed_file_sha256": "ad32e6cb0e90c8f97c8c97f66609ba1db17da51aeef0b161f20ce9b689d3a15a",
+              "decoded_sha256": "b04aeb80c11871cf03a2e116c14bea29b1e0ad9630c9de0756b0e3d104736f26"
+            },
+            "whole_file_static_operation_counts": {
+              "ttg.convert_layout": 3,
+              "ttg.local_load": 0,
+              "ttg.async_copy_global_to_local": 0
+            }
+          },
+          "ptx": {
+            "source": {
+              "path": "experiment_notes/semantic_candidate_experiments/results/contract_pipeline_final/code/upstream63.baseline.ptx.gz",
+              "compressed_file_sha256": "77a2bb2940a21a9e58ad4f2439ed4497d407e00610e528cadcea2d477e247866",
+              "decoded_sha256": "73d9572320e59d76abdd9ebdb43d9c30f58d1c71d331aa93793315e430d60b40"
+            },
+            "whole_file_static_operation_counts": {
+              "bar.sync": 3,
+              "bar.warp.sync": 3,
+              "st.shared": 5,
+              "ld.shared": 8,
+              "cp.async.wait_group": 0
+            }
+          }
+        },
+        "pipeline": {
+          "ttgir": {
+            "source": {
+              "path": "experiment_notes/semantic_candidate_experiments/results/contract_pipeline_final/code/upstream63.pipeline.ttgir.gz",
+              "compressed_file_sha256": "4cd5e2c8d82d086b773b154b10f38bbd577c169cae7805aca7c2d24358507169",
+              "decoded_sha256": "120e002a5478fd908a0dd61c41f04ebd88e987ad2fb86ee5a26b283e788f28c0"
+            },
+            "whole_file_static_operation_counts": {
+              "ttg.convert_layout": 1,
+              "ttg.local_load": 9,
+              "ttg.async_copy_global_to_local": 14
+            }
+          },
+          "ptx": {
+            "source": {
+              "path": "experiment_notes/semantic_candidate_experiments/results/contract_pipeline_final/code/upstream63.pipeline.ptx.gz",
+              "compressed_file_sha256": "a3392e3e7c69dcc80427102cefb8116495cf23df43ed7c41e723fdb796554abc",
+              "decoded_sha256": "357795ad389901602ec6bcfb92c0c88e2980203b0be8ee7f26b10f6a11e62bc8"
+            },
+            "whole_file_static_operation_counts": {
+              "bar.sync": 4,
+              "bar.warp.sync": 1,
+              "st.shared": 1,
+              "ld.shared": 15,
+              "cp.async.wait_group": 2
+            }
+          }
+        }
+      }
+    },
+    "upstream500": {
+      "measurement_source": {
+        "path": "experiment_notes/semantic_candidate_experiments/results/contract_pipeline_final/upstream500.json",
+        "compressed_file_sha256": "e0376fbdc5b1ee8d89b41274e7bf6942201b0112295c870f838e12f5b94852e8",
+        "decoded_sha256": "e0376fbdc5b1ee8d89b41274e7bf6942201b0112295c870f838e12f5b94852e8"
+      },
+      "fixed_configuration": {
+        "BV": 8,
+        "num_warps": 1,
+        "launch_num_stages": 3,
+        "automatic_loop_stages": 2
+      },
+      "same_configuration_screen_median_us": {
+        "baseline": 457.8799903392792,
+        "pipeline": 345.24399042129517
+      },
+      "same_configuration_screen_speedup": 1.3262504288069903,
+      "resources": {
+        "baseline": {
+          "registers": 70,
+          "spills": 0,
+          "shared": 256,
+          "async_copies": 0
+        },
+        "pipeline": {
+          "registers": 68,
+          "spills": 0,
+          "shared": 724,
+          "async_copies": 14
+        }
+      },
+      "independently_selected_configurations": {
+        "baseline": [
+          32,
+          2,
+          2
+        ],
+        "pipeline": [
+          8,
+          1,
+          3
+        ]
+      },
+      "fresh_confirmations_compare_same_configuration": false,
+      "fresh_confirmation_speedups": [
+        1.2178485719930479,
+        1.2139771583707808,
+        1.217140947277246
+      ],
+      "counts": {
+        "baseline": {
+          "ttgir": {
+            "source": {
+              "path": "experiment_notes/semantic_candidate_experiments/results/contract_pipeline_final/code/upstream500.baseline.ttgir.gz",
+              "compressed_file_sha256": "14ef3ab4fcda88a741524218cbc81e355857a430a9d4d66989ab78d7403f3dea",
+              "decoded_sha256": "9b7c5b88b1ec43e528cd31bb1cf64b7450ee502f68a9efa302b4e3147976132a"
+            },
+            "whole_file_static_operation_counts": {
+              "ttg.convert_layout": 3,
+              "ttg.local_load": 0,
+              "ttg.async_copy_global_to_local": 0
+            }
+          },
+          "ptx": {
+            "source": {
+              "path": "experiment_notes/semantic_candidate_experiments/results/contract_pipeline_final/code/upstream500.baseline.ptx.gz",
+              "compressed_file_sha256": "e180c5606184ca4dedbc300cf3bac750d64b7fa80700e131478bba8a88623b40",
+              "decoded_sha256": "5f78aaedf8dca24a3fe899d3dcf5b696325fe9153d59430d09f4c37f51334f9b"
+            },
+            "whole_file_static_operation_counts": {
+              "bar.sync": 14,
+              "bar.warp.sync": 0,
+              "st.shared": 7,
+              "ld.shared": 8,
+              "cp.async.wait_group": 0
+            }
+          }
+        },
+        "pipeline": {
+          "ttgir": {
+            "source": {
+              "path": "experiment_notes/semantic_candidate_experiments/results/contract_pipeline_final/code/upstream500.pipeline.ttgir.gz",
+              "compressed_file_sha256": "e126f31e73eea8030056dc97425b3cd7b9ac1b22a913fe2ee9e3ed0efe52c84a",
+              "decoded_sha256": "dda6800edcc034336010914dbb88a38e2b7454e858654b1c748c29be164aa0e8"
+            },
+            "whole_file_static_operation_counts": {
+              "ttg.convert_layout": 1,
+              "ttg.local_load": 9,
+              "ttg.async_copy_global_to_local": 14
+            }
+          },
+          "ptx": {
+            "source": {
+              "path": "experiment_notes/semantic_candidate_experiments/results/contract_pipeline_final/code/upstream500.pipeline.ptx.gz",
+              "compressed_file_sha256": "06107ea516eafbebfbbbd4bafd4bf52338fba928caacafcf3df7de566f4c4549",
+              "decoded_sha256": "c8cc525949d130a4043024b00b4b719c13fa67eb7f97d7d3174dc32e529e7599"
+            },
+            "whole_file_static_operation_counts": {
+              "bar.sync": 4,
+              "bar.warp.sync": 1,
+              "st.shared": 1,
+              "ld.shared": 15,
+              "cp.async.wait_group": 2
+            }
+          }
+        }
+      }
+    }
+  },
+  "t63_layout_evidence": {
+    "baseline": {
+      "source": {
+        "path": "experiment_notes/semantic_candidate_experiments/results/contract_pipeline_final/code/upstream63.baseline.ttgir.gz",
+        "compressed_file_sha256": "ad32e6cb0e90c8f97c8c97f66609ba1db17da51aeef0b161f20ce9b689d3a15a",
+        "decoded_sha256": "b04aeb80c11871cf03a2e116c14bea29b1e0ad9630c9de0756b0e3d104736f26"
+      },
+      "excerpts": [
+        {
+          "first_line": 119,
+          "last_line": 125,
+          "lines": [
+            {
+              "line": 119,
+              "text": "      %b_q_48 = tt.load %p_q_45, %mask_k_33, %cst : tensor<64x!tt.ptr<f32>, #blocked> loc(#loc137)"
+            },
+            {
+              "line": 120,
+              "text": "      %b_k = tt.load %p_k_46, %mask_k_33, %cst : tensor<64x!tt.ptr<f32>, #blocked> loc(#loc138)"
+            },
+            {
+              "line": 121,
+              "text": "      %b_v = tt.load %p_v_47, %mask_v, %cst_7 : tensor<8x!tt.ptr<f32>, #ttg.slice<{dim = 0, parent = #blocked1}>> loc(#loc139)"
+            },
+            {
+              "line": 122,
+              "text": "      %b_b = tt.load %p_b_41 : !tt.ptr<f32> loc(#loc140)"
+            },
+            {
+              "line": 123,
+              "text": "      %b_A_log = tt.load %A_log : !tt.ptr<f32> loc(#loc141)"
+            },
+            {
+              "line": 124,
+              "text": "      %b_a = tt.load %p_a_43 : !tt.ptr<f32> loc(#loc142)"
+            },
+            {
+              "line": 125,
+              "text": "      %b_dt_bias = tt.load %dt_bias : !tt.ptr<f32> loc(#loc143)"
+            }
+          ]
+        },
+        {
+          "first_line": 165,
+          "last_line": 165,
+          "lines": [
+            {
+              "line": 165,
+              "text": "      %b_v_76 = ttg.convert_layout %b_k_71 : tensor<64xf32, #blocked> -> tensor<64xf32, #ttg.slice<{dim = 1, parent = #blocked1}>> loc(#loc167)"
+            }
+          ]
+        },
+        {
+          "first_line": 181,
+          "last_line": 181,
+          "lines": [
+            {
+              "line": 181,
+              "text": "      %b_o = ttg.convert_layout %b_q_72 : tensor<64xf32, #blocked> -> tensor<64xf32, #ttg.slice<{dim = 1, parent = #blocked1}>> loc(#loc175)"
+            }
+          ]
+        },
+        {
+          "first_line": 190,
+          "last_line": 190,
+          "lines": [
+            {
+              "line": 190,
+              "text": "      %7 = ttg.convert_layout %b_o_91 : tensor<8xf32, #ttg.slice<{dim = 0, parent = #blocked1}>> -> tensor<8xf32, #blocked2> loc(#loc79)"
+            }
+          ]
+        }
+      ]
+    },
+    "pipeline": {
+      "source": {
+        "path": "experiment_notes/semantic_candidate_experiments/results/contract_pipeline_final/code/upstream63.pipeline.ttgir.gz",
+        "compressed_file_sha256": "4cd5e2c8d82d086b773b154b10f38bbd577c169cae7805aca7c2d24358507169",
+        "decoded_sha256": "120e002a5478fd908a0dd61c41f04ebd88e987ad2fb86ee5a26b283e788f28c0"
+      },
+      "excerpts": [
+        {
+          "first_line": 121,
+          "last_line": 127,
+          "lines": [
+            {
+              "line": 121,
+              "text": "    %b_q_40 = ttg.local_alloc : () -> !ttg.memdesc<1x64xf32, #shared, #smem, mutable> loc(#loc136)"
+            },
+            {
+              "line": 122,
+              "text": "    %b_k = ttg.local_alloc : () -> !ttg.memdesc<1x64xf32, #shared, #smem, mutable> loc(#loc137)"
+            },
+            {
+              "line": 123,
+              "text": "    %b_v = ttg.local_alloc : () -> !ttg.memdesc<1x8xf32, #shared, #smem, mutable> loc(#loc138)"
+            },
+            {
+              "line": 124,
+              "text": "    %b_b = ttg.local_alloc : () -> !ttg.memdesc<1x1xf32, #shared, #smem, mutable> loc(#loc139)"
+            },
+            {
+              "line": 125,
+              "text": "    %b_A_log = ttg.local_alloc : () -> !ttg.memdesc<1x1xf32, #shared, #smem, mutable> loc(#loc140)"
+            },
+            {
+              "line": 126,
+              "text": "    %b_a = ttg.local_alloc : () -> !ttg.memdesc<1x1xf32, #shared, #smem, mutable> loc(#loc141)"
+            },
+            {
+              "line": 127,
+              "text": "    %b_dt_bias = ttg.local_alloc : () -> !ttg.memdesc<1x1xf32, #shared, #smem, mutable> loc(#loc142)"
+            }
+          ]
+        },
+        {
+          "first_line": 165,
+          "last_line": 173,
+          "lines": [
+            {
+              "line": 165,
+              "text": "      %b_q_94 = ttg.async_wait %b_q_81, %b_k_82, %b_v_83, %b_b_84, %b_A_log_85, %b_a_86, %b_dt_bias_87 {num = 0 : i32} loc(#loc136)"
+            },
+            {
+              "line": 166,
+              "text": "      %b_q_95 = ttg.memdesc_index %b_q_40[%b_h_93] : !ttg.memdesc<1x64xf32, #shared, #smem, mutable> -> !ttg.memdesc<64xf32, #shared, #smem, mutable> loc(#loc136)"
+            },
+            {
+              "line": 167,
+              "text": "      %b_q_96 = ttg.local_load %b_q_95 token %b_q_94 : !ttg.memdesc<64xf32, #shared, #smem, mutable> -> tensor<64xf32, #ttg.slice<{dim = 1, parent = #blocked1}>> loc(#loc136)"
+            },
+            {
+              "line": 168,
+              "text": "      %b_q_97 = ttg.local_load %b_q_95 token %b_q_94 : !ttg.memdesc<64xf32, #shared, #smem, mutable> -> tensor<64xf32, #blocked> loc(#loc136)"
+            },
+            {
+              "line": 169,
+              "text": "      %b_k_98 = ttg.memdesc_index %b_k[%b_h_93] : !ttg.memdesc<1x64xf32, #shared, #smem, mutable> -> !ttg.memdesc<64xf32, #shared, #smem, mutable> loc(#loc137)"
+            },
+            {
+              "line": 170,
+              "text": "      %b_k_99 = ttg.local_load %b_k_98 token %b_q_94 : !ttg.memdesc<64xf32, #shared, #smem, mutable> -> tensor<64xf32, #ttg.slice<{dim = 1, parent = #blocked1}>> loc(#loc137)"
+            },
+            {
+              "line": 171,
+              "text": "      %b_k_100 = ttg.local_load %b_k_98 token %b_q_94 : !ttg.memdesc<64xf32, #shared, #smem, mutable> -> tensor<64xf32, #blocked> loc(#loc137)"
+            },
+            {
+              "line": 172,
+              "text": "      %b_v_101 = ttg.memdesc_index %b_v[%b_h_93] : !ttg.memdesc<1x8xf32, #shared, #smem, mutable> -> !ttg.memdesc<8xf32, #shared, #smem, mutable> loc(#loc138)"
+            },
+            {
+              "line": 173,
+              "text": "      %b_v_102 = ttg.local_load %b_v_101 token %b_q_94 : !ttg.memdesc<8xf32, #shared, #smem, mutable> -> tensor<8xf32, #ttg.slice<{dim = 0, parent = #blocked1}>> loc(#loc138)"
+            }
+          ]
+        },
+        {
+          "first_line": 248,
+          "last_line": 249,
+          "lines": [
+            {
+              "line": 248,
+              "text": "      %7 = ttg.convert_layout %b_o_155 : tensor<8xf32, #ttg.slice<{dim = 0, parent = #blocked1}>> -> tensor<8xf32, #blocked2> loc(#loc79)"
+            },
+            {
+              "line": 249,
+              "text": "      tt.store %p_o_76, %7, %mask_v : tensor<8x!tt.ptr<f32>, #blocked2> loc(#loc79)"
+            }
+          ]
+        },
+        {
+          "first_line": 258,
+          "last_line": 261,
+          "lines": [
+            {
+              "line": 258,
+              "text": "      %b_q_164 = ttg.async_copy_global_to_local %p_q_157, %b_q_41 mask %b_h_163 other %cst {contiguity = 2 : i32} : tensor<64x!tt.ptr<f32>, #blocked> -> <64xf32, #shared, #smem, mutable> loc(#loc136)"
+            },
+            {
+              "line": 259,
+              "text": "      %b_q_165 = ttg.async_commit_group tokens %b_q_164 loc(#loc136)"
+            },
+            {
+              "line": 260,
+              "text": "      %b_k_166 = ttg.async_copy_global_to_local %p_k_158, %b_k_46 mask %b_h_163 other %cst {contiguity = 2 : i32} : tensor<64x!tt.ptr<f32>, #blocked> -> <64xf32, #shared, #smem, mutable> loc(#loc137)"
+            },
+            {
+              "line": 261,
+              "text": "      %b_k_167 = ttg.async_commit_group tokens %b_k_166 loc(#loc137)"
+            }
+          ]
+        },
+        {
+          "first_line": 275,
+          "last_line": 276,
+          "lines": [
+            {
+              "line": 275,
+              "text": "      %b_dt_bias_181 = ttg.async_copy_global_to_local %b_dt_bias_67, %b_dt_bias_68 mask %b_h_173 : tensor<1x!tt.ptr<f32>, #blocked2> -> <1xf32, #shared, #smem, mutable> loc(#loc142)"
+            },
+            {
+              "line": 276,
+              "text": "      %b_dt_bias_182 = ttg.async_commit_group tokens %b_dt_bias_181 loc(#loc142)"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "t63_ptx_loop_evidence": {
+    "baseline": {
+      "source": {
+        "path": "experiment_notes/semantic_candidate_experiments/results/contract_pipeline_final/code/upstream63.baseline.ptx.gz",
+        "compressed_file_sha256": "77a2bb2940a21a9e58ad4f2439ed4497d407e00610e528cadcea2d477e247866",
+        "decoded_sha256": "73d9572320e59d76abdd9ebdb43d9c30f58d1c71d331aa93793315e430d60b40"
+      },
+      "excerpts": [
+        {
+          "first_line": 398,
+          "last_line": 406,
+          "lines": [
+            {
+              "line": 398,
+              "text": "\t.loc\t1 61 29                         // kernels.py:61:29"
+            },
+            {
+              "line": 399,
+              "text": "\tbar.sync \t0;"
+            },
+            {
+              "line": 400,
+              "text": "\tst.shared.b32 \t[%r11], %r160;"
+            },
+            {
+              "line": 401,
+              "text": "\tst.shared.b32 \t[%r12+128], %r161;"
+            },
+            {
+              "line": 402,
+              "text": "\tbar.warp.sync \t-1;"
+            },
+            {
+              "line": 403,
+              "text": "\tld.shared.b32 \t%r166, [%r13];"
+            },
+            {
+              "line": 404,
+              "text": "\tld.shared.b32 \t%r167, [%r13+8];"
+            },
+            {
+              "line": 405,
+              "text": "\tld.shared.b32 \t%r168, [%r14];"
+            },
+            {
+              "line": 406,
+              "text": "\tld.shared.b32 \t%r169, [%r14+8];"
+            }
+          ]
+        },
+        {
+          "first_line": 555,
+          "last_line": 563,
+          "lines": [
+            {
+              "line": 555,
+              "text": "\t.loc\t1 64 28                         // kernels.py:64:28"
+            },
+            {
+              "line": 556,
+              "text": "\tbar.sync \t0;"
+            },
+            {
+              "line": 557,
+              "text": "\tst.shared.b32 \t[%r11], %r162;"
+            },
+            {
+              "line": 558,
+              "text": "\tst.shared.b32 \t[%r12+128], %r163;"
+            },
+            {
+              "line": 559,
+              "text": "\tbar.warp.sync \t-1;"
+            },
+            {
+              "line": 560,
+              "text": "\tld.shared.b32 \t%r202, [%r13];"
+            },
+            {
+              "line": 561,
+              "text": "\tld.shared.b32 \t%r203, [%r13+8];"
+            },
+            {
+              "line": 562,
+              "text": "\tld.shared.b32 \t%r204, [%r14];"
+            },
+            {
+              "line": 563,
+              "text": "\tld.shared.b32 \t%r205, [%r14+8];"
+            }
+          ]
+        },
+        {
+          "first_line": 685,
+          "last_line": 691,
+          "lines": [
+            {
+              "line": 685,
+              "text": "\t.loc\t1 65 9                          // kernels.py:65:9"
+            },
+            {
+              "line": 686,
+              "text": "\tbar.sync \t0;"
+            },
+            {
+              "line": 687,
+              "text": "\tst.shared.v4.b32 \t[%r15], {%r219, %r227, %r235, %r243};"
+            },
+            {
+              "line": 688,
+              "text": "\tbar.warp.sync \t-1;"
+            },
+            {
+              "line": 689,
+              "text": "\tldmatrix.sync.aligned.m8n8.x1.shared.b16 {%r116}, [%r15];"
+            },
+            {
+              "line": 690,
+              "text": "\t// begin inline asm"
+            },
+            {
+              "line": 691,
+              "text": "\t@%p9 st.global.b32 [ %rd129 + 0 ], { %r116 };"
+            }
+          ]
+        },
+        {
+          "first_line": 706,
+          "last_line": 710,
+          "lines": [
+            {
+              "line": 706,
+              "text": "\t.loc\t1 43 5                          // kernels.py:43:5"
+            },
+            {
+              "line": 707,
+              "text": "\tadd.s32 \t%r248, %r248, -1;"
+            },
+            {
+              "line": 708,
+              "text": "\tsetp.ne.b32 \t%p12, %r248, 0;"
+            },
+            {
+              "line": 709,
+              "text": "\t@!%p12 bra \t$L__BB0_7;"
+            },
+            {
+              "line": 710,
+              "text": "$L__BB0_4:                              // =>This Inner Loop Header: Depth=1"
+            }
+          ]
+        }
+      ]
+    },
+    "pipeline": {
+      "source": {
+        "path": "experiment_notes/semantic_candidate_experiments/results/contract_pipeline_final/code/upstream63.pipeline.ptx.gz",
+        "compressed_file_sha256": "a3392e3e7c69dcc80427102cefb8116495cf23df43ed7c41e723fdb796554abc",
+        "decoded_sha256": "357795ad389901602ec6bcfb92c0c88e2980203b0be8ee7f26b10f6a11e62bc8"
+      },
+      "excerpts": [
+        {
+          "first_line": 763,
+          "last_line": 768,
+          "lines": [
+            {
+              "line": 763,
+              "text": "\t.loc\t1 65 9                          // kernels.py:65:9"
+            },
+            {
+              "line": 764,
+              "text": "\tst.shared.v4.b32 \t[%r21], {%r216, %r224, %r232, %r240};"
+            },
+            {
+              "line": 765,
+              "text": "\tbar.warp.sync \t-1;"
+            },
+            {
+              "line": 766,
+              "text": "\tldmatrix.sync.aligned.m8n8.x1.shared.b16 {%r115}, [%r21];"
+            },
+            {
+              "line": 767,
+              "text": "\t// begin inline asm"
+            },
+            {
+              "line": 768,
+              "text": "\t@%p13 st.global.b32 [ %rd13 + 0 ], { %r115 };"
+            }
+          ]
+        },
+        {
+          "first_line": 777,
+          "last_line": 785,
+          "lines": [
+            {
+              "line": 777,
+              "text": "\t.loc\t1 44 15                         // kernels.py:44:15"
+            },
+            {
+              "line": 778,
+              "text": "\tbar.sync \t0;"
+            },
+            {
+              "line": 779,
+              "text": "\tor.pred \t%p14, %p10, %p16;"
+            },
+            {
+              "line": 780,
+              "text": "\t// begin inline asm"
+            },
+            {
+              "line": 781,
+              "text": "\t.loc\t1 44 15                         // kernels.py:44:15"
+            },
+            {
+              "line": 782,
+              "text": "\tcp.async.ca.shared.global [ %r17 + 0 ], [ %rd55 + 0 ], 0x8, %p14;"
+            },
+            {
+              "line": 783,
+              "text": ""
+            },
+            {
+              "line": 784,
+              "text": "\t// end inline asm"
+            },
+            {
+              "line": 785,
+              "text": "\tcp.async.commit_group;"
+            }
+          ]
+        },
+        {
+          "first_line": 818,
+          "last_line": 838,
+          "lines": [
+            {
+              "line": 818,
+              "text": "\t.loc\t1 50 21                         // kernels.py:50:21"
+            },
+            {
+              "line": 819,
+              "text": "\t// begin inline asm"
+            },
+            {
+              "line": 820,
+              "text": "\t@%p8 cp.async.ca.shared.global [ %r70 + 0 ], [ %rd44 + 0 ], 0x4, %p16;"
+            },
+            {
+              "line": 821,
+              "text": ""
+            },
+            {
+              "line": 822,
+              "text": "\t// end inline asm"
+            },
+            {
+              "line": 823,
+              "text": "\tcp.async.commit_group;"
+            },
+            {
+              "line": 824,
+              "text": "\t.loc\t1 43 5                          // kernels.py:43:5"
+            },
+            {
+              "line": 825,
+              "text": "\tadd.s32 \t%r245, %r245, 1;"
+            },
+            {
+              "line": 826,
+              "text": "\tadd.s64 \t%rd155, %rd155, 256;"
+            },
+            {
+              "line": 827,
+              "text": "\tadd.s64 \t%rd154, %rd154, 4;"
+            },
+            {
+              "line": 828,
+              "text": "\tadd.s64 \t%rd153, %rd153, 4;"
+            },
+            {
+              "line": 829,
+              "text": "\tsetp.ne.b32 \t%p19, %r39, %r245;"
+            },
+            {
+              "line": 830,
+              "text": "\t@!%p19 bra \t$L__BB0_7;"
+            },
+            {
+              "line": 831,
+              "text": "$L__BB0_4:                              // =>This Inner Loop Header: Depth=1"
+            },
+            {
+              "line": 832,
+              "text": "\t.loc\t1 44 15                         // kernels.py:44:15"
+            },
+            {
+              "line": 833,
+              "text": "\tcp.async.wait_group \t0;"
+            },
+            {
+              "line": 834,
+              "text": "\tbar.sync \t0;"
+            },
+            {
+              "line": 835,
+              "text": "\t.loc\t1 49 15                         // kernels.py:49:15"
+            },
+            {
+              "line": 836,
+              "text": "\tld.shared.b32 \t%r80, [global_smem+704];"
+            },
+            {
+              "line": 837,
+              "text": "\t.loc\t1 50 21                         // kernels.py:50:21"
+            },
+            {
+              "line": 838,
+              "text": "\tld.shared.b32 \t%r81, [global_smem+720];"
+            }
+          ]
+        },
+        {
+          "first_line": 889,
+          "last_line": 893,
+          "lines": [
+            {
+              "line": 889,
+              "text": "$L__BB0_7:                              // %._crit_edge"
+            },
+            {
+              "line": 890,
+              "text": "\t.loc\t1 43 5                          // kernels.py:43:5"
+            },
+            {
+              "line": 891,
+              "text": "\tcp.async.wait_group \t0;"
+            },
+            {
+              "line": 892,
+              "text": "\t.loc\t1 73 15                         // kernels.py:73:15"
+            },
+            {
+              "line": 893,
+              "text": "\t// begin inline asm"
+            }
+          ]
+        },
+        {
+          "first_line": 915,
+          "last_line": 919,
+          "lines": [
+            {
+              "line": 915,
+              "text": "\tadd.s64 \t%rd145, %rd151, %rd152;"
+            },
+            {
+              "line": 916,
+              "text": "\t.loc\t1 76 13                         // kernels.py:76:13"
+            },
+            {
+              "line": 917,
+              "text": "\tbar.sync \t0;"
+            },
+            {
+              "line": 918,
+              "text": "\t// begin inline asm"
+            },
+            {
+              "line": 919,
+              "text": "\t@%p21 st.global.v4.b32 [ %rd142 + 0 ], { %r247, %r248, %r249, %r250 };"
+            }
+          ]
+        },
+        {
+          "first_line": 933,
+          "last_line": 937,
+          "lines": [
+            {
+              "line": 933,
+              "text": "\t// end inline asm"
+            },
+            {
+              "line": 934,
+              "text": "$L__BB0_9:"
+            },
+            {
+              "line": 935,
+              "text": "\t.loc\t1 10 1                          // kernels.py:10:1"
+            },
+            {
+              "line": 936,
+              "text": "\tbar.sync \t0;"
+            },
+            {
+              "line": 937,
+              "text": "\tret;"
+            }
+          ]
+        }
+      ]
+    },
+    "per_recurrent_iteration_instruction_sites": {
+      "baseline": {
+        "cta_barriers": 3,
+        "warp_barriers": 3,
+        "explicit_shared_store_sites": 5,
+        "async_wait_group_sites": 0
+      },
+      "pipeline": {
+        "cta_barriers": 2,
+        "warp_barriers": 1,
+        "explicit_shared_store_sites": 1,
+        "async_wait_group_sites": 1
+      }
+    },
+    "pipeline_cta_barrier_sites_inside_loop": [
+      778,
+      834
+    ],
+    "pipeline_cta_barrier_sites_outside_loop": [
+      917,
+      936
+    ],
+    "baseline_cta_barrier_sites_inside_loop": [
+      399,
+      556,
+      686
+    ]
+  },
+  "new_case_static_contrasts": {
+    "logsoftmax": {
+      "baseline": {
+        "ttgir": {
+          "source": {
+            "path": "experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/code/logsoftmax.baseline.ttgir.gz",
+            "compressed_file_sha256": "b3685f4f50a68bc81a396b68057176d03a7cbba42c70f123210e9f50cb5878f8",
+            "decoded_sha256": "5c058528b18b10d0e529135a9cf175e18b4087ebcdc4dc8f828fde0354435cce"
+          },
+          "whole_file_static_operation_counts": {
+            "ttg.convert_layout": 0,
+            "ttg.local_load": 0,
+            "ttg.async_copy_global_to_local": 0
+          }
+        },
+        "ptx": {
+          "source": {
+            "path": "experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/code/logsoftmax.baseline.ptx.gz",
+            "compressed_file_sha256": "c0e9332fe7cac3c76a0cc7ac2a715712988d690105fdee1f5d893b1920ced5e4",
+            "decoded_sha256": "5cf2527658ae07a426175c2007c2d2c1404d9ef7cea06cd920e947f2072deeb8"
+          },
+          "whole_file_static_operation_counts": {
+            "bar.sync": 2,
+            "bar.warp.sync": 0,
+            "st.shared": 1,
+            "ld.shared": 1,
+            "cp.async.wait_group": 0
+          }
+        }
+      },
+      "stages2": {
+        "ttgir": {
+          "source": {
+            "path": "experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/code/logsoftmax.stages2.ttgir.gz",
+            "compressed_file_sha256": "fa69ec15d07928048ac9d548ec119685a26967ae6b56f3254e6bfa2ea1fb3be2",
+            "decoded_sha256": "f7ac699a2270c092349154ef31e0ad5eb10b4665d5551f4e9be55037534475af"
+          },
+          "whole_file_static_operation_counts": {
+            "ttg.convert_layout": 0,
+            "ttg.local_load": 3,
+            "ttg.async_copy_global_to_local": 6
+          }
+        },
+        "ptx": {
+          "source": {
+            "path": "experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/code/logsoftmax.stages2.ptx.gz",
+            "compressed_file_sha256": "1ebbf56dd60993776e5643d0ac087778b99c1d180129d9e16437058cfd27de64",
+            "decoded_sha256": "3bfc7bbe85c0980dbaeadcb31bf1cdd4e27600f06b29ef9f103fa027a5a57b2b"
+          },
+          "whole_file_static_operation_counts": {
+            "bar.sync": 6,
+            "bar.warp.sync": 0,
+            "st.shared": 1,
+            "ld.shared": 4,
+            "cp.async.wait_group": 4
+          }
+        }
+      }
+    },
+    "rotary_w2": {
+      "baseline": {
+        "ttgir": {
+          "source": {
+            "path": "experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/code/rotary_w2.baseline.ttgir.gz",
+            "compressed_file_sha256": "eaa32298984cbcb760579963c04c780d34a1423347d9975bb77f1f526f900a4f",
+            "decoded_sha256": "3547ef0ae55e039ec703b4e31f98de73eecbdd4c4272525eb6aff2af6724599c"
+          },
+          "whole_file_static_operation_counts": {
+            "ttg.convert_layout": 0,
+            "ttg.local_load": 0,
+            "ttg.async_copy_global_to_local": 0
+          }
+        },
+        "ptx": {
+          "source": {
+            "path": "experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/code/rotary_w2.baseline.ptx.gz",
+            "compressed_file_sha256": "a8ef1e498f0e678daa307ec62fa32073896956141f1159f582d04fdd91b240eb",
+            "decoded_sha256": "911505c3bd08d16b1a9bd75aaad21ee10a4bf74c70070b9df4e8a92ea9980c27"
+          },
+          "whole_file_static_operation_counts": {
+            "bar.sync": 0,
+            "bar.warp.sync": 0,
+            "st.shared": 0,
+            "ld.shared": 0,
+            "cp.async.wait_group": 0
+          }
+        }
+      },
+      "stages2": {
+        "ttgir": {
+          "source": {
+            "path": "experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/code/rotary_w2.stages2.ttgir.gz",
+            "compressed_file_sha256": "89c68e301e4ece78fcd244df6bfa8135291acaba024782645ebcdb782286e82b",
+            "decoded_sha256": "4af8bbf0f44dde191be29f670ea512764e22541e39fb873ada3671a5c686aa4e"
+          },
+          "whole_file_static_operation_counts": {
+            "ttg.convert_layout": 0,
+            "ttg.local_load": 4,
+            "ttg.async_copy_global_to_local": 8
+          }
+        },
+        "ptx": {
+          "source": {
+            "path": "experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/code/rotary_w2.stages2.ptx.gz",
+            "compressed_file_sha256": "7fd1b575a78feac88dd03c3ee7f767ea295e0d8558b0de212b8ed24617f7e44e",
+            "decoded_sha256": "aa903e0ef7552962d03c805a3bd88703eed0ede50c078bab72c4bf37e658c6c5"
+          },
+          "whole_file_static_operation_counts": {
+            "bar.sync": 6,
+            "bar.warp.sync": 0,
+            "st.shared": 0,
+            "ld.shared": 4,
+            "cp.async.wait_group": 4
+          }
+        }
+      }
+    },
+    "rotary_w8": {
+      "baseline": {
+        "ttgir": {
+          "source": {
+            "path": "experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/code/rotary_w8.baseline.ttgir.gz",
+            "compressed_file_sha256": "be6c4d644c0e8fd487bf1f103c4c52d6bbc5a3b96dc0e47a2807d749b651ebf3",
+            "decoded_sha256": "0850c5dab617b416bcacb39345189230fcf44bf631d1cbf786d27cecf095e23c"
+          },
+          "whole_file_static_operation_counts": {
+            "ttg.convert_layout": 0,
+            "ttg.local_load": 0,
+            "ttg.async_copy_global_to_local": 0
+          }
+        },
+        "ptx": {
+          "source": {
+            "path": "experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/code/rotary_w8.baseline.ptx.gz",
+            "compressed_file_sha256": "04cd57c732e5dfffc6b4ba04cb823f7f63dbde2ceb3fe8992324cdb7bdf4c341",
+            "decoded_sha256": "a311a1bee41fc04b11522e341012556ac5419460bf940a2ab908d29e2fa6945c"
+          },
+          "whole_file_static_operation_counts": {
+            "bar.sync": 0,
+            "bar.warp.sync": 0,
+            "st.shared": 0,
+            "ld.shared": 0,
+            "cp.async.wait_group": 0
+          }
+        }
+      },
+      "stages2": {
+        "ttgir": {
+          "source": {
+            "path": "experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/code/rotary_w8.stages2.ttgir.gz",
+            "compressed_file_sha256": "81fa89ec5fb44720615bcf32efb9c3f274e95c5678958b4a6361be938b064be4",
+            "decoded_sha256": "56c7b321e8f74850b119174e65c58defec2edcb2454a9b297694871a549384bf"
+          },
+          "whole_file_static_operation_counts": {
+            "ttg.convert_layout": 0,
+            "ttg.local_load": 4,
+            "ttg.async_copy_global_to_local": 8
+          }
+        },
+        "ptx": {
+          "source": {
+            "path": "experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/code/rotary_w8.stages2.ptx.gz",
+            "compressed_file_sha256": "b0f173078483ffe73b73c8f4bcc138d6cca4becb1820098549bf5e7a33aa346a",
+            "decoded_sha256": "c70486798c676428c081dc8d69f521fc5c893dbc0aeb775e1be1052f4c32dbef"
+          },
+          "whole_file_static_operation_counts": {
+            "bar.sync": 6,
+            "bar.warp.sync": 0,
+            "st.shared": 0,
+            "ld.shared": 0,
+            "cp.async.wait_group": 4
+          }
+        }
+      }
+    },
+    "upsample": {
+      "baseline": {
+        "ttgir": {
+          "source": {
+            "path": "experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/code/upsample.baseline.ttgir.gz",
+            "compressed_file_sha256": "a3e9cdf150502d0a05a073394236e320c70a26772a06d051f613fdaf2c50ed34",
+            "decoded_sha256": "4f7389f025a688b4db5ba3563353cfc8664a398461ca722202af29616ed36fee"
+          },
+          "whole_file_static_operation_counts": {
+            "ttg.convert_layout": 8,
+            "ttg.local_load": 0,
+            "ttg.async_copy_global_to_local": 0
+          }
+        },
+        "ptx": {
+          "source": {
+            "path": "experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/code/upsample.baseline.ptx.gz",
+            "compressed_file_sha256": "37baae98ef73bcc6e9822a35b50b464fb08382b6c1a0b23e68892720702ce978",
+            "decoded_sha256": "a5b80b3d8ee80586569dc44cfdc338b6dd4aa7027c026c22d917687231934ddb"
+          },
+          "whole_file_static_operation_counts": {
+            "bar.sync": 0,
+            "bar.warp.sync": 0,
+            "st.shared": 0,
+            "ld.shared": 0,
+            "cp.async.wait_group": 0
+          }
+        }
+      },
+      "stages2": {
+        "ttgir": {
+          "source": {
+            "path": "experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/code/upsample.stages2.ttgir.gz",
+            "compressed_file_sha256": "e772dc91aa76b21481208a18ec2fb75d68ae38312ab802108a7144da601e7bd2",
+            "decoded_sha256": "f7f905841e142f1cc2d96b7893497803e8a931d293063c7f5493bbe768db88c5"
+          },
+          "whole_file_static_operation_counts": {
+            "ttg.convert_layout": 8,
+            "ttg.local_load": 4,
+            "ttg.async_copy_global_to_local": 8
+          }
+        },
+        "ptx": {
+          "source": {
+            "path": "experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/code/upsample.stages2.ptx.gz",
+            "compressed_file_sha256": "8cf43258a6107c55a23b1ec38790e7cb7b0827eb63b0470575f85090b1627a15",
+            "decoded_sha256": "8098496b5cd5b8f589097ea81dc5c6d469a59d1d3821241be50ffa63a98e0cdc"
+          },
+          "whole_file_static_operation_counts": {
+            "bar.sync": 4,
+            "bar.warp.sync": 0,
+            "st.shared": 0,
+            "ld.shared": 0,
+            "cp.async.wait_group": 2
+          }
+        }
+      }
+    }
+  },
+  "suggested_next_discriminator": "Profile the same-config T63 baseline/pipeline pair and, if warranted, construct a valid layout-transport control preserving required barriers. Do not infer that stage2 success means cross-iteration prefetch hid compute latency."
+}

@@ -1,0 +1,244 @@
+{
+  "case": {
+    "id": "rms_forward_31x1008",
+    "family": "aiter_rmsnorm",
+    "operation": "forward",
+    "M": 31,
+    "N": 1008,
+    "dtype": "bfloat16",
+    "epsilon": 1e-06,
+    "source_has_explicit_loop_stages": true,
+    "auto_inference_expected": false,
+    "boundary": true
+  },
+  "tuning": [
+    {
+      "resources": {
+        "no_contract": {
+          "registers": 35,
+          "spills": 0,
+          "shared": 16,
+          "async_copies": 0,
+          "loops": 1,
+          "ptx_sha256": "73e433c1dd02ba03cedee1906fefd27fd9d2a273b6772dfba31fa75a1da203a7",
+          "cubin_sha256": "5a0215ed37ec3e050e19d31e1e16661625866c459e1e9f6b401d018e2cc8dca9"
+        },
+        "contracts": {
+          "registers": 36,
+          "spills": 0,
+          "shared": 4112,
+          "async_copies": 4,
+          "loops": 1,
+          "ptx_sha256": "5db0639ee1194ab9023d038a06a09e677518793afa8971cfe4f8ca50f940a47f",
+          "cubin_sha256": "387e82e44ed21958a56026297e957e5a9d37062ef50ecce3d4d0c107e7f801a4"
+        },
+        "licm": {
+          "registers": 39,
+          "spills": 0,
+          "shared": 2064,
+          "async_copies": 2,
+          "loops": 1,
+          "ptx_sha256": "bf494a70d7588c381961473cffb56744040d923a8db68fc290f7252c8a842874",
+          "cubin_sha256": "c580004556000e0d4d8a3096a592e5d9fe44b5f9ec378207557ab1d92ecf55d1"
+        },
+        "pipeline": {
+          "registers": 36,
+          "spills": 0,
+          "shared": 4112,
+          "async_copies": 4,
+          "loops": 1,
+          "ptx_sha256": "5db0639ee1194ab9023d038a06a09e677518793afa8971cfe4f8ca50f940a47f",
+          "cubin_sha256": "387e82e44ed21958a56026297e957e5a9d37062ef50ecce3d4d0c107e7f801a4"
+        },
+        "both": {
+          "registers": 39,
+          "spills": 0,
+          "shared": 2064,
+          "async_copies": 2,
+          "loops": 1,
+          "ptx_sha256": "bf494a70d7588c381961473cffb56744040d923a8db68fc290f7252c8a842874",
+          "cubin_sha256": "c580004556000e0d4d8a3096a592e5d9fe44b5f9ec378207557ab1d92ecf55d1"
+        }
+      },
+      "trailing_resources": [],
+      "config": {
+        "warps": 4,
+        "grid": "1sm"
+      },
+      "grid": [
+        148,
+        1,
+        1
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 2,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "enable_private_reduction_ownership": false,
+        "enable_contract_load_reuse": false,
+        "enable_contract_licm": false,
+        "contract_pipeline_stages": 0
+      },
+      "groups": {
+        "0": 0,
+        "2": 0,
+        "1": 1,
+        "3": 2
+      },
+      "compile_seconds": 0.40851963000022806,
+      "no_contract_matches_contracts_ptx": false,
+      "pipeline_changes_contracts_ptx": false,
+      "pipeline_changes_licm_ptx": false,
+      "validation": {
+        "contracts": {
+          "oracle": {
+            "outputs": {
+              "y": {
+                "max_absolute_error": 0.022284920901508798,
+                "atol": 0.02,
+                "rtol": 0.02
+              },
+              "rsigma": {
+                "max_absolute_error": 7.043681971019566e-08,
+                "atol": 2e-06,
+                "rtol": 2e-06
+              }
+            },
+            "independent_fp64_oracle": true,
+            "same_config_bitwise_equal_to_baseline": false,
+            "guards_passed": true,
+            "inputs_unchanged": true,
+            "complete_backward_includes_final_dgamma": false
+          },
+          "bitwise_equal_to_contracts": {
+            "y": true,
+            "rsigma": true
+          },
+          "max_absolute_difference_to_contracts": {
+            "y": 0.0,
+            "rsigma": 0.0
+          }
+        },
+        "no_contract": {
+          "oracle": {
+            "outputs": {
+              "y": {
+                "max_absolute_error": 0.022284920901508798,
+                "atol": 0.02,
+                "rtol": 0.02
+              },
+              "rsigma": {
+                "max_absolute_error": 7.043681971019566e-08,
+                "atol": 2e-06,
+                "rtol": 2e-06
+              }
+            },
+            "independent_fp64_oracle": true,
+            "same_config_bitwise_equal_to_baseline": false,
+            "guards_passed": true,
+            "inputs_unchanged": true,
+            "complete_backward_includes_final_dgamma": false
+          },
+          "bitwise_equal_to_contracts": {
+            "y": true,
+            "rsigma": true
+          },
+          "max_absolute_difference_to_contracts": {
+            "y": 0.0,
+            "rsigma": 0.0
+          }
+        },
+        "licm": {
+          "oracle": {
+            "outputs": {
+              "y": {
+                "max_absolute_error": 0.022284920901508798,
+                "atol": 0.02,
+                "rtol": 0.02
+              },
+              "rsigma": {
+                "max_absolute_error": 7.043681971019566e-08,
+                "atol": 2e-06,
+                "rtol": 2e-06
+              }
+            },
+            "independent_fp64_oracle": true,
+            "same_config_bitwise_equal_to_baseline": false,
+            "guards_passed": true,
+            "inputs_unchanged": true,
+            "complete_backward_includes_final_dgamma": false
+          },
+          "bitwise_equal_to_contracts": {
+            "y": true,
+            "rsigma": true
+          },
+          "max_absolute_difference_to_contracts": {
+            "y": 0.0,
+            "rsigma": 0.0
+          }
+        },
+        "pipeline": {
+          "oracle": {
+            "outputs": {
+              "y": {
+                "max_absolute_error": 0.022284920901508798,
+                "atol": 0.02,
+                "rtol": 0.02
+              },
+              "rsigma": {
+                "max_absolute_error": 7.043681971019566e-08,
+                "atol": 2e-06,
+                "rtol": 2e-06
+              }
+            },
+            "independent_fp64_oracle": true,
+            "same_config_bitwise_equal_to_baseline": false,
+            "guards_passed": true,
+            "inputs_unchanged": true,
+            "complete_backward_includes_final_dgamma": false
+          },
+          "bitwise_equal_to_contracts": {
+            "y": true,
+            "rsigma": true
+          },
+          "max_absolute_difference_to_contracts": {
+            "y": 0.0,
+            "rsigma": 0.0
+          }
+        },
+        "both": {
+          "oracle": {
+            "outputs": {
+              "y": {
+                "max_absolute_error": 0.022284920901508798,
+                "atol": 0.02,
+                "rtol": 0.02
+              },
+              "rsigma": {
+                "max_absolute_error": 7.043681971019566e-08,
+                "atol": 2e-06,
+                "rtol": 2e-06
+              }
+            },
+            "independent_fp64_oracle": true,
+            "same_config_bitwise_equal_to_baseline": false,
+            "guards_passed": true,
+            "inputs_unchanged": true,
+            "complete_backward_includes_final_dgamma": false
+          },
+          "bitwise_equal_to_contracts": {
+            "y": true,
+            "rsigma": true
+          },
+          "max_absolute_difference_to_contracts": {
+            "y": 0.0,
+            "rsigma": 0.0
+          }
+        }
+      }
+    }
+  ],
+  "confirmations": [],
+  "failures": []
+}

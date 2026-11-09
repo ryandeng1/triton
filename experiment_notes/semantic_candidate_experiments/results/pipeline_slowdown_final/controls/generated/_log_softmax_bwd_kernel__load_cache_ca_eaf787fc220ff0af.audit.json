@@ -1,0 +1,39 @@
+{
+  "alias_contracts": "Caller supplies the same independently validated alias facts as the baseline.",
+  "audit_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/generated/_log_softmax_bwd_kernel__load_cache_ca_eaf787fc220ff0af.audit.json",
+  "computations_and_memory_operations_unchanged": true,
+  "inverse_edit_recovers_original_function_ast": true,
+  "label": "load_cache_ca",
+  "load_cache_controls": [
+    {
+      "ordinal": 0,
+      "original_cache_modifier": null,
+      "original_line": 19,
+      "variant_cache_modifier": ".ca"
+    },
+    {
+      "ordinal": 1,
+      "original_cache_modifier": null,
+      "original_line": 27,
+      "variant_cache_modifier": ".ca"
+    },
+    {
+      "ordinal": 2,
+      "original_cache_modifier": null,
+      "original_line": 29,
+      "variant_cache_modifier": ".ca"
+    }
+  ],
+  "original_function": "_log_softmax_bwd_kernel",
+  "original_function_ast_sha256": "ce42e316759e0c8203a8baa657db523f3c4d4066c8d4e8bd7c18e5521fab8532",
+  "original_source_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/vendor/cross_pipeline/flag_gems/kernels.py",
+  "original_source_sha256": "b8ab18149d3111eaca4be7137a4791ce7d5e521018bf0ce05aae10b545c1024f",
+  "permitted_edit": "tl.load cache_modifier annotation",
+  "required_contract_pipeline_stages": null,
+  "signature_unchanged": true,
+  "source_loop_controls": [],
+  "variant_function": "_log_softmax_bwd_kernel__load_cache_ca",
+  "variant_function_ast_sha256": "08a5951c30d441ea0dde9aa66df1261d2ec365f12d279e9e531dd238f3f0dd6a",
+  "variant_source_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/generated/_log_softmax_bwd_kernel__load_cache_ca_eaf787fc220ff0af.py",
+  "variant_source_sha256": "eaf787fc220ff0afef00a02040c00e09b72d8e148eac615cf23afd7f402e1c9a"
+}

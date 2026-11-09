@@ -1,0 +1,75 @@
+{
+  "alias_contracts": "Caller supplies the same independently validated alias facts as the baseline.",
+  "audit_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/generated/apply_rotary_pos_emb_kernel__load_cache_ca_0bc4dfe2f134ef5a.audit.json",
+  "computations_and_memory_operations_unchanged": true,
+  "inverse_edit_recovers_original_function_ast": true,
+  "label": "load_cache_ca",
+  "load_cache_controls": [
+    {
+      "ordinal": 0,
+      "original_cache_modifier": null,
+      "original_line": 38,
+      "variant_cache_modifier": ".ca"
+    },
+    {
+      "ordinal": 1,
+      "original_cache_modifier": null,
+      "original_line": 51,
+      "variant_cache_modifier": ".ca"
+    },
+    {
+      "ordinal": 2,
+      "original_cache_modifier": null,
+      "original_line": 52,
+      "variant_cache_modifier": ".ca"
+    },
+    {
+      "ordinal": 3,
+      "original_cache_modifier": null,
+      "original_line": 57,
+      "variant_cache_modifier": ".ca"
+    },
+    {
+      "ordinal": 4,
+      "original_cache_modifier": null,
+      "original_line": 58,
+      "variant_cache_modifier": ".ca"
+    },
+    {
+      "ordinal": 5,
+      "original_cache_modifier": null,
+      "original_line": 69,
+      "variant_cache_modifier": ".ca"
+    },
+    {
+      "ordinal": 6,
+      "original_cache_modifier": null,
+      "original_line": 70,
+      "variant_cache_modifier": ".ca"
+    },
+    {
+      "ordinal": 7,
+      "original_cache_modifier": null,
+      "original_line": 82,
+      "variant_cache_modifier": ".ca"
+    },
+    {
+      "ordinal": 8,
+      "original_cache_modifier": null,
+      "original_line": 83,
+      "variant_cache_modifier": ".ca"
+    }
+  ],
+  "original_function": "apply_rotary_pos_emb_kernel",
+  "original_function_ast_sha256": "526f852e26f6796a48943c97d907fa935d1a469a0e355054500c04a722a6f819",
+  "original_source_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/vendor/cross_pipeline/flag_gems/kernels.py",
+  "original_source_sha256": "4c2ef75ca65061de2aeed2e6149bac625949bfe9d2d68a3c0fbfcdad65b149bd",
+  "permitted_edit": "tl.load cache_modifier annotation",
+  "required_contract_pipeline_stages": null,
+  "signature_unchanged": true,
+  "source_loop_controls": [],
+  "variant_function": "apply_rotary_pos_emb_kernel__load_cache_ca",
+  "variant_function_ast_sha256": "43823a3e163a834a7b16229573312f9adfd747be1920ba7904ba1fe5b4efee82",
+  "variant_source_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/generated/apply_rotary_pos_emb_kernel__load_cache_ca_0bc4dfe2f134ef5a.py",
+  "variant_source_sha256": "0bc4dfe2f134ef5a4344e84e0b41dba6941b920a65ce052b7114217b55aa4947"
+}

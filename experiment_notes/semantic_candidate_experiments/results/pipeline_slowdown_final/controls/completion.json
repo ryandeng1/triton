@@ -1,0 +1,12 @@
+{
+  "completed": true,
+  "native_unchanged": true,
+  "studies": [
+    "logsoftmax",
+    "rotary_w2",
+    "rotary_w8",
+    "upsample",
+    "rms_rows",
+    "rms_persistent"
+  ]
+}

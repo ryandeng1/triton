@@ -1,0 +1,17 @@
+Traceback (most recent call last):
+  File "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/cross_kernel_pipeline_experiment.py", line 314, in <module>
+    main()
+  File "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/cross_kernel_pipeline_experiment.py", line 295, in main
+    reports.append(run_case(adapter, case, args.output, number))
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/cross_kernel_pipeline_experiment.py", line 203, in run_case
+    checks = validate(adapter, case, data, build)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/cross_kernel_pipeline_experiment.py", line 132, in validate
+    build["functions"][name]()
+  File "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/cross_kernel_pipeline_experiment.py", line 110, in invoke
+    launcher(*args)
+  File "/home/ryandeng/tpaa/triton/python/triton/compiler/compiler.py", line 519, in runner
+    self.run(grid[0], grid[1], grid[2], stream, self.function, self.packed_metadata, launch_metadata,
+                      ~~~~^^^
+IndexError: tuple index out of range

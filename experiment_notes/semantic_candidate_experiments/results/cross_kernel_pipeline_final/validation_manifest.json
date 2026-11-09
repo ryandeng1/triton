@@ -1,0 +1,15 @@
+{
+  "git_head": "bb6ff3638c024c120fb62c6dcd4ad267bd7750e4",
+  "native_library_sha256": "e7e15b9337405e632e887ceae9c96d9ea85e38aa1e9c35dec937d7b148d06178",
+  "source_hashes": {
+    "experiment_notes/semantic_candidate_experiments/cross_kernel_pipeline_experiment.py": "cadaf55ba6b1c480ed22088c1e603d0199818e20acf1b48216d860843ac93070",
+    "experiment_notes/semantic_candidate_experiments/cross_pipeline_rms.py": "f537a5d99fb272b6686ab41f3516a5e1a06c2d419e33530cf629b4470b3fe673",
+    "experiment_notes/semantic_candidate_experiments/cross_pipeline_upsample.py": "6fb234b45f485cff3c8f264bf596e13246d83b9f9a1da1a8189da81c547ca4f1",
+    "experiment_notes/semantic_candidate_experiments/cross_kernel_flaggems_adapters.py": "e8db8e6a25a9fe685e9a771be3b96c5b8c19bac363650bc35f056e0a7f1ea3c1"
+  },
+  "findings_sha256": "3d546ef4fa7cdc0e58878448a5b1668f00f98067964b04bc912fd649008e1e4d",
+  "main_run_log_sha256": "1469445bb00b540c631c917a24e0738f0fdf5b350ebefae920a45f6e310a7290",
+  "upsample_run_log_sha256": "3038482ba55ce8703b04205f3a7bec0c4f5c3b274d19b51152bb59ba71b9c290",
+  "native_unchanged": true,
+  "completed": true
+}

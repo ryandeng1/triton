@@ -1,0 +1,256 @@
+{
+  "case": {
+    "id": "rms_backward_31x1008",
+    "family": "aiter_rmsnorm",
+    "operation": "backward",
+    "M": 31,
+    "N": 1008,
+    "dtype": "bfloat16",
+    "epsilon": 1e-06,
+    "source_has_explicit_loop_stages": true,
+    "auto_inference_expected": false,
+    "boundary": true
+  },
+  "tuning": [
+    {
+      "resources": {
+        "no_contract": {
+          "registers": 62,
+          "spills": 0,
+          "shared": 4096,
+          "async_copies": 0,
+          "loops": 1,
+          "ptx_sha256": "621b3507d2e5fadef2816bed47b5f1d4a85e88c5971645c145a8d6a33dd57382",
+          "cubin_sha256": "8098f5903f965ccd827b4e983f61adeac26168302bb494786bfdcd19218cefda"
+        },
+        "contracts": {
+          "registers": 69,
+          "spills": 0,
+          "shared": 6164,
+          "async_copies": 8,
+          "loops": 1,
+          "ptx_sha256": "62df9bbf7f0d15a5f91fb7089a854e31b397ce1e2d2cd59e613e8aaed24c14b7",
+          "cubin_sha256": "5d6d8a0f353e2986478448f7ba03c87c0baf5a399bf7293f31f7028e6b31f4ae"
+        },
+        "licm": {
+          "registers": 70,
+          "spills": 0,
+          "shared": 4116,
+          "async_copies": 6,
+          "loops": 1,
+          "ptx_sha256": "3158dad9cc016813799513f54036ade533359b41629ef78d559e35f57a0f4cb7",
+          "cubin_sha256": "342af8b591af50bad69e2e1d0ce8d666678ac74b2af911fe463dd1383c4e2645"
+        },
+        "pipeline": {
+          "registers": 69,
+          "spills": 0,
+          "shared": 6164,
+          "async_copies": 8,
+          "loops": 1,
+          "ptx_sha256": "62df9bbf7f0d15a5f91fb7089a854e31b397ce1e2d2cd59e613e8aaed24c14b7",
+          "cubin_sha256": "5d6d8a0f353e2986478448f7ba03c87c0baf5a399bf7293f31f7028e6b31f4ae"
+        },
+        "both": {
+          "registers": 70,
+          "spills": 0,
+          "shared": 4116,
+          "async_copies": 6,
+          "loops": 1,
+          "ptx_sha256": "3158dad9cc016813799513f54036ade533359b41629ef78d559e35f57a0f4cb7",
+          "cubin_sha256": "342af8b591af50bad69e2e1d0ce8d666678ac74b2af911fe463dd1383c4e2645"
+        }
+      },
+      "trailing_resources": [
+        {
+          "registers": 128,
+          "spills": 0,
+          "shared": 1024,
+          "async_copies": 0,
+          "loops": 1,
+          "ptx_sha256": "e5302873dcf11d39a4abd7377abb2e3107bff61b5c157f048ba7d75678b156bb",
+          "cubin_sha256": "d9467ba6d4215c114bbcfd16c548e86e08083477136d9e4bf84810c5249594ba"
+        }
+      ],
+      "config": {
+        "warps": 4,
+        "grid": "1sm"
+      },
+      "grid": [
+        148,
+        1,
+        1
+      ],
+      "options": {
+        "num_warps": 4,
+        "num_stages": 2,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "enable_private_reduction_ownership": false,
+        "enable_contract_load_reuse": false,
+        "enable_contract_licm": false,
+        "contract_pipeline_stages": 0
+      },
+      "groups": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 1,
+        "5": 2
+      },
+      "compile_seconds": 0.4748257299979741,
+      "no_contract_matches_contracts_ptx": false,
+      "pipeline_changes_contracts_ptx": false,
+      "pipeline_changes_licm_ptx": false,
+      "validation": {
+        "contracts": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 0.027185446910841904,
+                "atol": 0.02,
+                "rtol": 0.02
+              },
+              "dgamma": {
+                "max_absolute_error": 0.05898619641666869,
+                "atol": 0.125,
+                "rtol": 0.02
+              }
+            },
+            "independent_fp64_oracle": true,
+            "same_config_bitwise_equal_to_baseline": false,
+            "guards_passed": true,
+            "inputs_unchanged": true,
+            "complete_backward_includes_final_dgamma": true
+          },
+          "bitwise_equal_to_contracts": {
+            "dx": true,
+            "dgamma": true
+          },
+          "max_absolute_difference_to_contracts": {
+            "dx": 0.0,
+            "dgamma": 0.0
+          }
+        },
+        "no_contract": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 0.027185446910841904,
+                "atol": 0.02,
+                "rtol": 0.02
+              },
+              "dgamma": {
+                "max_absolute_error": 0.05898619641666869,
+                "atol": 0.125,
+                "rtol": 0.02
+              }
+            },
+            "independent_fp64_oracle": true,
+            "same_config_bitwise_equal_to_baseline": false,
+            "guards_passed": true,
+            "inputs_unchanged": true,
+            "complete_backward_includes_final_dgamma": true
+          },
+          "bitwise_equal_to_contracts": {
+            "dx": true,
+            "dgamma": true
+          },
+          "max_absolute_difference_to_contracts": {
+            "dx": 0.0,
+            "dgamma": 0.0
+          }
+        },
+        "licm": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 0.027185446910841904,
+                "atol": 0.02,
+                "rtol": 0.02
+              },
+              "dgamma": {
+                "max_absolute_error": 0.05898619641666869,
+                "atol": 0.125,
+                "rtol": 0.02
+              }
+            },
+            "independent_fp64_oracle": true,
+            "same_config_bitwise_equal_to_baseline": false,
+            "guards_passed": true,
+            "inputs_unchanged": true,
+            "complete_backward_includes_final_dgamma": true
+          },
+          "bitwise_equal_to_contracts": {
+            "dx": true,
+            "dgamma": true
+          },
+          "max_absolute_difference_to_contracts": {
+            "dx": 0.0,
+            "dgamma": 0.0
+          }
+        },
+        "pipeline": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 0.027185446910841904,
+                "atol": 0.02,
+                "rtol": 0.02
+              },
+              "dgamma": {
+                "max_absolute_error": 0.05898619641666869,
+                "atol": 0.125,
+                "rtol": 0.02
+              }
+            },
+            "independent_fp64_oracle": true,
+            "same_config_bitwise_equal_to_baseline": false,
+            "guards_passed": true,
+            "inputs_unchanged": true,
+            "complete_backward_includes_final_dgamma": true
+          },
+          "bitwise_equal_to_contracts": {
+            "dx": true,
+            "dgamma": true
+          },
+          "max_absolute_difference_to_contracts": {
+            "dx": 0.0,
+            "dgamma": 0.0
+          }
+        },
+        "both": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 0.027185446910841904,
+                "atol": 0.02,
+                "rtol": 0.02
+              },
+              "dgamma": {
+                "max_absolute_error": 0.05898619641666869,
+                "atol": 0.125,
+                "rtol": 0.02
+              }
+            },
+            "independent_fp64_oracle": true,
+            "same_config_bitwise_equal_to_baseline": false,
+            "guards_passed": true,
+            "inputs_unchanged": true,
+            "complete_backward_includes_final_dgamma": true
+          },
+          "bitwise_equal_to_contracts": {
+            "dx": true,
+            "dgamma": true
+          },
+          "max_absolute_difference_to_contracts": {
+            "dx": 0.0,
+            "dgamma": 0.0
+          }
+        }
+      }
+    }
+  ],
+  "confirmations": [],
+  "failures": []
+}

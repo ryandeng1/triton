@@ -1,0 +1,409 @@
+{
+  "cases": [
+    {
+      "id": "rms_forward_4096x1024",
+      "family": "aiter_rmsnorm",
+      "operation": "forward",
+      "M": 4096,
+      "N": 1024,
+      "dtype": "bfloat16",
+      "epsilon": 1e-06,
+      "source_has_explicit_loop_stages": true,
+      "auto_inference_expected": false,
+      "boundary": false
+    },
+    {
+      "id": "rms_forward_16384x4096",
+      "family": "aiter_rmsnorm",
+      "operation": "forward",
+      "M": 16384,
+      "N": 4096,
+      "dtype": "bfloat16",
+      "epsilon": 1e-06,
+      "source_has_explicit_loop_stages": true,
+      "auto_inference_expected": false,
+      "boundary": false
+    },
+    {
+      "id": "rms_forward_31x1008",
+      "family": "aiter_rmsnorm",
+      "operation": "forward",
+      "M": 31,
+      "N": 1008,
+      "dtype": "bfloat16",
+      "epsilon": 1e-06,
+      "source_has_explicit_loop_stages": true,
+      "auto_inference_expected": false,
+      "boundary": true
+    },
+    {
+      "id": "rms_backward_4096x1024",
+      "family": "aiter_rmsnorm",
+      "operation": "backward",
+      "M": 4096,
+      "N": 1024,
+      "dtype": "bfloat16",
+      "epsilon": 1e-06,
+      "source_has_explicit_loop_stages": true,
+      "auto_inference_expected": false,
+      "boundary": false
+    },
+    {
+      "id": "rms_backward_16384x4096",
+      "family": "aiter_rmsnorm",
+      "operation": "backward",
+      "M": 16384,
+      "N": 4096,
+      "dtype": "bfloat16",
+      "epsilon": 1e-06,
+      "source_has_explicit_loop_stages": true,
+      "auto_inference_expected": false,
+      "boundary": false
+    },
+    {
+      "id": "rms_backward_31x1008",
+      "family": "aiter_rmsnorm",
+      "operation": "backward",
+      "M": 31,
+      "N": 1008,
+      "dtype": "bfloat16",
+      "epsilon": 1e-06,
+      "source_has_explicit_loop_stages": true,
+      "auto_inference_expected": false,
+      "boundary": true
+    },
+    {
+      "id": "fg_logsoftmax_m64_k16384_f32",
+      "family": "log_softmax_backward",
+      "M": 64,
+      "K": 16384,
+      "dtype": "float32",
+      "boundary": false
+    },
+    {
+      "id": "fg_logsoftmax_m256_k8192_f32",
+      "family": "log_softmax_backward",
+      "M": 256,
+      "K": 8192,
+      "dtype": "float32",
+      "boundary": false
+    },
+    {
+      "id": "fg_logsoftmax_m512_k4096_bf16",
+      "family": "log_softmax_backward",
+      "M": 512,
+      "K": 4096,
+      "dtype": "bfloat16",
+      "boundary": false
+    },
+    {
+      "id": "fg_logsoftmax_masked",
+      "family": "log_softmax_backward",
+      "M": 7,
+      "K": 2053,
+      "dtype": "float32",
+      "boundary": true
+    },
+    {
+      "id": "fg_rotary_t128_q32_k8_d128_f32",
+      "family": "rotary_embedding",
+      "tokens": 128,
+      "qheads": 32,
+      "kheads": 8,
+      "dim": 128,
+      "dtype": "float32",
+      "interleaved": false,
+      "boundary": false
+    },
+    {
+      "id": "fg_rotary_t1024_q32_k8_d128_bf16",
+      "family": "rotary_embedding",
+      "tokens": 1024,
+      "qheads": 32,
+      "kheads": 8,
+      "dim": 128,
+      "dtype": "bfloat16",
+      "interleaved": false,
+      "boundary": false
+    },
+    {
+      "id": "fg_rotary_t4096_q16_k4_d64_bf16",
+      "family": "rotary_embedding",
+      "tokens": 4096,
+      "qheads": 16,
+      "kheads": 4,
+      "dim": 64,
+      "dtype": "bfloat16",
+      "interleaved": true,
+      "boundary": false
+    },
+    {
+      "id": "fg_rotary_masked",
+      "family": "rotary_embedding",
+      "tokens": 17,
+      "qheads": 5,
+      "kheads": 2,
+      "dim": 96,
+      "dtype": "float32",
+      "interleaved": true,
+      "boundary": true
+    }
+  ],
+  "configurations": {
+    "rms_forward_4096x1024": [
+      {
+        "warps": 4,
+        "grid": "1sm"
+      },
+      {
+        "warps": 4,
+        "grid": "4sm"
+      },
+      {
+        "warps": 4,
+        "grid": "rows"
+      },
+      {
+        "warps": 8,
+        "grid": "1sm"
+      },
+      {
+        "warps": 8,
+        "grid": "4sm"
+      },
+      {
+        "warps": 8,
+        "grid": "rows"
+      }
+    ],
+    "rms_forward_16384x4096": [
+      {
+        "warps": 4,
+        "grid": "1sm"
+      },
+      {
+        "warps": 4,
+        "grid": "4sm"
+      },
+      {
+        "warps": 4,
+        "grid": "rows"
+      },
+      {
+        "warps": 8,
+        "grid": "1sm"
+      },
+      {
+        "warps": 8,
+        "grid": "4sm"
+      },
+      {
+        "warps": 8,
+        "grid": "rows"
+      }
+    ],
+    "rms_forward_31x1008": [
+      {
+        "warps": 4,
+        "grid": "1sm"
+      }
+    ],
+    "rms_backward_4096x1024": [
+      {
+        "warps": 4,
+        "grid": "1sm"
+      },
+      {
+        "warps": 4,
+        "grid": "4sm"
+      },
+      {
+        "warps": 4,
+        "grid": "rows"
+      },
+      {
+        "warps": 8,
+        "grid": "1sm"
+      },
+      {
+        "warps": 8,
+        "grid": "4sm"
+      },
+      {
+        "warps": 8,
+        "grid": "rows"
+      }
+    ],
+    "rms_backward_16384x4096": [
+      {
+        "warps": 4,
+        "grid": "1sm"
+      },
+      {
+        "warps": 4,
+        "grid": "4sm"
+      },
+      {
+        "warps": 4,
+        "grid": "rows"
+      },
+      {
+        "warps": 8,
+        "grid": "1sm"
+      },
+      {
+        "warps": 8,
+        "grid": "4sm"
+      },
+      {
+        "warps": 8,
+        "grid": "rows"
+      }
+    ],
+    "rms_backward_31x1008": [
+      {
+        "warps": 4,
+        "grid": "1sm"
+      }
+    ],
+    "fg_logsoftmax_m64_k16384_f32": [
+      {
+        "block": 256,
+        "warps": 4
+      },
+      {
+        "block": 512,
+        "warps": 4
+      },
+      {
+        "block": 1024,
+        "warps": 4
+      },
+      {
+        "block": 1024,
+        "warps": 8
+      }
+    ],
+    "fg_logsoftmax_m256_k8192_f32": [
+      {
+        "block": 256,
+        "warps": 4
+      },
+      {
+        "block": 512,
+        "warps": 4
+      },
+      {
+        "block": 1024,
+        "warps": 4
+      },
+      {
+        "block": 1024,
+        "warps": 8
+      }
+    ],
+    "fg_logsoftmax_m512_k4096_bf16": [
+      {
+        "block": 256,
+        "warps": 4
+      },
+      {
+        "block": 512,
+        "warps": 4
+      },
+      {
+        "block": 1024,
+        "warps": 4
+      },
+      {
+        "block": 1024,
+        "warps": 8
+      }
+    ],
+    "fg_logsoftmax_masked": [
+      {
+        "block": 256,
+        "warps": 4
+      }
+    ],
+    "fg_rotary_t128_q32_k8_d128_f32": [
+      {
+        "warps": 1
+      },
+      {
+        "warps": 2
+      },
+      {
+        "warps": 4
+      },
+      {
+        "warps": 8
+      }
+    ],
+    "fg_rotary_t1024_q32_k8_d128_bf16": [
+      {
+        "warps": 1
+      },
+      {
+        "warps": 2
+      },
+      {
+        "warps": 4
+      },
+      {
+        "warps": 8
+      }
+    ],
+    "fg_rotary_t4096_q16_k4_d64_bf16": [
+      {
+        "warps": 1
+      },
+      {
+        "warps": 2
+      },
+      {
+        "warps": 4
+      },
+      {
+        "warps": 8
+      }
+    ],
+    "fg_rotary_masked": [
+      {
+        "warps": 1
+      }
+    ]
+  },
+  "variants": {
+    "no_contract": [
+      false,
+      0
+    ],
+    "contracts": [
+      false,
+      0
+    ],
+    "licm": [
+      true,
+      0
+    ],
+    "pipeline": [
+      false,
+      2
+    ],
+    "both": [
+      true,
+      2
+    ]
+  },
+  "screening_rounds": 5,
+  "confirmation_rounds": 13,
+  "confirmation_seeds": [
+    39019,
+    49031,
+    59051
+  ],
+  "selection_minimum_gain": 1.02,
+  "baseline": "contracts only; no-contract is a separate safety-restoration control",
+  "no_native_or_kernel_body_edits": true
+}

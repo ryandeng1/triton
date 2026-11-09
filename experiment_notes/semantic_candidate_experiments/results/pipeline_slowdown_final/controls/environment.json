@@ -1,0 +1,18 @@
+{
+  "gpu": "NVIDIA B300 SXM6 PC",
+  "capability": [
+    10,
+    3
+  ],
+  "torch": "2.14.1+cu130",
+  "triton": "3.9.0",
+  "native_sha256": "e7e15b9337405e632e887ceae9c96d9ea85e38aa1e9c35dec937d7b148d06178",
+  "scripts": {
+    "pipeline_slowdown_experiment.py": "d25bb37c571e544abadb84467afa67f6d2d7ccc9d2f77055da42562810f9f549",
+    "pipeline_slowdown_controls.py": "a3fb95b6f80049361f9d19bbe3b2415041fc18ebcd744b3c77818a4d95e0744f",
+    "cross_kernel_pipeline_experiment.py": "cadaf55ba6b1c480ed22088c1e603d0199818e20acf1b48216d860843ac93070",
+    "cross_kernel_flaggems_adapters.py": "e8db8e6a25a9fe685e9a771be3b96c5b8c19bac363650bc35f056e0a7f1ea3c1",
+    "cross_pipeline_rms.py": "f537a5d99fb272b6686ab41f3516a5e1a06c2d419e33530cf629b4470b3fe673",
+    "cross_pipeline_upsample.py": "6fb234b45f485cff3c8f264bf596e13246d83b9f9a1da1a8189da81c547ca4f1"
+  }
+}

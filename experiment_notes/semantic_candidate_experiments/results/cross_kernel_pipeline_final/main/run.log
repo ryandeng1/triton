@@ -1,0 +1,82 @@
+SCREEN rms_forward_4096x1024 {'warps': 4, 'grid': '1sm'} {'no_contract': 12.343999929726124, 'contracts': 13.868000358343124, 'licm': 13.034000061452389, 'pipeline': 13.864000327885151, 'both': 13.008000329136848}
+SCREEN rms_forward_4096x1024 {'warps': 4, 'grid': '4sm'} {'no_contract': 4.904000088572502, 'contracts': 5.692000035196543, 'licm': 4.83600003644824, 'pipeline': 5.71200018748641, 'both': 4.848000127822161}
+SCREEN rms_forward_4096x1024 {'warps': 4, 'grid': 'rows'} {'no_contract': 3.7720000836998224, 'contracts': 5.1460000686347485, 'licm': 4.0259999223053455, 'pipeline': 5.150000099092722, 'both': 4.023999907076359}
+SCREEN rms_forward_4096x1024 {'warps': 8, 'grid': '1sm'} {'no_contract': 12.323999777436256, 'contracts': 13.477999716997147, 'licm': 13.240000233054161, 'pipeline': 13.477999716997147, 'both': 13.249999843537807}
+SCREEN rms_forward_4096x1024 {'warps': 8, 'grid': '4sm'} {'no_contract': 4.912000149488449, 'contracts': 5.671999882906675, 'licm': 5.187999922782183, 'pipeline': 5.708000157028437, 'both': 5.284000188112259}
+SCREEN rms_forward_4096x1024 {'warps': 8, 'grid': 'rows'} {'no_contract': 4.898000042885542, 'contracts': 6.023999769240618, 'licm': 5.632000043988228, 'pipeline': 6.056000012904406, 'both': 5.541999824345112}
+CONFIRM rms_forward_4096x1024 both {'no_contract': 1.3187727609210649, 'contracts': 1.0, 'licm': 1.261761763453165, 'pipeline': 0.9941633797080032, 'both': 1.2568305954045267}
+CONFIRM rms_forward_4096x1024 both {'no_contract': 1.329186075255112, 'contracts': 1.0, 'licm': 1.2636317152827279, 'pipeline': 0.9848307803014229, 'both': 1.2592223456144733}
+CONFIRM rms_forward_4096x1024 both {'no_contract': 1.3133712405347941, 'contracts': 1.0, 'licm': 1.2554781875478735, 'pipeline': 0.9996042708162304, 'both': 1.2655622795662478}
+SCREEN rms_forward_16384x4096 {'warps': 4, 'grid': '1sm'} {'no_contract': 127.15399265289307, 'contracts': 134.14199650287628, 'licm': 128.82000207901, 'pipeline': 134.18200612068176, 'both': 129.05800342559814}
+SCREEN rms_forward_16384x4096 {'warps': 4, 'grid': '4sm'} {'no_contract': 51.44999921321869, 'contracts': 52.27600038051605, 'licm': 51.12599954009056, 'pipeline': 52.16199904680252, 'both': 51.17199942469597}
+SCREEN rms_forward_16384x4096 {'warps': 4, 'grid': 'rows'} {'no_contract': 41.850000619888306, 'contracts': 43.30600053071976, 'licm': 47.200001776218414, 'pipeline': 43.32000017166138, 'both': 47.27799817919731}
+SCREEN rms_forward_16384x4096 {'warps': 8, 'grid': '1sm'} {'no_contract': 128.04999947547913, 'contracts': 132.35799968242645, 'licm': 129.98999655246735, 'pipeline': 132.35799968242645, 'both': 129.953995347023}
+SCREEN rms_forward_16384x4096 {'warps': 8, 'grid': '4sm'} {'no_contract': 51.30799859762192, 'contracts': 52.51000076532364, 'licm': 51.32399871945381, 'pipeline': 52.344001829624176, 'both': 51.32199823856354}
+SCREEN rms_forward_16384x4096 {'warps': 8, 'grid': 'rows'} {'no_contract': 48.52199926972389, 'contracts': 49.78200048208237, 'licm': 54.92199957370758, 'pipeline': 49.79600012302399, 'both': 54.659999907016754}
+CONFIRM rms_forward_16384x4096 contracts {'no_contract': 1.0403812178455694, 'contracts': 1.0, 'licm': 0.915711786286403, 'pipeline': 1.0000926920996296, 'both': 0.9142760195513409}
+CONFIRM rms_forward_16384x4096 contracts {'no_contract': 1.0417955770276157, 'contracts': 1.0, 'licm': 0.9148413748867167, 'pipeline': 1.0007882580895342, 'both': 0.9153066933473938}
+CONFIRM rms_forward_16384x4096 contracts {'no_contract': 1.039601016885577, 'contracts': 1.0, 'licm': 0.9140691239193866, 'pipeline': 0.9997218592714957, 'both': 0.9149720323088917}
+BOUNDARY rms_forward_31x1008 PASS
+SCREEN rms_backward_4096x1024 {'warps': 4, 'grid': '1sm'} {'no_contract': 15.73999971151352, 'contracts': 17.465999349951744, 'licm': 16.659999266266823, 'pipeline': 17.57200062274933, 'both': 16.55000075697899}
+SCREEN rms_backward_4096x1024 {'warps': 4, 'grid': '4sm'} {'no_contract': 24.574000388383865, 'contracts': 25.62200091779232, 'licm': 24.85799975693226, 'pipeline': 25.617999956011772, 'both': 24.87199939787388}
+SCREEN rms_backward_4096x1024 {'warps': 4, 'grid': 'rows'} {'no_contract': 130.10400533676147, 'contracts': 133.6359977722168, 'licm': 133.25800001621246, 'pipeline': 133.20399820804596, 'both': 133.01800191402435}
+SCREEN rms_backward_4096x1024 {'warps': 8, 'grid': '1sm'} {'no_contract': 15.515999868512154, 'contracts': 17.839999869465828, 'licm': 17.14400015771389, 'pipeline': 17.810000106692314, 'both': 17.149999737739563}
+SCREEN rms_backward_4096x1024 {'warps': 8, 'grid': '4sm'} {'no_contract': 24.89200048148632, 'contracts': 26.264000684022903, 'licm': 25.505999103188515, 'pipeline': 26.25199966132641, 'both': 25.44200047850609}
+SCREEN rms_backward_4096x1024 {'warps': 8, 'grid': 'rows'} {'no_contract': 131.99999928474426, 'contracts': 133.77200067043304, 'licm': 132.72599875926971, 'pipeline': 133.86200368404388, 'both': 132.72400200366974}
+CONFIRM rms_backward_4096x1024 both {'no_contract': 1.1107230633826994, 'contracts': 1.0, 'licm': 1.0399087238921247, 'pipeline': 0.9942196631368645, 'both': 1.0380081303089808}
+CONFIRM rms_backward_4096x1024 both {'no_contract': 1.1137127366310786, 'contracts': 1.0, 'licm': 1.0356068149552948, 'pipeline': 0.9974469417935802, 'both': 1.0351087436932487}
+CONFIRM rms_backward_4096x1024 both {'no_contract': 1.1126160871920738, 'contracts': 1.0, 'licm': 1.037432575485176, 'pipeline': 0.9989564737343586, 'both': 1.0380389209838976}
+SCREEN rms_backward_16384x4096 {'warps': 4, 'grid': '1sm'} {'no_contract': 155.2319973707199, 'contracts': 158.0059975385666, 'licm': 150.05800127983093, 'pipeline': 158.01599621772766, 'both': 150.23399889469147}
+SCREEN rms_backward_16384x4096 {'warps': 4, 'grid': '4sm'} {'no_contract': 125.61599910259247, 'contracts': 124.7439980506897, 'licm': 119.80000138282776, 'pipeline': 124.98600035905838, 'both': 119.66399848461151}
+SCREEN rms_backward_16384x4096 {'warps': 4, 'grid': 'rows'} {'no_contract': 1083.8819742202759, 'contracts': 1118.2420253753662, 'licm': 1106.0279607772827, 'pipeline': 1118.1119680404663, 'both': 1105.7939529418945}
+SCREEN rms_backward_16384x4096 {'warps': 8, 'grid': '1sm'} {'no_contract': 147.46199548244476, 'contracts': 162.58199512958527, 'licm': 156.37999773025513, 'pipeline': 162.79800236225128, 'both': 156.39199316501617}
+SCREEN rms_backward_16384x4096 {'warps': 8, 'grid': '4sm'} {'no_contract': 119.39799785614014, 'contracts': 127.01399624347687, 'licm': 123.73600155115128, 'pipeline': 126.8099993467331, 'both': 123.76400083303452}
+SCREEN rms_backward_16384x4096 {'warps': 8, 'grid': 'rows'} {'no_contract': 1113.3840084075928, 'contracts': 1120.1380491256714, 'licm': 1112.0339632034302, 'pipeline': 1119.4380521774292, 'both': 1112.504005432129}
+CONFIRM rms_backward_16384x4096 both {'no_contract': 1.0432247581860221, 'contracts': 1.0, 'licm': 1.0426939247303197, 'pipeline': 0.9996160268783569, 'both': 1.0425623993277167}
+CONFIRM rms_backward_16384x4096 both {'no_contract': 1.0452143997881087, 'contracts': 1.0, 'licm': 1.0445368877342809, 'pipeline': 0.9998562504745043, 'both': 1.0460325338733196}
+CONFIRM rms_backward_16384x4096 both {'no_contract': 1.044505464710777, 'contracts': 1.0, 'licm': 1.0438693518851723, 'pipeline': 1.000559472338273, 'both': 1.0442336208896965}
+BOUNDARY rms_backward_31x1008 PASS
+SCREEN fg_logsoftmax_m64_k16384_f32 {'block': 256, 'warps': 4} {'no_contract': 32.52200037240982, 'contracts': 32.561998814344406, 'licm': 32.49200060963631, 'pipeline': 35.548001527786255, 'both': 35.59799864888191}
+SCREEN fg_logsoftmax_m64_k16384_f32 {'block': 512, 'warps': 4} {'no_contract': 18.314000219106674, 'contracts': 18.28799955546856, 'licm': 18.216000869870186, 'pipeline': 20.222000777721405, 'both': 20.207999274134636}
+SCREEN fg_logsoftmax_m64_k16384_f32 {'block': 1024, 'warps': 4} {'no_contract': 12.918000109493732, 'contracts': 12.930000200867653, 'licm': 12.95000035315752, 'pipeline': 11.905999854207039, 'both': 11.920000426471233}
+SCREEN fg_logsoftmax_m64_k16384_f32 {'block': 1024, 'warps': 8} {'no_contract': 10.4160001501441, 'contracts': 10.470000095665455, 'licm': 10.444000363349915, 'pipeline': 12.102000415325165, 'both': 12.071999721229076}
+CONFIRM fg_logsoftmax_m64_k16384_f32 contracts {'no_contract': 0.9988573518390605, 'contracts': 1.0, 'licm': 0.9986661927237939, 'pipeline': 0.8799661417408379, 'both': 0.8788539363751232}
+CONFIRM fg_logsoftmax_m64_k16384_f32 contracts {'no_contract': 1.0015319025232385, 'contracts': 1.0, 'licm': 1.000191031413106, 'pipeline': 0.8822932239077889, 'both': 0.8805794843920716}
+CONFIRM fg_logsoftmax_m64_k16384_f32 contracts {'no_contract': 1.0, 'contracts': 1.0, 'licm': 1.0032560614455281, 'pipeline': 0.8821747581947297, 'both': 0.881432895985555}
+SCREEN fg_logsoftmax_m256_k8192_f32 {'block': 256, 'warps': 4} {'no_contract': 17.30399951338768, 'contracts': 17.316000536084175, 'licm': 17.24799908697605, 'pipeline': 19.11200024187565, 'both': 19.120000302791595}
+SCREEN fg_logsoftmax_m256_k8192_f32 {'block': 512, 'warps': 4} {'no_contract': 10.208000428974628, 'contracts': 10.147999972105026, 'licm': 10.226000100374222, 'pipeline': 11.153999716043472, 'both': 11.180000379681587}
+SCREEN fg_logsoftmax_m256_k8192_f32 {'block': 1024, 'warps': 4} {'no_contract': 7.557999808341265, 'contracts': 7.447999902069569, 'licm': 7.521999999880791, 'pipeline': 7.313999813050032, 'both': 7.269999943673611}
+SCREEN fg_logsoftmax_m256_k8192_f32 {'block': 1024, 'warps': 8} {'no_contract': 6.4039998687803745, 'contracts': 6.390000227838755, 'licm': 6.422000005841255, 'pipeline': 7.284000050276518, 'both': 7.294000126421452}
+CONFIRM fg_logsoftmax_m256_k8192_f32 contracts {'no_contract': 0.9987468576617035, 'contracts': 1.0, 'licm': 0.999065704503036, 'pipeline': 0.8795047925962545, 'both': 0.8752393999148305}
+CONFIRM fg_logsoftmax_m256_k8192_f32 contracts {'no_contract': 0.9949748361556736, 'contracts': 1.0, 'licm': 0.9962429270586959, 'pipeline': 0.8787630282257782, 'both': 0.8705882652715089}
+CONFIRM fg_logsoftmax_m256_k8192_f32 contracts {'no_contract': 1.0003126978250574, 'contracts': 1.0, 'licm': 0.9971518771196521, 'pipeline': 0.8806380507387667, 'both': 0.8722418749494587}
+SCREEN fg_logsoftmax_m512_k4096_bf16 {'block': 256, 'warps': 4} {'no_contract': 9.530000388622284, 'contracts': 9.479999542236328, 'licm': 9.499999694526196, 'pipeline': 10.746000334620476, 'both': 10.743999853730202}
+SCREEN fg_logsoftmax_m512_k4096_bf16 {'block': 512, 'warps': 4} {'no_contract': 5.942000076174736, 'contracts': 5.948000121861696, 'licm': 5.985999945551157, 'pipeline': 6.322000175714493, 'both': 6.318000145256519}
+SCREEN fg_logsoftmax_m512_k4096_bf16 {'block': 1024, 'warps': 4} {'no_contract': 4.188000224530697, 'contracts': 4.1160001419484615, 'licm': 4.19399980455637, 'pipeline': 4.449999891221523, 'both': 4.435999784618616}
+SCREEN fg_logsoftmax_m512_k4096_bf16 {'block': 1024, 'warps': 8} {'no_contract': 4.261999856680632, 'contracts': 4.238000139594078, 'licm': 4.246000200510025, 'pipeline': 5.061999894678593, 'both': 5.080000031739473}
+CONFIRM fg_logsoftmax_m512_k4096_bf16 contracts {'no_contract': 1.0023958015961671, 'contracts': 1.0, 'licm': 0.9971181337047291, 'pipeline': 0.9523593012038316, 'both': 0.9442139276737203}
+CONFIRM fg_logsoftmax_m512_k4096_bf16 contracts {'no_contract': 1.0019483830462095, 'contracts': 1.0, 'licm': 1.0048780859004236, 'pipeline': 0.9440110168747183, 'both': 0.9350000338662756}
+CONFIRM fg_logsoftmax_m512_k4096_bf16 contracts {'no_contract': 1.0088149547057732, 'contracts': 1.0, 'licm': 0.9846889906312963, 'pipeline': 0.9427917554300153, 'both': 0.9419296710891716}
+BOUNDARY fg_logsoftmax_masked PASS
+SCREEN fg_rotary_t128_q32_k8_d128_f32 {'warps': 1} {'no_contract': 8.932000026106834, 'contracts': 8.961999788880348, 'licm': 8.957999758422375, 'pipeline': 9.990000165998936, 'both': 10.026000440120697}
+SCREEN fg_rotary_t128_q32_k8_d128_f32 {'warps': 2} {'no_contract': 8.457999676465988, 'contracts': 8.461999706923962, 'licm': 8.452000096440315, 'pipeline': 9.717999957501888, 'both': 9.723999537527561}
+SCREEN fg_rotary_t128_q32_k8_d128_f32 {'warps': 4} {'no_contract': 8.196000009775162, 'contracts': 8.179999887943268, 'licm': 8.213999681174755, 'pipeline': 9.878000244498253, 'both': 9.906000457704067}
+SCREEN fg_rotary_t128_q32_k8_d128_f32 {'warps': 8} {'no_contract': 8.212000131607056, 'contracts': 8.17199982702732, 'licm': 8.196000009775162, 'pipeline': 10.400000028312206, 'both': 10.40599960833788}
+CONFIRM fg_rotary_t128_q32_k8_d128_f32 contracts {'no_contract': 0.9995114764920668, 'contracts': 1.0, 'licm': 1.0007350624683289, 'pipeline': 0.8404669086299726, 'both': 0.8401374811319183}
+CONFIRM fg_rotary_t128_q32_k8_d128_f32 contracts {'no_contract': 1.0007276875337063, 'contracts': 1.0, 'licm': 1.0014648549077414, 'pipeline': 0.8429394901076216, 'both': 0.8444581032447975}
+CONFIRM fg_rotary_t128_q32_k8_d128_f32 contracts {'no_contract': 0.9987826137239129, 'contracts': 1.0, 'licm': 0.9956310348767857, 'pipeline': 0.8415637365234899, 'both': 0.8411946327045003}
+SCREEN fg_rotary_t1024_q32_k8_d128_bf16 {'warps': 1} {'no_contract': 9.584000334143639, 'contracts': 9.531999938189983, 'licm': 9.499999694526196, 'pipeline': 10.602000169456005, 'both': 10.622000321745872}
+SCREEN fg_rotary_t1024_q32_k8_d128_bf16 {'warps': 2} {'no_contract': 9.221999906003475, 'contracts': 9.221999906003475, 'licm': 9.208000265061855, 'pipeline': 10.76400000602007, 'both': 10.739999823272228}
+SCREEN fg_rotary_t1024_q32_k8_d128_bf16 {'warps': 4} {'no_contract': 9.096000343561172, 'contracts': 9.123999625444412, 'licm': 9.126000106334686, 'pipeline': 9.097999893128872, 'both': 9.092000313103199}
+SCREEN fg_rotary_t1024_q32_k8_d128_bf16 {'warps': 8} {'no_contract': 9.854000061750412, 'contracts': 9.755999781191349, 'licm': 9.771999903023243, 'pipeline': 9.846000000834465, 'both': 9.855999611318111}
+CONFIRM fg_rotary_t1024_q32_k8_d128_bf16 contracts {'no_contract': 1.0006629369857916, 'contracts': 1.0, 'licm': 1.0004412122890618, 'pipeline': 1.0017829420598834, 'both': 1.0015514818907088}
+CONFIRM fg_rotary_t1024_q32_k8_d128_bf16 contracts {'no_contract': 0.9993366231689044, 'contracts': 1.0, 'licm': 0.9958295925075552, 'pipeline': 0.9993379408212412, 'both': 1.0013258739715833}
+CONFIRM fg_rotary_t1024_q32_k8_d128_bf16 contracts {'no_contract': 1.0046780858281499, 'contracts': 1.0, 'licm': 1.0066741331318887, 'pipeline': 1.007558972981809, 'both': 1.0022286775748543}
+SCREEN fg_rotary_t4096_q16_k4_d64_bf16 {'warps': 1} {'no_contract': 6.291999947279692, 'contracts': 6.4119999296963215, 'licm': 6.36200001463294, 'pipeline': 7.914000190794468, 'both': 7.935999892652035}
+SCREEN fg_rotary_t4096_q16_k4_d64_bf16 {'warps': 2} {'no_contract': 6.384000182151794, 'contracts': 6.4039998687803745, 'licm': 6.434000097215176, 'pipeline': 6.4199999906122684, 'both': 6.430000066757202}
+SCREEN fg_rotary_t4096_q16_k4_d64_bf16 {'warps': 4} {'no_contract': 9.953999891877174, 'contracts': 9.953999891877174, 'licm': 9.978000074625015, 'pipeline': 9.974000044167042, 'both': 9.999999776482582}
+SCREEN fg_rotary_t4096_q16_k4_d64_bf16 {'warps': 8} {'no_contract': 17.834000289440155, 'contracts': 17.907999455928802, 'licm': 17.91200041770935, 'pipeline': 17.921999096870422, 'both': 17.907999455928802}
+CONFIRM fg_rotary_t4096_q16_k4_d64_bf16 contracts {'no_contract': 1.0131157536219837, 'contracts': 1.0, 'licm': 1.0169112750352367, 'pipeline': 0.9949732573928484, 'both': 0.9940901572385344}
+CONFIRM fg_rotary_t4096_q16_k4_d64_bf16 contracts {'no_contract': 1.0191815824414734, 'contracts': 1.0, 'licm': 1.0088272323188905, 'pipeline': 0.9993730359932811, 'both': 1.0028177318097238}
+CONFIRM fg_rotary_t4096_q16_k4_d64_bf16 contracts {'no_contract': 1.014410991006552, 'contracts': 1.0, 'licm': 1.0191815824414734, 'pipeline': 0.9981244723281609, 'both': 0.9978090600776641}
+BOUNDARY fg_rotary_masked PASS

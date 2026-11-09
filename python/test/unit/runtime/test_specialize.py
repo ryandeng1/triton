@@ -1811,3 +1811,302 @@ def test_native_global_load_reuse_retains_real_aliased_updates(device, frontend)
         assert torch.equal(output, first * 2 + second)
         for storage in (input_storage, output_storage):
             assert torch.all(storage[:guard] == 123.) and torch.all(storage[-guard:] == 123.)
+
+
+@triton.jit
+def _native_pipeline_policy_tl(X, Y, T, N: tl.constexpr, BLOCK: tl.constexpr, STATEFUL: tl.constexpr):
+    col = tl.arange(0, BLOCK)
+    value = tl.full((BLOCK, ), 0, tl.float32)
+    if STATEFUL:
+        value = tl.load(Y + col, col < N, other=0)
+        previous_guard = tl.load(Y - 1)
+    for step in range(T):
+        value += tl.load(X + step * N + col, col < N, other=0)
+        tl.store(Y + col, value, col < N)
+    tl.store(Y + col, value, col < N)
+    if STATEFUL:
+        # This location belongs to Y's backing allocation but lies outside the
+        # logical tensor. Calibration must preserve the full declared storage.
+        tl.store(Y - 1, previous_guard + 1)
+
+
+def _native_pipeline_policy_arguments(device, *, stateful=True, trips=8):
+    width, guard = 128, 32
+    x = torch.arange(trips * width, device=device, dtype=torch.float32).reshape(trips, width)
+    storage = torch.full((width + 2 * guard, ), 17., device=device)
+    y = storage[guard:-guard]
+    y.fill_(3.)
+    return (x, y, trips, width, width, stateful), storage
+
+
+def _compile_native_pipeline_policy(args, **kwargs):
+    from triton.experimental.semantic_contracts.native import compile_pipeline
+
+    return compile_pipeline(_native_pipeline_policy_tl, args, grid=(1, ), alias_groups={"X": 0, "Y":
+                                                                                        1}, mutable_args=("Y", ),
+                            options=dict(num_warps=4, num_stages=1), depths=(0, 3), rounds=3, repetitions=2, **kwargs)
+
+
+def test_native_pipeline_calibration_preserves_full_state_and_cached_calls_update_once(device, monkeypatch):
+    _semantic_require_cuda(device)
+    from triton.experimental.semantic_contracts import pipeline
+
+    args, storage = _native_pipeline_policy_arguments(device)
+    initial, original_input = storage.clone(), args[0].clone()
+    increment = args[0].sum(0)
+    expected = initial.clone()
+    expected[32:-32] += increment
+    expected[31] += 1
+    phases = []
+
+    def measure(functions, repetitions, rounds, seed):
+        phases.append(tuple(functions))
+        for function in functions.values():
+            for _ in range(2):
+                function()
+                assert torch.equal(storage, expected), "state must reset before each calibration invocation"
+        return {name: [10. if name == "baseline" else 8.] * rounds for name in functions}
+
+    monkeypatch.setattr(pipeline, "_measure", measure)
+    plan = _compile_native_pipeline_policy(args)
+    assert plan.selected_name == "stages3"
+    assert plan.report()["selected"] == plan.selected_name
+    assert len(phases) == 2
+    assert torch.equal(storage, initial)
+    assert torch.equal(args[0], original_input)
+    assert "ttg.async_copy_global_to_local" in plan.candidates["stages3"].asm["ttgir"]
+    assert "ttg.async_copy_global_to_local" not in plan.baseline.asm["ttgir"]
+    assert plan.report()["calibration"]["reset_copies_included"]
+
+    def unexpected_calibration(*unused_args, **unused_kwargs):
+        raise AssertionError("cached launch must not calibrate")
+
+    monkeypatch.setattr(pipeline, "_measure", unexpected_calibration)
+    plan(*args)
+    assert torch.equal(storage, expected)
+    plan(*args)
+    expected[32:-32] += increment
+    expected[31] += 1
+    assert torch.equal(storage, expected)
+    # Metadata-compatible replacements are allowed, and carry their own state.
+    replacement, replacement_storage = _native_pipeline_policy_arguments(device)
+    plan(*replacement)
+    torch.testing.assert_close(replacement[1], 3 + increment, rtol=0, atol=0)
+    assert replacement_storage[31].item() == 18
+
+
+@pytest.mark.parametrize("screen,confirmation,selected", [(8., 8., "stages3"), (9.9, 8., "baseline"),
+                                                          (8., 10.1, "baseline")])
+def test_native_pipeline_requires_screen_and_confirmation_gain(device, monkeypatch, screen, confirmation, selected):
+    _semantic_require_cuda(device)
+    from triton.experimental.semantic_contracts import pipeline
+
+    args, storage = _native_pipeline_policy_arguments(device, stateful=False)
+    initial = storage.clone()
+    phases = []
+
+    def measure(functions, repetitions, rounds, seed):
+        cost = screen if not phases else confirmation
+        phases.append(tuple(functions))
+        for function in functions.values():
+            function()
+        return {name: [10. if name == "baseline" else cost] * rounds for name in functions}
+
+    monkeypatch.setattr(pipeline, "_measure", measure)
+    plan = _compile_native_pipeline_policy(args, replay_safe=True)
+    assert plan.selected_name == selected
+    assert torch.equal(storage, initial), "replay_safe must not disable final restoration"
+    assert not plan.report()["calibration"]["reset_copies_included"]
+    if screen == 8.:
+        assert len(phases) == 2
+    else:
+        assert len(phases) == 1
+
+
+@pytest.mark.parametrize("failure", ["exception", "invalid_timing"])
+def test_native_pipeline_failed_calibration_restores_mutable_storage(device, monkeypatch, failure):
+    _semantic_require_cuda(device)
+    from triton.experimental.semantic_contracts import pipeline
+
+    args, storage = _native_pipeline_policy_arguments(device)
+    initial = storage.clone()
+
+    def fail(functions, repetitions, rounds, seed):
+        functions["baseline"]()
+        if failure == "exception":
+            raise RuntimeError("injected calibration failure")
+        return {name: [float("nan")] * rounds for name in functions}
+
+    monkeypatch.setattr(pipeline, "_measure", fail)
+    with pytest.raises(RuntimeError, match="calibration"):
+        _compile_native_pipeline_policy(args)
+    assert torch.equal(storage, initial)
+
+
+@pytest.mark.parametrize("change",
+                         ["grid", "scalar", "metadata", "device", "direct_alias", "disjoint_views_one_storage"])
+def test_native_pipeline_launch_guards_fail_before_mutation(device, monkeypatch, change):
+    _semantic_require_cuda(device)
+    from triton.experimental.semantic_contracts import pipeline
+
+    args, storage = _native_pipeline_policy_arguments(device)
+    initial = storage.clone()
+    monkeypatch.setattr(
+        pipeline, "_measure", lambda functions, repetitions, rounds, seed:
+        {name: [10. if name == "baseline" else 12.] * rounds
+         for name in functions})
+    plan = _compile_native_pipeline_policy(args)
+    changed, kwargs, extra_storage = list(args), {}, None
+    if change == "grid":
+        kwargs["grid"] = (2, )
+    elif change == "scalar":
+        changed[2] += 1
+    elif change == "metadata":
+        changed[1] = torch.full_like(args[1], 5., dtype=torch.float64)
+    elif change == "direct_alias":
+        changed[1] = args[0][0]
+    elif change == "disjoint_views_one_storage":
+        extra_storage = torch.full((args[0].numel() + args[1].numel(), ), 11., device=device)
+        changed[0] = extra_storage[:args[0].numel()].reshape_as(args[0])
+        changed[1] = extra_storage[args[0].numel():]
+    original_input = changed[0].clone()
+    original_output = changed[1].clone()
+    with monkeypatch.context() as guard_patch:
+        if change == "device":
+            guard_patch.setattr(torch.cuda, "current_device", lambda: plan.device + 1)
+        with pytest.raises(ValueError):
+            plan(*changed, **kwargs)
+    assert torch.equal(storage, initial)
+    assert torch.equal(changed[0], original_input)
+    assert torch.equal(changed[1], original_output)
+    if extra_storage is not None:
+        assert torch.all(extra_storage == 11.)
+
+
+def test_native_pipeline_cached_cuda_graph_and_cold_capture_rejection(device, monkeypatch):
+    _semantic_require_cuda(device)
+    from triton.experimental.semantic_contracts import pipeline
+
+    args, storage = _native_pipeline_policy_arguments(device)
+    initial = storage.clone()
+    monkeypatch.setattr(
+        pipeline, "_measure", lambda functions, repetitions, rounds, seed:
+        {name: [10. if name == "baseline" else 8.] * rounds
+         for name in functions})
+    plan = _compile_native_pipeline_policy(args)
+    # The cold path must reject capture before compiling or launching candidates.
+    with monkeypatch.context() as capture_patch:
+        capture_patch.setattr(torch.cuda, "is_current_stream_capturing", lambda: True)
+        with pytest.raises(RuntimeError, match="capture"):
+            _compile_native_pipeline_policy(args)
+    assert torch.equal(storage, initial)
+
+    def unexpected_calibration(*unused_args, **unused_kwargs):
+        raise AssertionError("cached graph launch must not calibrate")
+
+    monkeypatch.setattr(pipeline, "_measure", unexpected_calibration)
+    plan(*args)
+    torch.cuda.synchronize()
+    graph = torch.cuda.CUDAGraph()
+    with torch.cuda.graph(graph):
+        plan(*args)
+    storage.copy_(initial)
+    expected = initial.clone()
+    for _ in range(2):
+        graph.replay()
+        expected[32:-32] += args[0].sum(0)
+        expected[31] += 1
+        assert torch.equal(storage, expected)
+
+
+def test_native_pipeline_identical_candidates_skip_calibration(device, monkeypatch):
+    _semantic_require_cuda(device)
+    from triton.experimental.semantic_contracts import pipeline
+
+    # One iteration folds away before automatic staging can add useful work.
+    args, storage = _native_pipeline_policy_arguments(device, stateful=False, trips=1)
+    initial = storage.clone()
+
+    def unexpected_calibration(*unused_args, **unused_kwargs):
+        raise AssertionError("identical binaries must not be benchmarked")
+
+    monkeypatch.setattr(pipeline, "_measure", unexpected_calibration)
+    plan = _compile_native_pipeline_policy(args)
+    assert plan.selected_name == "baseline"
+    assert not plan.report()["calibration"]["executed"]
+    assert torch.equal(storage, initial)
+    plan(*args)
+    assert torch.equal(args[1], args[0][0])
+
+
+def test_native_pipeline_licm_is_independently_selectable_with_depth_zero(device, monkeypatch):
+    _semantic_require_cuda(device)
+    from triton.experimental.semantic_contracts import pipeline
+    from triton.experimental.semantic_contracts.native import compile_pipeline
+
+    rows, width = 11, 128
+    x = torch.arange(rows * width, device=device, dtype=torch.float32).reshape(rows, width)
+    gamma = torch.full((width, ), 2., device=device)
+    output = torch.full_like(x, -3.)
+    args = (x, gamma, output, rows, width, width)
+    phases = []
+
+    def measure(functions, repetitions, rounds, seed):
+        phases.append(tuple(functions))
+        for function in functions.values():
+            function()
+            assert torch.equal(output, x * gamma)
+        return {name: [8. if name == "licm" else 10.] * rounds for name in functions}
+
+    monkeypatch.setattr(pipeline, "_measure", measure)
+    plan = compile_pipeline(_native_immutable_loop_tl, args, grid=(1, ), alias_groups={"X": 0, "Gamma": 0, "Y": 1},
+                            mutable_args=("Y", ), immutable_args=("Gamma", ), options=dict(num_warps=4, num_stages=1),
+                            depths=(0, 3), tune_licm=True, replay_safe=True, rounds=3, repetitions=2)
+    assert set(plan.candidates) == {"baseline", "stages3", "licm", "stages3_licm"}
+    assert plan.selected_name == "licm"
+    assert len(phases) == 2 and set(phases[-1]) == {"baseline", "licm"}
+    assert plan.candidates["licm"].metadata.contract_pipeline_stages == 0
+    assert plan.candidates["licm"].metadata.enable_contract_licm
+    assert not plan.baseline.metadata.enable_contract_licm
+    assert plan.baseline.src.attrs == plan.candidates["licm"].src.attrs
+    assert plan.baseline.asm["cubin"] != plan.candidates["licm"].asm["cubin"]
+    assert torch.all(output == -3.)
+    plan(*args)
+    assert torch.equal(output, x * gamma)
+
+
+@pytest.mark.parametrize("failure", ["resource", "internal"])
+def test_native_pipeline_only_resource_exhaustion_discards_a_candidate(device, monkeypatch, failure):
+    _semantic_require_cuda(device)
+    from triton.experimental.semantic_contracts import pipeline
+    from triton.runtime.errors import OutOfResources
+
+    args, storage = _native_pipeline_policy_arguments(device)
+    initial = storage.clone()
+    compile_kernel = pipeline.triton.compile
+    attempted = []
+
+    def compile_candidate(*compile_args, **kwargs):
+        if kwargs.get("options", {}).get("contract_pipeline_stages") == 3:
+            attempted.append(3)
+            if failure == "resource":
+                raise OutOfResources(200000, 100000, "shared memory")
+            raise RuntimeError("injected compiler failure")
+        return compile_kernel(*compile_args, **kwargs)
+
+    def unexpected_calibration(*unused_args, **unused_kwargs):
+        raise AssertionError("there is no surviving alternative to calibrate")
+
+    monkeypatch.setattr(pipeline.triton, "compile", compile_candidate)
+    monkeypatch.setattr(pipeline, "_measure", unexpected_calibration)
+    if failure == "internal":
+        with pytest.raises(RuntimeError, match="injected compiler failure"):
+            _compile_native_pipeline_policy(args)
+    else:
+        plan = _compile_native_pipeline_policy(args)
+        assert plan.selected_name == "baseline"
+        assert set(plan.candidates) == {"baseline"}
+        assert plan.report()["variants"]["stages3"]["excluded"] == "resource_exhaustion"
+        assert not plan.report()["calibration"]["executed"]
+    assert attempted == [3]
+    assert torch.equal(storage, initial)

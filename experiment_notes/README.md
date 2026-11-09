@@ -29,6 +29,9 @@ runs rather than absolute timings across experiments.
 | AITER recurrent delta rule, native alias-derived LICM | About 1.134× at upstream T1024/D128; 1.09× at larger decode; 1.056× at T500/D60 | Three of six cases improve; three are neutral/slower. Includes state reset, every timestep output and final state. New pointer provenance makes alias-only and immutable PTX identical. Supported long-T tests do not establish production prevalence. |
 | Recurrent explicit loop pipelining | T500 1.214–1.216× after four-configuration tuning; T1024 and short decode regress | Three fresh seeds, reset included, full output/state checks. Adding LICM makes the best T500 pipeline about 3.3% slower. Historical source scheduling oracle; now recovered by automatic contract-licensed pipelining below. |
 | Contract-licensed automatic pipelining and variant selection | T63 1.207–1.210×; T500 1.214–1.218×; LICM selected at T1024/larger decode; baseline retained at short decode/T2048 | Unchanged kernel body; same contracts across four variants/configurations; three fresh seeds, reset included, 204 validation records. Per-shape calibration, not a static profitability model. |
+| Cross-kernel automatic-pipeline validation | Fixed stage2 policy: log-softmax backward 0.879–0.952×, FP32 rotary 0.840–0.843×, bilinear resize 0.656–0.854× | Five entry kernels/four families, 13 timed workloads and five boundaries. Neutral BF16 rotary choices have unchanged code; RMSNorm already requests stages. 625 validation records pass. |
+| Pipeline slowdown controls | Stage3 recovers log-softmax 1.113–1.115×; stage4 recovers FP32 rotary 1.921–1.930× at fixed w2 launch; resize/RMS still lose | Stage2 gives one shared slot and little useful overlap. Deeper stages provide real lookahead. Resize adds 69% instructions without an occupancy decline. 126 validations/204 bitwise output comparisons pass; fixed-launch controls, not independently retuned speedups. |
+| Integrated pipeline profitability selector | Log-softmax 1.115–1.130×; FP32 rotary 1.853–1.861×; BF16 rotary 1.524–1.537×; resize retains baseline | Cached runtime depth search with baseline fallback and separate confirmation; constant-proven zero/single-trip inference gate. Four workloads/three families, equal launch-tuning domains, three fresh seeds. 200 validations/305 bitwise comparisons pass. |
 | LLVM argument-contract probe | Identical PTX, cubin and SASS in all nine attribute-on/off pairs | Audited readonly/no-capture/noalias attributes survive LLVM optimization, but global loads remain side-effecting inline PTX. No runtime timing of identical code. |
 | Transformer Engine MoE unpermute backward | Native hoist 1.19×, 1.11×, approximately 1.00× | Best tested configuration per variant after bounded tuning; manual and contract variants matched machine code. |
 | Producer-unique embedding backward | Source specialization 1.16–1.26×; frequency-scaled 1.41–2.18× | Includes dense zeroing and final copy. These historical timings used finite, non-subnormal BF16 gradients and predate the automatic proof pipeline below. |
@@ -292,6 +295,47 @@ selector, not a general runtime autotuner or static profitability guard. The pri
 T1024 0.819× ratio compared pipeline-plus-LICM with LICM; LICM itself already gained
 about 1.134×. The new semantic fact licenses motion; selecting useful motion still
 requires performance information.
+
+The [cross-kernel study](semantic_candidate_experiments/results/cross_kernel_pipeline_final/README.md)
+finds no additional profitable family for this fixed two-stage policy. Five entry
+kernels from four families cover 13 timed workloads and five boundary cases.
+Log-softmax backward, FP32 rotary embedding and bilinear resize transform but lose
+after independent baseline tuning; selected neutral BF16 rotary variants are
+identical code. RMSNorm already requests two stages, so its auto switch is inert;
+its within-contract LICM gains do not beat the fastest safe uncontracted controls.
+All 625 variant validations and 1,000 bitwise output comparisons pass. The kernels
+and compiler are unchanged, and the experiment is a bounded candidate study,
+not a corpus-wide applicability rate.
+
+The [slowdown investigation](semantic_candidate_experiments/results/pipeline_slowdown_final/README.md)
+finds that stage2 uses one shared slot and issues the next copies after current
+computation, adding staging with little useful overlap. At fixed launches, stage3
+recovers log-softmax 1.113–1.115× and stage4 recovers FP32 rotary 1.921–1.930× at w2
+(1.678–1.683× at the prior best baseline's w8). Resize still loses: profiling shows
+69% more instructions, added shared traffic, similar L2 reads, and no occupancy
+decline. One-iteration RMSNorm has no useful next iteration; its persistent control
+also loses. Cache-policy controls do not rescue the losses. All 126 validations and
+204 bitwise comparisons pass. These are scheduling controls, not a newly tuned
+cross-kernel applicability claim. The earlier recurrent stage2 success also lacks
+useful floating-point overlap; its code instead shows two eliminated layout
+conversions and fewer repeated shared stores/barriers, a plausible benefit not
+separately isolated. Profitability must consider staging and layout costs as well
+as actual prefetch distance; the contracts already supply legality.
+
+The [integrated profitability selector](semantic_candidate_experiments/results/pipeline_profitability_final/README.md)
+now exposes `native.compile_pipeline`: same-contract depths 0/2/3/4, optional
+independent LICM candidates, identical-binary pruning, and a 2% screening plus
+separate confirmation margin. It caches one fixed-launch choice, preserves full
+mutable backing storage during calibration, and rechecks metadata/grid/aliases
+on calls. Native inference skips constant-proven zero/single-trip loops; explicit
+source schedules remain authoritative. Against independently tuned baselines,
+it selects log-softmax stage3 (1.115–1.130×), FP32/BF16 rotary stage4
+(1.853–1.861× / 1.524–1.537×), and resize baseline (0.999–1.001×). All 200
+validations and 305 bitwise comparisons pass. Launch configuration selection
+remains in the experiment harness. Calibration costs 9–159 ms per measured plan
+plus compilation and is excluded from CUDA-graph steady-state timing; uncaptured
+host guard overhead is also excluded. This measured policy is opt-in, specific
+to its calibration conditions, and does not override RMSNorm's source stages.
 
 The new opt-in [private-reduction ownership pass](../lib/Dialect/Triton/Transforms/PrivateReductionOwnership.cpp)
 recognizes IR roles rather than kernel names. Private initialized disjoint outputs,

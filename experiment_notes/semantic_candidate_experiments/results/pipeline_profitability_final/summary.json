@@ -1,0 +1,205 @@
+{
+  "completed": true,
+  "native_unchanged": true,
+  "native_sha256": "04888937bce1bd18866aa87971e0b93e331d35df5cc0488508301996389b17a8",
+  "variant_validations": 200,
+  "bitwise_output_comparisons": 305,
+  "records": [
+    {
+      "case": {
+        "id": "fg_logsoftmax_m256_k8192_f32",
+        "family": "log_softmax_backward",
+        "M": 256,
+        "K": 8192,
+        "dtype": "float32",
+        "boundary": false
+      },
+      "selection": {
+        "baseline_config_index": 3,
+        "selected_config_index": 2,
+        "baseline_config": {
+          "block": 1024,
+          "warps": 8
+        },
+        "selected_config": {
+          "block": 1024,
+          "warps": 4
+        },
+        "selected_name": "stages3",
+        "depth_selection": "Integrated compile_pipeline calibration; no harness depth override",
+        "configuration_selection": "Independent five-round calibration for baseline and selected plans over identical predeclared launch domain",
+        "confirmation_reselects": false
+      },
+      "speedups": [
+        1.1149073823095776,
+        1.129505542938214,
+        1.1204819196398104
+      ],
+      "boundary_passed": false
+    },
+    {
+      "case": {
+        "id": "fg_rotary_t128_q32_k8_d128_f32",
+        "family": "rotary_embedding",
+        "tokens": 128,
+        "qheads": 32,
+        "kheads": 8,
+        "dim": 128,
+        "dtype": "float32",
+        "interleaved": false,
+        "boundary": false
+      },
+      "selection": {
+        "baseline_config_index": 2,
+        "selected_config_index": 1,
+        "baseline_config": {
+          "warps": 4
+        },
+        "selected_config": {
+          "warps": 2
+        },
+        "selected_name": "stages4",
+        "depth_selection": "Integrated compile_pipeline calibration; no harness depth override",
+        "configuration_selection": "Independent five-round calibration for baseline and selected plans over identical predeclared launch domain",
+        "confirmation_reselects": false
+      },
+      "speedups": [
+        1.853198405136889,
+        1.8609452945238105,
+        1.8542816772682147
+      ],
+      "boundary_passed": false
+    },
+    {
+      "case": {
+        "id": "fg_rotary_t1024_q32_k8_d128_bf16",
+        "family": "rotary_embedding",
+        "tokens": 1024,
+        "qheads": 32,
+        "kheads": 8,
+        "dim": 128,
+        "dtype": "bfloat16",
+        "interleaved": false,
+        "boundary": false
+      },
+      "selection": {
+        "baseline_config_index": 2,
+        "selected_config_index": 0,
+        "baseline_config": {
+          "warps": 4
+        },
+        "selected_config": {
+          "warps": 1
+        },
+        "selected_name": "stages4",
+        "depth_selection": "Integrated compile_pipeline calibration; no harness depth override",
+        "configuration_selection": "Independent five-round calibration for baseline and selected plans over identical predeclared launch domain",
+        "confirmation_reselects": false
+      },
+      "speedups": [
+        1.5310490144771338,
+        1.5239916757378327,
+        1.5366659788409227
+      ],
+      "boundary_passed": false
+    },
+    {
+      "case": {
+        "id": "upsample_2x64_64x256_to128x512",
+        "family": "upsample_bilinear2d",
+        "shape": [
+          2,
+          64,
+          64,
+          256
+        ],
+        "output_size": [
+          128,
+          512
+        ],
+        "align_corners": true,
+        "dtype": "float32",
+        "boundary": false,
+        "cohort": "calibration",
+        "origin": "Independent align-corners 2x resize with batch and channel loops."
+      },
+      "selection": {
+        "baseline_config_index": 0,
+        "selected_config_index": 0,
+        "baseline_config": [
+          64,
+          2,
+          4
+        ],
+        "selected_config": [
+          64,
+          2,
+          4
+        ],
+        "selected_name": "baseline",
+        "depth_selection": "Integrated compile_pipeline calibration; no harness depth override",
+        "configuration_selection": "Independent five-round calibration for baseline and selected plans over identical predeclared launch domain",
+        "confirmation_reselects": false
+      },
+      "speedups": [
+        0.9993533213985121,
+        1.0008499119559056,
+        0.999152256187368
+      ],
+      "boundary_passed": false
+    },
+    {
+      "case": {
+        "id": "fg_logsoftmax_masked",
+        "family": "log_softmax_backward",
+        "M": 7,
+        "K": 2053,
+        "dtype": "float32",
+        "boundary": true
+      },
+      "selection": null,
+      "speedups": [],
+      "boundary_passed": true
+    },
+    {
+      "case": {
+        "id": "fg_rotary_masked",
+        "family": "rotary_embedding",
+        "tokens": 17,
+        "qheads": 5,
+        "kheads": 2,
+        "dim": 96,
+        "dtype": "float32",
+        "interleaved": true,
+        "boundary": true
+      },
+      "selection": null,
+      "speedups": [],
+      "boundary_passed": true
+    },
+    {
+      "case": {
+        "id": "upsample_boundary_single_height",
+        "family": "upsample_bilinear2d",
+        "shape": [
+          2,
+          3,
+          1,
+          33
+        ],
+        "output_size": [
+          1,
+          64
+        ],
+        "align_corners": true,
+        "dtype": "float32",
+        "boundary": true,
+        "cohort": "boundary",
+        "origin": "IH=OH=1 branch, odd input width, few batch/channel iterations; exact output tile."
+      },
+      "selection": null,
+      "speedups": [],
+      "boundary_passed": true
+    }
+  ]
+}

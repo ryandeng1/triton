@@ -1,0 +1,1416 @@
+{
+  "native_library_sha256": "e7e15b9337405e632e887ceae9c96d9ea85e38aa1e9c35dec937d7b148d06178",
+  "native_unchanged": true,
+  "native_edits": false,
+  "kernel_body_edits": false,
+  "families": 4,
+  "entry_kernels": 5,
+  "unchanged_auxiliary_kernels": 1,
+  "timed_workloads": 13,
+  "boundary_workloads": 5,
+  "configurations": 65,
+  "validation_records": 625,
+  "output_comparisons": 1000,
+  "all_outputs_bitwise_equal": true,
+  "all_math_oracles_and_guards_passed": true,
+  "code_change_counts_by_family": {
+    "aiter_rmsnorm": {
+      "configurations": 26,
+      "auto_changes_ptx": 0,
+      "contracts_change_ptx": 26
+    },
+    "log_softmax_backward": {
+      "configurations": 13,
+      "auto_changes_ptx": 13,
+      "contracts_change_ptx": 0
+    },
+    "rotary_embedding": {
+      "configurations": 13,
+      "auto_changes_ptx": 8,
+      "contracts_change_ptx": 0
+    },
+    "upsample_bilinear2d": {
+      "configurations": 13,
+      "auto_changes_ptx": 13,
+      "contracts_change_ptx": 0
+    }
+  },
+  "records": [
+    {
+      "id": "rms_forward_4096x1024",
+      "family": "aiter_rmsnorm",
+      "boundary": false,
+      "source_report": "main/rms_forward_4096x1024.json",
+      "configurations": 6,
+      "validation_records": 45,
+      "selected_variant_label": "both",
+      "baseline_config": {
+        "warps": 4,
+        "grid": "rows"
+      },
+      "selected_config": {
+        "warps": 4,
+        "grid": "rows"
+      },
+      "selected_configs": {
+        "no_contract": {
+          "warps": 4,
+          "grid": "rows"
+        },
+        "contracts": {
+          "warps": 4,
+          "grid": "rows"
+        },
+        "licm": {
+          "warps": 4,
+          "grid": "rows"
+        },
+        "pipeline": {
+          "warps": 4,
+          "grid": "rows"
+        },
+        "both": {
+          "warps": 4,
+          "grid": "rows"
+        }
+      },
+      "speedup_vs_contracts_range": {
+        "no_contract": [
+          1.3133712405347941,
+          1.329186075255112
+        ],
+        "licm": [
+          1.2554781875478735,
+          1.2636317152827279
+        ],
+        "pipeline": [
+          0.9848307803014229,
+          0.9996042708162304
+        ],
+        "both": [
+          1.2568305954045267,
+          1.2655622795662478
+        ]
+      },
+      "median_us": {
+        "no_contract": 3.845999948680401,
+        "contracts": 5.051999818533659,
+        "licm": 4.029999952763319,
+        "pipeline": 5.06999995559454,
+        "both": 4.019999876618385
+      },
+      "selected_pipeline_changes_code": false,
+      "selected_label_equivalent_to_licm": true,
+      "selected_vs_tuned_no_contract_range": [
+        0.9473419767134332,
+        0.9593858137523223
+      ],
+      "selected_pipeline_resources": {
+        "registers": 36,
+        "spills": 0,
+        "shared": 4112,
+        "async_copies": 4,
+        "loops": 1,
+        "ptx_sha256": "5db0639ee1194ab9023d038a06a09e677518793afa8971cfe4f8ca50f940a47f",
+        "cubin_sha256": "387e82e44ed21958a56026297e957e5a9d37062ef50ecce3d4d0c107e7f801a4"
+      },
+      "same_config_baseline_resources": {
+        "registers": 36,
+        "spills": 0,
+        "shared": 4112,
+        "async_copies": 4,
+        "loops": 1,
+        "ptx_sha256": "5db0639ee1194ab9023d038a06a09e677518793afa8971cfe4f8ca50f940a47f",
+        "cubin_sha256": "387e82e44ed21958a56026297e957e5a9d37062ef50ecce3d4d0c107e7f801a4"
+      },
+      "selected_variant_static_instruction_counts": {
+        "contracts": {
+          "async_copies": 4,
+          "async_waits": 2,
+          "async_commits": 4,
+          "ptx_cta_barrier_sites": 3
+        },
+        "pipeline": {
+          "async_copies": 4,
+          "async_waits": 2,
+          "async_commits": 4,
+          "ptx_cta_barrier_sites": 3
+        }
+      }
+    },
+    {
+      "id": "rms_forward_16384x4096",
+      "family": "aiter_rmsnorm",
+      "boundary": false,
+      "source_report": "main/rms_forward_16384x4096.json",
+      "configurations": 6,
+      "validation_records": 45,
+      "selected_variant_label": "contracts",
+      "baseline_config": {
+        "warps": 4,
+        "grid": "rows"
+      },
+      "selected_config": {
+        "warps": 4,
+        "grid": "rows"
+      },
+      "selected_configs": {
+        "no_contract": {
+          "warps": 4,
+          "grid": "rows"
+        },
+        "contracts": {
+          "warps": 4,
+          "grid": "rows"
+        },
+        "licm": {
+          "warps": 4,
+          "grid": "rows"
+        },
+        "pipeline": {
+          "warps": 4,
+          "grid": "rows"
+        },
+        "both": {
+          "warps": 4,
+          "grid": "rows"
+        }
+      },
+      "speedup_vs_contracts_range": {
+        "no_contract": [
+          1.039601016885577,
+          1.0417955770276157
+        ],
+        "licm": [
+          0.9140691239193866,
+          0.915711786286403
+        ],
+        "pipeline": [
+          0.9997218592714957,
+          1.0007882580895342
+        ],
+        "both": [
+          0.9142760195513409,
+          0.9153066933473938
+        ]
+      },
+      "median_us": {
+        "no_contract": 41.51400178670883,
+        "contracts": 43.1939996778965,
+        "licm": 47.20599949359894,
+        "pipeline": 43.16600039601326,
+        "both": 47.20599949359894
+      },
+      "selected_pipeline_changes_code": false,
+      "selected_label_equivalent_to_licm": false,
+      "selected_vs_tuned_no_contract_range": [
+        0.9598812109119679,
+        0.9619074854272331
+      ],
+      "selected_pipeline_resources": {
+        "registers": 68,
+        "spills": 0,
+        "shared": 16400,
+        "async_copies": 4,
+        "loops": 1,
+        "ptx_sha256": "6d57f53cb8a8f4b22915da632936363b055095db8917d32e497edfb1ea68ecd5",
+        "cubin_sha256": "2db7b16527b1fe30f3e6a71ce42418e7c5e5d0df25d6b49cc712efb7e9701982"
+      },
+      "same_config_baseline_resources": {
+        "registers": 68,
+        "spills": 0,
+        "shared": 16400,
+        "async_copies": 4,
+        "loops": 1,
+        "ptx_sha256": "6d57f53cb8a8f4b22915da632936363b055095db8917d32e497edfb1ea68ecd5",
+        "cubin_sha256": "2db7b16527b1fe30f3e6a71ce42418e7c5e5d0df25d6b49cc712efb7e9701982"
+      },
+      "selected_variant_static_instruction_counts": {
+        "contracts": {
+          "async_copies": 4,
+          "async_waits": 2,
+          "async_commits": 4,
+          "ptx_cta_barrier_sites": 3
+        },
+        "pipeline": {
+          "async_copies": 4,
+          "async_waits": 2,
+          "async_commits": 4,
+          "ptx_cta_barrier_sites": 3
+        }
+      }
+    },
+    {
+      "id": "rms_forward_31x1008",
+      "family": "aiter_rmsnorm",
+      "boundary": true,
+      "source_report": "main/rms_forward_31x1008.json",
+      "configurations": 1,
+      "validation_records": 5
+    },
+    {
+      "id": "rms_backward_4096x1024",
+      "family": "aiter_rmsnorm",
+      "boundary": false,
+      "source_report": "main/rms_backward_4096x1024.json",
+      "configurations": 6,
+      "validation_records": 60,
+      "selected_variant_label": "both",
+      "baseline_config": {
+        "warps": 4,
+        "grid": "1sm"
+      },
+      "selected_config": {
+        "warps": 4,
+        "grid": "1sm"
+      },
+      "selected_configs": {
+        "no_contract": {
+          "warps": 8,
+          "grid": "1sm"
+        },
+        "contracts": {
+          "warps": 4,
+          "grid": "1sm"
+        },
+        "licm": {
+          "warps": 4,
+          "grid": "1sm"
+        },
+        "pipeline": {
+          "warps": 4,
+          "grid": "1sm"
+        },
+        "both": {
+          "warps": 4,
+          "grid": "1sm"
+        }
+      },
+      "speedup_vs_contracts_range": {
+        "no_contract": [
+          1.1107230633826994,
+          1.1137127366310786
+        ],
+        "licm": [
+          1.0356068149552948,
+          1.0399087238921247
+        ],
+        "pipeline": [
+          0.9942196631368645,
+          0.9989564737343586
+        ],
+        "both": [
+          1.0351087436932487,
+          1.0380389209838976
+        ]
+      },
+      "median_us": {
+        "no_contract": 15.483999624848366,
+        "contracts": 17.230000346899033,
+        "licm": 16.607999801635742,
+        "pipeline": 17.28600077331066,
+        "both": 16.628000885248184
+      },
+      "selected_pipeline_changes_code": false,
+      "selected_label_equivalent_to_licm": true,
+      "selected_vs_tuned_no_contract_range": [
+        0.930012055764423,
+        0.9345389105355436
+      ],
+      "selected_pipeline_resources": {
+        "registers": 69,
+        "spills": 0,
+        "shared": 6164,
+        "async_copies": 8,
+        "loops": 1,
+        "ptx_sha256": "62df9bbf7f0d15a5f91fb7089a854e31b397ce1e2d2cd59e613e8aaed24c14b7",
+        "cubin_sha256": "5d6d8a0f353e2986478448f7ba03c87c0baf5a399bf7293f31f7028e6b31f4ae"
+      },
+      "same_config_baseline_resources": {
+        "registers": 69,
+        "spills": 0,
+        "shared": 6164,
+        "async_copies": 8,
+        "loops": 1,
+        "ptx_sha256": "62df9bbf7f0d15a5f91fb7089a854e31b397ce1e2d2cd59e613e8aaed24c14b7",
+        "cubin_sha256": "5d6d8a0f353e2986478448f7ba03c87c0baf5a399bf7293f31f7028e6b31f4ae"
+      },
+      "selected_variant_static_instruction_counts": {
+        "contracts": {
+          "async_copies": 8,
+          "async_waits": 2,
+          "async_commits": 8,
+          "ptx_cta_barrier_sites": 4
+        },
+        "pipeline": {
+          "async_copies": 8,
+          "async_waits": 2,
+          "async_commits": 8,
+          "ptx_cta_barrier_sites": 4
+        }
+      }
+    },
+    {
+      "id": "rms_backward_16384x4096",
+      "family": "aiter_rmsnorm",
+      "boundary": false,
+      "source_report": "main/rms_backward_16384x4096.json",
+      "configurations": 6,
+      "validation_records": 60,
+      "selected_variant_label": "both",
+      "baseline_config": {
+        "warps": 4,
+        "grid": "4sm"
+      },
+      "selected_config": {
+        "warps": 4,
+        "grid": "4sm"
+      },
+      "selected_configs": {
+        "no_contract": {
+          "warps": 8,
+          "grid": "4sm"
+        },
+        "contracts": {
+          "warps": 4,
+          "grid": "4sm"
+        },
+        "licm": {
+          "warps": 4,
+          "grid": "4sm"
+        },
+        "pipeline": {
+          "warps": 4,
+          "grid": "4sm"
+        },
+        "both": {
+          "warps": 4,
+          "grid": "4sm"
+        }
+      },
+      "speedup_vs_contracts_range": {
+        "no_contract": [
+          1.0432247581860221,
+          1.0452143997881087
+        ],
+        "licm": [
+          1.0426939247303197,
+          1.0445368877342809
+        ],
+        "pipeline": [
+          0.9996160268783569,
+          1.000559472338273
+        ],
+        "both": [
+          1.0425623993277167,
+          1.0460325338733196
+        ]
+      },
+      "median_us": {
+        "no_contract": 119.67600136995316,
+        "contracts": 125.02600252628326,
+        "licm": 119.73199993371964,
+        "pipeline": 125.08399784564972,
+        "both": 119.82999742031097
+      },
+      "selected_pipeline_changes_code": false,
+      "selected_label_equivalent_to_licm": true,
+      "selected_vs_tuned_no_contract_range": [
+        0.9992823616531672,
+        1.0001170558102668
+      ],
+      "selected_pipeline_resources": {
+        "registers": 176,
+        "spills": 0,
+        "shared": 24596,
+        "async_copies": 8,
+        "loops": 1,
+        "ptx_sha256": "2715afb503d80c790a6ee8cfdcfbd6bb149565fafce591492fa9a24d6b1aed04",
+        "cubin_sha256": "4a8c61a4c0af2c35bee3bd98ad1fff77abd24a49d76329336479306901519f27"
+      },
+      "same_config_baseline_resources": {
+        "registers": 176,
+        "spills": 0,
+        "shared": 24596,
+        "async_copies": 8,
+        "loops": 1,
+        "ptx_sha256": "2715afb503d80c790a6ee8cfdcfbd6bb149565fafce591492fa9a24d6b1aed04",
+        "cubin_sha256": "4a8c61a4c0af2c35bee3bd98ad1fff77abd24a49d76329336479306901519f27"
+      },
+      "selected_variant_static_instruction_counts": {
+        "contracts": {
+          "async_copies": 8,
+          "async_waits": 2,
+          "async_commits": 8,
+          "ptx_cta_barrier_sites": 10
+        },
+        "pipeline": {
+          "async_copies": 8,
+          "async_waits": 2,
+          "async_commits": 8,
+          "ptx_cta_barrier_sites": 10
+        }
+      }
+    },
+    {
+      "id": "rms_backward_31x1008",
+      "family": "aiter_rmsnorm",
+      "boundary": true,
+      "source_report": "main/rms_backward_31x1008.json",
+      "configurations": 1,
+      "validation_records": 5
+    },
+    {
+      "id": "fg_logsoftmax_m64_k16384_f32",
+      "family": "log_softmax_backward",
+      "boundary": false,
+      "source_report": "main/fg_logsoftmax_m64_k16384_f32.json",
+      "configurations": 4,
+      "validation_records": 50,
+      "selected_variant_label": "contracts",
+      "baseline_config": {
+        "block": 1024,
+        "warps": 8
+      },
+      "selected_config": {
+        "block": 1024,
+        "warps": 8
+      },
+      "selected_configs": {
+        "no_contract": {
+          "block": 1024,
+          "warps": 8
+        },
+        "contracts": {
+          "block": 1024,
+          "warps": 8
+        },
+        "licm": {
+          "block": 1024,
+          "warps": 8
+        },
+        "pipeline": {
+          "block": 1024,
+          "warps": 4
+        },
+        "both": {
+          "block": 1024,
+          "warps": 4
+        }
+      },
+      "speedup_vs_contracts_range": {
+        "no_contract": [
+          0.9988573518390605,
+          1.0015319025232385
+        ],
+        "licm": [
+          0.9986661927237939,
+          1.0032560614455281
+        ],
+        "pipeline": [
+          0.8799661417408379,
+          0.8822932239077889
+        ],
+        "both": [
+          0.8788539363751232,
+          0.881432895985555
+        ]
+      },
+      "median_us": {
+        "no_contract": 10.471999645233154,
+        "contracts": 10.471999645233154,
+        "licm": 10.475999675691128,
+        "pipeline": 11.880000121891499,
+        "both": 11.905999854207039
+      },
+      "selected_pipeline_changes_code": true,
+      "selected_label_equivalent_to_licm": false,
+      "selected_vs_tuned_no_contract_range": [
+        0.9984704406126464,
+        1.0011439552993584
+      ],
+      "selected_pipeline_resources": {
+        "registers": 31,
+        "spills": 0,
+        "shared": 8192,
+        "async_copies": 6,
+        "loops": 2,
+        "ptx_sha256": "9b4ba638ac4464a6fb25eeff8e72740b2bb1e61c7bcae4b22fa8ecbc1375832a",
+        "cubin_sha256": "b462cacb97c43adb55aeebdceb0f1ea1ca49a06be881f9f5b2f9a620d029270c"
+      },
+      "same_config_baseline_resources": {
+        "registers": 32,
+        "spills": 0,
+        "shared": 16,
+        "async_copies": 0,
+        "loops": 2,
+        "ptx_sha256": "ecc495eaade90a36e18dec01640da1db023caeb139d656be5d29620f4b16737b",
+        "cubin_sha256": "7b7bb815c9560338b82425442cbada047a429eaabcff6640d3c650ab769787c1"
+      },
+      "selected_variant_static_instruction_counts": {
+        "contracts": {
+          "async_copies": 0,
+          "async_waits": 0,
+          "async_commits": 0,
+          "ptx_cta_barrier_sites": 2
+        },
+        "pipeline": {
+          "async_copies": 6,
+          "async_waits": 4,
+          "async_commits": 6,
+          "ptx_cta_barrier_sites": 6
+        }
+      }
+    },
+    {
+      "id": "fg_logsoftmax_m256_k8192_f32",
+      "family": "log_softmax_backward",
+      "boundary": false,
+      "source_report": "main/fg_logsoftmax_m256_k8192_f32.json",
+      "configurations": 4,
+      "validation_records": 50,
+      "selected_variant_label": "contracts",
+      "baseline_config": {
+        "block": 1024,
+        "warps": 8
+      },
+      "selected_config": {
+        "block": 1024,
+        "warps": 8
+      },
+      "selected_configs": {
+        "no_contract": {
+          "block": 1024,
+          "warps": 8
+        },
+        "contracts": {
+          "block": 1024,
+          "warps": 8
+        },
+        "licm": {
+          "block": 1024,
+          "warps": 8
+        },
+        "pipeline": {
+          "block": 1024,
+          "warps": 8
+        },
+        "both": {
+          "block": 1024,
+          "warps": 4
+        }
+      },
+      "speedup_vs_contracts_range": {
+        "no_contract": [
+          0.9949748361556736,
+          1.0003126978250574
+        ],
+        "licm": [
+          0.9962429270586959,
+          0.999065704503036
+        ],
+        "pipeline": [
+          0.8787630282257782,
+          0.8806380507387667
+        ],
+        "both": [
+          0.8705882652715089,
+          0.8752393999148305
+        ]
+      },
+      "median_us": {
+        "no_contract": 6.401999853551388,
+        "contracts": 6.397999823093414,
+        "licm": 6.395999807864428,
+        "pipeline": 7.273999974131584,
+        "both": 7.309999782592058
+      },
+      "selected_pipeline_changes_code": true,
+      "selected_label_equivalent_to_licm": false,
+      "selected_vs_tuned_no_contract_range": [
+        0.9996873999243063,
+        1.0050505436536892
+      ],
+      "selected_pipeline_resources": {
+        "registers": 23,
+        "spills": 0,
+        "shared": 8192,
+        "async_copies": 6,
+        "loops": 2,
+        "ptx_sha256": "3bfc7bbe85c0980dbaeadcb31bf1cdd4e27600f06b29ef9f103fa027a5a57b2b",
+        "cubin_sha256": "518a4fc791b42a197cf44681e3bd182ab8369bfd0031d78d69aa969ce7d4cf98"
+      },
+      "same_config_baseline_resources": {
+        "registers": 28,
+        "spills": 0,
+        "shared": 32,
+        "async_copies": 0,
+        "loops": 2,
+        "ptx_sha256": "5cf2527658ae07a426175c2007c2d2c1404d9ef7cea06cd920e947f2072deeb8",
+        "cubin_sha256": "b0047b30ee622f909e581a05a5a3cbcfa8fefad3b41bee3f20c7e60921c3c3d7"
+      },
+      "selected_variant_static_instruction_counts": {
+        "contracts": {
+          "async_copies": 0,
+          "async_waits": 0,
+          "async_commits": 0,
+          "ptx_cta_barrier_sites": 2
+        },
+        "pipeline": {
+          "async_copies": 6,
+          "async_waits": 4,
+          "async_commits": 6,
+          "ptx_cta_barrier_sites": 6
+        }
+      }
+    },
+    {
+      "id": "fg_logsoftmax_m512_k4096_bf16",
+      "family": "log_softmax_backward",
+      "boundary": false,
+      "source_report": "main/fg_logsoftmax_m512_k4096_bf16.json",
+      "configurations": 4,
+      "validation_records": 35,
+      "selected_variant_label": "contracts",
+      "baseline_config": {
+        "block": 1024,
+        "warps": 4
+      },
+      "selected_config": {
+        "block": 1024,
+        "warps": 4
+      },
+      "selected_configs": {
+        "no_contract": {
+          "block": 1024,
+          "warps": 4
+        },
+        "contracts": {
+          "block": 1024,
+          "warps": 4
+        },
+        "licm": {
+          "block": 1024,
+          "warps": 4
+        },
+        "pipeline": {
+          "block": 1024,
+          "warps": 4
+        },
+        "both": {
+          "block": 1024,
+          "warps": 4
+        }
+      },
+      "speedup_vs_contracts_range": {
+        "no_contract": [
+          1.0019483830462095,
+          1.0088149547057732
+        ],
+        "licm": [
+          0.9846889906312963,
+          1.0048780859004236
+        ],
+        "pipeline": [
+          0.9427917554300153,
+          0.9523593012038316
+        ],
+        "both": [
+          0.9350000338662756,
+          0.9442139276737203
+        ]
+      },
+      "median_us": {
+        "no_contract": 4.141999874264002,
+        "contracts": 4.137999843806028,
+        "licm": 4.166000057011843,
+        "pipeline": 4.377999808639288,
+        "both": 4.404000006616116
+      },
+      "selected_pipeline_changes_code": true,
+      "selected_label_equivalent_to_licm": false,
+      "selected_vs_tuned_no_contract_range": [
+        0.9912620697535713,
+        0.9980554057682234
+      ],
+      "selected_pipeline_resources": {
+        "registers": 30,
+        "spills": 0,
+        "shared": 4096,
+        "async_copies": 6,
+        "loops": 2,
+        "ptx_sha256": "3266488de7bac88206dd95d0d19ff30e4216eb9a6758b4214a6f8f456b7fe1c5",
+        "cubin_sha256": "b5f7a2da3412c4eda769e32d6f48c51d105f36854b67b8c871f8ff87a774d82a"
+      },
+      "same_config_baseline_resources": {
+        "registers": 29,
+        "spills": 0,
+        "shared": 16,
+        "async_copies": 0,
+        "loops": 2,
+        "ptx_sha256": "61fe176b34777abfdc9e3d47a6bd444994503cd683b311184096c66b616fb46d",
+        "cubin_sha256": "e8fc1dc82fa46d1792060a38a4bb833ede06509d0493d5de8e0da247717f4d54"
+      },
+      "selected_variant_static_instruction_counts": {
+        "contracts": {
+          "async_copies": 0,
+          "async_waits": 0,
+          "async_commits": 0,
+          "ptx_cta_barrier_sites": 2
+        },
+        "pipeline": {
+          "async_copies": 6,
+          "async_waits": 4,
+          "async_commits": 6,
+          "ptx_cta_barrier_sites": 6
+        }
+      }
+    },
+    {
+      "id": "fg_logsoftmax_masked",
+      "family": "log_softmax_backward",
+      "boundary": true,
+      "source_report": "main/fg_logsoftmax_masked.json",
+      "configurations": 1,
+      "validation_records": 5
+    },
+    {
+      "id": "fg_rotary_t128_q32_k8_d128_f32",
+      "family": "rotary_embedding",
+      "boundary": false,
+      "source_report": "main/fg_rotary_t128_q32_k8_d128_f32.json",
+      "configurations": 4,
+      "validation_records": 65,
+      "selected_variant_label": "contracts",
+      "baseline_config": {
+        "warps": 8
+      },
+      "selected_config": {
+        "warps": 8
+      },
+      "selected_configs": {
+        "no_contract": {
+          "warps": 4
+        },
+        "contracts": {
+          "warps": 8
+        },
+        "licm": {
+          "warps": 8
+        },
+        "pipeline": {
+          "warps": 2
+        },
+        "both": {
+          "warps": 2
+        }
+      },
+      "speedup_vs_contracts_range": {
+        "no_contract": [
+          0.9987826137239129,
+          1.0007276875337063
+        ],
+        "licm": [
+          0.9956310348767857,
+          1.0014648549077414
+        ],
+        "pipeline": [
+          0.8404669086299726,
+          0.8429394901076216
+        ],
+        "both": [
+          0.8401374811319183,
+          0.8444581032447975
+        ]
+      },
+      "median_us": {
+        "no_contract": 8.21600016206503,
+        "contracts": 8.197999559342861,
+        "licm": 8.186000399291515,
+        "pipeline": 9.727999567985535,
+        "both": 9.730000048875809
+      },
+      "selected_pipeline_changes_code": true,
+      "selected_label_equivalent_to_licm": false,
+      "selected_vs_tuned_no_contract_range": [
+        0.9992728416103889,
+        1.0012188701118336
+      ],
+      "selected_pipeline_resources": {
+        "registers": 26,
+        "spills": 0,
+        "shared": 1024,
+        "async_copies": 8,
+        "loops": 2,
+        "ptx_sha256": "aa903e0ef7552962d03c805a3bd88703eed0ede50c078bab72c4bf37e658c6c5",
+        "cubin_sha256": "ab073aaeadc41f5033c5e5b3d8a0d2b5daab86cb83a9d21a3be0bac0b1cffddf"
+      },
+      "same_config_baseline_resources": {
+        "registers": 26,
+        "spills": 0,
+        "shared": 0,
+        "async_copies": 0,
+        "loops": 2,
+        "ptx_sha256": "911505c3bd08d16b1a9bd75aaad21ee10a4bf74c70070b9df4e8a92ea9980c27",
+        "cubin_sha256": "5c8293fa29ccd2c31355bcc60c1378117841a3f53852abbb6cad20cd82c2c900"
+      },
+      "selected_variant_static_instruction_counts": {
+        "contracts": {
+          "async_copies": 0,
+          "async_waits": 0,
+          "async_commits": 0,
+          "ptx_cta_barrier_sites": 0
+        },
+        "pipeline": {
+          "async_copies": 8,
+          "async_waits": 4,
+          "async_commits": 8,
+          "ptx_cta_barrier_sites": 6
+        }
+      }
+    },
+    {
+      "id": "fg_rotary_t1024_q32_k8_d128_bf16",
+      "family": "rotary_embedding",
+      "boundary": false,
+      "source_report": "main/fg_rotary_t1024_q32_k8_d128_bf16.json",
+      "configurations": 4,
+      "validation_records": 35,
+      "selected_variant_label": "contracts",
+      "baseline_config": {
+        "warps": 4
+      },
+      "selected_config": {
+        "warps": 4
+      },
+      "selected_configs": {
+        "no_contract": {
+          "warps": 4
+        },
+        "contracts": {
+          "warps": 4
+        },
+        "licm": {
+          "warps": 4
+        },
+        "pipeline": {
+          "warps": 4
+        },
+        "both": {
+          "warps": 4
+        }
+      },
+      "speedup_vs_contracts_range": {
+        "no_contract": [
+          0.9993366231689044,
+          1.0046780858281499
+        ],
+        "licm": [
+          0.9958295925075552,
+          1.0066741331318887
+        ],
+        "pipeline": [
+          0.9993379408212412,
+          1.007558972981809
+        ],
+        "both": [
+          1.0013258739715833,
+          1.0022286775748543
+        ]
+      },
+      "median_us": {
+        "no_contract": 9.050000458955765,
+        "contracts": 9.056000038981438,
+        "licm": 9.007999673485756,
+        "pipeline": 9.031999856233597,
+        "both": 9.04799997806549
+      },
+      "selected_pipeline_changes_code": false,
+      "selected_label_equivalent_to_licm": false,
+      "selected_vs_tuned_no_contract_range": [
+        0.9953436967580578,
+        1.000663817192041
+      ],
+      "selected_pipeline_resources": {
+        "registers": 20,
+        "spills": 0,
+        "shared": 0,
+        "async_copies": 0,
+        "loops": 2,
+        "ptx_sha256": "7b4461f390ed4381fbb437f4ef16292cb05d3d5786f5d73e5e19691ff66f37f8",
+        "cubin_sha256": "d0269c63b9338980e2ac7e45544cd68c9f7f4535f79f9e72c638fa748c24ae7a"
+      },
+      "same_config_baseline_resources": {
+        "registers": 20,
+        "spills": 0,
+        "shared": 0,
+        "async_copies": 0,
+        "loops": 2,
+        "ptx_sha256": "7b4461f390ed4381fbb437f4ef16292cb05d3d5786f5d73e5e19691ff66f37f8",
+        "cubin_sha256": "d0269c63b9338980e2ac7e45544cd68c9f7f4535f79f9e72c638fa748c24ae7a"
+      },
+      "selected_variant_static_instruction_counts": {
+        "contracts": {
+          "async_copies": 0,
+          "async_waits": 0,
+          "async_commits": 0,
+          "ptx_cta_barrier_sites": 0
+        },
+        "pipeline": {
+          "async_copies": 0,
+          "async_waits": 0,
+          "async_commits": 0,
+          "ptx_cta_barrier_sites": 0
+        }
+      }
+    },
+    {
+      "id": "fg_rotary_t4096_q16_k4_d64_bf16",
+      "family": "rotary_embedding",
+      "boundary": false,
+      "source_report": "main/fg_rotary_t4096_q16_k4_d64_bf16.json",
+      "configurations": 4,
+      "validation_records": 50,
+      "selected_variant_label": "contracts",
+      "baseline_config": {
+        "warps": 2
+      },
+      "selected_config": {
+        "warps": 2
+      },
+      "selected_configs": {
+        "no_contract": {
+          "warps": 1
+        },
+        "contracts": {
+          "warps": 2
+        },
+        "licm": {
+          "warps": 1
+        },
+        "pipeline": {
+          "warps": 2
+        },
+        "both": {
+          "warps": 2
+        }
+      },
+      "speedup_vs_contracts_range": {
+        "no_contract": [
+          1.0131157536219837,
+          1.0191815824414734
+        ],
+        "licm": [
+          1.0088272323188905,
+          1.0191815824414734
+        ],
+        "pipeline": [
+          0.9949732573928484,
+          0.9993730359932811
+        ],
+        "both": [
+          0.9940901572385344,
+          1.0028177318097238
+        ]
+      },
+      "median_us": {
+        "no_contract": 6.304000038653612,
+        "contracts": 6.390000227838755,
+        "licm": 6.266000214964151,
+        "pipeline": 6.413999944925308,
+        "both": 6.4119999296963215
+      },
+      "selected_pipeline_changes_code": false,
+      "selected_label_equivalent_to_licm": false,
+      "selected_vs_tuned_no_contract_range": [
+        0.9811794259512387,
+        0.9870540423687089
+      ],
+      "selected_pipeline_resources": {
+        "registers": 20,
+        "spills": 0,
+        "shared": 0,
+        "async_copies": 0,
+        "loops": 2,
+        "ptx_sha256": "1c0021bc05c798501ae8a876d50aab8d08a778f908dec9d6fb90ae37da33b927",
+        "cubin_sha256": "b6510ac64ee6ce3d0c3acc9d60e7b491e083703e568261db8b5ba77e189995d1"
+      },
+      "same_config_baseline_resources": {
+        "registers": 20,
+        "spills": 0,
+        "shared": 0,
+        "async_copies": 0,
+        "loops": 2,
+        "ptx_sha256": "1c0021bc05c798501ae8a876d50aab8d08a778f908dec9d6fb90ae37da33b927",
+        "cubin_sha256": "b6510ac64ee6ce3d0c3acc9d60e7b491e083703e568261db8b5ba77e189995d1"
+      },
+      "selected_variant_static_instruction_counts": {
+        "contracts": {
+          "async_copies": 0,
+          "async_waits": 0,
+          "async_commits": 0,
+          "ptx_cta_barrier_sites": 0
+        },
+        "pipeline": {
+          "async_copies": 0,
+          "async_waits": 0,
+          "async_commits": 0,
+          "ptx_cta_barrier_sites": 0
+        }
+      }
+    },
+    {
+      "id": "fg_rotary_masked",
+      "family": "rotary_embedding",
+      "boundary": true,
+      "source_report": "main/fg_rotary_masked.json",
+      "configurations": 1,
+      "validation_records": 5
+    },
+    {
+      "id": "upsample_1x64_32x128_to64x256",
+      "family": "upsample_bilinear2d",
+      "boundary": false,
+      "source_report": "upsample/upsample_1x64_32x128_to64x256.json",
+      "configurations": 4,
+      "validation_records": 35,
+      "selected_variant_label": "contracts",
+      "baseline_config": [
+        64,
+        1,
+        4
+      ],
+      "selected_config": [
+        64,
+        1,
+        4
+      ],
+      "selected_configs": {
+        "no_contract": [
+          64,
+          1,
+          4
+        ],
+        "contracts": [
+          64,
+          1,
+          4
+        ],
+        "licm": [
+          64,
+          1,
+          4
+        ],
+        "pipeline": [
+          64,
+          1,
+          4
+        ],
+        "both": [
+          64,
+          1,
+          4
+        ]
+      },
+      "speedup_vs_contracts_range": {
+        "no_contract": [
+          0.997671910361177,
+          0.9992195612914029
+        ],
+        "licm": [
+          0.9978179384835018,
+          1.0010924291888534
+        ],
+        "pipeline": [
+          0.7564087147144009,
+          0.7580550118962643
+        ],
+        "both": [
+          0.7577227626185716,
+          0.7582495849804047
+        ]
+      },
+      "median_us": {
+        "no_contract": 12.84599956125021,
+        "contracts": 12.838000431656837,
+        "licm": 12.835999950766563,
+        "pipeline": 16.930000856518745,
+        "both": 16.925999894738197
+      },
+      "selected_pipeline_changes_code": true,
+      "selected_label_equivalent_to_licm": false,
+      "selected_vs_tuned_no_contract_range": [
+        1.0007810482688995,
+        1.0023335222878835
+      ],
+      "selected_pipeline_resources": {
+        "registers": 30,
+        "spills": 0,
+        "shared": 1024,
+        "async_copies": 8,
+        "loops": 1,
+        "ptx_sha256": "ae56e79e0587dbea749ce414a062bb8ac406006eb9f093a9329aa2a018ad0a0e",
+        "cubin_sha256": "4ae371d435a68c959f43dda7db1bf03619fb92a9b45c991402ebabbb20c76930"
+      },
+      "same_config_baseline_resources": {
+        "registers": 32,
+        "spills": 0,
+        "shared": 0,
+        "async_copies": 0,
+        "loops": 1,
+        "ptx_sha256": "53e26fbbee5b22794e0f4ef656954e03c3be82c1276d22f5a97d6b1baff54218",
+        "cubin_sha256": "7ff096bc3f3582a2cc9cc0099745632b9375ff6050523c573d73e788d1ae08bb"
+      },
+      "selected_variant_static_instruction_counts": {
+        "contracts": {
+          "async_copies": 0,
+          "async_waits": 0,
+          "async_commits": 0,
+          "ptx_cta_barrier_sites": 0
+        },
+        "pipeline": {
+          "async_copies": 8,
+          "async_waits": 2,
+          "async_commits": 8,
+          "ptx_cta_barrier_sites": 3
+        }
+      }
+    },
+    {
+      "id": "upsample_2x64_64x256_to128x512",
+      "family": "upsample_bilinear2d",
+      "boundary": false,
+      "source_report": "upsample/upsample_2x64_64x256_to128x512.json",
+      "configurations": 4,
+      "validation_records": 35,
+      "selected_variant_label": "contracts",
+      "baseline_config": [
+        64,
+        2,
+        4
+      ],
+      "selected_config": [
+        64,
+        2,
+        4
+      ],
+      "selected_configs": {
+        "no_contract": [
+          64,
+          2,
+          4
+        ],
+        "contracts": [
+          64,
+          2,
+          4
+        ],
+        "licm": [
+          64,
+          2,
+          4
+        ],
+        "pipeline": [
+          64,
+          2,
+          4
+        ],
+        "both": [
+          64,
+          2,
+          4
+        ]
+      },
+      "speedup_vs_contracts_range": {
+        "no_contract": [
+          0.999839460647567,
+          1.0012853568526205
+        ],
+        "licm": [
+          0.9995991227898544,
+          1.0013640666552883
+        ],
+        "pipeline": [
+          0.6562203627164481,
+          0.6584811829173334
+        ],
+        "both": [
+          0.6574084210093554,
+          0.6578822153150841
+        ]
+      },
+      "median_us": {
+        "no_contract": 24.893999099731445,
+        "contracts": 24.91999976336956,
+        "licm": 24.90600012242794,
+        "pipeline": 37.87999972701073,
+        "both": 37.87599876523018
+      },
+      "selected_pipeline_changes_code": true,
+      "selected_label_equivalent_to_licm": false,
+      "selected_vs_tuned_no_contract_range": [
+        0.9987162931687519,
+        1.000160565129455
+      ],
+      "selected_pipeline_resources": {
+        "registers": 32,
+        "spills": 0,
+        "shared": 2048,
+        "async_copies": 8,
+        "loops": 2,
+        "ptx_sha256": "8098496b5cd5b8f589097ea81dc5c6d469a59d1d3821241be50ffa63a98e0cdc",
+        "cubin_sha256": "3da7d00209d3d043caa31de9cc944c3bb3846014d6d8b1881331fbb925337832"
+      },
+      "same_config_baseline_resources": {
+        "registers": 28,
+        "spills": 0,
+        "shared": 0,
+        "async_copies": 0,
+        "loops": 2,
+        "ptx_sha256": "a5b80b3d8ee80586569dc44cfdc338b6dd4aa7027c026c22d917687231934ddb",
+        "cubin_sha256": "3a59c94aba567e431a40a48056096609e6be7c2e8b2d5e5e50d0f77480f8af4b"
+      },
+      "selected_variant_static_instruction_counts": {
+        "contracts": {
+          "async_copies": 0,
+          "async_waits": 0,
+          "async_commits": 0,
+          "ptx_cta_barrier_sites": 0
+        },
+        "pipeline": {
+          "async_copies": 8,
+          "async_waits": 2,
+          "async_commits": 8,
+          "ptx_cta_barrier_sites": 4
+        }
+      }
+    },
+    {
+      "id": "upsample_32x16_128x128_to256x256",
+      "family": "upsample_bilinear2d",
+      "boundary": false,
+      "source_report": "upsample/upsample_32x16_128x128_to256x256.json",
+      "configurations": 4,
+      "validation_records": 35,
+      "selected_variant_label": "contracts",
+      "baseline_config": [
+        64,
+        1,
+        4
+      ],
+      "selected_config": [
+        64,
+        1,
+        4
+      ],
+      "selected_configs": {
+        "no_contract": [
+          64,
+          1,
+          4
+        ],
+        "contracts": [
+          64,
+          1,
+          4
+        ],
+        "licm": [
+          64,
+          1,
+          4
+        ],
+        "pipeline": [
+          64,
+          1,
+          4
+        ],
+        "both": [
+          64,
+          1,
+          4
+        ]
+      },
+      "speedup_vs_contracts_range": {
+        "no_contract": [
+          0.9997613894171063,
+          1.0001193815919176
+        ],
+        "licm": [
+          0.999676285247538,
+          0.9999232782833846
+        ],
+        "pipeline": [
+          0.8538584128860487,
+          0.854258028140148
+        ],
+        "both": [
+          0.8539328383706363,
+          0.8542150433019253
+        ]
+      },
+      "median_us": {
+        "no_contract": 234.65000092983246,
+        "contracts": 234.62000489234924,
+        "licm": 234.63399708271027,
+        "pipeline": 274.68401193618774,
+        "both": 274.6700048446655
+      },
+      "selected_pipeline_changes_code": true,
+      "selected_label_equivalent_to_licm": false,
+      "selected_vs_tuned_no_contract_range": [
+        0.9998806326583456,
+        1.0002386675314925
+      ],
+      "selected_pipeline_resources": {
+        "registers": 32,
+        "spills": 0,
+        "shared": 1024,
+        "async_copies": 8,
+        "loops": 2,
+        "ptx_sha256": "3b4156a8eae78966dc58425b6ba24c372e6d8e003b4939ab594707c87a6999ab",
+        "cubin_sha256": "c983ea853b83681bff0b53b9e433d88bc0c31e991b9f4a736d0c9c4c5543ed97"
+      },
+      "same_config_baseline_resources": {
+        "registers": 28,
+        "spills": 0,
+        "shared": 0,
+        "async_copies": 0,
+        "loops": 2,
+        "ptx_sha256": "3a2af7aff5a53ae76236254352cc00c830948e9bccab04bb0a9632205c9d313f",
+        "cubin_sha256": "7313b01832dab9c250782ca85036d7b4bd9e547b8a08a5c74e2195c337c53d9a"
+      },
+      "selected_variant_static_instruction_counts": {
+        "contracts": {
+          "async_copies": 0,
+          "async_waits": 0,
+          "async_commits": 0,
+          "ptx_cta_barrier_sites": 0
+        },
+        "pipeline": {
+          "async_copies": 8,
+          "async_waits": 2,
+          "async_commits": 8,
+          "ptx_cta_barrier_sites": 4
+        }
+      }
+    },
+    {
+      "id": "upsample_boundary_single_height",
+      "family": "upsample_bilinear2d",
+      "boundary": true,
+      "source_report": "upsample/upsample_boundary_single_height.json",
+      "configurations": 1,
+      "validation_records": 5
+    }
+  ],
+  "conclusion": "No additional profitable automatic-pipeline kernel family found in this bounded study. RMS source stages were already explicit; its both variants equal LICM. Selected neutral BF16 rotary variants are unchanged code. All nine timed workloads from three newly stage-inferred families retain baseline after calibration.",
+  "limitations": [
+    "Purposive candidate selection, not random corpus coverage.",
+    "Fixed automatic two-stage policy and bounded configurations, not exhaustive schedule search.",
+    "FlagGems log-softmax is experimental_ops implementation.",
+    "Upsample exact output tiles only; source modulo-indexed partial tiles can overlap writes.",
+    "Kernel-only timing includes required RMS dgamma reduction; excludes provider dispatch and data preparation.",
+    "Static resource/synchronization differences are not an isolated causal profile.",
+    "RMS selected gain against same-contract baseline does not imply gain against the faster guarded uncontracted source."
+  ]
+}

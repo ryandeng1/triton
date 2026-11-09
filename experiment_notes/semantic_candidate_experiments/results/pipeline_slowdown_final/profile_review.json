@@ -1,0 +1,641 @@
+{
+  "complete": true,
+  "scope": "CPU-only review of nine completed application-replay profiles and the corresponding fixed-launch controls; no kernels or profiler launched by the reviewer.",
+  "evidence_files": {
+    "profile_summary": "profiles/summary.json",
+    "profile_plan": "profiles/plan.json",
+    "profile_commands": "profiles/commands.json",
+    "controls": "controls/{study}.json"
+  },
+  "profile_summary_sha256": "debb0fa8e82e6635fb685229745c0ad231dbfda3210db12318bd7038b5fdbe2e",
+  "protocol": "Sixth launch after five identical warm launches in each application replay; cache-control none, clock-control none. Profiles diagnose the warm-cache regime, not cold application execution. Graph confirmations use three fresh seeds, fifteen shuffled timing rounds and thirty-two repetitions per graph.",
+  "main_conclusion": "The selected regressions are explained best by the cost-benefit balance of the generated pipeline. Stage 2 introduces substantial staging work without sufficient lookahead; deeper schedules recover or reverse the loss for logsoftmax and rotary. Upsample retains enough overhead to remain slower. These results do not establish a fundamental limit of alias contracts.",
+  "metric_names": {
+    "profile_duration_ns": "gpu__time_duration.sum",
+    "dram_read_bytes": "dram__bytes_read.sum",
+    "l2_read_sectors": "lts__t_sectors_srcunit_tex_op_read.sum",
+    "shared_load_wavefronts": "l1tex__data_pipe_lsu_wavefronts_mem_shared_op_ld.sum",
+    "shared_load_bank_conflicts": "l1tex__data_bank_conflicts_pipe_lsu_mem_shared_op_ld.sum",
+    "executed_warp_instructions": "smsp__inst_executed.sum",
+    "active_warps_per_scheduler": "smsp__warps_active.avg.per_cycle_active",
+    "eligible_warps_per_scheduler": "smsp__warps_eligible.avg.per_cycle_active",
+    "issue_active_percent": "smsp__issue_active.avg.pct_of_peak_sustained_active",
+    "achieved_occupancy_percent": "sm__warps_active.avg.pct_of_peak_sustained_active",
+    "register_block_limit": "launch__occupancy_limit_registers",
+    "shared_memory_block_limit": "launch__occupancy_limit_shared_mem",
+    "barrier_stall_per_issue": "smsp__average_warps_issue_stalled_barrier_per_issue_active.ratio",
+    "long_scoreboard_stall_per_issue": "smsp__average_warps_issue_stalled_long_scoreboard_per_issue_active.ratio",
+    "short_scoreboard_stall_per_issue": "smsp__average_warps_issue_stalled_short_scoreboard_per_issue_active.ratio"
+  },
+  "studies": {
+    "upsample": {
+      "case": "upsample_2x64_64x256_to128x512",
+      "config": [
+        64,
+        2,
+        4
+      ],
+      "profile_variant_order": [
+        "baseline",
+        "stages2",
+        "stages3"
+      ],
+      "profile_metrics": {
+        "profile_duration_ns": [
+          37216.0,
+          57120.0,
+          35264.0
+        ],
+        "dram_read_bytes": [
+          256.0,
+          0.0,
+          0.0
+        ],
+        "l2_read_sectors": [
+          1105829.0,
+          1119372.0,
+          1118829.0
+        ],
+        "shared_load_wavefronts": [
+          0.0,
+          1052024.0,
+          1048576.0
+        ],
+        "shared_load_bank_conflicts": [
+          0.0,
+          3448.0,
+          0.0
+        ],
+        "executed_warp_instructions": [
+          8038400.0,
+          13582336.0,
+          15781888.0
+        ],
+        "active_warps_per_scheduler": [
+          3.31,
+          3.39,
+          3.46
+        ],
+        "eligible_warps_per_scheduler": [
+          0.32,
+          0.35,
+          0.67
+        ],
+        "issue_active_percent": [
+          27.4,
+          30.8,
+          47.91
+        ],
+        "achieved_occupancy_percent": [
+          20.32,
+          21.19,
+          21.62
+        ],
+        "register_block_limit": [
+          16.0,
+          16.0,
+          16.0
+        ],
+        "shared_memory_block_limit": [
+          32.0,
+          33.0,
+          26.0
+        ],
+        "barrier_stall_per_issue": [
+          0.0,
+          0.58,
+          0.55
+        ],
+        "long_scoreboard_stall_per_issue": [
+          9.79,
+          7.29,
+          2.48
+        ],
+        "short_scoreboard_stall_per_issue": [
+          0.09,
+          0.83,
+          1.54
+        ]
+      },
+      "graph_timings": {
+        "baseline": {
+          "median_us": 24.741,
+          "seed_median_us_range": [
+            24.728,
+            24.749
+          ],
+          "speedup_vs_fixed_baseline_range": [
+            1.0,
+            1.0
+          ]
+        },
+        "stages2": {
+          "median_us": 37.797999,
+          "seed_median_us_range": [
+            37.790999,
+            37.840001
+          ],
+          "speedup_vs_fixed_baseline_range": [
+            0.653488,
+            0.654891
+          ]
+        },
+        "stages3": {
+          "median_us": 32.386001,
+          "seed_median_us_range": [
+            32.364,
+            32.409001
+          ],
+          "speedup_vs_fixed_baseline_range": [
+            0.763399,
+            0.764188
+          ]
+        },
+        "stages4": {
+          "median_us": 32.547001,
+          "seed_median_us_range": [
+            32.543998,
+            32.556999
+          ],
+          "speedup_vs_fixed_baseline_range": [
+            0.759833,
+            0.760408
+          ]
+        },
+        "cache_ca_baseline": {
+          "median_us": 24.741,
+          "seed_median_us_range": [
+            24.716999,
+            24.743
+          ],
+          "speedup_vs_fixed_baseline_range": [
+            0.999919,
+            1.000445
+          ]
+        },
+        "cache_ca_stages2": {
+          "median_us": 37.79,
+          "seed_median_us_range": [
+            37.79,
+            37.806001
+          ],
+          "speedup_vs_fixed_baseline_range": [
+            0.654076,
+            0.654909
+          ]
+        },
+        "cache_ca_stages3": {
+          "median_us": 32.386001,
+          "seed_median_us_range": [
+            32.375999,
+            32.387
+          ],
+          "speedup_vs_fixed_baseline_range": [
+            0.763516,
+            0.764188
+          ]
+        }
+      },
+      "supported": "Stage 2 adds substantial on-chip work without a measurable reduction in external-memory requests or occupancy. Stage 3 improves latency hiding but remains slower in the CUDA-graph benchmark.",
+      "evidence": [
+        "Stage 2 executes 69.0% more warp instructions and adds about 1.05 million shared-load wavefronts. L2 read sectors change only 1.22%, DRAM reads are negligible, register block limit is unchanged, and achieved occupancy rises slightly.",
+        "Stage 3 executes still more instructions while eligible warps and issue activity rise and long-scoreboard stalls fall. It improves graph runtime versus stage 2 but remains about 31% slower than baseline.",
+        "The cache-ca intervention is neutral; the original async copies already use ca."
+      ],
+      "not_established": [
+        "The individual portions of the slowdown attributable to extra instructions, shared loads, and synchronization were not separately measured.",
+        "The data do not support an off-chip bandwidth increase or an occupancy collapse as the primary cause.",
+        "The Nsight duration ranks stage 3 faster than baseline, opposite to all three graph confirmations; profile duration cannot support the performance claim."
+      ]
+    },
+    "logsoftmax": {
+      "case": "fg_logsoftmax_m256_k8192_f32",
+      "config": {
+        "block": 1024,
+        "warps": 8
+      },
+      "profile_variant_order": [
+        "baseline",
+        "stages2",
+        "stages3"
+      ],
+      "profile_metrics": {
+        "profile_duration_ns": [
+          9888.0,
+          10848.0,
+          8192.0
+        ],
+        "dram_read_bytes": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "l2_read_sectors": [
+          537552.0,
+          786432.0,
+          786432.0
+        ],
+        "shared_load_wavefronts": [
+          16384.0,
+          212992.0,
+          212992.0
+        ],
+        "shared_load_bank_conflicts": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "executed_warp_instructions": [
+          1552384.0,
+          1933312.0,
+          1964032.0
+        ],
+        "active_warps_per_scheduler": [
+          3.37,
+          3.38,
+          3.44
+        ],
+        "eligible_warps_per_scheduler": [
+          0.33,
+          0.34,
+          0.53
+        ],
+        "issue_active_percent": [
+          23.51,
+          24.86,
+          34.86
+        ],
+        "achieved_occupancy_percent": [
+          20.78,
+          21.15,
+          21.4
+        ],
+        "register_block_limit": [
+          8.0,
+          10.0,
+          8.0
+        ],
+        "shared_memory_block_limit": [
+          28.0,
+          14.0,
+          9.0
+        ],
+        "barrier_stall_per_issue": [
+          0.46,
+          0.91,
+          0.9
+        ],
+        "long_scoreboard_stall_per_issue": [
+          7.42,
+          6.59,
+          1.27
+        ],
+        "short_scoreboard_stall_per_issue": [
+          2.56,
+          2.89,
+          3.46
+        ]
+      },
+      "graph_timings": {
+        "baseline": {
+          "median_us": 6.224,
+          "seed_median_us_range": [
+            6.22,
+            6.229
+          ],
+          "speedup_vs_fixed_baseline_range": [
+            1.0,
+            1.0
+          ]
+        },
+        "stages2": {
+          "median_us": 7.083,
+          "seed_median_us_range": [
+            7.057,
+            7.111
+          ],
+          "speedup_vs_fixed_baseline_range": [
+            0.875967,
+            0.881961
+          ]
+        },
+        "stages3": {
+          "median_us": 5.586,
+          "seed_median_us_range": [
+            5.582,
+            5.593
+          ],
+          "speedup_vs_fixed_baseline_range": [
+            1.113498,
+            1.115012
+          ]
+        },
+        "stages4": {
+          "median_us": 5.651,
+          "seed_median_us_range": [
+            5.639,
+            5.653
+          ],
+          "speedup_vs_fixed_baseline_range": [
+            1.101398,
+            1.103032
+          ]
+        },
+        "sum_only2": {
+          "median_us": 6.452,
+          "seed_median_us_range": [
+            6.442,
+            6.461
+          ],
+          "speedup_vs_fixed_baseline_range": [
+            0.964042,
+            0.96616
+          ]
+        },
+        "output_only2": {
+          "median_us": 6.895,
+          "seed_median_us_range": [
+            6.856,
+            6.901
+          ],
+          "speedup_vs_fixed_baseline_range": [
+            0.902103,
+            0.907818
+          ]
+        },
+        "cache_ca_baseline": {
+          "median_us": 6.218,
+          "seed_median_us_range": [
+            6.212,
+            6.223
+          ],
+          "speedup_vs_fixed_baseline_range": [
+            1.000964,
+            1.001288
+          ]
+        },
+        "cache_ca_stages2": {
+          "median_us": 7.539,
+          "seed_median_us_range": [
+            7.532,
+            7.561
+          ],
+          "speedup_vs_fixed_baseline_range": [
+            0.823833,
+            0.82581
+          ]
+        },
+        "cache_ca_stages3": {
+          "median_us": 6.033,
+          "seed_median_us_range": [
+            6.03,
+            6.038
+          ],
+          "speedup_vs_fixed_baseline_range": [
+            1.030142,
+            1.033002
+          ]
+        }
+      },
+      "supported": "Two-stage scheduling pays shared staging and synchronization costs while providing insufficient useful lookahead. Increasing depth to three reverses the measured regression at this fixed launch.",
+      "evidence": [
+        "Stage 2 adds 24.5% executed instructions, raises shared-load wavefronts from 16,384 to 212,992 and L2 read sectors by 46.3%. DRAM reads remain zero and achieved occupancy does not decline.",
+        "Stages 2 and 3 have identical L2-read and shared-load counts. Stage 3 adds only 1.6% executed instructions while eligible warps rise from 0.34 to 0.53 and long-scoreboard stalls per issue fall from 6.59 to 1.27.",
+        "Graph timing changes from about 6.22 us baseline to 7.08 us at stage 2 and 5.59 us at stage 3. Selective stage-2 controls show the output loop contributes more loss than the sum loop.",
+        "Forcing ca makes the pipelined variants slower, so replacing cache bypass alone does not recover the loss."
+      ],
+      "not_established": [
+        "Extra L2 traffic is observed, but the study does not isolate its contribution to runtime.",
+        "Profiler stall changes corroborate the stage-depth intervention; they do not independently prove a precise time decomposition."
+      ]
+    },
+    "rotary_w2": {
+      "case": "fg_rotary_t128_q32_k8_d128_f32",
+      "config": {
+        "warps": 2
+      },
+      "profile_variant_order": [
+        "baseline",
+        "stages2",
+        "stages4"
+      ],
+      "profile_metrics": {
+        "profile_duration_ns": [
+          10816.0,
+          12096.0,
+          6752.0
+        ],
+        "dram_read_bytes": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "l2_read_sectors": [
+          83979.0,
+          83975.0,
+          83984.0
+        ],
+        "shared_load_wavefronts": [
+          0.0,
+          40960.0,
+          40960.0
+        ],
+        "shared_load_bank_conflicts": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "executed_warp_instructions": [
+          202496.0,
+          291840.0,
+          302080.0
+        ],
+        "active_warps_per_scheduler": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "eligible_warps_per_scheduler": [
+          0.05,
+          0.06,
+          0.15
+        ],
+        "issue_active_percent": [
+          5.11,
+          6.35,
+          15.26
+        ],
+        "achieved_occupancy_percent": [
+          3.12,
+          3.12,
+          3.13
+        ],
+        "register_block_limit": [
+          32.0,
+          32.0,
+          32.0
+        ],
+        "shared_memory_block_limit": [
+          32.0,
+          32.0,
+          33.0
+        ],
+        "barrier_stall_per_issue": [
+          0.0,
+          0.44,
+          0.7
+        ],
+        "long_scoreboard_stall_per_issue": [
+          16.49,
+          11.43,
+          2.36
+        ],
+        "short_scoreboard_stall_per_issue": [
+          0.29,
+          1.05,
+          0.69
+        ]
+      },
+      "graph_timings": {
+        "baseline": {
+          "median_us": 8.401,
+          "seed_median_us_range": [
+            8.335,
+            8.411
+          ],
+          "speedup_vs_fixed_baseline_range": [
+            1.0,
+            1.0
+          ]
+        },
+        "stages2": {
+          "median_us": 9.621,
+          "seed_median_us_range": [
+            9.573,
+            9.631
+          ],
+          "speedup_vs_fixed_baseline_range": [
+            0.870678,
+            0.874233
+          ]
+        },
+        "stages3": {
+          "median_us": 5.58,
+          "seed_median_us_range": [
+            5.569,
+            5.586
+          ],
+          "speedup_vs_fixed_baseline_range": [
+            1.496678,
+            1.505728
+          ]
+        },
+        "stages4": {
+          "median_us": 4.358,
+          "seed_median_us_range": [
+            4.338,
+            4.364
+          ],
+          "speedup_vs_fixed_baseline_range": [
+            1.921392,
+            1.930014
+          ]
+        },
+        "q_only2": {
+          "median_us": 9.295,
+          "seed_median_us_range": [
+            9.26,
+            9.301
+          ],
+          "speedup_vs_fixed_baseline_range": [
+            0.900108,
+            0.904895
+          ]
+        },
+        "k_only2": {
+          "median_us": 8.674,
+          "seed_median_us_range": [
+            8.64,
+            8.68
+          ],
+          "speedup_vs_fixed_baseline_range": [
+            0.964699,
+            0.969009
+          ]
+        },
+        "cache_ca_baseline": {
+          "median_us": 8.401,
+          "seed_median_us_range": [
+            8.351,
+            8.404
+          ],
+          "speedup_vs_fixed_baseline_range": [
+            0.998084,
+            1.000833
+          ]
+        },
+        "cache_ca_stages2": {
+          "median_us": 9.622,
+          "seed_median_us_range": [
+            9.611,
+            9.625
+          ],
+          "speedup_vs_fixed_baseline_range": [
+            0.867235,
+            0.874143
+          ]
+        },
+        "cache_ca_stages3": {
+          "median_us": 5.578,
+          "seed_median_us_range": [
+            5.545,
+            5.579
+          ],
+          "speedup_vs_fixed_baseline_range": [
+            1.503156,
+            1.507618
+          ]
+        }
+      },
+      "supported": "Stage 2 adds staging work with little improvement in readiness. Stage 4 provides enough lookahead to offset that cost and substantially improves the fixed-launch graph benchmark.",
+      "evidence": [
+        "Stage 2 adds 44.1% executed instructions and 40,960 shared-load wavefronts, with effectively unchanged L2 reads, zero DRAM reads, unchanged block limits and unchanged achieved occupancy.",
+        "Stage 4 has the same shared-load wavefront count as stage 2 and only 3.5% more instructions. Eligible warps rise from 0.06 to 0.15 and long-scoreboard stalls per issue fall from 11.43 to 2.36.",
+        "Graph timing changes from about 8.40 us baseline to 9.62 us at stage 2 and 4.36 us at stage 4. The same direction holds at eight warps.",
+        "Forcing ca is neutral because the original async copies already use ca."
+      ],
+      "not_established": [
+        "The stage-4 gain is a fixed-launch result for this shape, not a completed independent tuning or cross-shape validation claim.",
+        "Achieved occupancy remains about 3.12% in all variants; increasing residency is not the mechanism supported by these profiles."
+      ]
+    }
+  },
+  "limitations": [
+    "Performance claims use graph timings. Profiler duration can disagree in ranking: upsample stage 3 is faster than baseline in Nsight but slower in all graph confirmations.",
+    "Clocks were uncontrolled and no clock-frequency metric was collected. Clock or launch-regime differences could contribute to profile/graph discrepancies, but were not demonstrated.",
+    "Short-kernel multi-pass counters are diagnostic. Rotary baseline L2 hits (83,987) slightly exceed read sectors (83,979); do not interpret the derived hit rate literally.",
+    "Stall values are per issued instruction, not percentages of elapsed time. A changed instruction denominator and overlapping warp stalls preclude additive runtime attribution.",
+    "Long scoreboard denotes L1TEX dependencies and does not by itself establish DRAM bandwidth pressure. Short scoreboard includes shared loads and other MIO operations.",
+    "Ordinary global-load sectors are not sufficient to account for all asynchronous traffic. Conclusions about memory traffic use L2 sectors and DRAM bytes alongside saved code.",
+    "NCU per-block shared-memory figures and compiler user-shared-memory figures differ by 1,024 bytes in these captures; they are distinct resource measures.",
+    "The interventions preserve the computation and required synchronization, but do not isolate synchronization cost from address/control instruction cost or shared-memory loads."
+  ],
+  "methodology_audit": {
+    "same_config_within_study": true,
+    "same_alias_contracts_within_study": true,
+    "licm_disabled": true,
+    "source_stage_controls_disable_auto_inference": true,
+    "cache_controls_can_combine_with_auto_inference": true,
+    "fresh_inputs_three_seeds": true,
+    "complete_output_oracles_and_bitwise_comparisons_passed": true,
+    "input_guards_checked": true,
+    "selected_loop_ast_inverse_audits": true
+  },
+  "documentation": "/opt/nvidia/nsight-compute/2025.3.1/docs/ProfilingGuide/index.html (application-replay, cache-control, clock-control, range-and-precision, warp-stall metrics)",
+  "readme_review": {
+    "numerical_and_profile_causal_claims_crosschecked": true,
+    "variant_validations": 126,
+    "bitwise_output_comparisons": 204,
+    "findings": "No correction required to profile interpretation, timing table, or validation counts. Static schedule/layout claims are supported by the separately retained static-mechanism analysis, rather than attributed to profiler counters."
+  }
+}

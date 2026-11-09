@@ -1,4 +1,5 @@
 // RUN: triton-opt %s -split-input-file -tritongpu-assign-latencies="num-stages=3 contract-pipeline-stages=2" -tritongpu-schedule-loops -tritongpu-pipeline -canonicalize | FileCheck %s --check-prefix=CONTRACT
+// RUN: triton-opt %s -split-input-file -tritongpu-assign-latencies="num-stages=3 contract-pipeline-stages=2" | FileCheck %s --check-prefix=TRIP
 // RUN: triton-opt %s -split-input-file -tritongpu-pipeline | FileCheck %s --check-prefix=RAW
 // RUN: triton-opt %s -split-input-file -tritongpu-assign-latencies -tritongpu-schedule-loops -tritongpu-pipeline -canonicalize | FileCheck %s
 
@@ -613,6 +614,157 @@ module attributes {"ttg.num-ctas" = 1 : i32, "ttg.num-warps" = 4 : i32, ttg.targ
       %y = arith.addf %x, %acc {loop.cluster = 0 : i32, loop.stage = 2 : i32} : tensor<128xf32, #guard>
       scf.yield %y : tensor<128xf32, #guard>
     } {tt.num_stages = 3 : i32, tt.scheduled_max_stage = 2 : i32, ttg.global_pipeline_preprotocol_proof}
+    tt.return %result : tensor<128xf32, #guard>
+  }
+}
+
+// -----
+
+// Inspect inference before canonicalization folds the zero/single-trip loops.
+#guard = #ttg.blocked<{sizePerThread = [1], threadsPerWarp = [32], warpsPerCTA = [4], order = [0]}>
+module attributes {"ttg.num-ctas" = 1 : i32, "ttg.num-warps" = 4 : i32, ttg.target = "cuda:90", "ttg.threads-per-warp" = 32 : i32} {
+
+// TRIP-LABEL: @contract_trip_zero
+// TRIP: scf.for
+// TRIP-NOT: tt.experimental_contract_pipeline
+// TRIP-NOT: tt.num_stages
+// TRIP: tt.return
+  tt.func @contract_trip_zero(%p: !tt.ptr<f32> {tt.experimental_immutable = 1 : i32}) -> tensor<128xf32, #guard> {
+    %lower = arith.constant 0 : i32
+    %upper = arith.constant 0 : i32
+    %one = arith.constant 1 : i32
+    %zero = arith.constant dense<0.0> : tensor<128xf32, #guard>
+    %cols = tt.make_range {end = 128 : i32, start = 0 : i32} : tensor<128xi32, #guard>
+    %base = tt.splat %p : !tt.ptr<f32> -> tensor<128x!tt.ptr<f32>, #guard>
+    %ptrs = tt.addptr %base, %cols : tensor<128x!tt.ptr<f32>, #guard>, tensor<128xi32, #guard>
+    %result = scf.for %i = %lower to %upper step %one iter_args(%acc = %zero) -> tensor<128xf32, #guard> : i32 {
+      %x = tt.load %ptrs : tensor<128x!tt.ptr<f32>, #guard>
+      %sum = arith.addf %acc, %x : tensor<128xf32, #guard>
+      scf.yield %sum : tensor<128xf32, #guard>
+    }
+    tt.return %result : tensor<128xf32, #guard>
+  }
+
+// TRIP-LABEL: @contract_trip_one_negative_bounds
+// TRIP: scf.for
+// TRIP-NOT: tt.experimental_contract_pipeline
+// TRIP-NOT: tt.num_stages
+// TRIP: tt.return
+  tt.func @contract_trip_one_negative_bounds(%p: !tt.ptr<f32> {tt.experimental_immutable = 1 : i32}) -> tensor<128xf32, #guard> {
+    %lower = arith.constant -3 : i32
+    %upper = arith.constant -2 : i32
+    %one = arith.constant 1 : i32
+    %zero = arith.constant dense<0.0> : tensor<128xf32, #guard>
+    %cols = tt.make_range {end = 128 : i32, start = 0 : i32} : tensor<128xi32, #guard>
+    %base = tt.splat %p : !tt.ptr<f32> -> tensor<128x!tt.ptr<f32>, #guard>
+    %ptrs = tt.addptr %base, %cols : tensor<128x!tt.ptr<f32>, #guard>, tensor<128xi32, #guard>
+    %result = scf.for %i = %lower to %upper step %one iter_args(%acc = %zero) -> tensor<128xf32, #guard> : i32 {
+      %x = tt.load %ptrs : tensor<128x!tt.ptr<f32>, #guard>
+      %sum = arith.addf %acc, %x : tensor<128xf32, #guard>
+      scf.yield %sum : tensor<128xf32, #guard>
+    }
+    tt.return %result : tensor<128xf32, #guard>
+  }
+
+// TRIP-LABEL: @contract_trip_two
+// TRIP: scf.for
+// TRIP: tt.experimental_contract_pipeline = 2 : i32
+// TRIP: tt.return
+  tt.func @contract_trip_two(%p: !tt.ptr<f32> {tt.experimental_immutable = 1 : i32}) -> tensor<128xf32, #guard> {
+    %lower = arith.constant 0 : i32
+    %upper = arith.constant 2 : i32
+    %one = arith.constant 1 : i32
+    %zero = arith.constant dense<0.0> : tensor<128xf32, #guard>
+    %cols = tt.make_range {end = 128 : i32, start = 0 : i32} : tensor<128xi32, #guard>
+    %base = tt.splat %p : !tt.ptr<f32> -> tensor<128x!tt.ptr<f32>, #guard>
+    %ptrs = tt.addptr %base, %cols : tensor<128x!tt.ptr<f32>, #guard>, tensor<128xi32, #guard>
+    %result = scf.for %i = %lower to %upper step %one iter_args(%acc = %zero) -> tensor<128xf32, #guard> : i32 {
+      %x = tt.load %ptrs : tensor<128x!tt.ptr<f32>, #guard>
+      %sum = arith.addf %acc, %x : tensor<128xf32, #guard>
+      scf.yield %sum : tensor<128xf32, #guard>
+    }
+    tt.return %result : tensor<128xf32, #guard>
+  }
+
+// TRIP-LABEL: @contract_trip_signed_max_zero
+// TRIP: scf.for
+// TRIP-NOT: tt.experimental_contract_pipeline
+// TRIP-NOT: tt.num_stages
+// TRIP: tt.return
+  tt.func @contract_trip_signed_max_zero(%p: !tt.ptr<f32> {tt.experimental_immutable = 1 : i32}) -> tensor<128xf32, #guard> {
+    %lower = arith.constant 9223372036854775807 : i64
+    %upper = arith.constant 9223372036854775807 : i64
+    %one = arith.constant 1 : i64
+    %zero = arith.constant dense<0.0> : tensor<128xf32, #guard>
+    %cols = tt.make_range {end = 128 : i32, start = 0 : i32} : tensor<128xi32, #guard>
+    %base = tt.splat %p : !tt.ptr<f32> -> tensor<128x!tt.ptr<f32>, #guard>
+    %ptrs = tt.addptr %base, %cols : tensor<128x!tt.ptr<f32>, #guard>, tensor<128xi32, #guard>
+    %result = scf.for %i = %lower to %upper step %one iter_args(%acc = %zero) -> tensor<128xf32, #guard> : i64 {
+      %x = tt.load %ptrs : tensor<128x!tt.ptr<f32>, #guard>
+      %sum = arith.addf %acc, %x : tensor<128xf32, #guard>
+      scf.yield %sum : tensor<128xf32, #guard>
+    }
+    tt.return %result : tensor<128xf32, #guard>
+  }
+
+// TRIP-LABEL: @contract_trip_unsigned_max_one
+// TRIP: scf.for
+// TRIP-NOT: tt.experimental_contract_pipeline
+// TRIP-NOT: tt.num_stages
+// TRIP: tt.return
+  tt.func @contract_trip_unsigned_max_one(%p: !tt.ptr<f32> {tt.experimental_immutable = 1 : i32}) -> tensor<128xf32, #guard> {
+    %lower = arith.constant -2 : i64
+    %upper = arith.constant -1 : i64
+    %one = arith.constant 1 : i64
+    %zero = arith.constant dense<0.0> : tensor<128xf32, #guard>
+    %cols = tt.make_range {end = 128 : i32, start = 0 : i32} : tensor<128xi32, #guard>
+    %base = tt.splat %p : !tt.ptr<f32> -> tensor<128x!tt.ptr<f32>, #guard>
+    %ptrs = tt.addptr %base, %cols : tensor<128x!tt.ptr<f32>, #guard>, tensor<128xi32, #guard>
+    %result = scf.for unsigned %i = %lower to %upper step %one iter_args(%acc = %zero) -> tensor<128xf32, #guard> : i64 {
+      %x = tt.load %ptrs : tensor<128x!tt.ptr<f32>, #guard>
+      %sum = arith.addf %acc, %x : tensor<128xf32, #guard>
+      scf.yield %sum : tensor<128xf32, #guard>
+    }
+    tt.return %result : tensor<128xf32, #guard>
+  }
+
+// TRIP-LABEL: @contract_trip_dynamic
+// TRIP: scf.for
+// TRIP: tt.experimental_contract_pipeline = 2 : i32
+// TRIP: tt.return
+  tt.func @contract_trip_dynamic(%p: !tt.ptr<f32> {tt.experimental_immutable = 1 : i32}, %upper: i32) -> tensor<128xf32, #guard> {
+    %lower = arith.constant 0 : i32
+    %one = arith.constant 1 : i32
+    %zero = arith.constant dense<0.0> : tensor<128xf32, #guard>
+    %cols = tt.make_range {end = 128 : i32, start = 0 : i32} : tensor<128xi32, #guard>
+    %base = tt.splat %p : !tt.ptr<f32> -> tensor<128x!tt.ptr<f32>, #guard>
+    %ptrs = tt.addptr %base, %cols : tensor<128x!tt.ptr<f32>, #guard>, tensor<128xi32, #guard>
+    %result = scf.for %i = %lower to %upper step %one iter_args(%acc = %zero) -> tensor<128xf32, #guard> : i32 {
+      %x = tt.load %ptrs : tensor<128x!tt.ptr<f32>, #guard>
+      %sum = arith.addf %acc, %x : tensor<128xf32, #guard>
+      scf.yield %sum : tensor<128xf32, #guard>
+    }
+    tt.return %result : tensor<128xf32, #guard>
+  }
+
+// TRIP-LABEL: @contract_trip_explicit_one
+// TRIP: scf.for
+// TRIP-NOT: tt.experimental_contract_pipeline
+// TRIP: tt.num_stages = 3 : i32
+// TRIP: tt.return
+  tt.func @contract_trip_explicit_one(%p: !tt.ptr<f32> {tt.experimental_immutable = 1 : i32}) -> tensor<128xf32, #guard> {
+    %lower = arith.constant 0 : i32
+    %upper = arith.constant 1 : i32
+    %one = arith.constant 1 : i32
+    %zero = arith.constant dense<0.0> : tensor<128xf32, #guard>
+    %cols = tt.make_range {end = 128 : i32, start = 0 : i32} : tensor<128xi32, #guard>
+    %base = tt.splat %p : !tt.ptr<f32> -> tensor<128x!tt.ptr<f32>, #guard>
+    %ptrs = tt.addptr %base, %cols : tensor<128x!tt.ptr<f32>, #guard>, tensor<128xi32, #guard>
+    %result = scf.for %i = %lower to %upper step %one iter_args(%acc = %zero) -> tensor<128xf32, #guard> : i32 {
+      %x = tt.load %ptrs : tensor<128x!tt.ptr<f32>, #guard>
+      %sum = arith.addf %acc, %x : tensor<128xf32, #guard>
+      scf.yield %sum : tensor<128xf32, #guard>
+    } {tt.num_stages = 3 : i32}
     tt.return %result : tensor<128xf32, #guard>
   }
 }

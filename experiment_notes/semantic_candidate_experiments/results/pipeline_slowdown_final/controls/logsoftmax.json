@@ -1,0 +1,2171 @@
+{
+  "study": "logsoftmax",
+  "config": {
+    "block": 1024,
+    "warps": 8
+  },
+  "confirmations": [
+    {
+      "seed": 71011,
+      "validation": {
+        "baseline": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 2.86864188847602e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "dx": true
+          }
+        },
+        "stages2": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 2.86864188847602e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "dx": true
+          }
+        },
+        "stages3": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 2.86864188847602e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "dx": true
+          }
+        },
+        "stages4": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 2.86864188847602e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "dx": true
+          }
+        },
+        "sum_only2": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 2.86864188847602e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "dx": true
+          }
+        },
+        "output_only2": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 2.86864188847602e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "dx": true
+          }
+        },
+        "cache_ca_baseline": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 2.86864188847602e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "dx": true
+          }
+        },
+        "cache_ca_stages2": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 2.86864188847602e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "dx": true
+          }
+        },
+        "cache_ca_stages3": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 2.86864188847602e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "dx": true
+          }
+        }
+      },
+      "timing": {
+        "samples_us": {
+          "baseline": [
+            6.215000059455633,
+            6.219999864697456,
+            6.262999959290028,
+            6.2409997917711735,
+            6.196000147610903,
+            6.2409997917711735,
+            6.24299980700016,
+            6.258000154048204,
+            6.225000135600567,
+            6.21799984946847,
+            6.233000196516514,
+            6.209999788552523,
+            6.231000181287527,
+            6.219999864697456,
+            6.22900016605854
+          ],
+          "stages2": [
+            7.102999836206436,
+            7.096999790519476,
+            7.11800018325448,
+            7.120000198483467,
+            7.11899995803833,
+            7.071000058203936,
+            7.110999897122383,
+            7.114000152796507,
+            7.11800018325448,
+            7.075000088661909,
+            7.127999793738127,
+            7.098000030964613,
+            7.081999909132719,
+            7.062999997287989,
+            7.12599977850914
+          ],
+          "stages3": [
+            5.588000174611807,
+            5.58099988847971,
+            5.58699993416667,
+            5.628999788314104,
+            5.5970000103116035,
+            5.609000101685524,
+            5.594000220298767,
+            5.601000040769577,
+            5.588999949395657,
+            5.619000177830458,
+            5.59299997985363,
+            5.576000083237886,
+            5.570000037550926,
+            5.582000128924847,
+            5.59299997985363
+          ],
+          "stages4": [
+            5.797999911010265,
+            5.661999806761742,
+            5.634999834001064,
+            5.644000135362148,
+            5.652999971061945,
+            5.654000211507082,
+            5.656000226736069,
+            5.667000077664852,
+            5.59200020506978,
+            5.644999910145998,
+            5.642999894917011,
+            5.6409998796880245,
+            5.657000001519918,
+            5.667000077664852,
+            5.630999803543091
+          ],
+          "sum_only2": [
+            6.5100002102553844,
+            6.4929998479783535,
+            6.444000173360109,
+            6.4690001308918,
+            6.424999795854092,
+            6.48800004273653,
+            6.403000093996525,
+            6.461000069975853,
+            6.422999780625105,
+            6.479000207036734,
+            6.471000146120787,
+            6.484000012278557,
+            6.442999932914972,
+            6.442999932914972,
+            6.430000066757202
+          ],
+          "output_only2": [
+            6.901000160723925,
+            6.9229998625814915,
+            6.928999908268452,
+            6.8789999932050705,
+            6.918000057339668,
+            6.876000203192234,
+            6.858999840915203,
+            6.88599981367588,
+            6.932999938726425,
+            6.868999917060137,
+            6.876999977976084,
+            6.924999877810478,
+            6.909999996423721,
+            6.883000023663044,
+            6.905000191181898
+          ],
+          "cache_ca_baseline": [
+            6.22300012037158,
+            6.235000211745501,
+            6.213000044226646,
+            6.237000226974487,
+            6.237000226974487,
+            6.22399989515543,
+            6.206999998539686,
+            6.221000105142593,
+            6.260999944061041,
+            6.252000108361244,
+            6.221000105142593,
+            6.184999831020832,
+            6.246999837458134,
+            6.1980001628398895,
+            6.215999834239483
+          ],
+          "cache_ca_stages2": [
+            7.579000201076269,
+            7.536999881267548,
+            7.586000021547079,
+            7.573999930173159,
+            7.571999914944172,
+            7.592999842017889,
+            7.5610000640153885,
+            7.546000182628632,
+            7.536999881267548,
+            7.573999930173159,
+            7.538999896496534,
+            7.499999832361937,
+            7.5240000151097775,
+            7.557999808341265,
+            7.5889998115599155
+          ],
+          "cache_ca_stages3": [
+            6.058999802917242,
+            5.985000170767307,
+            6.022000219672918,
+            6.0629998333752155,
+            6.047999951988459,
+            6.029999814927578,
+            6.029000040143728,
+            6.029999814927578,
+            6.029000040143728,
+            6.031999830156565,
+            6.020000204443932,
+            6.031000055372715,
+            6.020999979227781,
+            6.051000207662582,
+            6.041999906301498
+          ]
+        },
+        "orders": [
+          [
+            "stages4",
+            "cache_ca_stages3",
+            "stages2",
+            "cache_ca_stages2",
+            "cache_ca_baseline",
+            "stages3",
+            "output_only2",
+            "baseline",
+            "sum_only2"
+          ],
+          [
+            "output_only2",
+            "sum_only2",
+            "cache_ca_baseline",
+            "stages4",
+            "cache_ca_stages2",
+            "stages3",
+            "stages2",
+            "cache_ca_stages3",
+            "baseline"
+          ],
+          [
+            "stages4",
+            "cache_ca_stages2",
+            "cache_ca_baseline",
+            "sum_only2",
+            "stages2",
+            "output_only2",
+            "stages3",
+            "cache_ca_stages3",
+            "baseline"
+          ],
+          [
+            "stages4",
+            "cache_ca_stages2",
+            "stages3",
+            "cache_ca_baseline",
+            "output_only2",
+            "stages2",
+            "baseline",
+            "sum_only2",
+            "cache_ca_stages3"
+          ],
+          [
+            "cache_ca_baseline",
+            "stages2",
+            "sum_only2",
+            "stages3",
+            "stages4",
+            "baseline",
+            "cache_ca_stages2",
+            "output_only2",
+            "cache_ca_stages3"
+          ],
+          [
+            "output_only2",
+            "baseline",
+            "stages3",
+            "stages2",
+            "cache_ca_stages3",
+            "stages4",
+            "cache_ca_stages2",
+            "cache_ca_baseline",
+            "sum_only2"
+          ],
+          [
+            "baseline",
+            "cache_ca_stages2",
+            "cache_ca_stages3",
+            "output_only2",
+            "stages3",
+            "stages2",
+            "stages4",
+            "sum_only2",
+            "cache_ca_baseline"
+          ],
+          [
+            "stages4",
+            "cache_ca_baseline",
+            "cache_ca_stages2",
+            "stages2",
+            "sum_only2",
+            "stages3",
+            "baseline",
+            "output_only2",
+            "cache_ca_stages3"
+          ],
+          [
+            "stages3",
+            "stages4",
+            "baseline",
+            "stages2",
+            "cache_ca_baseline",
+            "sum_only2",
+            "cache_ca_stages2",
+            "cache_ca_stages3",
+            "output_only2"
+          ],
+          [
+            "cache_ca_stages3",
+            "output_only2",
+            "cache_ca_baseline",
+            "baseline",
+            "cache_ca_stages2",
+            "stages4",
+            "stages3",
+            "stages2",
+            "sum_only2"
+          ],
+          [
+            "sum_only2",
+            "stages4",
+            "stages2",
+            "cache_ca_baseline",
+            "stages3",
+            "cache_ca_stages2",
+            "output_only2",
+            "cache_ca_stages3",
+            "baseline"
+          ],
+          [
+            "cache_ca_baseline",
+            "cache_ca_stages3",
+            "stages3",
+            "stages4",
+            "sum_only2",
+            "output_only2",
+            "baseline",
+            "stages2",
+            "cache_ca_stages2"
+          ],
+          [
+            "cache_ca_baseline",
+            "cache_ca_stages3",
+            "baseline",
+            "sum_only2",
+            "stages4",
+            "cache_ca_stages2",
+            "stages3",
+            "output_only2",
+            "stages2"
+          ],
+          [
+            "cache_ca_stages3",
+            "cache_ca_baseline",
+            "sum_only2",
+            "cache_ca_stages2",
+            "stages4",
+            "stages3",
+            "baseline",
+            "stages2",
+            "output_only2"
+          ],
+          [
+            "baseline",
+            "output_only2",
+            "cache_ca_baseline",
+            "stages2",
+            "cache_ca_stages2",
+            "stages3",
+            "sum_only2",
+            "cache_ca_stages3",
+            "stages4"
+          ]
+        ],
+        "median_us": {
+          "baseline": 6.22900016605854,
+          "stages2": 7.110999897122383,
+          "stages3": 5.59299997985363,
+          "stages4": 5.652999971061945,
+          "sum_only2": 6.461000069975853,
+          "output_only2": 6.901000160723925,
+          "cache_ca_baseline": 6.22300012037158,
+          "cache_ca_stages2": 7.5610000640153885,
+          "cache_ca_stages3": 6.029999814927578
+        }
+      },
+      "speedup_vs_fixed_baseline": {
+        "baseline": 1.0,
+        "stages2": 0.8759668480067392,
+        "stages3": 1.1137136042366935,
+        "stages4": 1.1018928352989874,
+        "sum_only2": 0.9640922610424644,
+        "output_only2": 0.9026228113295841,
+        "cache_ca_baseline": 1.000964172516616,
+        "cache_ca_stages2": 0.8238328413332312,
+        "cache_ca_stages3": 1.0330017176183532
+      }
+    },
+    {
+      "seed": 81013,
+      "validation": {
+        "baseline": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 3.556740262311564e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "dx": true
+          }
+        },
+        "stages2": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 3.556740262311564e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "dx": true
+          }
+        },
+        "stages3": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 3.556740262311564e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "dx": true
+          }
+        },
+        "stages4": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 3.556740262311564e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "dx": true
+          }
+        },
+        "sum_only2": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 3.556740262311564e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "dx": true
+          }
+        },
+        "output_only2": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 3.556740262311564e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "dx": true
+          }
+        },
+        "cache_ca_baseline": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 3.556740262311564e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "dx": true
+          }
+        },
+        "cache_ca_stages2": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 3.556740262311564e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "dx": true
+          }
+        },
+        "cache_ca_stages3": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 3.556740262311564e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "dx": true
+          }
+        }
+      },
+      "timing": {
+        "samples_us": {
+          "baseline": [
+            6.192999891936779,
+            6.237000226974487,
+            6.264000199735165,
+            6.248000077903271,
+            6.233000196516514,
+            6.184000056236982,
+            6.240000016987324,
+            6.20400020852685,
+            6.209000013768673,
+            6.2060002237558365,
+            6.448000203818083,
+            6.213999819010496,
+            6.2699997797608376,
+            6.219999864697456,
+            6.182000041007996
+          ],
+          "stages2": [
+            7.079999893903732,
+            7.067999802529812,
+            7.10699986666441,
+            7.108000107109547,
+            7.050999905914068,
+            7.104999851435423,
+            7.058999966830015,
+            7.089999970048666,
+            7.100999820977449,
+            7.069000042974949,
+            7.083000149577856,
+            7.0859999395906925,
+            7.071000058203936,
+            7.052999921143055,
+            7.091999985277653
+          ],
+          "stages3": [
+            5.632999818772078,
+            5.594999995082617,
+            5.5610002018511295,
+            5.541999824345112,
+            5.5970000103116035,
+            5.58600015938282,
+            5.6059998460114,
+            5.563999991863966,
+            5.584000144153833,
+            5.625000223517418,
+            5.625999998301268,
+            5.601000040769577,
+            5.578000098466873,
+            5.58000011369586,
+            5.58099988847971
+          ],
+          "stages4": [
+            5.617000162601471,
+            5.677999928593636,
+            5.679000169038773,
+            5.619999952614307,
+            5.657000001519918,
+            5.6420001201331615,
+            5.630000028759241,
+            5.638000089675188,
+            5.609000101685524,
+            5.661999806761742,
+            5.654000211507082,
+            5.638999864459038,
+            5.70600014179945,
+            5.638999864459038,
+            5.638000089675188
+          ],
+          "sum_only2": [
+            6.484000012278557,
+            6.46300008520484,
+            6.426999811083078,
+            6.440999917685986,
+            6.471000146120787,
+            6.434999871999025,
+            6.467999890446663,
+            6.48199999704957,
+            6.434000097215176,
+            6.451999768614769,
+            6.48299977183342,
+            6.461999844759703,
+            6.428000051528215,
+            6.440000142902136,
+            6.415999960154295
+          ],
+          "output_only2": [
+            6.984999869018793,
+            6.899999920278788,
+            6.918999832123518,
+            6.895000115036964,
+            6.876999977976084,
+            6.858999840915203,
+            6.8870000541210175,
+            6.843999959528446,
+            6.864999886602163,
+            6.86099985614419,
+            6.874999962747097,
+            6.922000087797642,
+            6.897000130265951,
+            6.907000206410885,
+            6.9320001639425755
+          ],
+          "cache_ca_baseline": [
+            6.20400020852685,
+            6.24299980700016,
+            6.21700007468462,
+            6.176999770104885,
+            6.248000077903271,
+            6.211999803781509,
+            6.1980001628398895,
+            6.215999834239483,
+            6.244000047445297,
+            6.2339999713003635,
+            6.202999968081713,
+            6.21100002899766,
+            6.200999952852726,
+            6.22300012037158,
+            6.178000010550022
+          ],
+          "cache_ca_stages2": [
+            7.577999960631132,
+            7.588000036776066,
+            7.5610000640153885,
+            7.5240000151097775,
+            7.532000076025724,
+            7.495999801903963,
+            7.50399986281991,
+            7.49199977144599,
+            7.553999777883291,
+            7.488999981433153,
+            7.542000152170658,
+            7.553999777883291,
+            7.563999854028225,
+            7.493999786674976,
+            7.528999820351601
+          ],
+          "cache_ca_stages3": [
+            6.080999970436096,
+            6.074000149965286,
+            6.008999887853861,
+            6.049000192433596,
+            6.066000089049339,
+            6.244999822229147,
+            6.037999875843525,
+            6.035999860614538,
+            6.045000161975622,
+            6.016999948769808,
+            6.051999982446432,
+            6.0189999639987946,
+            6.029999814927578,
+            6.035999860614538,
+            6.0259997844696045
+          ]
+        },
+        "orders": [
+          [
+            "output_only2",
+            "cache_ca_stages2",
+            "stages3",
+            "sum_only2",
+            "cache_ca_stages3",
+            "cache_ca_baseline",
+            "stages4",
+            "baseline",
+            "stages2"
+          ],
+          [
+            "cache_ca_stages2",
+            "stages2",
+            "baseline",
+            "sum_only2",
+            "stages3",
+            "stages4",
+            "cache_ca_stages3",
+            "cache_ca_baseline",
+            "output_only2"
+          ],
+          [
+            "output_only2",
+            "cache_ca_stages3",
+            "baseline",
+            "cache_ca_baseline",
+            "stages4",
+            "stages2",
+            "stages3",
+            "sum_only2",
+            "cache_ca_stages2"
+          ],
+          [
+            "stages2",
+            "cache_ca_stages3",
+            "stages3",
+            "output_only2",
+            "sum_only2",
+            "cache_ca_stages2",
+            "baseline",
+            "stages4",
+            "cache_ca_baseline"
+          ],
+          [
+            "stages4",
+            "cache_ca_stages3",
+            "output_only2",
+            "cache_ca_stages2",
+            "stages3",
+            "cache_ca_baseline",
+            "baseline",
+            "stages2",
+            "sum_only2"
+          ],
+          [
+            "cache_ca_stages3",
+            "stages3",
+            "cache_ca_stages2",
+            "output_only2",
+            "stages2",
+            "cache_ca_baseline",
+            "stages4",
+            "sum_only2",
+            "baseline"
+          ],
+          [
+            "cache_ca_baseline",
+            "cache_ca_stages3",
+            "sum_only2",
+            "cache_ca_stages2",
+            "baseline",
+            "stages2",
+            "stages4",
+            "output_only2",
+            "stages3"
+          ],
+          [
+            "baseline",
+            "cache_ca_stages3",
+            "cache_ca_stages2",
+            "cache_ca_baseline",
+            "stages3",
+            "sum_only2",
+            "stages4",
+            "output_only2",
+            "stages2"
+          ],
+          [
+            "stages4",
+            "stages3",
+            "sum_only2",
+            "output_only2",
+            "cache_ca_stages3",
+            "cache_ca_stages2",
+            "stages2",
+            "baseline",
+            "cache_ca_baseline"
+          ],
+          [
+            "cache_ca_baseline",
+            "output_only2",
+            "stages2",
+            "stages3",
+            "stages4",
+            "cache_ca_stages2",
+            "baseline",
+            "cache_ca_stages3",
+            "sum_only2"
+          ],
+          [
+            "stages4",
+            "stages3",
+            "cache_ca_stages2",
+            "baseline",
+            "cache_ca_baseline",
+            "cache_ca_stages3",
+            "sum_only2",
+            "output_only2",
+            "stages2"
+          ],
+          [
+            "cache_ca_stages2",
+            "stages3",
+            "cache_ca_stages3",
+            "output_only2",
+            "stages2",
+            "cache_ca_baseline",
+            "stages4",
+            "sum_only2",
+            "baseline"
+          ],
+          [
+            "cache_ca_baseline",
+            "baseline",
+            "stages2",
+            "output_only2",
+            "sum_only2",
+            "cache_ca_stages3",
+            "stages4",
+            "stages3",
+            "cache_ca_stages2"
+          ],
+          [
+            "sum_only2",
+            "cache_ca_baseline",
+            "stages3",
+            "stages4",
+            "stages2",
+            "cache_ca_stages2",
+            "cache_ca_stages3",
+            "baseline",
+            "output_only2"
+          ],
+          [
+            "cache_ca_stages3",
+            "output_only2",
+            "stages3",
+            "sum_only2",
+            "stages2",
+            "cache_ca_stages2",
+            "stages4",
+            "baseline",
+            "cache_ca_baseline"
+          ]
+        ],
+        "median_us": {
+          "baseline": 6.219999864697456,
+          "stages2": 7.083000149577856,
+          "stages3": 5.58600015938282,
+          "stages4": 5.638999864459038,
+          "sum_only2": 6.451999768614769,
+          "output_only2": 6.895000115036964,
+          "cache_ca_baseline": 6.211999803781509,
+          "cache_ca_stages2": 7.532000076025724,
+          "cache_ca_stages3": 6.037999875843525
+        }
+      },
+      "speedup_vs_fixed_baseline": {
+        "baseline": 1.0,
+        "stages2": 0.8781589345396479,
+        "stages3": 1.1134979747986053,
+        "stages4": 1.1030324550813153,
+        "sum_only2": 0.964042171072935,
+        "output_only2": 0.9021029384948909,
+        "cache_ca_baseline": 1.0012878398532912,
+        "cache_ca_stages2": 0.8258098515553192,
+        "cache_ca_stages3": 1.0301424300424493
+      }
+    },
+    {
+      "seed": 91019,
+      "validation": {
+        "baseline": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 2.630539315262581e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "dx": true
+          }
+        },
+        "stages2": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 2.630539315262581e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "dx": true
+          }
+        },
+        "stages3": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 2.630539315262581e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "dx": true
+          }
+        },
+        "stages4": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 2.630539315262581e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "dx": true
+          }
+        },
+        "sum_only2": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 2.630539315262581e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "dx": true
+          }
+        },
+        "output_only2": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 2.630539315262581e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "dx": true
+          }
+        },
+        "cache_ca_baseline": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 2.630539315262581e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "dx": true
+          }
+        },
+        "cache_ca_stages2": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 2.630539315262581e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "dx": true
+          }
+        },
+        "cache_ca_stages3": {
+          "oracle": {
+            "outputs": {
+              "dx": {
+                "max_absolute_error": 2.630539315262581e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "dx": true
+          }
+        }
+      },
+      "timing": {
+        "samples_us": {
+          "baseline": [
+            6.258000154048204,
+            6.227999925613403,
+            6.190000101923943,
+            6.240000016987324,
+            6.180000025779009,
+            6.2339999713003635,
+            6.219000089913607,
+            6.1969999223947525,
+            6.235000211745501,
+            6.200999952852726,
+            6.219000089913607,
+            6.225000135600567,
+            6.21700007468462,
+            6.22399989515543,
+            6.22399989515543
+          ],
+          "stages2": [
+            7.050999905914068,
+            7.0859999395906925,
+            7.042999844998121,
+            7.077000103890896,
+            7.073999848216772,
+            7.052000146359205,
+            7.065999787300825,
+            7.0940000005066395,
+            7.056999951601028,
+            7.052999921143055,
+            7.031999994069338,
+            7.10699986666441,
+            7.0420000702142715,
+            7.056999951601028,
+            7.0409998297691345
+          ],
+          "stages3": [
+            5.71299996227026,
+            5.572000052779913,
+            5.557000171393156,
+            5.5740000680089,
+            5.6050000712275505,
+            5.590999964624643,
+            5.58099988847971,
+            5.5740000680089,
+            5.601000040769577,
+            5.555999930948019,
+            5.588000174611807,
+            5.576000083237886,
+            5.582000128924847,
+            5.594000220298767,
+            5.584000144153833
+          ],
+          "stages4": [
+            5.663000047206879,
+            5.669999867677689,
+            5.667999852448702,
+            5.646999925374985,
+            5.636000074446201,
+            5.650999955832958,
+            5.6409998796880245,
+            5.694999825209379,
+            5.681999959051609,
+            5.650999955832958,
+            5.6870002299547195,
+            5.638000089675188,
+            5.6940000504255295,
+            5.642999894917011,
+            5.640000104904175
+          ],
+          "sum_only2": [
+            6.457999814301729,
+            6.442000158131123,
+            6.471999920904636,
+            6.448000203818083,
+            6.46999990567565,
+            6.4210002310574055,
+            6.419000215828419,
+            6.4489999786019325,
+            6.417999975383282,
+            6.4199999906122684,
+            6.4119999296963215,
+            6.413999944925308,
+            6.479999981820583,
+            6.48100022226572,
+            6.436000112444162
+          ],
+          "output_only2": [
+            6.862000096589327,
+            6.852999795228243,
+            6.850000005215406,
+            6.868999917060137,
+            6.850999779999256,
+            6.856000050902367,
+            6.849000230431557,
+            6.883999798446894,
+            6.852000020444393,
+            6.86099985614419,
+            6.852000020444393,
+            6.856999825686216,
+            6.86000008136034,
+            6.8660001270473,
+            6.85499981045723
+          ],
+          "cache_ca_baseline": [
+            6.180000025779009,
+            6.246000062674284,
+            6.21799984946847,
+            6.225999910384417,
+            6.215000059455633,
+            6.22999994084239,
+            6.186999846249819,
+            6.213999819010496,
+            6.215000059455633,
+            6.1690001748502254,
+            6.235000211745501,
+            6.233000196516514,
+            6.221999879926443,
+            6.184999831020832,
+            6.22900016605854
+          ],
+          "cache_ca_stages2": [
+            7.567999884486198,
+            7.534000091254711,
+            7.555999793112278,
+            7.561999838799238,
+            7.5690001249313354,
+            7.501999847590923,
+            7.5090001337230206,
+            7.517999969422817,
+            7.538999896496534,
+            7.532000076025724,
+            7.555000018328428,
+            7.50999990850687,
+            7.495999801903963,
+            7.575999945402145,
+            7.557000033557415
+          ],
+          "cache_ca_stages3": [
+            6.047999951988459,
+            6.020000204443932,
+            5.9899999760091305,
+            6.037999875843525,
+            6.0189999639987946,
+            6.025000009685755,
+            6.045000161975622,
+            6.068000104278326,
+            6.029000040143728,
+            6.0350000858306885,
+            6.049000192433596,
+            6.033000070601702,
+            6.041000131517649,
+            6.008000113070011,
+            6.0270000249147415
+          ]
+        },
+        "orders": [
+          [
+            "stages3",
+            "sum_only2",
+            "output_only2",
+            "stages4",
+            "stages2",
+            "cache_ca_stages3",
+            "cache_ca_stages2",
+            "cache_ca_baseline",
+            "baseline"
+          ],
+          [
+            "sum_only2",
+            "cache_ca_stages2",
+            "baseline",
+            "cache_ca_baseline",
+            "cache_ca_stages3",
+            "stages4",
+            "output_only2",
+            "stages3",
+            "stages2"
+          ],
+          [
+            "baseline",
+            "stages3",
+            "cache_ca_baseline",
+            "output_only2",
+            "cache_ca_stages3",
+            "cache_ca_stages2",
+            "sum_only2",
+            "stages2",
+            "stages4"
+          ],
+          [
+            "cache_ca_stages2",
+            "stages4",
+            "baseline",
+            "sum_only2",
+            "stages3",
+            "output_only2",
+            "cache_ca_stages3",
+            "cache_ca_baseline",
+            "stages2"
+          ],
+          [
+            "stages2",
+            "cache_ca_stages2",
+            "cache_ca_stages3",
+            "stages3",
+            "output_only2",
+            "baseline",
+            "stages4",
+            "cache_ca_baseline",
+            "sum_only2"
+          ],
+          [
+            "cache_ca_baseline",
+            "baseline",
+            "output_only2",
+            "cache_ca_stages3",
+            "stages2",
+            "sum_only2",
+            "stages4",
+            "cache_ca_stages2",
+            "stages3"
+          ],
+          [
+            "output_only2",
+            "sum_only2",
+            "stages3",
+            "stages2",
+            "cache_ca_baseline",
+            "baseline",
+            "cache_ca_stages2",
+            "stages4",
+            "cache_ca_stages3"
+          ],
+          [
+            "sum_only2",
+            "stages4",
+            "cache_ca_stages2",
+            "cache_ca_stages3",
+            "output_only2",
+            "baseline",
+            "stages2",
+            "stages3",
+            "cache_ca_baseline"
+          ],
+          [
+            "cache_ca_baseline",
+            "baseline",
+            "stages2",
+            "sum_only2",
+            "cache_ca_stages3",
+            "stages4",
+            "stages3",
+            "cache_ca_stages2",
+            "output_only2"
+          ],
+          [
+            "cache_ca_stages2",
+            "stages3",
+            "baseline",
+            "output_only2",
+            "sum_only2",
+            "stages2",
+            "cache_ca_baseline",
+            "stages4",
+            "cache_ca_stages3"
+          ],
+          [
+            "cache_ca_stages3",
+            "stages3",
+            "cache_ca_baseline",
+            "cache_ca_stages2",
+            "stages4",
+            "sum_only2",
+            "output_only2",
+            "baseline",
+            "stages2"
+          ],
+          [
+            "sum_only2",
+            "output_only2",
+            "stages2",
+            "cache_ca_stages2",
+            "cache_ca_baseline",
+            "cache_ca_stages3",
+            "baseline",
+            "stages4",
+            "stages3"
+          ],
+          [
+            "cache_ca_stages3",
+            "cache_ca_baseline",
+            "output_only2",
+            "stages3",
+            "baseline",
+            "sum_only2",
+            "cache_ca_stages2",
+            "stages4",
+            "stages2"
+          ],
+          [
+            "cache_ca_stages3",
+            "cache_ca_baseline",
+            "cache_ca_stages2",
+            "output_only2",
+            "sum_only2",
+            "baseline",
+            "stages2",
+            "stages3",
+            "stages4"
+          ],
+          [
+            "output_only2",
+            "stages4",
+            "baseline",
+            "cache_ca_stages2",
+            "stages3",
+            "sum_only2",
+            "cache_ca_stages3",
+            "cache_ca_baseline",
+            "stages2"
+          ]
+        ],
+        "median_us": {
+          "baseline": 6.22399989515543,
+          "stages2": 7.056999951601028,
+          "stages3": 5.582000128924847,
+          "stages4": 5.650999955832958,
+          "sum_only2": 6.442000158131123,
+          "output_only2": 6.856000050902367,
+          "cache_ca_baseline": 6.21799984946847,
+          "cache_ca_stages2": 7.538999896496534,
+          "cache_ca_stages3": 6.033000070601702
+        }
+      },
+      "speedup_vs_fixed_baseline": {
+        "baseline": 1.0,
+        "stages2": 0.8819611644950324,
+        "stages3": 1.115012495772593,
+        "stages4": 1.101397972712957,
+        "sum_only2": 0.9661595377794998,
+        "output_only2": 0.9078179476291347,
+        "cache_ca_baseline": 1.0009649478662295,
+        "cache_ca_stages2": 0.825573680939802,
+        "cache_ca_stages3": 1.031659178239439
+      }
+    }
+  ],
+  "case": {
+    "id": "fg_logsoftmax_m256_k8192_f32",
+    "family": "log_softmax_backward",
+    "M": 256,
+    "K": 8192,
+    "dtype": "float32",
+    "boundary": false
+  },
+  "provenance": {
+    "repository": "flagos-ai/FlagGems",
+    "revision": "3f1f896fd90f5db42d167d64fcb9691326071bc2",
+    "files": [
+      {
+        "path": "src/flag_gems/experimental_ops/_log_softmax_backward_data.py",
+        "function": "_log_softmax_bwd_kernel",
+        "local_file": "log_softmax_backward.py",
+        "url": "https://github.com/flagos-ai/FlagGems/blob/3f1f896fd90f5db42d167d64fcb9691326071bc2/src/flag_gems/experimental_ops/_log_softmax_backward_data.py",
+        "sha256": "ae30d52b6ab2bf83397457a0e1722b916f334fb8fc2b0a1c756f2ab8788a3c3b",
+        "body_ast_sha256": "913cebecc09a8aa7dccc756b9c2b15a7e418c888138a4a93ca0b7f9b37b47508"
+      },
+      {
+        "path": "src/flag_gems/fused/rotary_embedding.py",
+        "function": "apply_rotary_pos_emb_kernel",
+        "local_file": "rotary_embedding.py",
+        "url": "https://github.com/flagos-ai/FlagGems/blob/3f1f896fd90f5db42d167d64fcb9691326071bc2/src/flag_gems/fused/rotary_embedding.py",
+        "sha256": "cbeff1df02a4357975c330247c19a36e5d20aa7a67388b1dd637a52039e94849",
+        "body_ast_sha256": "b1fe0c90425e1da5e3715cea2334fee7ddf71558474526ffdd99adf0cf321973"
+      }
+    ],
+    "kernel_bodies_unchanged": true,
+    "decorator_changes": "Remove libentry/provider autotune; retain triton.jit.",
+    "selection_note": "Cross-family validation candidates chosen for simple independent oracles and unit-step innermost loops with ordinary read/store effects. This is not a corpus-random sample.",
+    "adapter_sha256": "e8db8e6a25a9fe685e9a771be3b96c5b8c19bac363650bc35f056e0a7f1ea3c1",
+    "extracted_sha256": "6dd0be2147f9253eb189af9ed9b6c8b0348af23ff03b48df84d49bd282297432"
+  },
+  "variants": {
+    "baseline": {
+      "resources": {
+        "registers": 28,
+        "spills": 0,
+        "shared": 32,
+        "async_copies": 0,
+        "loops": 2,
+        "ptx_sha256": "5cf2527658ae07a426175c2007c2d2c1404d9ef7cea06cd920e947f2072deeb8",
+        "cubin_sha256": "b0047b30ee622f909e581a05a5a3cbcfa8fefad3b41bee3f20c7e60921c3c3d7",
+        "wait_groups": [],
+        "barriers": 2,
+        "commits": 0,
+        "copy_cg": 0,
+        "copy_ca": 0
+      },
+      "audit": {
+        "unchanged_source": true
+      },
+      "options": {
+        "num_warps": 8,
+        "num_stages": 1,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "enable_private_reduction_ownership": false,
+        "enable_contract_load_reuse": false,
+        "enable_contract_licm": false,
+        "contract_pipeline_stages": 0
+      },
+      "grid": [
+        256,
+        1,
+        1
+      ],
+      "groups": {
+        "0": 0,
+        "1": 0,
+        "2": 1
+      }
+    },
+    "stages2": {
+      "resources": {
+        "registers": 23,
+        "spills": 0,
+        "shared": 8192,
+        "async_copies": 6,
+        "loops": 2,
+        "ptx_sha256": "3bfc7bbe85c0980dbaeadcb31bf1cdd4e27600f06b29ef9f103fa027a5a57b2b",
+        "cubin_sha256": "518a4fc791b42a197cf44681e3bd182ab8369bfd0031d78d69aa969ce7d4cf98",
+        "wait_groups": [
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        "barriers": 6,
+        "commits": 6,
+        "copy_cg": 6,
+        "copy_ca": 0
+      },
+      "audit": {
+        "unchanged_source": true
+      },
+      "options": {
+        "num_warps": 8,
+        "num_stages": 1,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "enable_private_reduction_ownership": false,
+        "enable_contract_load_reuse": false,
+        "enable_contract_licm": false,
+        "contract_pipeline_stages": 2
+      },
+      "grid": [
+        256,
+        1,
+        1
+      ],
+      "groups": {
+        "0": 0,
+        "1": 0,
+        "2": 1
+      }
+    },
+    "stages3": {
+      "resources": {
+        "registers": 32,
+        "spills": 0,
+        "shared": 16384,
+        "async_copies": 9,
+        "loops": 2,
+        "ptx_sha256": "1dd92a9575f53e46df0e582187a4daf40e928bbca92d8ea572911ddf6d69ec0f",
+        "cubin_sha256": "ded6e1a78cff575d7e3ee1331a421cb811b1713b01d7e7a81956b499c2febd84",
+        "wait_groups": [
+          "1",
+          "0",
+          "2",
+          "0"
+        ],
+        "barriers": 6,
+        "commits": 9,
+        "copy_cg": 9,
+        "copy_ca": 0
+      },
+      "audit": {
+        "unchanged_source": true
+      },
+      "options": {
+        "num_warps": 8,
+        "num_stages": 1,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "enable_private_reduction_ownership": false,
+        "enable_contract_load_reuse": false,
+        "enable_contract_licm": false,
+        "contract_pipeline_stages": 3
+      },
+      "grid": [
+        256,
+        1,
+        1
+      ],
+      "groups": {
+        "0": 0,
+        "1": 0,
+        "2": 1
+      }
+    },
+    "stages4": {
+      "resources": {
+        "registers": 32,
+        "spills": 0,
+        "shared": 24576,
+        "async_copies": 12,
+        "loops": 2,
+        "ptx_sha256": "a660e0ffc771f09fe9f67f7c1785b78876a201aaf8a284b0b535f5e7d3a63979",
+        "cubin_sha256": "ea8d8ef83f63013d8355637f3a9d653d1139cde044fb8b419592a1d96151794b",
+        "wait_groups": [
+          "2",
+          "0",
+          "4",
+          "0"
+        ],
+        "barriers": 6,
+        "commits": 12,
+        "copy_cg": 12,
+        "copy_ca": 0
+      },
+      "audit": {
+        "unchanged_source": true
+      },
+      "options": {
+        "num_warps": 8,
+        "num_stages": 1,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "enable_private_reduction_ownership": false,
+        "enable_contract_load_reuse": false,
+        "enable_contract_licm": false,
+        "contract_pipeline_stages": 4
+      },
+      "grid": [
+        256,
+        1,
+        1
+      ],
+      "groups": {
+        "0": 0,
+        "1": 0,
+        "2": 1
+      }
+    },
+    "sum_only2": {
+      "resources": {
+        "registers": 28,
+        "spills": 0,
+        "shared": 4128,
+        "async_copies": 2,
+        "loops": 2,
+        "ptx_sha256": "579aea46e2d0a22504c6462c45bbdbc6fd3f11a58dd892058c9b8dd37f15b6d4",
+        "cubin_sha256": "5abeccce8856abe4459c7a2fb8af0d216ededd06d4e554113ef35181a171985a",
+        "wait_groups": [
+          "0",
+          "0",
+          "0"
+        ],
+        "barriers": 4,
+        "commits": 2,
+        "copy_cg": 2,
+        "copy_ca": 0
+      },
+      "audit": {
+        "label": "logsoftmax_sum_only2",
+        "original_function": "_log_softmax_bwd_kernel",
+        "original_source_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/vendor/cross_pipeline/flag_gems/kernels.py",
+        "original_source_sha256": "b8ab18149d3111eaca4be7137a4791ce7d5e521018bf0ce05aae10b545c1024f",
+        "original_function_ast_sha256": "ce42e316759e0c8203a8baa657db523f3c4d4066c8d4e8bd7c18e5521fab8532",
+        "variant_function": "_log_softmax_bwd_kernel__logsoftmax_sum_only2",
+        "variant_source_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/generated/_log_softmax_bwd_kernel__logsoftmax_sum_only2_7071fb021008b121.py",
+        "variant_source_sha256": "7071fb021008b121caf9fbd930e307cce243bcd0ae695a67cb1d5a35d7b32ac8",
+        "variant_function_ast_sha256": "203747d825f054b8f0a0206bda4113982e312b2644b45cdec0b68cfab9884b0e",
+        "audit_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/generated/_log_softmax_bwd_kernel__logsoftmax_sum_only2_7071fb021008b121.audit.json",
+        "inverse_edit_recovers_original_function_ast": true,
+        "signature_unchanged": true,
+        "computations_and_memory_operations_unchanged": true,
+        "source_loop_controls": [
+          {
+            "ordinal": 0,
+            "original_line": 16,
+            "induction_variable": "chunk",
+            "original_iterator": "range(0, num_chunks)",
+            "variant_iterator": "tl.range(0, num_chunks, num_stages=2)",
+            "source_num_stages": 2
+          },
+          {
+            "ordinal": 1,
+            "original_line": 24,
+            "induction_variable": "chunk",
+            "original_iterator": "range(0, num_chunks)",
+            "variant_iterator": "tl.range(0, num_chunks, num_stages=1)",
+            "source_num_stages": 1
+          }
+        ],
+        "load_cache_controls": [],
+        "permitted_edit": "ordinary loop range callee and num_stages annotation",
+        "required_contract_pipeline_stages": 0,
+        "alias_contracts": "Caller supplies the same independently validated alias facts as the baseline."
+      },
+      "options": {
+        "num_warps": 8,
+        "num_stages": 1,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "enable_private_reduction_ownership": false,
+        "enable_contract_load_reuse": false,
+        "enable_contract_licm": false,
+        "contract_pipeline_stages": 0
+      },
+      "grid": [
+        256,
+        1,
+        1
+      ],
+      "groups": {
+        "0": 0,
+        "1": 0,
+        "2": 1
+      }
+    },
+    "output_only2": {
+      "resources": {
+        "registers": 23,
+        "spills": 0,
+        "shared": 8192,
+        "async_copies": 4,
+        "loops": 2,
+        "ptx_sha256": "a07632a8dfe78c5f6bcf22bac863943a5a3016cdd1e7a22598d15355ca867c61",
+        "cubin_sha256": "152c27941ee138bab03fe309310221d1c668f9376c7a28b53e81c1413205a060",
+        "wait_groups": [
+          "0",
+          "0"
+        ],
+        "barriers": 6,
+        "commits": 4,
+        "copy_cg": 4,
+        "copy_ca": 0
+      },
+      "audit": {
+        "label": "logsoftmax_output_only2",
+        "original_function": "_log_softmax_bwd_kernel",
+        "original_source_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/vendor/cross_pipeline/flag_gems/kernels.py",
+        "original_source_sha256": "b8ab18149d3111eaca4be7137a4791ce7d5e521018bf0ce05aae10b545c1024f",
+        "original_function_ast_sha256": "ce42e316759e0c8203a8baa657db523f3c4d4066c8d4e8bd7c18e5521fab8532",
+        "variant_function": "_log_softmax_bwd_kernel__logsoftmax_output_only2",
+        "variant_source_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/generated/_log_softmax_bwd_kernel__logsoftmax_output_only2_966dcfc5dca52806.py",
+        "variant_source_sha256": "966dcfc5dca528067e256f1ff5e63043f5faa61fe52432d937cfa5582d9519b6",
+        "variant_function_ast_sha256": "06735305bf1d1e418dff5a563080bfebb316df43e9d04518793e8261cd289153",
+        "audit_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/generated/_log_softmax_bwd_kernel__logsoftmax_output_only2_966dcfc5dca52806.audit.json",
+        "inverse_edit_recovers_original_function_ast": true,
+        "signature_unchanged": true,
+        "computations_and_memory_operations_unchanged": true,
+        "source_loop_controls": [
+          {
+            "ordinal": 0,
+            "original_line": 16,
+            "induction_variable": "chunk",
+            "original_iterator": "range(0, num_chunks)",
+            "variant_iterator": "tl.range(0, num_chunks, num_stages=1)",
+            "source_num_stages": 1
+          },
+          {
+            "ordinal": 1,
+            "original_line": 24,
+            "induction_variable": "chunk",
+            "original_iterator": "range(0, num_chunks)",
+            "variant_iterator": "tl.range(0, num_chunks, num_stages=2)",
+            "source_num_stages": 2
+          }
+        ],
+        "load_cache_controls": [],
+        "permitted_edit": "ordinary loop range callee and num_stages annotation",
+        "required_contract_pipeline_stages": 0,
+        "alias_contracts": "Caller supplies the same independently validated alias facts as the baseline."
+      },
+      "options": {
+        "num_warps": 8,
+        "num_stages": 1,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "enable_private_reduction_ownership": false,
+        "enable_contract_load_reuse": false,
+        "enable_contract_licm": false,
+        "contract_pipeline_stages": 0
+      },
+      "grid": [
+        256,
+        1,
+        1
+      ],
+      "groups": {
+        "0": 0,
+        "1": 0,
+        "2": 1
+      }
+    },
+    "cache_ca_baseline": {
+      "resources": {
+        "registers": 28,
+        "spills": 0,
+        "shared": 32,
+        "async_copies": 0,
+        "loops": 2,
+        "ptx_sha256": "ac2f3d1fc7bea4e47bbc7ebafe1b512ba5d0caea108086c45fa7d840681e4a61",
+        "cubin_sha256": "42ac9920fb861e4c3f38d2aa455b52d108101c533c8d3a12f4b0e3ccca8d6cfa",
+        "wait_groups": [],
+        "barriers": 2,
+        "commits": 0,
+        "copy_cg": 0,
+        "copy_ca": 0
+      },
+      "audit": {
+        "label": "load_cache_ca",
+        "original_function": "_log_softmax_bwd_kernel",
+        "original_source_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/vendor/cross_pipeline/flag_gems/kernels.py",
+        "original_source_sha256": "b8ab18149d3111eaca4be7137a4791ce7d5e521018bf0ce05aae10b545c1024f",
+        "original_function_ast_sha256": "ce42e316759e0c8203a8baa657db523f3c4d4066c8d4e8bd7c18e5521fab8532",
+        "variant_function": "_log_softmax_bwd_kernel__load_cache_ca",
+        "variant_source_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/generated/_log_softmax_bwd_kernel__load_cache_ca_eaf787fc220ff0af.py",
+        "variant_source_sha256": "eaf787fc220ff0afef00a02040c00e09b72d8e148eac615cf23afd7f402e1c9a",
+        "variant_function_ast_sha256": "08a5951c30d441ea0dde9aa66df1261d2ec365f12d279e9e531dd238f3f0dd6a",
+        "audit_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/generated/_log_softmax_bwd_kernel__load_cache_ca_eaf787fc220ff0af.audit.json",
+        "inverse_edit_recovers_original_function_ast": true,
+        "signature_unchanged": true,
+        "computations_and_memory_operations_unchanged": true,
+        "source_loop_controls": [],
+        "load_cache_controls": [
+          {
+            "ordinal": 0,
+            "original_line": 19,
+            "original_cache_modifier": null,
+            "variant_cache_modifier": ".ca"
+          },
+          {
+            "ordinal": 1,
+            "original_line": 27,
+            "original_cache_modifier": null,
+            "variant_cache_modifier": ".ca"
+          },
+          {
+            "ordinal": 2,
+            "original_line": 29,
+            "original_cache_modifier": null,
+            "variant_cache_modifier": ".ca"
+          }
+        ],
+        "permitted_edit": "tl.load cache_modifier annotation",
+        "required_contract_pipeline_stages": null,
+        "alias_contracts": "Caller supplies the same independently validated alias facts as the baseline."
+      },
+      "options": {
+        "num_warps": 8,
+        "num_stages": 1,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "enable_private_reduction_ownership": false,
+        "enable_contract_load_reuse": false,
+        "enable_contract_licm": false,
+        "contract_pipeline_stages": 0
+      },
+      "grid": [
+        256,
+        1,
+        1
+      ],
+      "groups": {
+        "0": 0,
+        "1": 0,
+        "2": 1
+      }
+    },
+    "cache_ca_stages2": {
+      "resources": {
+        "registers": 23,
+        "spills": 0,
+        "shared": 8192,
+        "async_copies": 6,
+        "loops": 2,
+        "ptx_sha256": "eef77ae1c6867c1f4a87b3f7d9b7952e04509109af9faa0b05650cc0a9e0713f",
+        "cubin_sha256": "d772439785cc80946ad472da08df0c871c968773c39b8f49bd36717ad11c8f61",
+        "wait_groups": [
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        "barriers": 6,
+        "commits": 6,
+        "copy_cg": 0,
+        "copy_ca": 6
+      },
+      "audit": {
+        "label": "load_cache_ca",
+        "original_function": "_log_softmax_bwd_kernel",
+        "original_source_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/vendor/cross_pipeline/flag_gems/kernels.py",
+        "original_source_sha256": "b8ab18149d3111eaca4be7137a4791ce7d5e521018bf0ce05aae10b545c1024f",
+        "original_function_ast_sha256": "ce42e316759e0c8203a8baa657db523f3c4d4066c8d4e8bd7c18e5521fab8532",
+        "variant_function": "_log_softmax_bwd_kernel__load_cache_ca",
+        "variant_source_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/generated/_log_softmax_bwd_kernel__load_cache_ca_eaf787fc220ff0af.py",
+        "variant_source_sha256": "eaf787fc220ff0afef00a02040c00e09b72d8e148eac615cf23afd7f402e1c9a",
+        "variant_function_ast_sha256": "08a5951c30d441ea0dde9aa66df1261d2ec365f12d279e9e531dd238f3f0dd6a",
+        "audit_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/generated/_log_softmax_bwd_kernel__load_cache_ca_eaf787fc220ff0af.audit.json",
+        "inverse_edit_recovers_original_function_ast": true,
+        "signature_unchanged": true,
+        "computations_and_memory_operations_unchanged": true,
+        "source_loop_controls": [],
+        "load_cache_controls": [
+          {
+            "ordinal": 0,
+            "original_line": 19,
+            "original_cache_modifier": null,
+            "variant_cache_modifier": ".ca"
+          },
+          {
+            "ordinal": 1,
+            "original_line": 27,
+            "original_cache_modifier": null,
+            "variant_cache_modifier": ".ca"
+          },
+          {
+            "ordinal": 2,
+            "original_line": 29,
+            "original_cache_modifier": null,
+            "variant_cache_modifier": ".ca"
+          }
+        ],
+        "permitted_edit": "tl.load cache_modifier annotation",
+        "required_contract_pipeline_stages": null,
+        "alias_contracts": "Caller supplies the same independently validated alias facts as the baseline."
+      },
+      "options": {
+        "num_warps": 8,
+        "num_stages": 1,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "enable_private_reduction_ownership": false,
+        "enable_contract_load_reuse": false,
+        "enable_contract_licm": false,
+        "contract_pipeline_stages": 2
+      },
+      "grid": [
+        256,
+        1,
+        1
+      ],
+      "groups": {
+        "0": 0,
+        "1": 0,
+        "2": 1
+      }
+    },
+    "cache_ca_stages3": {
+      "resources": {
+        "registers": 32,
+        "spills": 0,
+        "shared": 16384,
+        "async_copies": 9,
+        "loops": 2,
+        "ptx_sha256": "d76407592fbff6ba73c22eaefd39df03a0ce06bf6049afde885e459a38cb4faf",
+        "cubin_sha256": "95fc656d0d6a8e5ca848af560035742bec61c27553d1e15b8729d893547c61ca",
+        "wait_groups": [
+          "1",
+          "0",
+          "2",
+          "0"
+        ],
+        "barriers": 6,
+        "commits": 9,
+        "copy_cg": 0,
+        "copy_ca": 9
+      },
+      "audit": {
+        "label": "load_cache_ca",
+        "original_function": "_log_softmax_bwd_kernel",
+        "original_source_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/vendor/cross_pipeline/flag_gems/kernels.py",
+        "original_source_sha256": "b8ab18149d3111eaca4be7137a4791ce7d5e521018bf0ce05aae10b545c1024f",
+        "original_function_ast_sha256": "ce42e316759e0c8203a8baa657db523f3c4d4066c8d4e8bd7c18e5521fab8532",
+        "variant_function": "_log_softmax_bwd_kernel__load_cache_ca",
+        "variant_source_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/generated/_log_softmax_bwd_kernel__load_cache_ca_eaf787fc220ff0af.py",
+        "variant_source_sha256": "eaf787fc220ff0afef00a02040c00e09b72d8e148eac615cf23afd7f402e1c9a",
+        "variant_function_ast_sha256": "08a5951c30d441ea0dde9aa66df1261d2ec365f12d279e9e531dd238f3f0dd6a",
+        "audit_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/generated/_log_softmax_bwd_kernel__load_cache_ca_eaf787fc220ff0af.audit.json",
+        "inverse_edit_recovers_original_function_ast": true,
+        "signature_unchanged": true,
+        "computations_and_memory_operations_unchanged": true,
+        "source_loop_controls": [],
+        "load_cache_controls": [
+          {
+            "ordinal": 0,
+            "original_line": 19,
+            "original_cache_modifier": null,
+            "variant_cache_modifier": ".ca"
+          },
+          {
+            "ordinal": 1,
+            "original_line": 27,
+            "original_cache_modifier": null,
+            "variant_cache_modifier": ".ca"
+          },
+          {
+            "ordinal": 2,
+            "original_line": 29,
+            "original_cache_modifier": null,
+            "variant_cache_modifier": ".ca"
+          }
+        ],
+        "permitted_edit": "tl.load cache_modifier annotation",
+        "required_contract_pipeline_stages": null,
+        "alias_contracts": "Caller supplies the same independently validated alias facts as the baseline."
+      },
+      "options": {
+        "num_warps": 8,
+        "num_stages": 1,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "enable_private_reduction_ownership": false,
+        "enable_contract_load_reuse": false,
+        "enable_contract_licm": false,
+        "contract_pipeline_stages": 3
+      },
+      "grid": [
+        256,
+        1,
+        1
+      ],
+      "groups": {
+        "0": 0,
+        "1": 0,
+        "2": 1
+      }
+    }
+  }
+}

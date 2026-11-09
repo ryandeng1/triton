@@ -1,0 +1,241 @@
+{
+  "studies": {
+    "logsoftmax": {
+      "adapter": "cross_kernel_flaggems_adapters",
+      "case": "fg_logsoftmax_m256_k8192_f32",
+      "config": {
+        "block": 1024,
+        "warps": 8
+      },
+      "variants": {
+        "baseline": [
+          null,
+          0
+        ],
+        "stages2": [
+          null,
+          2
+        ],
+        "stages3": [
+          null,
+          3
+        ],
+        "stages4": [
+          null,
+          4
+        ],
+        "sum_only2": [
+          "logsoftmax_sum_only2",
+          0
+        ],
+        "output_only2": [
+          "logsoftmax_output_only2",
+          0
+        ],
+        "cache_ca_baseline": [
+          "load_cache_ca",
+          0
+        ],
+        "cache_ca_stages2": [
+          "load_cache_ca",
+          2
+        ],
+        "cache_ca_stages3": [
+          "load_cache_ca",
+          3
+        ]
+      }
+    },
+    "rotary_w2": {
+      "adapter": "cross_kernel_flaggems_adapters",
+      "case": "fg_rotary_t128_q32_k8_d128_f32",
+      "config": {
+        "warps": 2
+      },
+      "variants": {
+        "baseline": [
+          null,
+          0
+        ],
+        "stages2": [
+          null,
+          2
+        ],
+        "stages3": [
+          null,
+          3
+        ],
+        "stages4": [
+          null,
+          4
+        ],
+        "q_only2": [
+          "rotary_q_only2",
+          0
+        ],
+        "k_only2": [
+          "rotary_k_only2",
+          0
+        ],
+        "cache_ca_baseline": [
+          "load_cache_ca",
+          0
+        ],
+        "cache_ca_stages2": [
+          "load_cache_ca",
+          2
+        ],
+        "cache_ca_stages3": [
+          "load_cache_ca",
+          3
+        ]
+      }
+    },
+    "rotary_w8": {
+      "adapter": "cross_kernel_flaggems_adapters",
+      "case": "fg_rotary_t128_q32_k8_d128_f32",
+      "config": {
+        "warps": 8
+      },
+      "variants": {
+        "baseline": [
+          null,
+          0
+        ],
+        "stages2": [
+          null,
+          2
+        ],
+        "stages3": [
+          null,
+          3
+        ],
+        "stages4": [
+          null,
+          4
+        ],
+        "q_only2": [
+          "rotary_q_only2",
+          0
+        ],
+        "k_only2": [
+          "rotary_k_only2",
+          0
+        ],
+        "cache_ca_baseline": [
+          "load_cache_ca",
+          0
+        ],
+        "cache_ca_stages2": [
+          "load_cache_ca",
+          2
+        ],
+        "cache_ca_stages3": [
+          "load_cache_ca",
+          3
+        ]
+      }
+    },
+    "upsample": {
+      "adapter": "cross_pipeline_upsample",
+      "case": "upsample_2x64_64x256_to128x512",
+      "config": [
+        64,
+        2,
+        4
+      ],
+      "variants": {
+        "baseline": [
+          null,
+          0
+        ],
+        "stages2": [
+          null,
+          2
+        ],
+        "stages3": [
+          null,
+          3
+        ],
+        "stages4": [
+          null,
+          4
+        ],
+        "cache_ca_baseline": [
+          "load_cache_ca",
+          0
+        ],
+        "cache_ca_stages2": [
+          "load_cache_ca",
+          2
+        ],
+        "cache_ca_stages3": [
+          "load_cache_ca",
+          3
+        ]
+      }
+    },
+    "rms_rows": {
+      "adapter": "cross_pipeline_rms",
+      "case": "rms_forward_4096x1024",
+      "config": {
+        "warps": 4,
+        "grid": "rows"
+      },
+      "variants": {
+        "baseline": [
+          "source_stages1",
+          0
+        ],
+        "stages2": [
+          "source_stages2",
+          0
+        ],
+        "stages3": [
+          "source_stages3",
+          0
+        ],
+        "stages4": [
+          "source_stages4",
+          0
+        ]
+      }
+    },
+    "rms_persistent": {
+      "adapter": "cross_pipeline_rms",
+      "case": "rms_forward_4096x1024",
+      "config": {
+        "warps": 4,
+        "grid": "4sm"
+      },
+      "variants": {
+        "baseline": [
+          "source_stages1",
+          0
+        ],
+        "stages2": [
+          "source_stages2",
+          0
+        ],
+        "stages3": [
+          "source_stages3",
+          0
+        ],
+        "stages4": [
+          "source_stages4",
+          0
+        ]
+      }
+    }
+  },
+  "seeds": [
+    71011,
+    81013,
+    91019
+  ],
+  "timing_rounds": 15,
+  "graph_repetitions": 32,
+  "comparison": "Fixed launch causal ablation; not an independently tuned speedup claim",
+  "controls": "Stage hints and load-cache annotations only; no math or synchronization removal",
+  "profiler_timing_is_diagnostic_only": true
+}

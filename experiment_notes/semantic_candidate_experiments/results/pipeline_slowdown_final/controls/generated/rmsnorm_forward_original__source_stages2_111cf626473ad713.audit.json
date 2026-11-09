@@ -1,0 +1,53 @@
+{
+  "alias_contracts": "Caller supplies the same independently validated alias facts as the baseline.",
+  "audit_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/generated/rmsnorm_forward_original__source_stages2_111cf626473ad713.audit.json",
+  "computations_and_memory_operations_unchanged": true,
+  "inverse_edit_recovers_original_function_ast": true,
+  "label": "source_stages2",
+  "load_cache_controls": [],
+  "original_function": "rmsnorm_forward_original",
+  "original_function_ast_sha256": "1bf63c8e10024f5a070e243bfd38cc0e4dd5fd0ebbb90abb97689e99046c65e8",
+  "original_source_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/rmsnorm_kernels.py",
+  "original_source_sha256": "c9166be061c79d06b84f7d4b77ca0056f9060015688ee52ddc24dd19f252b9e8",
+  "permitted_edit": "ordinary loop range callee and num_stages annotation",
+  "required_contract_pipeline_stages": 0,
+  "signature_unchanged": true,
+  "source_loop_controls": [
+    {
+      "induction_variable": "row_idx",
+      "ordinal": 0,
+      "original_iterator": "tl.range(row_start, n_rows, program_stride, num_stages=1)",
+      "original_line": 39,
+      "source_num_stages": 2,
+      "variant_iterator": "tl.range(row_start, n_rows, program_stride, num_stages=2)"
+    },
+    {
+      "induction_variable": "blk_idx",
+      "ordinal": 1,
+      "original_iterator": "tl.range(0, n_cols_blks, num_stages=2)",
+      "original_line": 46,
+      "source_num_stages": 2,
+      "variant_iterator": "tl.range(0, n_cols_blks, num_stages=2)"
+    },
+    {
+      "induction_variable": "blk_idx",
+      "ordinal": 2,
+      "original_iterator": "tl.range(0, n_cols_blks, num_stages=2)",
+      "original_line": 71,
+      "source_num_stages": 2,
+      "variant_iterator": "tl.range(0, n_cols_blks, num_stages=2)"
+    },
+    {
+      "induction_variable": "row_idx",
+      "ordinal": 3,
+      "original_iterator": "tl.range(row_start, n_rows, program_stride, num_stages=2)",
+      "original_line": 97,
+      "source_num_stages": 2,
+      "variant_iterator": "tl.range(row_start, n_rows, program_stride, num_stages=2)"
+    }
+  ],
+  "variant_function": "rmsnorm_forward_original__source_stages2",
+  "variant_function_ast_sha256": "63c48155be240a9b3cecac0db1af1bba80122db72ceb9709acfed665487bfb22",
+  "variant_source_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/generated/rmsnorm_forward_original__source_stages2_111cf626473ad713.py",
+  "variant_source_sha256": "111cf626473ad71356d43f4eaf764716b1a3a82d0d73bb6c21d2c40c5aa3f559"
+}

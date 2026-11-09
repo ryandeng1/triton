@@ -1,0 +1,17 @@
+{
+  "build": "make succeeded; ninja triton-opt up to date",
+  "native_sha256": "04888937bce1bd18866aa87971e0b93e331d35df5cc0488508301996389b17a8",
+  "runtime_tests": 45,
+  "new_runtime_tests": 17,
+  "existing_pipeline_runtime_tests": 28,
+  "runtime_command": "pytest -s --tb=short python/test/unit/runtime/test_specialize.py python/test/unit/language/test_pipeliner.py -k 'native_pipeline_ or pipeline_contract_preserves_masked_copies or pipeline_overlapping_argument_views_preserve_recurrence'",
+  "lit": {
+    "file": "test/TritonGPU/loop-pipeline-cuda.mlir",
+    "passed": true,
+    "new_trip_count_cases": 7
+  },
+  "ruff": "passed",
+  "git_diff_check": "passed",
+  "performance_validation": "summary.json",
+  "independent_review": "review.json"
+}

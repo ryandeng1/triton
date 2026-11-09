@@ -1,0 +1,71 @@
+{
+  "metrics": [
+    "gpu__time_duration.sum",
+    "dram__bytes_read.sum",
+    "dram__bytes_write.sum",
+    "lts__t_sectors_srcunit_tex_op_read.sum",
+    "lts__t_sectors_srcunit_tex_op_read_lookup_hit.sum",
+    "l1tex__t_sectors_pipe_lsu_mem_global_op_ld.sum",
+    "l1tex__data_pipe_lsu_wavefronts_mem_shared_op_ld.sum",
+    "l1tex__data_pipe_lsu_wavefronts_mem_shared_op_st.sum",
+    "l1tex__data_bank_conflicts_pipe_lsu_mem_shared_op_ld.sum",
+    "smsp__inst_executed.sum",
+    "smsp__warps_active.avg.per_cycle_active",
+    "smsp__warps_eligible.avg.per_cycle_active",
+    "smsp__issue_active.avg.pct_of_peak_sustained_active",
+    "sm__warps_active.avg.pct_of_peak_sustained_active",
+    "launch__occupancy_limit_registers",
+    "launch__occupancy_limit_shared_mem",
+    "launch__registers_per_thread",
+    "launch__shared_mem_per_block",
+    "smsp__average_warps_issue_stalled_barrier_per_issue_active.ratio",
+    "smsp__average_warps_issue_stalled_membar_per_issue_active.ratio",
+    "smsp__average_warps_issue_stalled_long_scoreboard_per_issue_active.ratio",
+    "smsp__average_warps_issue_stalled_short_scoreboard_per_issue_active.ratio",
+    "smsp__average_warps_issue_stalled_mio_throttle_per_issue_active.ratio",
+    "smsp__average_warps_issue_stalled_lg_throttle_per_issue_active.ratio"
+  ],
+  "plan": [
+    [
+      "upsample",
+      "baseline"
+    ],
+    [
+      "upsample",
+      "stages2"
+    ],
+    [
+      "upsample",
+      "stages3"
+    ],
+    [
+      "logsoftmax",
+      "baseline"
+    ],
+    [
+      "logsoftmax",
+      "stages2"
+    ],
+    [
+      "logsoftmax",
+      "stages3"
+    ],
+    [
+      "rotary_w2",
+      "baseline"
+    ],
+    [
+      "rotary_w2",
+      "stages2"
+    ],
+    [
+      "rotary_w2",
+      "stages4"
+    ]
+  ],
+  "replay": "application",
+  "cache_control": "none",
+  "clock_control": "none",
+  "selection": "sixth launch after profiler start; five identical warm launches in every application replay",
+  "caution": "Short kernels and multi-pass counters are diagnostic; shuffled CUDA graph timing is performance truth. Global LSU sectors do not include all async copy traffic."
+}

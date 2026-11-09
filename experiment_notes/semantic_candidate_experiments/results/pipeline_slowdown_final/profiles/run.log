@@ -1,0 +1,17 @@
+DONE upsample.baseline {'value': '37216', 'unit': 'ns'}
+PROFILE upsample.stages2
+DONE upsample.stages2 {'value': '57120', 'unit': 'ns'}
+PROFILE upsample.stages3
+DONE upsample.stages3 {'value': '35264', 'unit': 'ns'}
+PROFILE logsoftmax.baseline
+DONE logsoftmax.baseline {'value': '9888', 'unit': 'ns'}
+PROFILE logsoftmax.stages2
+DONE logsoftmax.stages2 {'value': '10848', 'unit': 'ns'}
+PROFILE logsoftmax.stages3
+DONE logsoftmax.stages3 {'value': '8192', 'unit': 'ns'}
+PROFILE rotary_w2.baseline
+DONE rotary_w2.baseline {'value': '10816', 'unit': 'ns'}
+PROFILE rotary_w2.stages2
+DONE rotary_w2.stages2 {'value': '12096', 'unit': 'ns'}
+PROFILE rotary_w2.stages4
+DONE rotary_w2.stages4 {'value': '6752', 'unit': 'ns'}

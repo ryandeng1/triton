@@ -1,0 +1,45 @@
+{
+  "alias_contracts": "Caller supplies the same independently validated alias facts as the baseline.",
+  "audit_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/generated/upsample_bilinear2d_kernel__load_cache_ca_e1b04d8f46b9a59c.audit.json",
+  "computations_and_memory_operations_unchanged": true,
+  "inverse_edit_recovers_original_function_ast": true,
+  "label": "load_cache_ca",
+  "load_cache_controls": [
+    {
+      "ordinal": 0,
+      "original_cache_modifier": null,
+      "original_line": 81,
+      "variant_cache_modifier": ".ca"
+    },
+    {
+      "ordinal": 1,
+      "original_cache_modifier": null,
+      "original_line": 82,
+      "variant_cache_modifier": ".ca"
+    },
+    {
+      "ordinal": 2,
+      "original_cache_modifier": null,
+      "original_line": 83,
+      "variant_cache_modifier": ".ca"
+    },
+    {
+      "ordinal": 3,
+      "original_cache_modifier": null,
+      "original_line": 84,
+      "variant_cache_modifier": ".ca"
+    }
+  ],
+  "original_function": "upsample_bilinear2d_kernel",
+  "original_function_ast_sha256": "0b2d184fabd8ccf8ac2f502734a4b555f32cc1e42c66b13e3db2ab71b2eb61d5",
+  "original_source_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/vendor/cross_pipeline/upsample_bilinear2d_kernel.py",
+  "original_source_sha256": "10d338b94ff1ce93ad7cde8446cfe09aa8c9a8ac04729213b7db5fc150b28c02",
+  "permitted_edit": "tl.load cache_modifier annotation",
+  "required_contract_pipeline_stages": null,
+  "signature_unchanged": true,
+  "source_loop_controls": [],
+  "variant_function": "upsample_bilinear2d_kernel__load_cache_ca",
+  "variant_function_ast_sha256": "ce3cc46f0bba3c14244add0c47e51de944cd1710caa343c408cefd701cb266d3",
+  "variant_source_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/generated/upsample_bilinear2d_kernel__load_cache_ca_e1b04d8f46b9a59c.py",
+  "variant_source_sha256": "e1b04d8f46b9a59c7f3c9031925995095145a1bf0046e8b8b44adb543054d909"
+}

@@ -1,0 +1,354 @@
+{
+  "status": "pass",
+  "scope": "Independent CPU-only audit of retained code, calibration decisions, equal-domain launch selection, fresh-input timing and validation evidence. No GPU execution.",
+  "counts": {
+    "fixed_launch_plans": 19,
+    "timed_workloads": 4,
+    "boundary_workloads": 3,
+    "variant_validation_records": 200,
+    "bitwise_output_comparisons": 305
+  },
+  "checks": {
+    "source_hashes_match_current_and_retained": true,
+    "runtime_choices_recomputed_from_raw_screen_and_confirmation_samples": true,
+    "external_configuration_choices_recomputed_as_minima_over_same_domain": true,
+    "speedups_recomputed_from_paired_raw_round_samples": true,
+    "all_calibration_argument_storage_preserved": true,
+    "fresh_inputs_use_same_frozen_plan": true,
+    "all_bitwise_checks_pass": true,
+    "baseline_has_no_async_copies": true,
+    "no_manual_depth_override_in_harness": true
+  },
+  "source_audit": {
+    "pipeline_profitability_experiment.py": {
+      "current_sha256": "036060ce36fc46d1590908a4a7e9b2277c977a4ceb55f452a9646a57df1a86e8",
+      "retained_sha256": "036060ce36fc46d1590908a4a7e9b2277c977a4ceb55f452a9646a57df1a86e8",
+      "recorded_sha256": "036060ce36fc46d1590908a4a7e9b2277c977a4ceb55f452a9646a57df1a86e8"
+    },
+    "cross_kernel_pipeline_experiment.py": {
+      "current_sha256": "cadaf55ba6b1c480ed22088c1e603d0199818e20acf1b48216d860843ac93070",
+      "retained_sha256": "cadaf55ba6b1c480ed22088c1e603d0199818e20acf1b48216d860843ac93070",
+      "recorded_sha256": "cadaf55ba6b1c480ed22088c1e603d0199818e20acf1b48216d860843ac93070"
+    },
+    "native.py": {
+      "current_sha256": "94e35759e2547f8aa44b87710a457b70dfba29f93d0b76e1aa3505f34ca9168f",
+      "retained_sha256": "94e35759e2547f8aa44b87710a457b70dfba29f93d0b76e1aa3505f34ca9168f",
+      "recorded_sha256": "94e35759e2547f8aa44b87710a457b70dfba29f93d0b76e1aa3505f34ca9168f"
+    },
+    "pipeline.py": {
+      "current_sha256": "be9724fe4bb4a8517fbbcebf16775c4bbd1782f37a779ce67a5dd2d53d476127",
+      "retained_sha256": "be9724fe4bb4a8517fbbcebf16775c4bbd1782f37a779ce67a5dd2d53d476127",
+      "recorded_sha256": "be9724fe4bb4a8517fbbcebf16775c4bbd1782f37a779ce67a5dd2d53d476127"
+    },
+    "AssignLatencies.cpp": {
+      "current_sha256": "c4f012b0e92c12ee4cfde1f0c9567841509d8bf92b135f1c0484d06594164325",
+      "retained_sha256": "c4f012b0e92c12ee4cfde1f0c9567841509d8bf92b135f1c0484d06594164325",
+      "recorded_sha256": "c4f012b0e92c12ee4cfde1f0c9567841509d8bf92b135f1c0484d06594164325"
+    },
+    "cross_kernel_flaggems_adapters.py": {
+      "current_sha256": "e8db8e6a25a9fe685e9a771be3b96c5b8c19bac363650bc35f056e0a7f1ea3c1",
+      "retained_sha256": "e8db8e6a25a9fe685e9a771be3b96c5b8c19bac363650bc35f056e0a7f1ea3c1",
+      "recorded_sha256": "e8db8e6a25a9fe685e9a771be3b96c5b8c19bac363650bc35f056e0a7f1ea3c1"
+    },
+    "cross_pipeline_upsample.py": {
+      "current_sha256": "6fb234b45f485cff3c8f264bf596e13246d83b9f9a1da1a8189da81c547ca4f1",
+      "retained_sha256": "6fb234b45f485cff3c8f264bf596e13246d83b9f9a1da1a8189da81c547ca4f1",
+      "recorded_sha256": "6fb234b45f485cff3c8f264bf596e13246d83b9f9a1da1a8189da81c547ca4f1"
+    }
+  },
+  "records": [
+    {
+      "id": "fg_logsoftmax_m256_k8192_f32",
+      "boundary": false,
+      "configs": [
+        {
+          "block": 256,
+          "warps": 4
+        },
+        {
+          "block": 512,
+          "warps": 4
+        },
+        {
+          "block": 1024,
+          "warps": 4
+        },
+        {
+          "block": 1024,
+          "warps": 8
+        }
+      ],
+      "runtime_choices": [
+        "stages4",
+        "stages4",
+        "stages3",
+        "stages3"
+      ],
+      "all_calibration_argument_storage_preserved": true,
+      "baseline_async_copy_sites": 0,
+      "compile_seconds_sum_over_configs": 1.985956594995514,
+      "calibration_seconds_sum_over_configs": 0.10195022900006734,
+      "selected": {
+        "baseline_config_index": 3,
+        "selected_config_index": 2,
+        "baseline_config": {
+          "block": 1024,
+          "warps": 8
+        },
+        "selected_config": {
+          "block": 1024,
+          "warps": 4
+        },
+        "selected_name": "stages3",
+        "depth_selection": "Integrated compile_pipeline calibration; no harness depth override",
+        "configuration_selection": "Independent five-round calibration for baseline and selected plans over identical predeclared launch domain",
+        "confirmation_reselects": false
+      },
+      "speedup_range": [
+        1.1149073823095776,
+        1.129505542938214
+      ],
+      "fresh_confirmation_seeds": [
+        121073,
+        131101,
+        141107
+      ],
+      "cached_selection_unchanged": true
+    },
+    {
+      "id": "fg_rotary_t128_q32_k8_d128_f32",
+      "boundary": false,
+      "configs": [
+        {
+          "warps": 1
+        },
+        {
+          "warps": 2
+        },
+        {
+          "warps": 4
+        },
+        {
+          "warps": 8
+        }
+      ],
+      "runtime_choices": [
+        "stages4",
+        "stages4",
+        "stages4",
+        "stages4"
+      ],
+      "all_calibration_argument_storage_preserved": true,
+      "baseline_async_copy_sites": 0,
+      "compile_seconds_sum_over_configs": 2.1246377780116745,
+      "calibration_seconds_sum_over_configs": 0.08281153498683125,
+      "selected": {
+        "baseline_config_index": 2,
+        "selected_config_index": 1,
+        "baseline_config": {
+          "warps": 4
+        },
+        "selected_config": {
+          "warps": 2
+        },
+        "selected_name": "stages4",
+        "depth_selection": "Integrated compile_pipeline calibration; no harness depth override",
+        "configuration_selection": "Independent five-round calibration for baseline and selected plans over identical predeclared launch domain",
+        "confirmation_reselects": false
+      },
+      "speedup_range": [
+        1.853198405136889,
+        1.8609452945238105
+      ],
+      "fresh_confirmation_seeds": [
+        121074,
+        131102,
+        141108
+      ],
+      "cached_selection_unchanged": true
+    },
+    {
+      "id": "fg_rotary_t1024_q32_k8_d128_bf16",
+      "boundary": false,
+      "configs": [
+        {
+          "warps": 1
+        },
+        {
+          "warps": 2
+        },
+        {
+          "warps": 4
+        },
+        {
+          "warps": 8
+        }
+      ],
+      "runtime_choices": [
+        "stages4",
+        "stages4",
+        "baseline",
+        "baseline"
+      ],
+      "all_calibration_argument_storage_preserved": true,
+      "baseline_async_copy_sites": 0,
+      "compile_seconds_sum_over_configs": 1.9065917559928494,
+      "calibration_seconds_sum_over_configs": 0.04654969800321851,
+      "selected": {
+        "baseline_config_index": 2,
+        "selected_config_index": 0,
+        "baseline_config": {
+          "warps": 4
+        },
+        "selected_config": {
+          "warps": 1
+        },
+        "selected_name": "stages4",
+        "depth_selection": "Integrated compile_pipeline calibration; no harness depth override",
+        "configuration_selection": "Independent five-round calibration for baseline and selected plans over identical predeclared launch domain",
+        "confirmation_reselects": false
+      },
+      "speedup_range": [
+        1.5239916757378327,
+        1.5366659788409227
+      ],
+      "fresh_confirmation_seeds": [
+        121075,
+        131103,
+        141109
+      ],
+      "cached_selection_unchanged": true
+    },
+    {
+      "id": "upsample_2x64_64x256_to128x512",
+      "boundary": false,
+      "configs": [
+        [
+          64,
+          2,
+          4
+        ],
+        [
+          128,
+          2,
+          4
+        ],
+        [
+          256,
+          2,
+          4
+        ],
+        [
+          512,
+          2,
+          4
+        ]
+      ],
+      "runtime_choices": [
+        "baseline",
+        "stages3",
+        "stages4",
+        "stages3"
+      ],
+      "all_calibration_argument_storage_preserved": true,
+      "baseline_async_copy_sites": 0,
+      "compile_seconds_sum_over_configs": 3.167583370995999,
+      "calibration_seconds_sum_over_configs": 0.4527461210018373,
+      "selected": {
+        "baseline_config_index": 0,
+        "selected_config_index": 0,
+        "baseline_config": [
+          64,
+          2,
+          4
+        ],
+        "selected_config": [
+          64,
+          2,
+          4
+        ],
+        "selected_name": "baseline",
+        "depth_selection": "Integrated compile_pipeline calibration; no harness depth override",
+        "configuration_selection": "Independent five-round calibration for baseline and selected plans over identical predeclared launch domain",
+        "confirmation_reselects": false
+      },
+      "speedup_range": [
+        0.999152256187368,
+        1.0008499119559056
+      ],
+      "fresh_confirmation_seeds": [
+        121076,
+        131104,
+        141110
+      ],
+      "cached_selection_unchanged": true
+    },
+    {
+      "id": "fg_logsoftmax_masked",
+      "boundary": true,
+      "configs": [
+        {
+          "block": 256,
+          "warps": 4
+        }
+      ],
+      "runtime_choices": [
+        "stages4"
+      ],
+      "all_calibration_argument_storage_preserved": true,
+      "baseline_async_copy_sites": 0,
+      "compile_seconds_sum_over_configs": 0.36469212800147943,
+      "calibration_seconds_sum_over_configs": 0.014785245999519248
+    },
+    {
+      "id": "fg_rotary_masked",
+      "boundary": true,
+      "configs": [
+        {
+          "warps": 1
+        }
+      ],
+      "runtime_choices": [
+        "stages4"
+      ],
+      "all_calibration_argument_storage_preserved": true,
+      "baseline_async_copy_sites": 0,
+      "compile_seconds_sum_over_configs": 0.4934866349940421,
+      "calibration_seconds_sum_over_configs": 0.010197448005783372
+    },
+    {
+      "id": "upsample_boundary_single_height",
+      "boundary": true,
+      "configs": [
+        [
+          64,
+          1,
+          4
+        ]
+      ],
+      "runtime_choices": [
+        "stages4"
+      ],
+      "all_calibration_argument_storage_preserved": true,
+      "baseline_async_copy_sites": 0,
+      "compile_seconds_sum_over_configs": 0.5252019320032559,
+      "calibration_seconds_sum_over_configs": 0.008682232997671235
+    }
+  ],
+  "interpretation": [
+    "Runtime policy selects inferred pipeline depth at one fixed launch; launch-configuration selection remains a separate experiment-harness operation. The reported end-to-end device speedups combine those two decisions.",
+    "Baseline and selected plans independently select from the same four launch configurations. The baseline receives the same alias contracts and no contract LICM; all retained baseline variants have zero async-copy sites.",
+    "BF16 rotary is not uniformly a no-op: w4/w8 have identical binaries across depths and skip timing, while w1/w2 produce pipelines. The external configuration search selects the profitable w1/stages4 plan.",
+    "Resize selects ordinary loads at its fastest launch. Other slower launch configurations can select profitable pipelines relative to their own weaker baselines without beating the independently tuned fastest baseline."
+  ],
+  "limits": [
+    "Bounded selected workload study on one B300; four timed workloads represent three kernel families. It is not a random corpus survey or a universal regression-avoidance guarantee.",
+    "Three fresh input seeds validate the frozen decisions; there is only one cold selection per launch configuration. Repeated independent calibration choices under changing load/clocks were not measured.",
+    "Timings measure warmed CUDA graph device execution with 32 invocations per sample and15 shuffled confirmation rounds. Compilation, calibration, host metadata guards/dispatch and allocation are excluded; gains require amortization.",
+    "Calibration depends on example contents and warm-cache/clock regime. A 2% margin is an engineering threshold, not a statistical confidence bound.",
+    "Plans bind exact scalar values, tensor shapes/strides/dtypes/device and alignment plus grid. Replacement tensors with that metadata are tested; changed metadata requires a new plan and is not covered by these timing claims.",
+    "All performance kernels fully overwrite outputs and use replay_safe=True. Reset-inclusive calibration for accumulating state and optional LICM combinations require the separate runtime tests; this performance study does not measure them.",
+    "Explicit source schedules are preserved, so AITER RMSNorm is excluded. Single-iteration inference pruning is not established by these real-kernel timings; targeted compiler/runtime tests cover that rule.",
+    "Boundary cases receive one validation input and calibration, without independent performance confirmations; their calibration timings are not included as speedup claims."
+  ]
+}

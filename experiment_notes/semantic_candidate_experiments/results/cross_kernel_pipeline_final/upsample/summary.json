@@ -1,0 +1,315 @@
+{
+  "records": [
+    {
+      "case": {
+        "id": "upsample_1x64_32x128_to64x256",
+        "family": "upsample_bilinear2d",
+        "shape": [
+          1,
+          64,
+          32,
+          128
+        ],
+        "output_size": [
+          64,
+          256
+        ],
+        "align_corners": false,
+        "dtype": "float32",
+        "boundary": false,
+        "cohort": "calibration",
+        "origin": "Independent 2x resize with a persistent channel loop."
+      },
+      "pipeline_changes_contracts_ptx": true,
+      "contracts_change_source_ptx": false,
+      "selection": {
+        "variant": "contracts",
+        "config": [
+          64,
+          1,
+          4
+        ],
+        "baseline_config": [
+          64,
+          1,
+          4
+        ],
+        "screening_speedup": 1.0,
+        "minimum_screen_gain": 1.02,
+        "calibration_seconds": 3.069265076002921,
+        "selected_configs": {
+          "no_contract": [
+            64,
+            1,
+            4
+          ],
+          "contracts": [
+            64,
+            1,
+            4
+          ],
+          "licm": [
+            64,
+            1,
+            4
+          ],
+          "pipeline": [
+            64,
+            1,
+            4
+          ],
+          "both": [
+            64,
+            1,
+            4
+          ]
+        },
+        "comparison_baseline": "same-contracts, no LICM or auto-stage inference"
+      },
+      "speedups_vs_contracts": [
+        {
+          "no_contract": 0.9981377884774849,
+          "contracts": 1.0,
+          "licm": 1.0010924291888534,
+          "pipeline": 0.7579806573829504,
+          "both": 0.7582495849804047
+        },
+        {
+          "no_contract": 0.9992195612914029,
+          "contracts": 1.0,
+          "licm": 0.9978179384835018,
+          "pipeline": 0.7564087147144009,
+          "both": 0.7577227626185716
+        },
+        {
+          "no_contract": 0.997671910361177,
+          "contracts": 1.0,
+          "licm": 1.0007793928444813,
+          "pipeline": 0.7580550118962643,
+          "both": 0.7578798234368079
+        }
+      ],
+      "contracts_vs_no_contract": [
+        1.0018656858241541,
+        1.0007810482688995,
+        1.0023335222878835
+      ]
+    },
+    {
+      "case": {
+        "id": "upsample_2x64_64x256_to128x512",
+        "family": "upsample_bilinear2d",
+        "shape": [
+          2,
+          64,
+          64,
+          256
+        ],
+        "output_size": [
+          128,
+          512
+        ],
+        "align_corners": true,
+        "dtype": "float32",
+        "boundary": false,
+        "cohort": "calibration",
+        "origin": "Independent align-corners 2x resize with batch and channel loops."
+      },
+      "pipeline_changes_contracts_ptx": true,
+      "contracts_change_source_ptx": false,
+      "selection": {
+        "variant": "contracts",
+        "config": [
+          64,
+          2,
+          4
+        ],
+        "baseline_config": [
+          64,
+          2,
+          4
+        ],
+        "screening_speedup": 1.003215458637448,
+        "minimum_screen_gain": 1.02,
+        "calibration_seconds": 4.268963401998917,
+        "selected_configs": {
+          "no_contract": [
+            64,
+            2,
+            4
+          ],
+          "contracts": [
+            64,
+            2,
+            4
+          ],
+          "licm": [
+            64,
+            2,
+            4
+          ],
+          "pipeline": [
+            64,
+            2,
+            4
+          ],
+          "both": [
+            64,
+            2,
+            4
+          ]
+        },
+        "comparison_baseline": "same-contracts, no LICM or auto-stage inference"
+      },
+      "speedups_vs_contracts": [
+        {
+          "no_contract": 1.0012853568526205,
+          "contracts": 1.0,
+          "licm": 1.0004019510459712,
+          "pipeline": 0.6584811829173334,
+          "both": 0.6578822153150841
+        },
+        {
+          "no_contract": 0.999839460647567,
+          "contracts": 1.0,
+          "licm": 0.9995991227898544,
+          "pipeline": 0.6562203627164481,
+          "both": 0.6574084210093554
+        },
+        {
+          "no_contract": 1.000160565129455,
+          "contracts": 1.0,
+          "licm": 1.0013640666552883,
+          "pipeline": 0.657430303389488,
+          "both": 0.6577042875866717
+        }
+      ],
+      "contracts_vs_no_contract": [
+        0.9987162931687519,
+        1.000160565129455,
+        0.999839460647567
+      ]
+    },
+    {
+      "case": {
+        "id": "upsample_32x16_128x128_to256x256",
+        "family": "upsample_bilinear2d",
+        "shape": [
+          32,
+          16,
+          128,
+          128
+        ],
+        "output_size": [
+          256,
+          256
+        ],
+        "align_corners": false,
+        "dtype": "float32",
+        "boundary": false,
+        "cohort": "calibration",
+        "origin": "Exact first upstream UPSAMPLE_SHAPES input and its supported 2x scale."
+      },
+      "pipeline_changes_contracts_ptx": true,
+      "contracts_change_source_ptx": false,
+      "selection": {
+        "variant": "contracts",
+        "config": [
+          64,
+          1,
+          4
+        ],
+        "baseline_config": [
+          64,
+          1,
+          4
+        ],
+        "screening_speedup": 1.0002821238877397,
+        "minimum_screen_gain": 1.02,
+        "calibration_seconds": 10.666235446999053,
+        "selected_configs": {
+          "no_contract": [
+            64,
+            1,
+            4
+          ],
+          "contracts": [
+            64,
+            1,
+            4
+          ],
+          "licm": [
+            64,
+            1,
+            4
+          ],
+          "pipeline": [
+            64,
+            1,
+            4
+          ],
+          "both": [
+            64,
+            1,
+            4
+          ]
+        },
+        "comparison_baseline": "same-contracts, no LICM or auto-stage inference"
+      },
+      "speedups_vs_contracts": [
+        {
+          "no_contract": 1.0001193815919176,
+          "contracts": 1.0,
+          "licm": 0.999676285247538,
+          "pipeline": 0.8538584128860487,
+          "both": 0.8541046191809173
+        },
+        {
+          "no_contract": 1.0000085112469776,
+          "contracts": 1.0,
+          "licm": 0.9999232782833846,
+          "pipeline": 0.854258028140148,
+          "both": 0.8542150433019253
+        },
+        {
+          "no_contract": 0.9997613894171063,
+          "contracts": 1.0,
+          "licm": 0.9997697759680034,
+          "pipeline": 0.8540295958082729,
+          "both": 0.8539328383706363
+        }
+      ],
+      "contracts_vs_no_contract": [
+        0.9998806326583456,
+        0.999991488825463,
+        1.0002386675314925
+      ]
+    },
+    {
+      "case": {
+        "id": "upsample_boundary_single_height",
+        "family": "upsample_bilinear2d",
+        "shape": [
+          2,
+          3,
+          1,
+          33
+        ],
+        "output_size": [
+          1,
+          64
+        ],
+        "align_corners": true,
+        "dtype": "float32",
+        "boundary": true,
+        "cohort": "boundary",
+        "origin": "IH=OH=1 branch, odd input width, few batch/channel iterations; exact output tile."
+      },
+      "pipeline_changes_contracts_ptx": true,
+      "contracts_change_source_ptx": false
+    }
+  ],
+  "native_library_sha256": "e7e15b9337405e632e887ceae9c96d9ea85e38aa1e9c35dec937d7b148d06178",
+  "native_unchanged": true,
+  "completed": true
+}

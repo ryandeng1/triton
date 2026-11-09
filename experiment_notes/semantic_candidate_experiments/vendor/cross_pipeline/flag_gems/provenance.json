@@ -1,0 +1,25 @@
+{
+  "repository": "flagos-ai/FlagGems",
+  "revision": "3f1f896fd90f5db42d167d64fcb9691326071bc2",
+  "files": [
+    {
+      "path": "src/flag_gems/experimental_ops/_log_softmax_backward_data.py",
+      "function": "_log_softmax_bwd_kernel",
+      "local_file": "log_softmax_backward.py",
+      "url": "https://github.com/flagos-ai/FlagGems/blob/3f1f896fd90f5db42d167d64fcb9691326071bc2/src/flag_gems/experimental_ops/_log_softmax_backward_data.py",
+      "sha256": "ae30d52b6ab2bf83397457a0e1722b916f334fb8fc2b0a1c756f2ab8788a3c3b",
+      "body_ast_sha256": "913cebecc09a8aa7dccc756b9c2b15a7e418c888138a4a93ca0b7f9b37b47508"
+    },
+    {
+      "path": "src/flag_gems/fused/rotary_embedding.py",
+      "function": "apply_rotary_pos_emb_kernel",
+      "local_file": "rotary_embedding.py",
+      "url": "https://github.com/flagos-ai/FlagGems/blob/3f1f896fd90f5db42d167d64fcb9691326071bc2/src/flag_gems/fused/rotary_embedding.py",
+      "sha256": "cbeff1df02a4357975c330247c19a36e5d20aa7a67388b1dd637a52039e94849",
+      "body_ast_sha256": "b1fe0c90425e1da5e3715cea2334fee7ddf71558474526ffdd99adf0cf321973"
+    }
+  ],
+  "kernel_bodies_unchanged": true,
+  "decorator_changes": "Remove libentry/provider autotune; retain triton.jit.",
+  "selection_note": "Cross-family validation candidates chosen for simple independent oracles and unit-step innermost loops with ordinary read/store effects. This is not a corpus-random sample."
+}

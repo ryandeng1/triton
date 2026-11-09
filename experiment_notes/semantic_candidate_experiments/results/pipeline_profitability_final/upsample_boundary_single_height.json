@@ -1,0 +1,366 @@
+{
+  "case": {
+    "id": "upsample_boundary_single_height",
+    "family": "upsample_bilinear2d",
+    "shape": [
+      2,
+      3,
+      1,
+      33
+    ],
+    "output_size": [
+      1,
+      64
+    ],
+    "align_corners": true,
+    "dtype": "float32",
+    "boundary": true,
+    "cohort": "boundary",
+    "origin": "IH=OH=1 branch, odd input width, few batch/channel iterations; exact output tile."
+  },
+  "configurations": [
+    [
+      64,
+      1,
+      4
+    ]
+  ],
+  "calibration": [
+    {
+      "wall_compile_and_calibration_seconds": 0.5352399920011521,
+      "all_argument_backing_storage_preserved": true,
+      "checked_allocation_count": 2,
+      "mutable_args": [
+        0
+      ],
+      "report": {
+        "selected": "stages4",
+        "grid": [
+          1,
+          1,
+          1
+        ],
+        "device": 0,
+        "alias_groups": {
+          "0": 1,
+          "1": 0
+        },
+        "immutable_args": [],
+        "mutable_args": [
+          0
+        ],
+        "variants": {
+          "baseline": {
+            "depth": 0,
+            "licm": false,
+            "equivalent_to": "baseline",
+            "registers": 24,
+            "spills": 0,
+            "shared_bytes": 0,
+            "cubin_sha256": "c233c60037aa064f986955cd7db2f18183567e3d32a31843ff7f29e5091e9de2",
+            "async_copy_sites": 0
+          },
+          "stages2": {
+            "depth": 2,
+            "licm": false,
+            "equivalent_to": "stages2",
+            "registers": 30,
+            "spills": 0,
+            "shared_bytes": 512,
+            "cubin_sha256": "f9163ecb09efd7c6545241a2dc76c949a3813b959371f13ce55c425eea4a3d3b",
+            "async_copy_sites": 4
+          },
+          "stages3": {
+            "depth": 3,
+            "licm": false,
+            "equivalent_to": "stages3",
+            "registers": 32,
+            "spills": 0,
+            "shared_bytes": 1024,
+            "cubin_sha256": "5d109b48bbd86c9ddfdb6569851e4d3ce7416d8b76e1f69a7cb3e0b7eefd8253",
+            "async_copy_sites": 6
+          },
+          "stages4": {
+            "depth": 4,
+            "licm": false,
+            "equivalent_to": "stages4",
+            "registers": 32,
+            "spills": 0,
+            "shared_bytes": 1536,
+            "cubin_sha256": "2afcd9df2bd5fc13b727962f60414c9aa49556a60bb5e20a9115780365602b82",
+            "async_copy_sites": 8
+          }
+        },
+        "compile_seconds": 0.5252019320032559,
+        "calibration_seconds": 0.008682232997671235,
+        "total_seconds": 0.5338847320017521,
+        "calibration": {
+          "screen_samples_us": {
+            "baseline": [
+              1.9379999721422791,
+              1.854000031016767,
+              1.908999984152615,
+              1.9079999765381217,
+              1.90100003965199,
+              1.918999943882227,
+              1.8889999482780695,
+              1.9280000124126673,
+              1.908999984152615
+            ],
+            "stages2": [
+              2.0699999295175076,
+              2.067999914288521,
+              2.03699991106987,
+              2.1540001034736633,
+              2.044999971985817,
+              2.061000093817711,
+              2.0359999034553766,
+              2.0240000449121,
+              2.03699991106987
+            ],
+            "stages3": [
+              1.7600000137463212,
+              1.9759999122470617,
+              1.6749999485909939,
+              1.6759999562054873,
+              1.689000055193901,
+              1.7130000051110983,
+              1.7140000127255917,
+              1.7049999441951513,
+              1.6560000367462635
+            ],
+            "stages4": [
+              1.7089999746531248,
+              1.6129999421536922,
+              1.6080000204965472,
+              1.5940000303089619,
+              1.576000009663403,
+              1.5979999443516135,
+              1.6039999900385737,
+              1.5979999443516135,
+              1.5739999944344163
+            ]
+          },
+          "confirmation_samples_us": {
+            "baseline": [
+              1.9180000526830554,
+              1.914000022225082,
+              1.9209999591112137,
+              1.8860000418499112,
+              1.9120000069960952,
+              1.9920000340789557,
+              1.9320000428706408,
+              1.9079999765381217,
+              1.9259999971836805
+            ],
+            "stages4": [
+              1.6629999736323953,
+              1.5910000074654818,
+              1.5770000172778964,
+              1.5539999585598707,
+              1.6060000052675605,
+              1.5979999443516135,
+              1.639000023715198,
+              1.5950000379234552,
+              1.598999951966107
+            ]
+          },
+          "screen_medians_us": {
+            "baseline": 1.908999984152615,
+            "stages2": 2.044999971985817,
+            "stages3": 1.7049999441951513,
+            "stages4": 1.5979999443516135
+          },
+          "confirmation_medians_us": {
+            "baseline": 1.9180000526830554,
+            "stages4": 1.5979999443516135
+          },
+          "min_gain": 0.02,
+          "rounds": 9,
+          "repetitions": 32,
+          "reset_copies_included": false,
+          "state_restored": true,
+          "executed": true,
+          "reason": "confirmed_gain",
+          "screen_winner": "stages4"
+        },
+        "scope": "inferred pipeline depth at fixed launch; explicit source schedules are preserved",
+        "cached": true,
+        "baseline": "same contracts, no inferred pipeline or contract LICM",
+        "native_attributes": {
+          "(0,)": [
+            [
+              "tt.divisibility",
+              16
+            ],
+            [
+              "tt.experimental_alias_group",
+              1
+            ]
+          ],
+          "(1,)": [
+            [
+              "tt.divisibility",
+              16
+            ],
+            [
+              "tt.experimental_alias_group",
+              0
+            ]
+          ],
+          "(2,)": [],
+          "(3,)": [],
+          "(4,)": [],
+          "(5,)": [
+            [
+              "tt.divisibility",
+              16
+            ]
+          ],
+          "(6,)": [],
+          "(7,)": [],
+          "(10,)": [],
+          "(11,)": [],
+          "(12,)": []
+        }
+      },
+      "selected_name": "stages4",
+      "resources": {
+        "baseline": {
+          "registers": 24,
+          "spills": 0,
+          "shared": 0,
+          "async_copies": 0,
+          "loops": 2,
+          "ptx_sha256": "77aa30b7740d6ee0fa6fa51a47694bbb41a7b909560ca693a464e2271b604ca4",
+          "cubin_sha256": "c233c60037aa064f986955cd7db2f18183567e3d32a31843ff7f29e5091e9de2"
+        },
+        "stages2": {
+          "registers": 30,
+          "spills": 0,
+          "shared": 512,
+          "async_copies": 4,
+          "loops": 2,
+          "ptx_sha256": "b87625ee86715d44bcc6247712e599df90bbd4e27a2d0b98a7546752d5f176cf",
+          "cubin_sha256": "f9163ecb09efd7c6545241a2dc76c949a3813b959371f13ce55c425eea4a3d3b"
+        },
+        "stages3": {
+          "registers": 32,
+          "spills": 0,
+          "shared": 1024,
+          "async_copies": 6,
+          "loops": 2,
+          "ptx_sha256": "d6bbb1104205750e86b7d9daee0928ffc5968475646f66019fdae92bf0f0d347",
+          "cubin_sha256": "5d109b48bbd86c9ddfdb6569851e4d3ce7416d8b76e1f69a7cb3e0b7eefd8253"
+        },
+        "stages4": {
+          "registers": 32,
+          "spills": 0,
+          "shared": 1536,
+          "async_copies": 8,
+          "loops": 2,
+          "ptx_sha256": "3b95faf21f646dbd77f44ccd4017edc8b16eb8aa9c5d3fddcff6a4e029544ce7",
+          "cubin_sha256": "2afcd9df2bd5fc13b727962f60414c9aa49556a60bb5e20a9115780365602b82"
+        }
+      },
+      "config": [
+        64,
+        1,
+        4
+      ],
+      "validation": {
+        "baseline_oracle": {
+          "complete_output_checked": true,
+          "input_unchanged": true,
+          "guards_passed": true,
+          "max_abs_error": 7.494101454619262e-06,
+          "oracle": "torch_interpolate_float64",
+          "atol": 0.0003,
+          "rtol": 0.0001,
+          "exact_output_tiling": true
+        },
+        "variants": {
+          "baseline": {
+            "oracle": {
+              "complete_output_checked": true,
+              "input_unchanged": true,
+              "guards_passed": true,
+              "max_abs_error": 7.494101454619262e-06,
+              "oracle": "torch_interpolate_float64",
+              "atol": 0.0003,
+              "rtol": 0.0001,
+              "exact_output_tiling": true
+            },
+            "bitwise_equal_to_baseline": {
+              "output": true
+            }
+          },
+          "stages2": {
+            "oracle": {
+              "complete_output_checked": true,
+              "input_unchanged": true,
+              "guards_passed": true,
+              "max_abs_error": 7.494101454619262e-06,
+              "oracle": "torch_interpolate_float64",
+              "atol": 0.0003,
+              "rtol": 0.0001,
+              "exact_output_tiling": true
+            },
+            "bitwise_equal_to_baseline": {
+              "output": true
+            }
+          },
+          "stages3": {
+            "oracle": {
+              "complete_output_checked": true,
+              "input_unchanged": true,
+              "guards_passed": true,
+              "max_abs_error": 7.494101454619262e-06,
+              "oracle": "torch_interpolate_float64",
+              "atol": 0.0003,
+              "rtol": 0.0001,
+              "exact_output_tiling": true
+            },
+            "bitwise_equal_to_baseline": {
+              "output": true
+            }
+          },
+          "stages4": {
+            "oracle": {
+              "complete_output_checked": true,
+              "input_unchanged": true,
+              "guards_passed": true,
+              "max_abs_error": 7.494101454619262e-06,
+              "oracle": "torch_interpolate_float64",
+              "atol": 0.0003,
+              "rtol": 0.0001,
+              "exact_output_tiling": true
+            },
+            "bitwise_equal_to_baseline": {
+              "output": true
+            }
+          },
+          "guarded_selected": {
+            "oracle": {
+              "complete_output_checked": true,
+              "input_unchanged": true,
+              "guards_passed": true,
+              "max_abs_error": 7.494101454619262e-06,
+              "oracle": "torch_interpolate_float64",
+              "atol": 0.0003,
+              "rtol": 0.0001,
+              "exact_output_tiling": true
+            },
+            "bitwise_equal_to_baseline": {
+              "output": true
+            }
+          }
+        },
+        "cached_selection_unchanged": true,
+        "selected_name": "stages4"
+      }
+    }
+  ],
+  "confirmations": [],
+  "boundary_passed": true
+}

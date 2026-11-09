@@ -1,0 +1,37 @@
+{
+  "alias_contracts": "Caller supplies the same independently validated alias facts as the baseline.",
+  "audit_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/generated/_log_softmax_bwd_kernel__logsoftmax_output_only2_966dcfc5dca52806.audit.json",
+  "computations_and_memory_operations_unchanged": true,
+  "inverse_edit_recovers_original_function_ast": true,
+  "label": "logsoftmax_output_only2",
+  "load_cache_controls": [],
+  "original_function": "_log_softmax_bwd_kernel",
+  "original_function_ast_sha256": "ce42e316759e0c8203a8baa657db523f3c4d4066c8d4e8bd7c18e5521fab8532",
+  "original_source_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/vendor/cross_pipeline/flag_gems/kernels.py",
+  "original_source_sha256": "b8ab18149d3111eaca4be7137a4791ce7d5e521018bf0ce05aae10b545c1024f",
+  "permitted_edit": "ordinary loop range callee and num_stages annotation",
+  "required_contract_pipeline_stages": 0,
+  "signature_unchanged": true,
+  "source_loop_controls": [
+    {
+      "induction_variable": "chunk",
+      "ordinal": 0,
+      "original_iterator": "range(0, num_chunks)",
+      "original_line": 16,
+      "source_num_stages": 1,
+      "variant_iterator": "tl.range(0, num_chunks, num_stages=1)"
+    },
+    {
+      "induction_variable": "chunk",
+      "ordinal": 1,
+      "original_iterator": "range(0, num_chunks)",
+      "original_line": 24,
+      "source_num_stages": 2,
+      "variant_iterator": "tl.range(0, num_chunks, num_stages=2)"
+    }
+  ],
+  "variant_function": "_log_softmax_bwd_kernel__logsoftmax_output_only2",
+  "variant_function_ast_sha256": "06735305bf1d1e418dff5a563080bfebb316df43e9d04518793e8261cd289153",
+  "variant_source_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/generated/_log_softmax_bwd_kernel__logsoftmax_output_only2_966dcfc5dca52806.py",
+  "variant_source_sha256": "966dcfc5dca528067e256f1ff5e63043f5faa61fe52432d937cfa5582d9519b6"
+}

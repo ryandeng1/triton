@@ -1,0 +1,2532 @@
+{
+  "study": "rotary_w2",
+  "config": {
+    "warps": 2
+  },
+  "confirmations": [
+    {
+      "seed": 71011,
+      "validation": {
+        "baseline": {
+          "oracle": {
+            "outputs": {
+              "oq": {
+                "max_absolute_error": 4.57985342983136e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              },
+              "ok": {
+                "max_absolute_error": 4.259122388106107e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "oq": true,
+            "ok": true
+          }
+        },
+        "stages2": {
+          "oracle": {
+            "outputs": {
+              "oq": {
+                "max_absolute_error": 4.57985342983136e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              },
+              "ok": {
+                "max_absolute_error": 4.259122388106107e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "oq": true,
+            "ok": true
+          }
+        },
+        "stages3": {
+          "oracle": {
+            "outputs": {
+              "oq": {
+                "max_absolute_error": 4.57985342983136e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              },
+              "ok": {
+                "max_absolute_error": 4.259122388106107e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "oq": true,
+            "ok": true
+          }
+        },
+        "stages4": {
+          "oracle": {
+            "outputs": {
+              "oq": {
+                "max_absolute_error": 4.57985342983136e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              },
+              "ok": {
+                "max_absolute_error": 4.259122388106107e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "oq": true,
+            "ok": true
+          }
+        },
+        "q_only2": {
+          "oracle": {
+            "outputs": {
+              "oq": {
+                "max_absolute_error": 4.57985342983136e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              },
+              "ok": {
+                "max_absolute_error": 4.259122388106107e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "oq": true,
+            "ok": true
+          }
+        },
+        "k_only2": {
+          "oracle": {
+            "outputs": {
+              "oq": {
+                "max_absolute_error": 4.57985342983136e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              },
+              "ok": {
+                "max_absolute_error": 4.259122388106107e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "oq": true,
+            "ok": true
+          }
+        },
+        "cache_ca_baseline": {
+          "oracle": {
+            "outputs": {
+              "oq": {
+                "max_absolute_error": 4.57985342983136e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              },
+              "ok": {
+                "max_absolute_error": 4.259122388106107e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "oq": true,
+            "ok": true
+          }
+        },
+        "cache_ca_stages2": {
+          "oracle": {
+            "outputs": {
+              "oq": {
+                "max_absolute_error": 4.57985342983136e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              },
+              "ok": {
+                "max_absolute_error": 4.259122388106107e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "oq": true,
+            "ok": true
+          }
+        },
+        "cache_ca_stages3": {
+          "oracle": {
+            "outputs": {
+              "oq": {
+                "max_absolute_error": 4.57985342983136e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              },
+              "ok": {
+                "max_absolute_error": 4.259122388106107e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "oq": true,
+            "ok": true
+          }
+        }
+      },
+      "timing": {
+        "samples_us": {
+          "baseline": [
+            8.34100041538477,
+            8.349999785423279,
+            8.318999782204628,
+            8.329000324010849,
+            8.317999541759491,
+            8.353999815881252,
+            8.372999727725983,
+            8.325999602675438,
+            8.38600005954504,
+            8.334999904036522,
+            8.36899969726801,
+            8.329000324010849,
+            8.324000053107738,
+            8.325999602675438,
+            8.334999904036522
+          ],
+          "stages2": [
+            9.55200009047985,
+            9.600000455975533,
+            9.599000215530396,
+            9.607999585568905,
+            9.55200009047985,
+            9.610000066459179,
+            9.557000361382961,
+            9.616999886929989,
+            9.762999601662159,
+            9.554999880492687,
+            9.55399964004755,
+            9.557000361382961,
+            9.57299955189228,
+            9.616999886929989,
+            9.54699981957674
+          ],
+          "stages3": [
+            5.563000217080116,
+            5.543999839574099,
+            5.568999797105789,
+            5.582000128924847,
+            5.5680000223219395,
+            5.547999870032072,
+            5.551000125706196,
+            5.578000098466873,
+            5.5240001529455185,
+            5.576000083237886,
+            5.58699993416667,
+            5.563000217080116,
+            5.574999842792749,
+            5.576000083237886,
+            5.582000128924847
+          ],
+          "stages4": [
+            4.4999998062849045,
+            4.379999823868275,
+            4.317000042647123,
+            4.373000003397465,
+            4.327999893575907,
+            4.333999939262867,
+            4.3379999697208405,
+            4.337000194936991,
+            4.327000118792057,
+            4.3680001981556416,
+            4.362000152468681,
+            4.3739997781813145,
+            4.335000179708004,
+            4.308999981731176,
+            4.389000125229359
+          ],
+          "q_only2": [
+            9.271999821066856,
+            9.254000149667263,
+            9.263000451028347,
+            9.285000152885914,
+            9.286999702453613,
+            9.221999906003475,
+            9.294000454246998,
+            9.290000423789024,
+            9.224999696016312,
+            9.259999729692936,
+            9.255999699234962,
+            9.283999912440777,
+            9.229999966919422,
+            9.233999997377396,
+            9.238000027835369
+          ],
+          "k_only2": [
+            8.631999604403973,
+            8.604000322520733,
+            8.64499993622303,
+            8.648999966681004,
+            8.63100029528141,
+            8.65700002759695,
+            8.63999966531992,
+            8.6260000243783,
+            8.642000146210194,
+            8.592000231146812,
+            8.65000020712614,
+            8.608000352978706,
+            8.617999963462353,
+            8.661000058054924,
+            8.64499993622303
+          ],
+          "cache_ca_baseline": [
+            8.34800023585558,
+            8.390000090003014,
+            8.351000025868416,
+            8.383999578654766,
+            8.341999724507332,
+            8.337999694049358,
+            8.351000025868416,
+            8.345000445842743,
+            8.382000029087067,
+            8.338999934494495,
+            8.395999670028687,
+            8.338999934494495,
+            8.356000296771526,
+            8.356000296771526,
+            8.345000445842743
+          ],
+          "cache_ca_stages2": [
+            9.569999761879444,
+            9.564000181853771,
+            9.618000127375126,
+            9.633000008761883,
+            9.61500033736229,
+            9.603999555110931,
+            9.592000395059586,
+            9.619000367820263,
+            9.620999917387962,
+            9.611000306904316,
+            9.55200009047985,
+            9.607000276446342,
+            9.579000063240528,
+            9.618000127375126,
+            9.612999856472015
+          ],
+          "cache_ca_stages3": [
+            5.58600015938282,
+            5.553000140935183,
+            5.518000107258558,
+            5.539000034332275,
+            5.528000183403492,
+            5.574999842792749,
+            5.5519999004900455,
+            5.545000080019236,
+            5.590000189840794,
+            5.516999866813421,
+            5.526999942958355,
+            5.541000049561262,
+            5.588000174611807,
+            5.557999946177006,
+            5.526000168174505
+          ]
+        },
+        "orders": [
+          [
+            "stages4",
+            "cache_ca_stages3",
+            "stages2",
+            "cache_ca_stages2",
+            "cache_ca_baseline",
+            "stages3",
+            "k_only2",
+            "baseline",
+            "q_only2"
+          ],
+          [
+            "k_only2",
+            "q_only2",
+            "cache_ca_baseline",
+            "stages4",
+            "cache_ca_stages2",
+            "stages3",
+            "stages2",
+            "cache_ca_stages3",
+            "baseline"
+          ],
+          [
+            "stages4",
+            "cache_ca_stages2",
+            "cache_ca_baseline",
+            "q_only2",
+            "stages2",
+            "k_only2",
+            "stages3",
+            "cache_ca_stages3",
+            "baseline"
+          ],
+          [
+            "stages4",
+            "cache_ca_stages2",
+            "stages3",
+            "cache_ca_baseline",
+            "k_only2",
+            "stages2",
+            "baseline",
+            "q_only2",
+            "cache_ca_stages3"
+          ],
+          [
+            "cache_ca_baseline",
+            "stages2",
+            "q_only2",
+            "stages3",
+            "stages4",
+            "baseline",
+            "cache_ca_stages2",
+            "k_only2",
+            "cache_ca_stages3"
+          ],
+          [
+            "k_only2",
+            "baseline",
+            "stages3",
+            "stages2",
+            "cache_ca_stages3",
+            "stages4",
+            "cache_ca_stages2",
+            "cache_ca_baseline",
+            "q_only2"
+          ],
+          [
+            "baseline",
+            "cache_ca_stages2",
+            "cache_ca_stages3",
+            "k_only2",
+            "stages3",
+            "stages2",
+            "stages4",
+            "q_only2",
+            "cache_ca_baseline"
+          ],
+          [
+            "stages4",
+            "cache_ca_baseline",
+            "cache_ca_stages2",
+            "stages2",
+            "q_only2",
+            "stages3",
+            "baseline",
+            "k_only2",
+            "cache_ca_stages3"
+          ],
+          [
+            "stages3",
+            "stages4",
+            "baseline",
+            "stages2",
+            "cache_ca_baseline",
+            "q_only2",
+            "cache_ca_stages2",
+            "cache_ca_stages3",
+            "k_only2"
+          ],
+          [
+            "cache_ca_stages3",
+            "k_only2",
+            "cache_ca_baseline",
+            "baseline",
+            "cache_ca_stages2",
+            "stages4",
+            "stages3",
+            "stages2",
+            "q_only2"
+          ],
+          [
+            "q_only2",
+            "stages4",
+            "stages2",
+            "cache_ca_baseline",
+            "stages3",
+            "cache_ca_stages2",
+            "k_only2",
+            "cache_ca_stages3",
+            "baseline"
+          ],
+          [
+            "cache_ca_baseline",
+            "cache_ca_stages3",
+            "stages3",
+            "stages4",
+            "q_only2",
+            "k_only2",
+            "baseline",
+            "stages2",
+            "cache_ca_stages2"
+          ],
+          [
+            "cache_ca_baseline",
+            "cache_ca_stages3",
+            "baseline",
+            "q_only2",
+            "stages4",
+            "cache_ca_stages2",
+            "stages3",
+            "k_only2",
+            "stages2"
+          ],
+          [
+            "cache_ca_stages3",
+            "cache_ca_baseline",
+            "q_only2",
+            "cache_ca_stages2",
+            "stages4",
+            "stages3",
+            "baseline",
+            "stages2",
+            "k_only2"
+          ],
+          [
+            "baseline",
+            "k_only2",
+            "cache_ca_baseline",
+            "stages2",
+            "cache_ca_stages2",
+            "stages3",
+            "q_only2",
+            "cache_ca_stages3",
+            "stages4"
+          ]
+        ],
+        "median_us": {
+          "baseline": 8.334999904036522,
+          "stages2": 9.57299955189228,
+          "stages3": 5.568999797105789,
+          "stages4": 4.3379999697208405,
+          "q_only2": 9.259999729692936,
+          "k_only2": 8.63999966531992,
+          "cache_ca_baseline": 8.351000025868416,
+          "cache_ca_stages2": 9.611000306904316,
+          "cache_ca_stages3": 5.545000080019236
+        }
+      },
+      "speedup_vs_fixed_baseline": {
+        "baseline": 1.0,
+        "stages2": 0.8706779791281778,
+        "stages3": 1.496678076441702,
+        "stages4": 1.921392337993238,
+        "q_only2": 0.9001080072723623,
+        "k_only2": 0.9646991003358906,
+        "cache_ca_baseline": 0.9980840472060435,
+        "cache_ca_stages2": 0.8672354216916272,
+        "cache_ca_stages3": 1.503155957394974
+      }
+    },
+    {
+      "seed": 81013,
+      "validation": {
+        "baseline": {
+          "oracle": {
+            "outputs": {
+              "oq": {
+                "max_absolute_error": 3.102064596305354e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              },
+              "ok": {
+                "max_absolute_error": 2.6186861035171205e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "oq": true,
+            "ok": true
+          }
+        },
+        "stages2": {
+          "oracle": {
+            "outputs": {
+              "oq": {
+                "max_absolute_error": 3.102064596305354e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              },
+              "ok": {
+                "max_absolute_error": 2.6186861035171205e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "oq": true,
+            "ok": true
+          }
+        },
+        "stages3": {
+          "oracle": {
+            "outputs": {
+              "oq": {
+                "max_absolute_error": 3.102064596305354e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              },
+              "ok": {
+                "max_absolute_error": 2.6186861035171205e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "oq": true,
+            "ok": true
+          }
+        },
+        "stages4": {
+          "oracle": {
+            "outputs": {
+              "oq": {
+                "max_absolute_error": 3.102064596305354e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              },
+              "ok": {
+                "max_absolute_error": 2.6186861035171205e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "oq": true,
+            "ok": true
+          }
+        },
+        "q_only2": {
+          "oracle": {
+            "outputs": {
+              "oq": {
+                "max_absolute_error": 3.102064596305354e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              },
+              "ok": {
+                "max_absolute_error": 2.6186861035171205e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "oq": true,
+            "ok": true
+          }
+        },
+        "k_only2": {
+          "oracle": {
+            "outputs": {
+              "oq": {
+                "max_absolute_error": 3.102064596305354e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              },
+              "ok": {
+                "max_absolute_error": 2.6186861035171205e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "oq": true,
+            "ok": true
+          }
+        },
+        "cache_ca_baseline": {
+          "oracle": {
+            "outputs": {
+              "oq": {
+                "max_absolute_error": 3.102064596305354e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              },
+              "ok": {
+                "max_absolute_error": 2.6186861035171205e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "oq": true,
+            "ok": true
+          }
+        },
+        "cache_ca_stages2": {
+          "oracle": {
+            "outputs": {
+              "oq": {
+                "max_absolute_error": 3.102064596305354e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              },
+              "ok": {
+                "max_absolute_error": 2.6186861035171205e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "oq": true,
+            "ok": true
+          }
+        },
+        "cache_ca_stages3": {
+          "oracle": {
+            "outputs": {
+              "oq": {
+                "max_absolute_error": 3.102064596305354e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              },
+              "ok": {
+                "max_absolute_error": 2.6186861035171205e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "oq": true,
+            "ok": true
+          }
+        }
+      },
+      "timing": {
+        "samples_us": {
+          "baseline": [
+            8.39999970048666,
+            8.441999554634094,
+            8.38600005954504,
+            8.37900023907423,
+            8.40499997138977,
+            8.407000452280045,
+            8.38600005954504,
+            8.414000272750854,
+            8.39100033044815,
+            8.396999910473824,
+            8.394000120460987,
+            8.403999730944633,
+            8.407000452280045,
+            8.400999940931797,
+            8.465999737381935
+          ],
+          "stages2": [
+            9.654000401496887,
+            9.637000039219856,
+            9.669000282883644,
+            9.631000459194183,
+            9.62700042873621,
+            9.646999649703503,
+            9.611000306904316,
+            9.614000096917152,
+            9.637000039219856,
+            9.619999676942825,
+            9.616999886929989,
+            9.624999947845936,
+            9.63599979877472,
+            9.662999771535397,
+            9.630000218749046
+          ],
+          "stages3": [
+            5.5669997818768024,
+            5.588000174611807,
+            5.563000217080116,
+            5.590999964624643,
+            5.59999980032444,
+            5.561999976634979,
+            5.588000174611807,
+            5.582000128924847,
+            5.563000217080116,
+            5.539000034332275,
+            5.58000011369586,
+            5.570999812334776,
+            5.5740000680089,
+            5.582000128924847,
+            5.584000144153833
+          ],
+          "stages4": [
+            4.344000015407801,
+            4.366000182926655,
+            4.362000152468681,
+            4.370999988168478,
+            4.377999808639288,
+            4.370999988168478,
+            4.3680001981556416,
+            4.356000106781721,
+            4.323999863117933,
+            4.323999863117933,
+            4.356000106781721,
+            4.377000033855438,
+            4.364000167697668,
+            4.364000167697668,
+            4.370000213384628
+          ],
+          "q_only2": [
+            9.353999979794025,
+            9.285000152885914,
+            9.30699985474348,
+            9.30699985474348,
+            9.317999705672264,
+            9.285000152885914,
+            9.340000338852406,
+            9.349999949336052,
+            9.285000152885914,
+            9.290999732911587,
+            9.28299967199564,
+            9.301000274717808,
+            9.312000125646591,
+            9.28100012242794,
+            9.29300021380186
+          ],
+          "k_only2": [
+            8.821000345051289,
+            8.674000389873981,
+            8.661000058054924,
+            8.659999817609787,
+            8.712000213563442,
+            8.684000000357628,
+            8.709999732673168,
+            8.66399984806776,
+            8.716999553143978,
+            8.65700002759695,
+            8.65899957716465,
+            8.67099966853857,
+            8.709000423550606,
+            8.654999546706676,
+            8.712000213563442
+          ],
+          "cache_ca_baseline": [
+            8.413000032305717,
+            8.39299988001585,
+            8.399000391364098,
+            8.446999825537205,
+            8.39800015091896,
+            8.38600005954504,
+            8.407999761402607,
+            8.40499997138977,
+            8.433000184595585,
+            8.395000360906124,
+            8.39800015091896,
+            8.383999578654766,
+            8.555999957025051,
+            8.400999940931797,
+            8.457999676465988
+          ],
+          "cache_ca_stages2": [
+            9.657000191509724,
+            9.623999707400799,
+            9.604999795556068,
+            9.638000279664993,
+            9.603999555110931,
+            9.607999585568905,
+            9.630000218749046,
+            9.607000276446342,
+            9.611000306904316,
+            9.67200007289648,
+            9.610000066459179,
+            9.626000188291073,
+            9.634999558329582,
+            9.624999947845936,
+            9.668000042438507
+          ],
+          "cache_ca_stages3": [
+            5.590000189840794,
+            5.566000007092953,
+            5.545000080019236,
+            5.545999854803085,
+            5.576999858021736,
+            5.541999824345112,
+            5.578000098466873,
+            5.582000128924847,
+            5.590999964624643,
+            5.566000007092953,
+            5.582999903708696,
+            5.5970000103116035,
+            5.590000189840794,
+            5.578000098466873,
+            5.537999793887138
+          ]
+        },
+        "orders": [
+          [
+            "k_only2",
+            "cache_ca_stages2",
+            "stages3",
+            "q_only2",
+            "cache_ca_stages3",
+            "cache_ca_baseline",
+            "stages4",
+            "baseline",
+            "stages2"
+          ],
+          [
+            "cache_ca_stages2",
+            "stages2",
+            "baseline",
+            "q_only2",
+            "stages3",
+            "stages4",
+            "cache_ca_stages3",
+            "cache_ca_baseline",
+            "k_only2"
+          ],
+          [
+            "k_only2",
+            "cache_ca_stages3",
+            "baseline",
+            "cache_ca_baseline",
+            "stages4",
+            "stages2",
+            "stages3",
+            "q_only2",
+            "cache_ca_stages2"
+          ],
+          [
+            "stages2",
+            "cache_ca_stages3",
+            "stages3",
+            "k_only2",
+            "q_only2",
+            "cache_ca_stages2",
+            "baseline",
+            "stages4",
+            "cache_ca_baseline"
+          ],
+          [
+            "stages4",
+            "cache_ca_stages3",
+            "k_only2",
+            "cache_ca_stages2",
+            "stages3",
+            "cache_ca_baseline",
+            "baseline",
+            "stages2",
+            "q_only2"
+          ],
+          [
+            "cache_ca_stages3",
+            "stages3",
+            "cache_ca_stages2",
+            "k_only2",
+            "stages2",
+            "cache_ca_baseline",
+            "stages4",
+            "q_only2",
+            "baseline"
+          ],
+          [
+            "cache_ca_baseline",
+            "cache_ca_stages3",
+            "q_only2",
+            "cache_ca_stages2",
+            "baseline",
+            "stages2",
+            "stages4",
+            "k_only2",
+            "stages3"
+          ],
+          [
+            "baseline",
+            "cache_ca_stages3",
+            "cache_ca_stages2",
+            "cache_ca_baseline",
+            "stages3",
+            "q_only2",
+            "stages4",
+            "k_only2",
+            "stages2"
+          ],
+          [
+            "stages4",
+            "stages3",
+            "q_only2",
+            "k_only2",
+            "cache_ca_stages3",
+            "cache_ca_stages2",
+            "stages2",
+            "baseline",
+            "cache_ca_baseline"
+          ],
+          [
+            "cache_ca_baseline",
+            "k_only2",
+            "stages2",
+            "stages3",
+            "stages4",
+            "cache_ca_stages2",
+            "baseline",
+            "cache_ca_stages3",
+            "q_only2"
+          ],
+          [
+            "stages4",
+            "stages3",
+            "cache_ca_stages2",
+            "baseline",
+            "cache_ca_baseline",
+            "cache_ca_stages3",
+            "q_only2",
+            "k_only2",
+            "stages2"
+          ],
+          [
+            "cache_ca_stages2",
+            "stages3",
+            "cache_ca_stages3",
+            "k_only2",
+            "stages2",
+            "cache_ca_baseline",
+            "stages4",
+            "q_only2",
+            "baseline"
+          ],
+          [
+            "cache_ca_baseline",
+            "baseline",
+            "stages2",
+            "k_only2",
+            "q_only2",
+            "cache_ca_stages3",
+            "stages4",
+            "stages3",
+            "cache_ca_stages2"
+          ],
+          [
+            "q_only2",
+            "cache_ca_baseline",
+            "stages3",
+            "stages4",
+            "stages2",
+            "cache_ca_stages2",
+            "cache_ca_stages3",
+            "baseline",
+            "k_only2"
+          ],
+          [
+            "cache_ca_stages3",
+            "k_only2",
+            "stages3",
+            "q_only2",
+            "stages2",
+            "cache_ca_stages2",
+            "stages4",
+            "baseline",
+            "cache_ca_baseline"
+          ]
+        ],
+        "median_us": {
+          "baseline": 8.400999940931797,
+          "stages2": 9.631000459194183,
+          "stages3": 5.58000011369586,
+          "stages4": 4.364000167697668,
+          "q_only2": 9.301000274717808,
+          "k_only2": 8.674000389873981,
+          "cache_ca_baseline": 8.400999940931797,
+          "cache_ca_stages2": 9.624999947845936,
+          "cache_ca_stages3": 5.578000098466873
+        }
+      },
+      "speedup_vs_fixed_baseline": {
+        "baseline": 1.0,
+        "stages2": 0.872287357531151,
+        "stages3": 1.505555514293256,
+        "stages4": 1.925068656760374,
+        "q_only2": 0.9032361781310326,
+        "k_only2": 0.9685265809693893,
+        "cache_ca_baseline": 1.0,
+        "cache_ca_stages2": 0.8728311674237392,
+        "cache_ca_stages3": 1.506095337510093
+      }
+    },
+    {
+      "seed": 91019,
+      "validation": {
+        "baseline": {
+          "oracle": {
+            "outputs": {
+              "oq": {
+                "max_absolute_error": 3.0947745699450024e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              },
+              "ok": {
+                "max_absolute_error": 3.138764128607363e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "oq": true,
+            "ok": true
+          }
+        },
+        "stages2": {
+          "oracle": {
+            "outputs": {
+              "oq": {
+                "max_absolute_error": 3.0947745699450024e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              },
+              "ok": {
+                "max_absolute_error": 3.138764128607363e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "oq": true,
+            "ok": true
+          }
+        },
+        "stages3": {
+          "oracle": {
+            "outputs": {
+              "oq": {
+                "max_absolute_error": 3.0947745699450024e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              },
+              "ok": {
+                "max_absolute_error": 3.138764128607363e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "oq": true,
+            "ok": true
+          }
+        },
+        "stages4": {
+          "oracle": {
+            "outputs": {
+              "oq": {
+                "max_absolute_error": 3.0947745699450024e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              },
+              "ok": {
+                "max_absolute_error": 3.138764128607363e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "oq": true,
+            "ok": true
+          }
+        },
+        "q_only2": {
+          "oracle": {
+            "outputs": {
+              "oq": {
+                "max_absolute_error": 3.0947745699450024e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              },
+              "ok": {
+                "max_absolute_error": 3.138764128607363e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "oq": true,
+            "ok": true
+          }
+        },
+        "k_only2": {
+          "oracle": {
+            "outputs": {
+              "oq": {
+                "max_absolute_error": 3.0947745699450024e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              },
+              "ok": {
+                "max_absolute_error": 3.138764128607363e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "oq": true,
+            "ok": true
+          }
+        },
+        "cache_ca_baseline": {
+          "oracle": {
+            "outputs": {
+              "oq": {
+                "max_absolute_error": 3.0947745699450024e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              },
+              "ok": {
+                "max_absolute_error": 3.138764128607363e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "oq": true,
+            "ok": true
+          }
+        },
+        "cache_ca_stages2": {
+          "oracle": {
+            "outputs": {
+              "oq": {
+                "max_absolute_error": 3.0947745699450024e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              },
+              "ok": {
+                "max_absolute_error": 3.138764128607363e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "oq": true,
+            "ok": true
+          }
+        },
+        "cache_ca_stages3": {
+          "oracle": {
+            "outputs": {
+              "oq": {
+                "max_absolute_error": 3.0947745699450024e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              },
+              "ok": {
+                "max_absolute_error": 3.138764128607363e-07,
+                "finite": true,
+                "atol": 3e-06,
+                "rtol": 2e-05,
+                "guards": true
+              }
+            },
+            "inputs_unchanged": true,
+            "complete_outputs_checked": true,
+            "oracle": "FP64 torch mathematics from stored input values"
+          },
+          "bitwise_equal_to_baseline": {
+            "oq": true,
+            "ok": true
+          }
+        }
+      },
+      "timing": {
+        "samples_us": {
+          "baseline": [
+            8.440000005066395,
+            8.433000184595585,
+            8.421000093221664,
+            8.422999642789364,
+            8.421000093221664,
+            8.403999730944633,
+            8.427999913692474,
+            8.39100033044815,
+            8.39100033044815,
+            8.38799960911274,
+            8.396999910473824,
+            8.417000062763691,
+            8.395999670028687,
+            8.410999551415443,
+            8.39800015091896
+          ],
+          "stages2": [
+            9.633000008761883,
+            9.604999795556068,
+            9.633000008761883,
+            9.643999859690666,
+            9.643999859690666,
+            9.70499962568283,
+            9.620999917387962,
+            9.62899997830391,
+            9.615999646484852,
+            9.616999886929989,
+            9.611999616026878,
+            9.612999856472015,
+            9.604999795556068,
+            9.619000367820263,
+            9.626000188291073
+          ],
+          "stages3": [
+            5.692000035196543,
+            5.576000083237886,
+            5.543999839574099,
+            5.590000189840794,
+            5.584000144153833,
+            5.621000193059444,
+            5.576999858021736,
+            5.6039998307824135,
+            5.584000144153833,
+            5.59200020506978,
+            5.574999842792749,
+            5.58600015938282,
+            5.5970000103116035,
+            5.541000049561262,
+            5.5970000103116035
+          ],
+          "stages4": [
+            4.34499979019165,
+            4.358000122010708,
+            4.3379999697208405,
+            4.352000076323748,
+            4.370999988168478,
+            4.358999896794558,
+            4.366000182926655,
+            4.315000027418137,
+            4.364999942481518,
+            4.362000152468681,
+            4.3669999577105045,
+            4.342999774962664,
+            4.370999988168478,
+            4.310000222176313,
+            4.344000015407801
+          ],
+          "q_only2": [
+            9.27599985152483,
+            9.321000427007675,
+            9.290000423789024,
+            9.283999912440777,
+            9.31399967521429,
+            9.324000217020512,
+            9.290000423789024,
+            9.308000095188618,
+            9.305000305175781,
+            9.294000454246998,
+            9.28799994289875,
+            9.312000125646591,
+            9.290000423789024,
+            9.29499976336956,
+            9.414000436663628
+          ],
+          "k_only2": [
+            8.694999851286411,
+            8.686999790370464,
+            8.679999969899654,
+            8.701000362634659,
+            8.679999969899654,
+            8.715000003576279,
+            8.678000420331955,
+            8.667999878525734,
+            8.671999908983707,
+            8.719000034034252,
+            8.659999817609787,
+            8.655999787151814,
+            8.681000210344791,
+            8.65700002759695,
+            8.654999546706676
+          ],
+          "cache_ca_baseline": [
+            8.450999855995178,
+            8.383999578654766,
+            8.418000303208828,
+            8.402000181376934,
+            8.415999822318554,
+            8.38799960911274,
+            8.419999852776527,
+            8.403000421822071,
+            8.403999730944633,
+            8.419999852776527,
+            8.402000181376934,
+            8.406000211834908,
+            8.402000181376934,
+            8.403999730944633,
+            8.414999581873417
+          ],
+          "cache_ca_stages2": [
+            9.64799989014864,
+            9.620999917387962,
+            9.638999588787556,
+            9.61500033736229,
+            9.610000066459179,
+            9.637000039219856,
+            9.63400024920702,
+            9.631000459194183,
+            9.626000188291073,
+            9.595000185072422,
+            9.607999585568905,
+            9.6220001578331,
+            9.631000459194183,
+            9.615999646484852,
+            9.599000215530396
+          ],
+          "cache_ca_stages3": [
+            5.543999839574099,
+            5.539999809116125,
+            5.601999815553427,
+            5.601000040769577,
+            5.555000156164169,
+            5.717999767512083,
+            5.576999858021736,
+            5.578999873250723,
+            5.570999812334776,
+            5.578999873250723,
+            5.594999995082617,
+            5.617000162601471,
+            5.576000083237886,
+            5.584000144153833,
+            5.58000011369586
+          ]
+        },
+        "orders": [
+          [
+            "stages3",
+            "q_only2",
+            "k_only2",
+            "stages4",
+            "stages2",
+            "cache_ca_stages3",
+            "cache_ca_stages2",
+            "cache_ca_baseline",
+            "baseline"
+          ],
+          [
+            "q_only2",
+            "cache_ca_stages2",
+            "baseline",
+            "cache_ca_baseline",
+            "cache_ca_stages3",
+            "stages4",
+            "k_only2",
+            "stages3",
+            "stages2"
+          ],
+          [
+            "baseline",
+            "stages3",
+            "cache_ca_baseline",
+            "k_only2",
+            "cache_ca_stages3",
+            "cache_ca_stages2",
+            "q_only2",
+            "stages2",
+            "stages4"
+          ],
+          [
+            "cache_ca_stages2",
+            "stages4",
+            "baseline",
+            "q_only2",
+            "stages3",
+            "k_only2",
+            "cache_ca_stages3",
+            "cache_ca_baseline",
+            "stages2"
+          ],
+          [
+            "stages2",
+            "cache_ca_stages2",
+            "cache_ca_stages3",
+            "stages3",
+            "k_only2",
+            "baseline",
+            "stages4",
+            "cache_ca_baseline",
+            "q_only2"
+          ],
+          [
+            "cache_ca_baseline",
+            "baseline",
+            "k_only2",
+            "cache_ca_stages3",
+            "stages2",
+            "q_only2",
+            "stages4",
+            "cache_ca_stages2",
+            "stages3"
+          ],
+          [
+            "k_only2",
+            "q_only2",
+            "stages3",
+            "stages2",
+            "cache_ca_baseline",
+            "baseline",
+            "cache_ca_stages2",
+            "stages4",
+            "cache_ca_stages3"
+          ],
+          [
+            "q_only2",
+            "stages4",
+            "cache_ca_stages2",
+            "cache_ca_stages3",
+            "k_only2",
+            "baseline",
+            "stages2",
+            "stages3",
+            "cache_ca_baseline"
+          ],
+          [
+            "cache_ca_baseline",
+            "baseline",
+            "stages2",
+            "q_only2",
+            "cache_ca_stages3",
+            "stages4",
+            "stages3",
+            "cache_ca_stages2",
+            "k_only2"
+          ],
+          [
+            "cache_ca_stages2",
+            "stages3",
+            "baseline",
+            "k_only2",
+            "q_only2",
+            "stages2",
+            "cache_ca_baseline",
+            "stages4",
+            "cache_ca_stages3"
+          ],
+          [
+            "cache_ca_stages3",
+            "stages3",
+            "cache_ca_baseline",
+            "cache_ca_stages2",
+            "stages4",
+            "q_only2",
+            "k_only2",
+            "baseline",
+            "stages2"
+          ],
+          [
+            "q_only2",
+            "k_only2",
+            "stages2",
+            "cache_ca_stages2",
+            "cache_ca_baseline",
+            "cache_ca_stages3",
+            "baseline",
+            "stages4",
+            "stages3"
+          ],
+          [
+            "cache_ca_stages3",
+            "cache_ca_baseline",
+            "k_only2",
+            "stages3",
+            "baseline",
+            "q_only2",
+            "cache_ca_stages2",
+            "stages4",
+            "stages2"
+          ],
+          [
+            "cache_ca_stages3",
+            "cache_ca_baseline",
+            "cache_ca_stages2",
+            "k_only2",
+            "q_only2",
+            "baseline",
+            "stages2",
+            "stages3",
+            "stages4"
+          ],
+          [
+            "k_only2",
+            "stages4",
+            "baseline",
+            "cache_ca_stages2",
+            "stages3",
+            "q_only2",
+            "cache_ca_stages3",
+            "cache_ca_baseline",
+            "stages2"
+          ]
+        ],
+        "median_us": {
+          "baseline": 8.410999551415443,
+          "stages2": 9.620999917387962,
+          "stages3": 5.58600015938282,
+          "stages4": 4.358000122010708,
+          "q_only2": 9.29499976336956,
+          "k_only2": 8.679999969899654,
+          "cache_ca_baseline": 8.403999730944633,
+          "cache_ca_stages2": 9.6220001578331,
+          "cache_ca_stages3": 5.578999873250723
+        }
+      },
+      "speedup_vs_fixed_baseline": {
+        "baseline": 1.0,
+        "stages2": 0.8742334085477234,
+        "stages3": 1.5057284839649465,
+        "stages4": 1.930013610815309,
+        "q_only2": 0.904895079670916,
+        "k_only2": 0.9690091682699256,
+        "cache_ca_baseline": 1.0008329153611268,
+        "cache_ca_stages2": 0.8741425289385594,
+        "cache_ca_stages3": 1.5076178065074226
+      }
+    }
+  ],
+  "case": {
+    "id": "fg_rotary_t128_q32_k8_d128_f32",
+    "family": "rotary_embedding",
+    "tokens": 128,
+    "qheads": 32,
+    "kheads": 8,
+    "dim": 128,
+    "dtype": "float32",
+    "interleaved": false,
+    "boundary": false
+  },
+  "provenance": {
+    "repository": "flagos-ai/FlagGems",
+    "revision": "3f1f896fd90f5db42d167d64fcb9691326071bc2",
+    "files": [
+      {
+        "path": "src/flag_gems/experimental_ops/_log_softmax_backward_data.py",
+        "function": "_log_softmax_bwd_kernel",
+        "local_file": "log_softmax_backward.py",
+        "url": "https://github.com/flagos-ai/FlagGems/blob/3f1f896fd90f5db42d167d64fcb9691326071bc2/src/flag_gems/experimental_ops/_log_softmax_backward_data.py",
+        "sha256": "ae30d52b6ab2bf83397457a0e1722b916f334fb8fc2b0a1c756f2ab8788a3c3b",
+        "body_ast_sha256": "913cebecc09a8aa7dccc756b9c2b15a7e418c888138a4a93ca0b7f9b37b47508"
+      },
+      {
+        "path": "src/flag_gems/fused/rotary_embedding.py",
+        "function": "apply_rotary_pos_emb_kernel",
+        "local_file": "rotary_embedding.py",
+        "url": "https://github.com/flagos-ai/FlagGems/blob/3f1f896fd90f5db42d167d64fcb9691326071bc2/src/flag_gems/fused/rotary_embedding.py",
+        "sha256": "cbeff1df02a4357975c330247c19a36e5d20aa7a67388b1dd637a52039e94849",
+        "body_ast_sha256": "b1fe0c90425e1da5e3715cea2334fee7ddf71558474526ffdd99adf0cf321973"
+      }
+    ],
+    "kernel_bodies_unchanged": true,
+    "decorator_changes": "Remove libentry/provider autotune; retain triton.jit.",
+    "selection_note": "Cross-family validation candidates chosen for simple independent oracles and unit-step innermost loops with ordinary read/store effects. This is not a corpus-random sample.",
+    "adapter_sha256": "e8db8e6a25a9fe685e9a771be3b96c5b8c19bac363650bc35f056e0a7f1ea3c1",
+    "extracted_sha256": "6dd0be2147f9253eb189af9ed9b6c8b0348af23ff03b48df84d49bd282297432"
+  },
+  "variants": {
+    "baseline": {
+      "resources": {
+        "registers": 26,
+        "spills": 0,
+        "shared": 0,
+        "async_copies": 0,
+        "loops": 2,
+        "ptx_sha256": "911505c3bd08d16b1a9bd75aaad21ee10a4bf74c70070b9df4e8a92ea9980c27",
+        "cubin_sha256": "5c8293fa29ccd2c31355bcc60c1378117841a3f53852abbb6cad20cd82c2c900",
+        "wait_groups": [],
+        "barriers": 0,
+        "commits": 0,
+        "copy_cg": 0,
+        "copy_ca": 0
+      },
+      "audit": {
+        "unchanged_source": true
+      },
+      "options": {
+        "num_warps": 2,
+        "num_stages": 1,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "enable_private_reduction_ownership": false,
+        "enable_contract_load_reuse": false,
+        "enable_contract_licm": false,
+        "contract_pipeline_stages": 0
+      },
+      "grid": [
+        128,
+        1,
+        1
+      ],
+      "groups": {
+        "0": 1,
+        "1": 2,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0
+      }
+    },
+    "stages2": {
+      "resources": {
+        "registers": 26,
+        "spills": 0,
+        "shared": 1024,
+        "async_copies": 8,
+        "loops": 2,
+        "ptx_sha256": "aa903e0ef7552962d03c805a3bd88703eed0ede50c078bab72c4bf37e658c6c5",
+        "cubin_sha256": "ab073aaeadc41f5033c5e5b3d8a0d2b5daab86cb83a9d21a3be0bac0b1cffddf",
+        "wait_groups": [
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        "barriers": 6,
+        "commits": 8,
+        "copy_cg": 0,
+        "copy_ca": 8
+      },
+      "audit": {
+        "unchanged_source": true
+      },
+      "options": {
+        "num_warps": 2,
+        "num_stages": 1,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "enable_private_reduction_ownership": false,
+        "enable_contract_load_reuse": false,
+        "enable_contract_licm": false,
+        "contract_pipeline_stages": 2
+      },
+      "grid": [
+        128,
+        1,
+        1
+      ],
+      "groups": {
+        "0": 1,
+        "1": 2,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0
+      }
+    },
+    "stages3": {
+      "resources": {
+        "registers": 28,
+        "spills": 0,
+        "shared": 2048,
+        "async_copies": 12,
+        "loops": 2,
+        "ptx_sha256": "7d88a1cf9c9036f0a2567daa3c40373323881f16dfe5befe0cdb2ff54b1f374c",
+        "cubin_sha256": "8ae5679eebcb6ca4f63da1a8b55a8cff4e2912caef903626a5fc3fe25e9d79ee",
+        "wait_groups": [
+          "2",
+          "0",
+          "2",
+          "0"
+        ],
+        "barriers": 6,
+        "commits": 12,
+        "copy_cg": 0,
+        "copy_ca": 12
+      },
+      "audit": {
+        "unchanged_source": true
+      },
+      "options": {
+        "num_warps": 2,
+        "num_stages": 1,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "enable_private_reduction_ownership": false,
+        "enable_contract_load_reuse": false,
+        "enable_contract_licm": false,
+        "contract_pipeline_stages": 3
+      },
+      "grid": [
+        128,
+        1,
+        1
+      ],
+      "groups": {
+        "0": 1,
+        "1": 2,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0
+      }
+    },
+    "stages4": {
+      "resources": {
+        "registers": 28,
+        "spills": 0,
+        "shared": 3072,
+        "async_copies": 16,
+        "loops": 2,
+        "ptx_sha256": "2d609a13db1d28fa73fec2a68e52af4117969bf71ad8954676fe19a042497ba2",
+        "cubin_sha256": "5cb2b3a40391aba134c2558037c8280f47c869baea8f1d66b69fd7cc005818a5",
+        "wait_groups": [
+          "4",
+          "0",
+          "4",
+          "0"
+        ],
+        "barriers": 6,
+        "commits": 16,
+        "copy_cg": 0,
+        "copy_ca": 16
+      },
+      "audit": {
+        "unchanged_source": true
+      },
+      "options": {
+        "num_warps": 2,
+        "num_stages": 1,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "enable_private_reduction_ownership": false,
+        "enable_contract_load_reuse": false,
+        "enable_contract_licm": false,
+        "contract_pipeline_stages": 4
+      },
+      "grid": [
+        128,
+        1,
+        1
+      ],
+      "groups": {
+        "0": 1,
+        "1": 2,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0
+      }
+    },
+    "q_only2": {
+      "resources": {
+        "registers": 30,
+        "spills": 0,
+        "shared": 1024,
+        "async_copies": 4,
+        "loops": 2,
+        "ptx_sha256": "0f63ad9d5b0e6598eb9c7ab59f812103c25e87c07a81e68e20a616d4e201fba9",
+        "cubin_sha256": "e7f9daf5a18269e2ec15d4960fc5c8bb03f42a8a98611e6f9687d41b5bc50c2d",
+        "wait_groups": [
+          "0",
+          "0"
+        ],
+        "barriers": 11,
+        "commits": 4,
+        "copy_cg": 0,
+        "copy_ca": 4
+      },
+      "audit": {
+        "label": "rotary_q_only2",
+        "original_function": "apply_rotary_pos_emb_kernel",
+        "original_source_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/vendor/cross_pipeline/flag_gems/kernels.py",
+        "original_source_sha256": "4c2ef75ca65061de2aeed2e6149bac625949bfe9d2d68a3c0fbfcdad65b149bd",
+        "original_function_ast_sha256": "526f852e26f6796a48943c97d907fa935d1a469a0e355054500c04a722a6f819",
+        "variant_function": "apply_rotary_pos_emb_kernel__rotary_q_only2",
+        "variant_source_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/generated/apply_rotary_pos_emb_kernel__rotary_q_only2_40b085faa54154bb.py",
+        "variant_source_sha256": "40b085faa54154bb715e5ec72f8115c44e5856707245d9e98a3f109a38312fc8",
+        "variant_function_ast_sha256": "6baaf362a7cb241adc1b8db10c27adbacd88daf87b20c071a16216530ca75a18",
+        "audit_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/generated/apply_rotary_pos_emb_kernel__rotary_q_only2_40b085faa54154bb.audit.json",
+        "inverse_edit_recovers_original_function_ast": true,
+        "signature_unchanged": true,
+        "computations_and_memory_operations_unchanged": true,
+        "source_loop_controls": [
+          {
+            "ordinal": 0,
+            "original_line": 64,
+            "induction_variable": "off_h",
+            "original_iterator": "range(0, NUM_Q_HEADS)",
+            "variant_iterator": "tl.range(0, NUM_Q_HEADS, num_stages=2)",
+            "source_num_stages": 2
+          },
+          {
+            "ordinal": 1,
+            "original_line": 77,
+            "induction_variable": "off_h",
+            "original_iterator": "range(0, NUM_K_HEADS)",
+            "variant_iterator": "tl.range(0, NUM_K_HEADS, num_stages=1)",
+            "source_num_stages": 1
+          }
+        ],
+        "load_cache_controls": [],
+        "permitted_edit": "ordinary loop range callee and num_stages annotation",
+        "required_contract_pipeline_stages": 0,
+        "alias_contracts": "Caller supplies the same independently validated alias facts as the baseline."
+      },
+      "options": {
+        "num_warps": 2,
+        "num_stages": 1,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "enable_private_reduction_ownership": false,
+        "enable_contract_load_reuse": false,
+        "enable_contract_licm": false,
+        "contract_pipeline_stages": 0
+      },
+      "grid": [
+        128,
+        1,
+        1
+      ],
+      "groups": {
+        "0": 1,
+        "1": 2,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0
+      }
+    },
+    "k_only2": {
+      "resources": {
+        "registers": 29,
+        "spills": 0,
+        "shared": 1024,
+        "async_copies": 4,
+        "loops": 2,
+        "ptx_sha256": "21189b6b8ddfc44547b3dd3a037f51ac6a51aa66127c502ca787d7142c5a4254",
+        "cubin_sha256": "fd3d13246a3ade61cd59a157cb39b36a6cf5dbf4f2354f02578400153bae5819",
+        "wait_groups": [
+          "0",
+          "0"
+        ],
+        "barriers": 3,
+        "commits": 4,
+        "copy_cg": 0,
+        "copy_ca": 4
+      },
+      "audit": {
+        "label": "rotary_k_only2",
+        "original_function": "apply_rotary_pos_emb_kernel",
+        "original_source_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/vendor/cross_pipeline/flag_gems/kernels.py",
+        "original_source_sha256": "4c2ef75ca65061de2aeed2e6149bac625949bfe9d2d68a3c0fbfcdad65b149bd",
+        "original_function_ast_sha256": "526f852e26f6796a48943c97d907fa935d1a469a0e355054500c04a722a6f819",
+        "variant_function": "apply_rotary_pos_emb_kernel__rotary_k_only2",
+        "variant_source_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/generated/apply_rotary_pos_emb_kernel__rotary_k_only2_30dcbadcc8b7964b.py",
+        "variant_source_sha256": "30dcbadcc8b7964bf6b448d72b48db9c9e5d658a6d34fde337442a87bc5f338e",
+        "variant_function_ast_sha256": "2b7791943bb5ecca8eff7508de54a3dc7716879250a98eb66e8fa9889f30ca8e",
+        "audit_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/generated/apply_rotary_pos_emb_kernel__rotary_k_only2_30dcbadcc8b7964b.audit.json",
+        "inverse_edit_recovers_original_function_ast": true,
+        "signature_unchanged": true,
+        "computations_and_memory_operations_unchanged": true,
+        "source_loop_controls": [
+          {
+            "ordinal": 0,
+            "original_line": 64,
+            "induction_variable": "off_h",
+            "original_iterator": "range(0, NUM_Q_HEADS)",
+            "variant_iterator": "tl.range(0, NUM_Q_HEADS, num_stages=1)",
+            "source_num_stages": 1
+          },
+          {
+            "ordinal": 1,
+            "original_line": 77,
+            "induction_variable": "off_h",
+            "original_iterator": "range(0, NUM_K_HEADS)",
+            "variant_iterator": "tl.range(0, NUM_K_HEADS, num_stages=2)",
+            "source_num_stages": 2
+          }
+        ],
+        "load_cache_controls": [],
+        "permitted_edit": "ordinary loop range callee and num_stages annotation",
+        "required_contract_pipeline_stages": 0,
+        "alias_contracts": "Caller supplies the same independently validated alias facts as the baseline."
+      },
+      "options": {
+        "num_warps": 2,
+        "num_stages": 1,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "enable_private_reduction_ownership": false,
+        "enable_contract_load_reuse": false,
+        "enable_contract_licm": false,
+        "contract_pipeline_stages": 0
+      },
+      "grid": [
+        128,
+        1,
+        1
+      ],
+      "groups": {
+        "0": 1,
+        "1": 2,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0
+      }
+    },
+    "cache_ca_baseline": {
+      "resources": {
+        "registers": 26,
+        "spills": 0,
+        "shared": 0,
+        "async_copies": 0,
+        "loops": 2,
+        "ptx_sha256": "d80d6f62978e575d73b4757876c5db467594ca835ee84caf79a93d64783cb092",
+        "cubin_sha256": "41ede2ed94a958140eb6ddc7cfe2aadc96e8da75822175a59322145853dd1be7",
+        "wait_groups": [],
+        "barriers": 0,
+        "commits": 0,
+        "copy_cg": 0,
+        "copy_ca": 0
+      },
+      "audit": {
+        "label": "load_cache_ca",
+        "original_function": "apply_rotary_pos_emb_kernel",
+        "original_source_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/vendor/cross_pipeline/flag_gems/kernels.py",
+        "original_source_sha256": "4c2ef75ca65061de2aeed2e6149bac625949bfe9d2d68a3c0fbfcdad65b149bd",
+        "original_function_ast_sha256": "526f852e26f6796a48943c97d907fa935d1a469a0e355054500c04a722a6f819",
+        "variant_function": "apply_rotary_pos_emb_kernel__load_cache_ca",
+        "variant_source_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/generated/apply_rotary_pos_emb_kernel__load_cache_ca_0bc4dfe2f134ef5a.py",
+        "variant_source_sha256": "0bc4dfe2f134ef5a4344e84e0b41dba6941b920a65ce052b7114217b55aa4947",
+        "variant_function_ast_sha256": "43823a3e163a834a7b16229573312f9adfd747be1920ba7904ba1fe5b4efee82",
+        "audit_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/generated/apply_rotary_pos_emb_kernel__load_cache_ca_0bc4dfe2f134ef5a.audit.json",
+        "inverse_edit_recovers_original_function_ast": true,
+        "signature_unchanged": true,
+        "computations_and_memory_operations_unchanged": true,
+        "source_loop_controls": [],
+        "load_cache_controls": [
+          {
+            "ordinal": 0,
+            "original_line": 38,
+            "original_cache_modifier": null,
+            "variant_cache_modifier": ".ca"
+          },
+          {
+            "ordinal": 1,
+            "original_line": 51,
+            "original_cache_modifier": null,
+            "variant_cache_modifier": ".ca"
+          },
+          {
+            "ordinal": 2,
+            "original_line": 52,
+            "original_cache_modifier": null,
+            "variant_cache_modifier": ".ca"
+          },
+          {
+            "ordinal": 3,
+            "original_line": 57,
+            "original_cache_modifier": null,
+            "variant_cache_modifier": ".ca"
+          },
+          {
+            "ordinal": 4,
+            "original_line": 58,
+            "original_cache_modifier": null,
+            "variant_cache_modifier": ".ca"
+          },
+          {
+            "ordinal": 5,
+            "original_line": 69,
+            "original_cache_modifier": null,
+            "variant_cache_modifier": ".ca"
+          },
+          {
+            "ordinal": 6,
+            "original_line": 70,
+            "original_cache_modifier": null,
+            "variant_cache_modifier": ".ca"
+          },
+          {
+            "ordinal": 7,
+            "original_line": 82,
+            "original_cache_modifier": null,
+            "variant_cache_modifier": ".ca"
+          },
+          {
+            "ordinal": 8,
+            "original_line": 83,
+            "original_cache_modifier": null,
+            "variant_cache_modifier": ".ca"
+          }
+        ],
+        "permitted_edit": "tl.load cache_modifier annotation",
+        "required_contract_pipeline_stages": null,
+        "alias_contracts": "Caller supplies the same independently validated alias facts as the baseline."
+      },
+      "options": {
+        "num_warps": 2,
+        "num_stages": 1,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "enable_private_reduction_ownership": false,
+        "enable_contract_load_reuse": false,
+        "enable_contract_licm": false,
+        "contract_pipeline_stages": 0
+      },
+      "grid": [
+        128,
+        1,
+        1
+      ],
+      "groups": {
+        "0": 1,
+        "1": 2,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0
+      }
+    },
+    "cache_ca_stages2": {
+      "resources": {
+        "registers": 26,
+        "spills": 0,
+        "shared": 1024,
+        "async_copies": 8,
+        "loops": 2,
+        "ptx_sha256": "d150a055e004e6b78dcae3403915a730619d69597b4d8109805459749e3208da",
+        "cubin_sha256": "5ae42c4729e12e4f63e5426362d3ac68c187a42e674051e20fcf43886b03766a",
+        "wait_groups": [
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        "barriers": 6,
+        "commits": 8,
+        "copy_cg": 0,
+        "copy_ca": 8
+      },
+      "audit": {
+        "label": "load_cache_ca",
+        "original_function": "apply_rotary_pos_emb_kernel",
+        "original_source_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/vendor/cross_pipeline/flag_gems/kernels.py",
+        "original_source_sha256": "4c2ef75ca65061de2aeed2e6149bac625949bfe9d2d68a3c0fbfcdad65b149bd",
+        "original_function_ast_sha256": "526f852e26f6796a48943c97d907fa935d1a469a0e355054500c04a722a6f819",
+        "variant_function": "apply_rotary_pos_emb_kernel__load_cache_ca",
+        "variant_source_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/generated/apply_rotary_pos_emb_kernel__load_cache_ca_0bc4dfe2f134ef5a.py",
+        "variant_source_sha256": "0bc4dfe2f134ef5a4344e84e0b41dba6941b920a65ce052b7114217b55aa4947",
+        "variant_function_ast_sha256": "43823a3e163a834a7b16229573312f9adfd747be1920ba7904ba1fe5b4efee82",
+        "audit_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/generated/apply_rotary_pos_emb_kernel__load_cache_ca_0bc4dfe2f134ef5a.audit.json",
+        "inverse_edit_recovers_original_function_ast": true,
+        "signature_unchanged": true,
+        "computations_and_memory_operations_unchanged": true,
+        "source_loop_controls": [],
+        "load_cache_controls": [
+          {
+            "ordinal": 0,
+            "original_line": 38,
+            "original_cache_modifier": null,
+            "variant_cache_modifier": ".ca"
+          },
+          {
+            "ordinal": 1,
+            "original_line": 51,
+            "original_cache_modifier": null,
+            "variant_cache_modifier": ".ca"
+          },
+          {
+            "ordinal": 2,
+            "original_line": 52,
+            "original_cache_modifier": null,
+            "variant_cache_modifier": ".ca"
+          },
+          {
+            "ordinal": 3,
+            "original_line": 57,
+            "original_cache_modifier": null,
+            "variant_cache_modifier": ".ca"
+          },
+          {
+            "ordinal": 4,
+            "original_line": 58,
+            "original_cache_modifier": null,
+            "variant_cache_modifier": ".ca"
+          },
+          {
+            "ordinal": 5,
+            "original_line": 69,
+            "original_cache_modifier": null,
+            "variant_cache_modifier": ".ca"
+          },
+          {
+            "ordinal": 6,
+            "original_line": 70,
+            "original_cache_modifier": null,
+            "variant_cache_modifier": ".ca"
+          },
+          {
+            "ordinal": 7,
+            "original_line": 82,
+            "original_cache_modifier": null,
+            "variant_cache_modifier": ".ca"
+          },
+          {
+            "ordinal": 8,
+            "original_line": 83,
+            "original_cache_modifier": null,
+            "variant_cache_modifier": ".ca"
+          }
+        ],
+        "permitted_edit": "tl.load cache_modifier annotation",
+        "required_contract_pipeline_stages": null,
+        "alias_contracts": "Caller supplies the same independently validated alias facts as the baseline."
+      },
+      "options": {
+        "num_warps": 2,
+        "num_stages": 1,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "enable_private_reduction_ownership": false,
+        "enable_contract_load_reuse": false,
+        "enable_contract_licm": false,
+        "contract_pipeline_stages": 2
+      },
+      "grid": [
+        128,
+        1,
+        1
+      ],
+      "groups": {
+        "0": 1,
+        "1": 2,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0
+      }
+    },
+    "cache_ca_stages3": {
+      "resources": {
+        "registers": 28,
+        "spills": 0,
+        "shared": 2048,
+        "async_copies": 12,
+        "loops": 2,
+        "ptx_sha256": "57e0da329baea9414159714473128e571cf1a89dabf8efff4ef9cf367ba1ea73",
+        "cubin_sha256": "6db20983610686682a557845da82f2cc70b936223a2cd379313f7b5608ec6bf1",
+        "wait_groups": [
+          "2",
+          "0",
+          "2",
+          "0"
+        ],
+        "barriers": 6,
+        "commits": 12,
+        "copy_cg": 0,
+        "copy_ca": 12
+      },
+      "audit": {
+        "label": "load_cache_ca",
+        "original_function": "apply_rotary_pos_emb_kernel",
+        "original_source_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/vendor/cross_pipeline/flag_gems/kernels.py",
+        "original_source_sha256": "4c2ef75ca65061de2aeed2e6149bac625949bfe9d2d68a3c0fbfcdad65b149bd",
+        "original_function_ast_sha256": "526f852e26f6796a48943c97d907fa935d1a469a0e355054500c04a722a6f819",
+        "variant_function": "apply_rotary_pos_emb_kernel__load_cache_ca",
+        "variant_source_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/generated/apply_rotary_pos_emb_kernel__load_cache_ca_0bc4dfe2f134ef5a.py",
+        "variant_source_sha256": "0bc4dfe2f134ef5a4344e84e0b41dba6941b920a65ce052b7114217b55aa4947",
+        "variant_function_ast_sha256": "43823a3e163a834a7b16229573312f9adfd747be1920ba7904ba1fe5b4efee82",
+        "audit_file": "/home/ryandeng/tpaa/triton/experiment_notes/semantic_candidate_experiments/results/pipeline_slowdown_final/controls/generated/apply_rotary_pos_emb_kernel__load_cache_ca_0bc4dfe2f134ef5a.audit.json",
+        "inverse_edit_recovers_original_function_ast": true,
+        "signature_unchanged": true,
+        "computations_and_memory_operations_unchanged": true,
+        "source_loop_controls": [],
+        "load_cache_controls": [
+          {
+            "ordinal": 0,
+            "original_line": 38,
+            "original_cache_modifier": null,
+            "variant_cache_modifier": ".ca"
+          },
+          {
+            "ordinal": 1,
+            "original_line": 51,
+            "original_cache_modifier": null,
+            "variant_cache_modifier": ".ca"
+          },
+          {
+            "ordinal": 2,
+            "original_line": 52,
+            "original_cache_modifier": null,
+            "variant_cache_modifier": ".ca"
+          },
+          {
+            "ordinal": 3,
+            "original_line": 57,
+            "original_cache_modifier": null,
+            "variant_cache_modifier": ".ca"
+          },
+          {
+            "ordinal": 4,
+            "original_line": 58,
+            "original_cache_modifier": null,
+            "variant_cache_modifier": ".ca"
+          },
+          {
+            "ordinal": 5,
+            "original_line": 69,
+            "original_cache_modifier": null,
+            "variant_cache_modifier": ".ca"
+          },
+          {
+            "ordinal": 6,
+            "original_line": 70,
+            "original_cache_modifier": null,
+            "variant_cache_modifier": ".ca"
+          },
+          {
+            "ordinal": 7,
+            "original_line": 82,
+            "original_cache_modifier": null,
+            "variant_cache_modifier": ".ca"
+          },
+          {
+            "ordinal": 8,
+            "original_line": 83,
+            "original_cache_modifier": null,
+            "variant_cache_modifier": ".ca"
+          }
+        ],
+        "permitted_edit": "tl.load cache_modifier annotation",
+        "required_contract_pipeline_stages": null,
+        "alias_contracts": "Caller supplies the same independently validated alias facts as the baseline."
+      },
+      "options": {
+        "num_warps": 2,
+        "num_stages": 1,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "enable_private_reduction_ownership": false,
+        "enable_contract_load_reuse": false,
+        "enable_contract_licm": false,
+        "contract_pipeline_stages": 3
+      },
+      "grid": [
+        128,
+        1,
+        1
+      ],
+      "groups": {
+        "0": 1,
+        "1": 2,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0
+      }
+    }
+  }
+}

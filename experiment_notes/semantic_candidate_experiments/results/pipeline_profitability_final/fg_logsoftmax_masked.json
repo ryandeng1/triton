@@ -1,0 +1,377 @@
+{
+  "case": {
+    "id": "fg_logsoftmax_masked",
+    "family": "log_softmax_backward",
+    "M": 7,
+    "K": 2053,
+    "dtype": "float32",
+    "boundary": true
+  },
+  "configurations": [
+    {
+      "block": 256,
+      "warps": 4
+    }
+  ],
+  "calibration": [
+    {
+      "wall_compile_and_calibration_seconds": 0.3807805129981716,
+      "all_argument_backing_storage_preserved": true,
+      "checked_allocation_count": 3,
+      "mutable_args": [
+        2
+      ],
+      "report": {
+        "selected": "stages4",
+        "grid": [
+          7,
+          1,
+          1
+        ],
+        "device": 0,
+        "alias_groups": {
+          "0": 0,
+          "1": 0,
+          "2": 1
+        },
+        "immutable_args": [],
+        "mutable_args": [
+          2
+        ],
+        "variants": {
+          "baseline": {
+            "depth": 0,
+            "licm": false,
+            "equivalent_to": "baseline",
+            "registers": 28,
+            "spills": 0,
+            "shared_bytes": 16,
+            "cubin_sha256": "c49e0ba11c98c494a38cf231d8eb03baf490f8752b99740259755861c611266a",
+            "async_copy_sites": 0
+          },
+          "stages2": {
+            "depth": 2,
+            "licm": false,
+            "equivalent_to": "stages2",
+            "registers": 32,
+            "spills": 0,
+            "shared_bytes": 2048,
+            "cubin_sha256": "886673c47dcb790a7f2d68475e7eceda9abf46f00e7a548f506d02b6c1f78061",
+            "async_copy_sites": 6
+          },
+          "stages3": {
+            "depth": 3,
+            "licm": false,
+            "equivalent_to": "stages3",
+            "registers": 32,
+            "spills": 0,
+            "shared_bytes": 4096,
+            "cubin_sha256": "f718d717dcb8469b7d2b1972a6a509fd903190857e547a1c9e13819f7e63e95a",
+            "async_copy_sites": 9
+          },
+          "stages4": {
+            "depth": 4,
+            "licm": false,
+            "equivalent_to": "stages4",
+            "registers": 32,
+            "spills": 0,
+            "shared_bytes": 6144,
+            "cubin_sha256": "7d997438226467cb2054c66dba4d3a53955914dd08d4d56e429209901d7039df",
+            "async_copy_sites": 12
+          }
+        },
+        "compile_seconds": 0.36469212800147943,
+        "calibration_seconds": 0.014785245999519248,
+        "total_seconds": 0.37947772000188706,
+        "calibration": {
+          "screen_samples_us": {
+            "baseline": [
+              5.375000182539225,
+              5.365999881178141,
+              5.375999957323074,
+              5.31500019133091,
+              5.31500019133091,
+              5.3530000150203705,
+              5.305999889969826,
+              5.369000136852264,
+              5.363999865949154
+            ],
+            "stages2": [
+              5.869000218808651,
+              5.872000008821487,
+              5.8559998869895935,
+              5.898000206798315,
+              5.874999798834324,
+              5.917999893426895,
+              5.923000164330006,
+              5.880000069737434,
+              5.919000133872032
+            ],
+            "stages3": [
+              3.8689998909831047,
+              3.892000066116452,
+              3.891000058501959,
+              3.8399999029934406,
+              3.834000090137124,
+              3.837999887764454,
+              3.826000029221177,
+              3.8999998942017555,
+              3.8270000368356705
+            ],
+            "stages4": [
+              3.834000090137124,
+              3.7849999498575926,
+              3.7609999999403954,
+              3.768000053241849,
+              3.7700000684708357,
+              3.763000015169382,
+              3.7720000836998224,
+              3.759999992325902,
+              3.80200007930398
+            ]
+          },
+          "confirmation_samples_us": {
+            "baseline": [
+              5.342000164091587,
+              5.3530000150203705,
+              5.384000018239021,
+              5.3159999661147594,
+              5.355000030249357,
+              5.361999850720167,
+              5.332000087946653,
+              5.367999896407127,
+              5.367000121623278
+            ],
+            "stages4": [
+              3.8330000825226307,
+              3.7140001077204943,
+              3.780999919399619,
+              3.7239999510347843,
+              3.745999885722995,
+              3.7430000957101583,
+              3.754999954253435,
+              3.7499999161809683,
+              3.7430000957101583
+            ]
+          },
+          "screen_medians_us": {
+            "baseline": 5.363999865949154,
+            "stages2": 5.880000069737434,
+            "stages3": 3.8399999029934406,
+            "stages4": 3.7700000684708357
+          },
+          "confirmation_medians_us": {
+            "baseline": 5.355000030249357,
+            "stages4": 3.745999885722995
+          },
+          "min_gain": 0.02,
+          "rounds": 9,
+          "repetitions": 32,
+          "reset_copies_included": false,
+          "state_restored": true,
+          "executed": true,
+          "reason": "confirmed_gain",
+          "screen_winner": "stages4"
+        },
+        "scope": "inferred pipeline depth at fixed launch; explicit source schedules are preserved",
+        "cached": true,
+        "baseline": "same contracts, no inferred pipeline or contract LICM",
+        "native_attributes": {
+          "(0,)": [
+            [
+              "tt.divisibility",
+              16
+            ],
+            [
+              "tt.experimental_alias_group",
+              0
+            ]
+          ],
+          "(1,)": [
+            [
+              "tt.divisibility",
+              16
+            ],
+            [
+              "tt.experimental_alias_group",
+              0
+            ]
+          ],
+          "(2,)": [
+            [
+              "tt.divisibility",
+              16
+            ],
+            [
+              "tt.experimental_alias_group",
+              1
+            ]
+          ],
+          "(3,)": [],
+          "(4,)": [],
+          "(5,)": []
+        }
+      },
+      "selected_name": "stages4",
+      "resources": {
+        "baseline": {
+          "registers": 28,
+          "spills": 0,
+          "shared": 16,
+          "async_copies": 0,
+          "loops": 2,
+          "ptx_sha256": "2bc043d85480f2007f1797b45b974f6b71b709d98115de2c2d9c0d419585a63e",
+          "cubin_sha256": "c49e0ba11c98c494a38cf231d8eb03baf490f8752b99740259755861c611266a"
+        },
+        "stages2": {
+          "registers": 32,
+          "spills": 0,
+          "shared": 2048,
+          "async_copies": 6,
+          "loops": 2,
+          "ptx_sha256": "a7b37421ac08f1870642adb0a7d447a875b059c6d3cf03186fa8f547242700ba",
+          "cubin_sha256": "886673c47dcb790a7f2d68475e7eceda9abf46f00e7a548f506d02b6c1f78061"
+        },
+        "stages3": {
+          "registers": 32,
+          "spills": 0,
+          "shared": 4096,
+          "async_copies": 9,
+          "loops": 2,
+          "ptx_sha256": "415ff88e6d2917cf3fe4e5e7336e51322e0b990822abfe301871a28131e59b82",
+          "cubin_sha256": "f718d717dcb8469b7d2b1972a6a509fd903190857e547a1c9e13819f7e63e95a"
+        },
+        "stages4": {
+          "registers": 32,
+          "spills": 0,
+          "shared": 6144,
+          "async_copies": 12,
+          "loops": 2,
+          "ptx_sha256": "7ddff8b998abdd75d98e906720e8a7f2e426b8ffbd942d4709d24e74b8e3e23d",
+          "cubin_sha256": "7d997438226467cb2054c66dba4d3a53955914dd08d4d56e429209901d7039df"
+        }
+      },
+      "config": {
+        "block": 256,
+        "warps": 4
+      },
+      "validation": {
+        "baseline_oracle": {
+          "outputs": {
+            "dx": {
+              "max_absolute_error": 1.6748274322964107e-07,
+              "finite": true,
+              "atol": 3e-06,
+              "rtol": 2e-05,
+              "guards": true
+            }
+          },
+          "inputs_unchanged": true,
+          "complete_outputs_checked": true,
+          "oracle": "FP64 torch mathematics from stored input values"
+        },
+        "variants": {
+          "baseline": {
+            "oracle": {
+              "outputs": {
+                "dx": {
+                  "max_absolute_error": 1.6748274322964107e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                }
+              },
+              "inputs_unchanged": true,
+              "complete_outputs_checked": true,
+              "oracle": "FP64 torch mathematics from stored input values"
+            },
+            "bitwise_equal_to_baseline": {
+              "dx": true
+            }
+          },
+          "stages2": {
+            "oracle": {
+              "outputs": {
+                "dx": {
+                  "max_absolute_error": 1.6748274322964107e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                }
+              },
+              "inputs_unchanged": true,
+              "complete_outputs_checked": true,
+              "oracle": "FP64 torch mathematics from stored input values"
+            },
+            "bitwise_equal_to_baseline": {
+              "dx": true
+            }
+          },
+          "stages3": {
+            "oracle": {
+              "outputs": {
+                "dx": {
+                  "max_absolute_error": 1.6748274322964107e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                }
+              },
+              "inputs_unchanged": true,
+              "complete_outputs_checked": true,
+              "oracle": "FP64 torch mathematics from stored input values"
+            },
+            "bitwise_equal_to_baseline": {
+              "dx": true
+            }
+          },
+          "stages4": {
+            "oracle": {
+              "outputs": {
+                "dx": {
+                  "max_absolute_error": 1.6748274322964107e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                }
+              },
+              "inputs_unchanged": true,
+              "complete_outputs_checked": true,
+              "oracle": "FP64 torch mathematics from stored input values"
+            },
+            "bitwise_equal_to_baseline": {
+              "dx": true
+            }
+          },
+          "guarded_selected": {
+            "oracle": {
+              "outputs": {
+                "dx": {
+                  "max_absolute_error": 1.6748274322964107e-07,
+                  "finite": true,
+                  "atol": 3e-06,
+                  "rtol": 2e-05,
+                  "guards": true
+                }
+              },
+              "inputs_unchanged": true,
+              "complete_outputs_checked": true,
+              "oracle": "FP64 torch mathematics from stored input values"
+            },
+            "bitwise_equal_to_baseline": {
+              "dx": true
+            }
+          }
+        },
+        "cached_selection_unchanged": true,
+        "selected_name": "stages4"
+      }
+    }
+  ],
+  "confirmations": [],
+  "boundary_passed": true
+}
