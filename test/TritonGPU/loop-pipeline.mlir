@@ -924,7 +924,8 @@ module attributes {"ttg.num-ctas" = 1 : i32, "ttg.num-warps" = 4 : i32} {
 #mma = #ttg.nvidia_mma<{versionMajor = 2, versionMinor = 0, warpsPerCTA = [2, 2], instrShape = [16, 8]}>
 #smem = #ttg.shared_memory
 module attributes {"ttg.num-ctas" = 1 : i32, "ttg.num-warps" = 4 : i32} {
-  tt.func public @nested_loops(%arg0: !tt.ptr<f32> {tt.divisibility = 16 : i32}, %arg1: !tt.ptr<f32> {tt.divisibility = 16 : i32}, %arg2: !tt.ptr<i32> {tt.divisibility = 16 : i32}, %arg3: !tt.ptr<f32> {tt.divisibility = 16 : i32}) {
+  // Both input footprints are disjoint from the output footprint.
+  tt.func public @nested_loops(%arg0: !tt.ptr<f32> {tt.divisibility = 16 : i32, tt.experimental_alias_group = 0 : i32}, %arg1: !tt.ptr<f32> {tt.divisibility = 16 : i32, tt.experimental_alias_group = 0 : i32}, %arg2: !tt.ptr<i32> {tt.divisibility = 16 : i32}, %arg3: !tt.ptr<f32> {tt.divisibility = 16 : i32, tt.experimental_alias_group = 1 : i32}) {
     %cst = arith.constant dense<0.000000e+00> : tensor<32x32xf32, #mma>
     %cst_0 = arith.constant dense<320> : tensor<32x1xi32, #blocked>
     %c0_i32 = arith.constant 0 : i32
@@ -1118,7 +1119,8 @@ tt.func @indirect_load_shared_layout(%77: tensor<16x16xi64, #BL> {tt.divisibilit
 #blocked = #ttg.blocked<{sizePerThread = [1, 4], threadsPerWarp = [4, 8], warpsPerCTA = [4, 1], order = [1, 0]}>
 #mma = #ttg.nvidia_mma<{versionMajor = 2, versionMinor = 0, warpsPerCTA = [2, 2], instrShape = [16, 8]}>
 module attributes {"ttg.num-ctas" = 1 : i32, "ttg.num-warps" = 4 : i32} {
-  tt.func public @kernel_yield_constant(%arg0: !tt.ptr<f32> {tt.divisibility = 16 : i32}, %arg1: !tt.ptr<f32> {tt.divisibility = 16 : i32}, %arg2: i32 {tt.divisibility = 16 : i32, tt.max_divisibility = 16 : i32}, %arg3: i32 {tt.divisibility = 16 : i32, tt.max_divisibility = 16 : i32}, %arg4: i32 {tt.divisibility = 16 : i32, tt.max_divisibility = 16 : i32}, %arg5: i32 {tt.divisibility = 16 : i32, tt.max_divisibility = 16 : i32}, %arg6: i32 {tt.divisibility = 16 : i32, tt.max_divisibility = 16 : i32}) {
+  // Input footprints may overlap each other, but are disjoint from output.
+  tt.func public @kernel_yield_constant(%arg0: !tt.ptr<f32> {tt.divisibility = 16 : i32, tt.experimental_alias_group = 0 : i32}, %arg1: !tt.ptr<f32> {tt.divisibility = 16 : i32, tt.experimental_alias_group = 1 : i32}, %arg2: i32 {tt.divisibility = 16 : i32, tt.max_divisibility = 16 : i32}, %arg3: i32 {tt.divisibility = 16 : i32, tt.max_divisibility = 16 : i32}, %arg4: i32 {tt.divisibility = 16 : i32, tt.max_divisibility = 16 : i32}, %arg5: i32 {tt.divisibility = 16 : i32, tt.max_divisibility = 16 : i32}, %arg6: i32 {tt.divisibility = 16 : i32, tt.max_divisibility = 16 : i32}) {
     %cst = arith.constant dense<0.000000e+00> : tensor<32x32xf32, #mma>
     %cst1 = arith.constant dense<1.000000e+00> : tensor<32x32xf32, #mma>
     %c0_i32 = arith.constant 0 : i32
@@ -1187,7 +1189,8 @@ module attributes {"ttg.num-ctas" = 1 : i32, "ttg.num-warps" = 4 : i32} {
 // AMD:  scf.for
 #blocked = #ttg.blocked<{sizePerThread = [4], threadsPerWarp = [32], warpsPerCTA = [4], order = [0]}>
 module attributes {"ttg.num-ctas" = 1 : i32, "ttg.num-warps" = 4 : i32} {
-  tt.func public @add_kernel(%arg0: !tt.ptr<f32> {tt.divisibility = 16 : i32}, %arg1: !tt.ptr<f32> {tt.divisibility = 16 : i32}, %arg2: !tt.ptr<f32> {tt.divisibility = 16 : i32}, %arg3: i32 {tt.divisibility = 16 : i32, tt.max_divisibility = 16 : i32}) {
+  // Input footprints may overlap each other, but are disjoint from output.
+  tt.func public @add_kernel(%arg0: !tt.ptr<f32> {tt.divisibility = 16 : i32, tt.experimental_alias_group = 0 : i32}, %arg1: !tt.ptr<f32> {tt.divisibility = 16 : i32, tt.experimental_alias_group = 0 : i32}, %arg2: !tt.ptr<f32> {tt.divisibility = 16 : i32, tt.experimental_alias_group = 1 : i32}, %arg3: i32 {tt.divisibility = 16 : i32, tt.max_divisibility = 16 : i32}) {
     %c1024_i32 = arith.constant 1024 : i32
     %c0_i32 = arith.constant 0 : i32
     %c1016800_i32 = arith.constant 1016800 : i32
@@ -1218,31 +1221,20 @@ module attributes {"ttg.num-ctas" = 1 : i32, "ttg.num-warps" = 4 : i32} {
 
 // -----
 
+// This recurrence reads and overwrites the same global tile. Its inner and
+// outer CUDA schedules must retain the source global-memory order.
 // CHECK-LABEL: @nested_loops
-// CHECK: tt.addptr %{{.*}}, {{.*}}
-// CHECK: %[[NEXT_BUFFER_1:.*]] = tt.addptr %{{.*}}, {{.*}}
+// CHECK-NOT: ttg.async_copy_global_to_local
 // CHECK: scf.for
-// CHECK:   %[[LOAD_1:.*]] = tt.load %[[NEXT_BUFFER_1]]
-// CHECK:   %[[BUFFER_2:.*]] = ttg.local_alloc %[[LOAD_1]]
-// CHECK:   %[[TRANS:.*]] = ttg.memdesc_trans %[[BUFFER_2]]
-// CHECK:   %[[LOCAL_LOAD_1:.*]] = ttg.local_load %[[TRANS]]
-// CHECK:   %[[BUFFER_1:.*]] = ttg.local_alloc : ()
-// CHECK:   %[[SUBVIEW_1:.*]] = ttg.memdesc_index %[[BUFFER_1]]
-// CHECK:   %[[ASYNC_COPY_1:.*]] = ttg.async_copy_global_to_local %[[NEXT_BUFFER_1]], %[[SUBVIEW_1]]
-// CHECK:   ttg.async_commit_group tokens %[[ASYNC_COPY_1]]
-// CHECK:   %[[SUBVIEW_2:.*]] = ttg.memdesc_index %[[BUFFER_1]]
-// CHECK:   %[[ASYNC_COPY_2:.*]] = ttg.async_copy_global_to_local %[[NEXT_BUFFER_1]], %[[SUBVIEW_2]]
-// CHECK:   ttg.async_commit_group tokens %[[ASYNC_COPY_2]]
+// CHECK:   tt.load
+// CHECK:   ttg.local_alloc
+// CHECK:   ttg.local_load
 // CHECK:   scf.for
-// CHECK:     ttg.async_wait
-// CHECK:     ttg.memdesc_index %[[BUFFER_1]]
-// CHECK:     %[[LOCAL_LOAD_2:.*]] = ttg.local_load
-// CHECK:     %[[DOT:.*]] = tt.dot %[[LOCAL_LOAD_2]], %[[LOCAL_LOAD_1]]
-// CHECK:     %[[CONVERT_LAYOUT_3:.*]] = ttg.convert_layout %[[DOT]]
-// CHECK:     %[[SUBVIEW_4:.*]] = ttg.memdesc_index %[[BUFFER_1]]
-// CHECK:     %[[ASYNC_COPY_3:.*]] = ttg.async_copy_global_to_local %[[NEXT_BUFFER_1]], %[[SUBVIEW_4]]
-// CHECK:     ttg.async_commit_group tokens %[[ASYNC_COPY_3]]
-// CHECK: ttg.local_dealloc %[[BUFFER_1]]
+// CHECK:     tt.load
+// CHECK:     tt.dot
+// CHECK:     tt.store
+// CHECK-NOT: ttg.async_copy_global_to_local
+// CHECK: tt.return
 
 // AMD-LABEL:  tt.func public @nested_loops
 // AMD-NOT:  ttg.local_alloc
@@ -1625,7 +1617,8 @@ tt.func @matmul_nested_ops(%lb : index, %ub : index, %step : index,
 
 #blocked = #ttg.blocked<{sizePerThread = [4], threadsPerWarp = [32], warpsPerCTA = [4], order = [0]}>
 module attributes {"ttg.num-ctas" = 1 : i32, "ttg.num-warps" = 4 : i32} {
-  tt.func public @masked_add_kernel(%arg0: !tt.ptr<f32> {tt.divisibility = 16 : i32}, %arg1: !tt.ptr<f32> {tt.divisibility = 16 : i32}, %arg2: !tt.ptr<f32> {tt.divisibility = 16 : i32}, %arg3: i32 {tt.divisibility = 16 : i32, tt.max_divisibility = 16 : i32}) {
+  // Input footprints may overlap each other, but are disjoint from output.
+  tt.func public @masked_add_kernel(%arg0: !tt.ptr<f32> {tt.divisibility = 16 : i32, tt.experimental_alias_group = 0 : i32}, %arg1: !tt.ptr<f32> {tt.divisibility = 16 : i32, tt.experimental_alias_group = 0 : i32}, %arg2: !tt.ptr<f32> {tt.divisibility = 16 : i32, tt.experimental_alias_group = 1 : i32}, %arg3: i32 {tt.divisibility = 16 : i32, tt.max_divisibility = 16 : i32}) {
     %c1024_i32 = arith.constant 1024 : i32
     %c0_i32 = arith.constant 0 : i32
     %c1016800_i32 = arith.constant 1016800 : i32
@@ -1661,7 +1654,8 @@ module attributes {"ttg.num-ctas" = 1 : i32, "ttg.num-warps" = 4 : i32} {
   // CHECK-LABEL: @predicate_stage1
   // CHECK: scf.for %[[IV:.*]] = %[[LB:.*]] to %[[UB:.*]] step %[[STEP:.*]] iter_args
   // CHECK: ttg.predicate_stage %[[IV]], %[[UB]], %[[STEP]] maxStage 2 stage 0 : i32 -> i1
-  tt.func public @predicate_stage1(%arg0: !tt.ptr<f32> {tt.divisibility = 16 : i32}, %arg1: !tt.ptr<f32> {tt.divisibility = 16 : i32}, %arg2: !tt.ptr<f32> {tt.divisibility = 16 : i32}, %arg3: i32 {tt.divisibility = 16 : i32, tt.max_divisibility = 16 : i32}) {
+  // Input footprints may overlap each other, but are disjoint from output.
+  tt.func public @predicate_stage1(%arg0: !tt.ptr<f32> {tt.divisibility = 16 : i32, tt.experimental_alias_group = 0 : i32}, %arg1: !tt.ptr<f32> {tt.divisibility = 16 : i32, tt.experimental_alias_group = 0 : i32}, %arg2: !tt.ptr<f32> {tt.divisibility = 16 : i32, tt.experimental_alias_group = 1 : i32}, %arg3: i32 {tt.divisibility = 16 : i32, tt.max_divisibility = 16 : i32}) {
     %c1024_i32 = arith.constant 1024 : i32
     %c0_i32 = arith.constant 0 : i32
     %c1016800_i32 = arith.constant 1016800 : i32

@@ -1,0 +1,43 @@
+{
+  "native_library_frozen": true,
+  "native_library_sha256": "600f64d69c767567ecf271b1393ab08c8ce187c0f520581357979e21c71ba3dd",
+  "fixed_config_pipeline_promising": false,
+  "retuned": false,
+  "no_automatic_pipeline_implementation": true,
+  "end_time": 1794182972.707769,
+  "cases": [
+    {
+      "case": "upstream500",
+      "fixed_speedups": {
+        "pipeline_vs_original": 0.932059681245274,
+        "pipeline_alias_vs_alias": 0.8851408854501878,
+        "alias_vs_original": 1.0563475509412454,
+        "pipeline_alias_vs_original": 0.9350510366222936
+      },
+      "selected": null,
+      "confirmations": []
+    },
+    {
+      "case": "upstream1024",
+      "fixed_speedups": {
+        "pipeline_vs_original": 0.9662644721297228,
+        "pipeline_alias_vs_alias": 0.820049324166105,
+        "alias_vs_original": 1.133452294944016,
+        "pipeline_alias_vs_original": 0.9296980168778989
+      },
+      "selected": null,
+      "confirmations": []
+    },
+    {
+      "case": "decode16",
+      "fixed_speedups": {
+        "pipeline_vs_original": 0.9825770418097053,
+        "pipeline_alias_vs_alias": 0.9902319112531907,
+        "alias_vs_original": 0.9860311756074361,
+        "pipeline_alias_vs_original": 0.9763457368319293
+      },
+      "selected": null,
+      "confirmations": []
+    }
+  ]
+}

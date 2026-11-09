@@ -1,0 +1,218 @@
+[
+  {
+    "stages": 1,
+    "shared": 0,
+    "async_copies": 0,
+    "ptx_sha256": "d1f3fde89487ef26aa880114cc4dd20ecf2be769a8276379599fa93886247df6",
+    "checks": [
+      {
+        "trips": 0,
+        "exact": true,
+        "max_error": 0.0,
+        "first_column": [
+          0.0
+        ]
+      },
+      {
+        "trips": 1,
+        "exact": true,
+        "max_error": 0.0,
+        "first_column": [
+          0.0,
+          1.0
+        ]
+      },
+      {
+        "trips": 2,
+        "exact": true,
+        "max_error": 0.0,
+        "first_column": [
+          0.0,
+          1.0,
+          2.0
+        ]
+      },
+      {
+        "trips": 4,
+        "exact": true,
+        "max_error": 0.0,
+        "first_column": [
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0
+        ]
+      },
+      {
+        "trips": 17,
+        "exact": true,
+        "max_error": 0.0,
+        "first_column": [
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
+          7.0,
+          8.0,
+          9.0,
+          10.0,
+          11.0,
+          12.0,
+          13.0,
+          14.0,
+          15.0,
+          16.0,
+          17.0
+        ]
+      }
+    ]
+  },
+  {
+    "stages": 2,
+    "shared": 512,
+    "async_copies": 2,
+    "ptx_sha256": "27069c58c41d1dca758be799e312ff003cc6fe7cd5245c2d45b6457d8dd92f5b",
+    "checks": [
+      {
+        "trips": 0,
+        "exact": true,
+        "max_error": 0.0,
+        "first_column": [
+          0.0
+        ]
+      },
+      {
+        "trips": 1,
+        "exact": true,
+        "max_error": 0.0,
+        "first_column": [
+          0.0,
+          1.0
+        ]
+      },
+      {
+        "trips": 2,
+        "exact": true,
+        "max_error": 0.0,
+        "first_column": [
+          0.0,
+          1.0,
+          2.0
+        ]
+      },
+      {
+        "trips": 4,
+        "exact": true,
+        "max_error": 0.0,
+        "first_column": [
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0
+        ]
+      },
+      {
+        "trips": 17,
+        "exact": true,
+        "max_error": 0.0,
+        "first_column": [
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
+          7.0,
+          8.0,
+          9.0,
+          10.0,
+          11.0,
+          12.0,
+          13.0,
+          14.0,
+          15.0,
+          16.0,
+          17.0
+        ]
+      }
+    ]
+  },
+  {
+    "stages": 3,
+    "shared": 1024,
+    "async_copies": 3,
+    "ptx_sha256": "d0128b5f1f45c382323e99c4c4036158289d115ea636871d3c8ceff0a82fd095",
+    "checks": [
+      {
+        "trips": 0,
+        "exact": true,
+        "max_error": 0.0,
+        "first_column": [
+          0.0
+        ]
+      },
+      {
+        "trips": 1,
+        "exact": true,
+        "max_error": 0.0,
+        "first_column": [
+          0.0,
+          1.0
+        ]
+      },
+      {
+        "trips": 2,
+        "exact": false,
+        "max_error": 1128.0,
+        "first_column": [
+          0.0,
+          1.0,
+          -999.0
+        ]
+      },
+      {
+        "trips": 4,
+        "exact": false,
+        "max_error": 1130.0,
+        "first_column": [
+          0.0,
+          1.0,
+          -999.0,
+          -999.0,
+          -999.0
+        ]
+      },
+      {
+        "trips": 17,
+        "exact": false,
+        "max_error": 1143.0,
+        "first_column": [
+          0.0,
+          1.0,
+          -999.0,
+          -999.0,
+          -999.0,
+          -999.0,
+          -999.0,
+          -999.0,
+          -999.0,
+          -999.0,
+          -999.0,
+          -999.0,
+          -999.0,
+          -999.0,
+          -999.0,
+          -999.0,
+          -999.0,
+          -999.0
+        ]
+      }
+    ]
+  }
+]

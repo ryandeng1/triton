@@ -10,6 +10,7 @@
 #include "mlir/Support/LLVM.h"
 #include "mlir/Transforms/GreedyPatternRewriteDriver.h"
 #include "triton/Analysis/AxisInfo.h"
+#include "triton/Analysis/GlobalMemoryEffects.h"
 #include "triton/Dialect/Triton/IR/Utility.h"
 #include "triton/Dialect/TritonGPU/IR/Dialect.h"
 #include "triton/Dialect/TritonGPU/Transforms/Passes.h"
@@ -28,6 +29,37 @@
 
 using namespace mlir;
 namespace tt = mlir::triton;
+
+bool mlir::triton::hasSafeGlobalPipelineAccesses(Operation *loop,
+                                              bool allowCompilerProtocols) {
+  auto function = loop->getParentOfType<FuncOp>();
+  return function &&
+         GlobalMemoryEffects(function).hasIndependentGlobalMemoryAccesses(
+             loop, allowCompilerProtocols &&
+                       loop->getAttrOfType<UnitAttr>(kGlobalPipelineProofAttrName));
+}
+
+void mlir::triton::clearUnsafePipelineSchedule(Operation *loop) {
+  loop->removeAttr(kWarpSpecializeAttrName);
+  loop->removeAttr("tt.experimental_contract_pipeline");
+  loop->removeAttr(kGlobalPipelineProofAttrName);
+  auto latency = TritonDialect::getLoaded(loop)->getLatencyAttrHelper();
+  auto selfLatency = TritonDialect::getLoaded(loop)->getSelfLatencyAttrHelper();
+  loop->walk<WalkOrder::PreOrder>([&](Operation *op) {
+    op->removeAttr(kLoopStageAttrName);
+    op->removeAttr(kLoopClusterAttrName);
+    // A nested loop's own schedule is independent of its position in the
+    // rejected enclosing schedule. Its legality is checked separately.
+    if (op != loop && isa<LoopLikeOpInterface>(op))
+      return WalkResult::skip();
+    op->removeAttr(kScheduledMaxStageAttrName);
+    if (latency.isAttrPresent(op))
+      latency.removeAttr(op);
+    if (selfLatency.isAttrPresent(op))
+      selfLatency.removeAttr(op);
+    return WalkResult::advance();
+  });
+}
 namespace ttg = mlir::triton::gpu;
 namespace ttng = mlir::triton::nvidia_gpu;
 
@@ -870,5 +902,6 @@ void triton::removePipeliningAttributes(ModuleOp moduleOp) {
     op->removeAttr(mlir::triton::kLoopStageAttrName);
     op->removeAttr(mlir::triton::kLoopClusterAttrName);
     op->removeAttr(mlir::triton::kScheduledMaxStageAttrName);
+    op->removeAttr(mlir::triton::kGlobalPipelineProofAttrName);
   });
 }

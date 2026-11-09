@@ -1,0 +1,1024 @@
+{
+  "case": {
+    "id": "decode16",
+    "cohort": "decode_screen",
+    "B": 1,
+    "T": 16,
+    "H": 8,
+    "HV": 8,
+    "K": 128,
+    "V": 128,
+    "dtype": "bfloat16",
+    "qk_dtype": "bfloat16",
+    "parameter_dtype": "bfloat16",
+    "lengths": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "scale": 0.08838834764831845
+  },
+  "tuning": [
+    {
+      "config": [
+        8,
+        1,
+        3
+      ],
+      "resources": {
+        "baseline": {
+          "registers": 128,
+          "spills": 0,
+          "shared": 512,
+          "async_copies": 0,
+          "ptx_sha256": "284b64273d0321fe4e68b9ae9619ee84794164ef0839d7808840ca2c480c378a",
+          "cubin_sha256": "16f3b5e7263e6e1f60fe49b78d457ae8a24a68d196b2615e4f9a1e18d91050b3",
+          "options": {
+            "num_warps": 1,
+            "num_stages": 3,
+            "enable_indexed_update_specialization": false,
+            "enable_private_atomic_relaxation": false,
+            "enable_private_reduction_ownership": false,
+            "enable_contract_load_reuse": false,
+            "enable_contract_licm": false,
+            "contract_pipeline_stages": 0
+          }
+        },
+        "licm": {
+          "registers": 111,
+          "spills": 0,
+          "shared": 512,
+          "async_copies": 0,
+          "ptx_sha256": "03f00544a4ebca32657b3a786d0aaa90183021af0fbf2ad4a59f68a676a267eb",
+          "cubin_sha256": "e142165c6c5d5aecf663a57c90f796c4b0e963b0b97de296f94e90e877da3472",
+          "options": {
+            "num_warps": 1,
+            "num_stages": 3,
+            "enable_indexed_update_specialization": false,
+            "enable_private_atomic_relaxation": false,
+            "enable_private_reduction_ownership": false,
+            "enable_contract_load_reuse": false,
+            "enable_contract_licm": true,
+            "contract_pipeline_stages": 0
+          }
+        },
+        "pipeline": {
+          "registers": 95,
+          "spills": 0,
+          "shared": 656,
+          "async_copies": 6,
+          "ptx_sha256": "f462b2c7d76aa4b2b1dbf717658053a52fd077916251bdbc0207b78bb35abbe5",
+          "cubin_sha256": "806dc1a879194f62c060be8ff1f8d591c46829a6651011c10d16dfe30b8df8f9",
+          "options": {
+            "num_warps": 1,
+            "num_stages": 3,
+            "enable_indexed_update_specialization": false,
+            "enable_private_atomic_relaxation": false,
+            "enable_private_reduction_ownership": false,
+            "enable_contract_load_reuse": false,
+            "enable_contract_licm": false,
+            "contract_pipeline_stages": 2
+          }
+        },
+        "both": {
+          "registers": 98,
+          "spills": 0,
+          "shared": 656,
+          "async_copies": 6,
+          "ptx_sha256": "e243e9207ff5732482b1872fb156246bff6a8569d8a020a19fbd66a053f2fd81",
+          "cubin_sha256": "46a75e9edc692eea44eb527d4cadbf3519dd6e10220f9fe61cb78a63f7716226",
+          "options": {
+            "num_warps": 1,
+            "num_stages": 3,
+            "enable_indexed_update_specialization": false,
+            "enable_private_atomic_relaxation": false,
+            "enable_private_reduction_ownership": false,
+            "enable_contract_load_reuse": false,
+            "enable_contract_licm": true,
+            "contract_pipeline_stages": 2
+          }
+        }
+      },
+      "validation": {
+        "baseline": {
+          "max_output_error": 0.00011996132116983554,
+          "max_state_error": 1.612540072581936e-07,
+          "same_config_bitwise_equal_to_original": true,
+          "guards_passed": true
+        },
+        "licm": {
+          "max_output_error": 0.00011996132116983554,
+          "max_state_error": 1.612540072581936e-07,
+          "same_config_bitwise_equal_to_original": true,
+          "guards_passed": true
+        },
+        "pipeline": {
+          "max_output_error": 0.00011996132116983554,
+          "max_state_error": 1.612540072581936e-07,
+          "same_config_bitwise_equal_to_original": true,
+          "guards_passed": true
+        },
+        "both": {
+          "max_output_error": 0.00011996132116983554,
+          "max_state_error": 1.612540072581936e-07,
+          "same_config_bitwise_equal_to_original": true,
+          "guards_passed": true
+        }
+      },
+      "times_us": {
+        "baseline": [
+          9.416500106453896,
+          7.087999954819679,
+          7.052000146359205,
+          7.063500117510557,
+          7.088750135153532
+        ],
+        "licm": [
+          9.516250342130661,
+          7.188249845057726,
+          7.178999949246645,
+          7.177500054240227,
+          7.163750007748604
+        ],
+        "pipeline": [
+          9.97225008904934,
+          7.743749767541885,
+          7.745500188320875,
+          7.722499780356884,
+          7.72724999114871
+        ],
+        "both": [
+          9.984999895095825,
+          7.6095000840723515,
+          7.609250023961067,
+          7.59425014257431,
+          7.584000006318092
+        ]
+      },
+      "median_us": {
+        "baseline": 7.087999954819679,
+        "licm": 7.178999949246645,
+        "pipeline": 7.743749767541885,
+        "both": 7.609250023961067
+      },
+      "compile_seconds": 1.809435952000058,
+      "no_contract_baseline_ptx_equal": true
+    },
+    {
+      "config": [
+        16,
+        1,
+        2
+      ],
+      "resources": {
+        "baseline": {
+          "registers": 213,
+          "spills": 0,
+          "shared": 512,
+          "async_copies": 0,
+          "ptx_sha256": "e8c98fd00e7aea2238f9927a4be96dfff4684f0be18725699da6b3ca3fdf4961",
+          "cubin_sha256": "1468fbe01f1b15e5def8fe7c0d36699264b61fc32ee3d1205a5bd22abf532e76",
+          "options": {
+            "num_warps": 1,
+            "num_stages": 2,
+            "enable_indexed_update_specialization": false,
+            "enable_private_atomic_relaxation": false,
+            "enable_private_reduction_ownership": false,
+            "enable_contract_load_reuse": false,
+            "enable_contract_licm": false,
+            "contract_pipeline_stages": 0
+          }
+        },
+        "licm": {
+          "registers": 168,
+          "spills": 0,
+          "shared": 512,
+          "async_copies": 0,
+          "ptx_sha256": "fc1a5b5c1de9867e5fdc2251c578f9cb9b2108479338ef6c1ba2d0327e60e4c5",
+          "cubin_sha256": "14a3f51c858fe9becdd6fe293b9db3e143c6f50d740cc6d2a4da63ab06b72e95",
+          "options": {
+            "num_warps": 1,
+            "num_stages": 2,
+            "enable_indexed_update_specialization": false,
+            "enable_private_atomic_relaxation": false,
+            "enable_private_reduction_ownership": false,
+            "enable_contract_load_reuse": false,
+            "enable_contract_licm": true,
+            "contract_pipeline_stages": 0
+          }
+        },
+        "pipeline": {
+          "registers": 226,
+          "spills": 0,
+          "shared": 1056,
+          "async_copies": 6,
+          "ptx_sha256": "9902929dde03ae2ff35edec48bf5c35ecd5ec26f89eb2b770aeeb537c6e5f159",
+          "cubin_sha256": "d361ea24b013a9066c0f521e559be88124df9e90d84dc05bf587ba1eb75ce1e8",
+          "options": {
+            "num_warps": 1,
+            "num_stages": 2,
+            "enable_indexed_update_specialization": false,
+            "enable_private_atomic_relaxation": false,
+            "enable_private_reduction_ownership": false,
+            "enable_contract_load_reuse": false,
+            "enable_contract_licm": false,
+            "contract_pipeline_stages": 2
+          }
+        },
+        "both": {
+          "registers": 226,
+          "spills": 0,
+          "shared": 1056,
+          "async_copies": 6,
+          "ptx_sha256": "3e567d65af1948e3a891c3d443dc206922ac16a94c566291ca2be2dd8914ffeb",
+          "cubin_sha256": "9a39e76cd9cad151d84b4c1467a4d39a9f88e3e1f53b608272014021680b9ebf",
+          "options": {
+            "num_warps": 1,
+            "num_stages": 2,
+            "enable_indexed_update_specialization": false,
+            "enable_private_atomic_relaxation": false,
+            "enable_private_reduction_ownership": false,
+            "enable_contract_load_reuse": false,
+            "enable_contract_licm": true,
+            "contract_pipeline_stages": 2
+          }
+        }
+      },
+      "validation": {
+        "baseline": {
+          "max_output_error": 0.00011996132116983554,
+          "max_state_error": 1.612540072581936e-07,
+          "same_config_bitwise_equal_to_original": true,
+          "guards_passed": true
+        },
+        "licm": {
+          "max_output_error": 0.00011996132116983554,
+          "max_state_error": 1.612540072581936e-07,
+          "same_config_bitwise_equal_to_original": true,
+          "guards_passed": true
+        },
+        "pipeline": {
+          "max_output_error": 0.00011996132116983554,
+          "max_state_error": 1.612540072581936e-07,
+          "same_config_bitwise_equal_to_original": true,
+          "guards_passed": true
+        },
+        "both": {
+          "max_output_error": 0.00011996132116983554,
+          "max_state_error": 1.612540072581936e-07,
+          "same_config_bitwise_equal_to_original": true,
+          "guards_passed": true
+        }
+      },
+      "times_us": {
+        "baseline": [
+          8.73624999076128,
+          6.326749920845032,
+          6.316749844700098,
+          6.303499918431044,
+          6.336499936878681
+        ],
+        "licm": [
+          8.9734997600317,
+          6.46624993532896,
+          6.438999902456999,
+          6.456749979406595,
+          6.444749888032675
+        ],
+        "pipeline": [
+          8.88775009661913,
+          6.445250008255243,
+          6.442250218242407,
+          6.430999841541052,
+          6.44725002348423
+        ],
+        "both": [
+          8.836749941110611,
+          6.493249908089638,
+          6.48100022226572,
+          6.462249904870987,
+          6.4894999377429485
+        ]
+      },
+      "median_us": {
+        "baseline": 6.326749920845032,
+        "licm": 6.456749979406595,
+        "pipeline": 6.445250008255243,
+        "both": 6.4894999377429485
+      },
+      "compile_seconds": 1.2990558820019942,
+      "no_contract_baseline_ptx_equal": true
+    },
+    {
+      "config": [
+        32,
+        2,
+        2
+      ],
+      "resources": {
+        "baseline": {
+          "registers": 208,
+          "spills": 0,
+          "shared": 512,
+          "async_copies": 0,
+          "ptx_sha256": "60d816deadbfac35b03c7fd34b727b8e83aedd9c37587595d1eb465b8037eb26",
+          "cubin_sha256": "d4aace71a35a0a103000916e37e98b652caa5a9ce40847135943ba610b3f45d7",
+          "options": {
+            "num_warps": 2,
+            "num_stages": 2,
+            "enable_indexed_update_specialization": false,
+            "enable_private_atomic_relaxation": false,
+            "enable_private_reduction_ownership": false,
+            "enable_contract_load_reuse": false,
+            "enable_contract_licm": false,
+            "contract_pipeline_stages": 0
+          }
+        },
+        "licm": {
+          "registers": 212,
+          "spills": 0,
+          "shared": 512,
+          "async_copies": 0,
+          "ptx_sha256": "a4032a7b45960506300f308d8014b30dc2e4d09912dcea982edde063817827c2",
+          "cubin_sha256": "bab231f258a698c11878d6d23158305189b8e7f1e17ae626be4a54f9dc849cb6",
+          "options": {
+            "num_warps": 2,
+            "num_stages": 2,
+            "enable_indexed_update_specialization": false,
+            "enable_private_atomic_relaxation": false,
+            "enable_private_reduction_ownership": false,
+            "enable_contract_load_reuse": false,
+            "enable_contract_licm": true,
+            "contract_pipeline_stages": 0
+          }
+        },
+        "pipeline": {
+          "registers": 231,
+          "spills": 0,
+          "shared": 1088,
+          "async_copies": 6,
+          "ptx_sha256": "1ab5d1d3ca793225d4cd8cbaf5bef697dc8960fc1904d18c027ed64ee55129ee",
+          "cubin_sha256": "1aa2d50bd8c3971f85c4762408b3d011f25ce431872d5fdc533704c2989edfb1",
+          "options": {
+            "num_warps": 2,
+            "num_stages": 2,
+            "enable_indexed_update_specialization": false,
+            "enable_private_atomic_relaxation": false,
+            "enable_private_reduction_ownership": false,
+            "enable_contract_load_reuse": false,
+            "enable_contract_licm": false,
+            "contract_pipeline_stages": 2
+          }
+        },
+        "both": {
+          "registers": 229,
+          "spills": 0,
+          "shared": 1088,
+          "async_copies": 6,
+          "ptx_sha256": "89176467698f7cfe8e7f905fe5b57a9f1a587b730251b51d17f7074cb8af74a7",
+          "cubin_sha256": "3600ffa55c1c2f171909c586d2747458f511275a019f8b1c2f60ad1b3a4ae084",
+          "options": {
+            "num_warps": 2,
+            "num_stages": 2,
+            "enable_indexed_update_specialization": false,
+            "enable_private_atomic_relaxation": false,
+            "enable_private_reduction_ownership": false,
+            "enable_contract_load_reuse": false,
+            "enable_contract_licm": true,
+            "contract_pipeline_stages": 2
+          }
+        }
+      },
+      "validation": {
+        "baseline": {
+          "max_output_error": 0.00011996132116983554,
+          "max_state_error": 1.612540072581936e-07,
+          "same_config_bitwise_equal_to_original": true,
+          "guards_passed": true
+        },
+        "licm": {
+          "max_output_error": 0.00011996132116983554,
+          "max_state_error": 1.612540072581936e-07,
+          "same_config_bitwise_equal_to_original": true,
+          "guards_passed": true
+        },
+        "pipeline": {
+          "max_output_error": 0.00011996132116983554,
+          "max_state_error": 1.612540072581936e-07,
+          "same_config_bitwise_equal_to_original": true,
+          "guards_passed": true
+        },
+        "both": {
+          "max_output_error": 0.00011996132116983554,
+          "max_state_error": 1.612540072581936e-07,
+          "same_config_bitwise_equal_to_original": true,
+          "guards_passed": true
+        }
+      },
+      "times_us": {
+        "baseline": [
+          8.561999537050724,
+          6.512000225484371,
+          6.518249865621328,
+          6.519999820739031,
+          6.514499895274639
+        ],
+        "licm": [
+          8.795750327408314,
+          6.587749812752008,
+          6.568749900907278,
+          6.560499779880047,
+          6.57325005158782
+        ],
+        "pipeline": [
+          8.728000335395336,
+          6.581250112503767,
+          6.544000003486872,
+          6.5425001084804535,
+          6.560499779880047
+        ],
+        "both": [
+          8.596249856054783,
+          6.628749892115593,
+          6.607499904930592,
+          6.599499844014645,
+          6.624499801546335
+        ]
+      },
+      "median_us": {
+        "baseline": 6.518249865621328,
+        "licm": 6.57325005158782,
+        "pipeline": 6.560499779880047,
+        "both": 6.624499801546335
+      },
+      "compile_seconds": 1.2848607990017626,
+      "no_contract_baseline_ptx_equal": true
+    },
+    {
+      "config": [
+        64,
+        4,
+        1
+      ],
+      "resources": {
+        "baseline": {
+          "registers": 208,
+          "spills": 0,
+          "shared": 1024,
+          "async_copies": 0,
+          "ptx_sha256": "5afc9174e090b48cce6caedbb6afeacb23ea25b6c184839075b37c937a73c7f5",
+          "cubin_sha256": "da3238e1ba3cb58ef1131b05cd2cfa317efdd07c54184ad80b4fcac29741fd59",
+          "options": {
+            "num_warps": 4,
+            "num_stages": 1,
+            "enable_indexed_update_specialization": false,
+            "enable_private_atomic_relaxation": false,
+            "enable_private_reduction_ownership": false,
+            "enable_contract_load_reuse": false,
+            "enable_contract_licm": false,
+            "contract_pipeline_stages": 0
+          }
+        },
+        "licm": {
+          "registers": 211,
+          "spills": 0,
+          "shared": 1024,
+          "async_copies": 0,
+          "ptx_sha256": "34516e5052997f38ec880fbb05c569c21a3e0cf95602db7026680a680c0828da",
+          "cubin_sha256": "295b0d0ee07a90f8fe1d354a3a7d0ce0211d5656c1c5cdfecfedad4a30813103",
+          "options": {
+            "num_warps": 4,
+            "num_stages": 1,
+            "enable_indexed_update_specialization": false,
+            "enable_private_atomic_relaxation": false,
+            "enable_private_reduction_ownership": false,
+            "enable_contract_load_reuse": false,
+            "enable_contract_licm": true,
+            "contract_pipeline_stages": 0
+          }
+        },
+        "pipeline": {
+          "registers": 208,
+          "spills": 0,
+          "shared": 1152,
+          "async_copies": 2,
+          "ptx_sha256": "d7419fb1d3a4eb88f507eb3b35d15162a759da2680f8763270dc95e3589603b3",
+          "cubin_sha256": "dfff1eb74ad31e19ee663f418afefdf2646754f9676d47b20a29c80b51e24c69",
+          "options": {
+            "num_warps": 4,
+            "num_stages": 1,
+            "enable_indexed_update_specialization": false,
+            "enable_private_atomic_relaxation": false,
+            "enable_private_reduction_ownership": false,
+            "enable_contract_load_reuse": false,
+            "enable_contract_licm": false,
+            "contract_pipeline_stages": 2
+          }
+        },
+        "both": {
+          "registers": 227,
+          "spills": 0,
+          "shared": 1152,
+          "async_copies": 2,
+          "ptx_sha256": "dfd812568097de77bbc5ab610d8baacbe35c92d09c83fd52b8207f8124963e99",
+          "cubin_sha256": "9cf808f842ad3105c6e899ddd349bf122f2286df6bfdd5ac17c137de30d31ba1",
+          "options": {
+            "num_warps": 4,
+            "num_stages": 1,
+            "enable_indexed_update_specialization": false,
+            "enable_private_atomic_relaxation": false,
+            "enable_private_reduction_ownership": false,
+            "enable_contract_load_reuse": false,
+            "enable_contract_licm": true,
+            "contract_pipeline_stages": 2
+          }
+        }
+      },
+      "validation": {
+        "baseline": {
+          "max_output_error": 0.00011996132116983554,
+          "max_state_error": 1.4298604011919736e-07,
+          "same_config_bitwise_equal_to_original": true,
+          "guards_passed": true
+        },
+        "licm": {
+          "max_output_error": 0.00011996132116983554,
+          "max_state_error": 1.4298604011919736e-07,
+          "same_config_bitwise_equal_to_original": true,
+          "guards_passed": true
+        },
+        "pipeline": {
+          "max_output_error": 0.00011996132116983554,
+          "max_state_error": 1.4298604011919736e-07,
+          "same_config_bitwise_equal_to_original": true,
+          "guards_passed": true
+        },
+        "both": {
+          "max_output_error": 0.00011996132116983554,
+          "max_state_error": 1.4298604011919736e-07,
+          "same_config_bitwise_equal_to_original": true,
+          "guards_passed": true
+        }
+      },
+      "times_us": {
+        "baseline": [
+          8.871999569237232,
+          6.638249848037958,
+          6.624250207096338,
+          6.6427499987185,
+          6.614749785512686
+        ],
+        "licm": [
+          8.666249923408031,
+          6.669249851256609,
+          6.639000028371811,
+          6.632999982684851,
+          6.639000028371811
+        ],
+        "pipeline": [
+          8.804500102996826,
+          6.7484998144209385,
+          6.771999876946211,
+          6.77150022238493,
+          6.763250101357698
+        ],
+        "both": [
+          8.755750022828579,
+          6.7757498472929,
+          6.769999861717224,
+          6.76274998113513,
+          6.763750221580267
+        ]
+      },
+      "median_us": {
+        "baseline": 6.638249848037958,
+        "licm": 6.639000028371811,
+        "pipeline": 6.77150022238493,
+        "both": 6.769999861717224
+      },
+      "compile_seconds": 1.3301595299999462,
+      "no_contract_baseline_ptx_equal": true
+    }
+  ],
+  "selected_configurations_by_variant": {
+    "baseline": [
+      16,
+      1,
+      2
+    ],
+    "licm": [
+      16,
+      1,
+      2
+    ],
+    "pipeline": [
+      16,
+      1,
+      2
+    ],
+    "both": [
+      16,
+      1,
+      2
+    ]
+  },
+  "selection": {
+    "variant": "baseline",
+    "config": [
+      16,
+      1,
+      2
+    ],
+    "baseline_config": [
+      16,
+      1,
+      2
+    ],
+    "screened_best_speedup": 1.0,
+    "minimum_screen_gain": 1.02,
+    "rule": "lowest validated median across four variants and four launch configurations; retain best baseline below 2% gain",
+    "calibration_wall_seconds": 7.017079372002627,
+    "excluded_from_steady_state_timings": true
+  },
+  "confirmations": [
+    {
+      "seed": 83003,
+      "validation": {
+        "1": {
+          "baseline": {
+            "max_output_error": 0.00011215239940226551,
+            "max_state_error": 1.3284750999265071e-07,
+            "same_config_bitwise_equal_to_original": true,
+            "guards_passed": true
+          },
+          "licm": {
+            "max_output_error": 0.00011215239940226551,
+            "max_state_error": 1.3284750999265071e-07,
+            "same_config_bitwise_equal_to_original": true,
+            "guards_passed": true
+          },
+          "pipeline": {
+            "max_output_error": 0.00011215239940226551,
+            "max_state_error": 1.3284750999265071e-07,
+            "same_config_bitwise_equal_to_original": true,
+            "guards_passed": true
+          },
+          "both": {
+            "max_output_error": 0.00011215239940226551,
+            "max_state_error": 1.3284750999265071e-07,
+            "same_config_bitwise_equal_to_original": true,
+            "guards_passed": true
+          }
+        }
+      },
+      "times_us": {
+        "baseline": [
+          7.623749785125256,
+          6.256749853491783,
+          6.248250138014555,
+          6.234500091522932,
+          6.229749880731106,
+          6.250500213354826,
+          6.2522501684725285,
+          6.233249790966511,
+          6.23599998652935,
+          6.254999898374081,
+          6.255500018596649,
+          6.249499972909689,
+          6.235000211745501
+        ],
+        "licm": [
+          8.336749859154224,
+          6.287999916821718,
+          6.2870001420378685,
+          6.260499823838472,
+          6.2837498262524605,
+          6.255750078707933,
+          6.262499839067459,
+          6.28749979659915,
+          6.269750185310841,
+          6.264249794185162,
+          6.266999989748001,
+          6.284249946475029,
+          6.304500158876181
+        ],
+        "pipeline": [
+          8.449999615550041,
+          6.38375012204051,
+          6.366250105202198,
+          6.38375012204051,
+          6.380000151693821,
+          6.397000048309565,
+          6.3702501356601715,
+          6.37775007635355,
+          6.383250001817942,
+          6.380999926477671,
+          6.38375012204051,
+          6.3634999096393585,
+          6.373249925673008
+        ],
+        "both": [
+          8.352000266313553,
+          6.4582498744130135,
+          6.430000066757202,
+          6.441750098019838,
+          6.438000127673149,
+          6.413999944925308,
+          6.440000142902136,
+          6.42450014129281,
+          6.425249855965376,
+          6.426999811083078,
+          6.432250142097473,
+          6.429499946534634,
+          6.432500202208757
+        ]
+      },
+      "median_us": {
+        "baseline": 6.249499972909689,
+        "licm": 6.2837498262524605,
+        "pipeline": 6.380999926477671,
+        "both": 6.432250142097473
+      },
+      "selected_speedup_samples": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "selected_speedup": 1.0,
+      "variant_speedups": {
+        "baseline": 1.0,
+        "licm": 0.9946169787018688,
+        "pipeline": 0.9783078153940576,
+        "both": 0.9705459128160875
+      },
+      "state_reset_included_every_invocation": true
+    },
+    {
+      "seed": 84007,
+      "validation": {
+        "1": {
+          "baseline": {
+            "max_output_error": 0.00010397882604129549,
+            "max_state_error": 1.4144261051285412e-07,
+            "same_config_bitwise_equal_to_original": true,
+            "guards_passed": true
+          },
+          "licm": {
+            "max_output_error": 0.00010397882604129549,
+            "max_state_error": 1.4144261051285412e-07,
+            "same_config_bitwise_equal_to_original": true,
+            "guards_passed": true
+          },
+          "pipeline": {
+            "max_output_error": 0.00010397882604129549,
+            "max_state_error": 1.4144261051285412e-07,
+            "same_config_bitwise_equal_to_original": true,
+            "guards_passed": true
+          },
+          "both": {
+            "max_output_error": 0.00010397882604129549,
+            "max_state_error": 1.4144261051285412e-07,
+            "same_config_bitwise_equal_to_original": true,
+            "guards_passed": true
+          }
+        }
+      },
+      "times_us": {
+        "baseline": [
+          8.43849964439869,
+          6.323750130832195,
+          6.2892502173781395,
+          6.303499918431044,
+          6.29850011318922,
+          6.300750188529491,
+          6.306500174105167,
+          6.316999904811382,
+          6.311499979346991,
+          6.32124999538064,
+          6.319249980151653,
+          6.298750173300505,
+          6.32025022059679
+        ],
+        "licm": [
+          8.464249782264233,
+          6.425749976187944,
+          6.412249989807606,
+          6.420250050723553,
+          6.441750098019838,
+          6.43149996176362,
+          6.411499809473753,
+          6.436250172555447,
+          6.434749811887741,
+          6.437249947339296,
+          6.432999856770039,
+          6.437249947339296,
+          6.40374980866909
+        ],
+        "pipeline": [
+          8.427499793469906,
+          6.471250206232071,
+          6.446499843150377,
+          6.461999844759703,
+          6.442250218242407,
+          6.43849978223443,
+          6.458749994635582,
+          6.446000188589096,
+          6.48475019261241,
+          6.4467499032616615,
+          6.433750037103891,
+          6.433750037103891,
+          6.463749799877405
+        ],
+        "both": [
+          8.454750292003155,
+          6.477499846369028,
+          6.478250026702881,
+          6.473999936133623,
+          6.463999859988689,
+          6.47599995136261,
+          6.470249965786934,
+          6.457500159740448,
+          6.467499770224094,
+          6.463500205427408,
+          6.450499873608351,
+          6.471749860793352,
+          6.4489999786019325
+        ]
+      },
+      "median_us": {
+        "baseline": 6.311499979346991,
+        "licm": 6.432999856770039,
+        "pipeline": 6.4467499032616615,
+        "both": 6.470249965786934
+      },
+      "selected_speedup_samples": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "selected_speedup": 1.0,
+      "variant_speedups": {
+        "baseline": 1.0,
+        "licm": 0.981815329407715,
+        "pipeline": 0.9777993295341759,
+        "both": 0.9758794284623997
+      },
+      "state_reset_included_every_invocation": true
+    },
+    {
+      "seed": 85021,
+      "validation": {
+        "1": {
+          "baseline": {
+            "max_output_error": 0.0001208663958740322,
+            "max_state_error": 1.8873936358243526e-07,
+            "same_config_bitwise_equal_to_original": true,
+            "guards_passed": true
+          },
+          "licm": {
+            "max_output_error": 0.0001208663958740322,
+            "max_state_error": 1.8873936358243526e-07,
+            "same_config_bitwise_equal_to_original": true,
+            "guards_passed": true
+          },
+          "pipeline": {
+            "max_output_error": 0.0001208663958740322,
+            "max_state_error": 1.8873936358243526e-07,
+            "same_config_bitwise_equal_to_original": true,
+            "guards_passed": true
+          },
+          "both": {
+            "max_output_error": 0.0001208663958740322,
+            "max_state_error": 1.8873936358243526e-07,
+            "same_config_bitwise_equal_to_original": true,
+            "guards_passed": true
+          }
+        }
+      },
+      "times_us": {
+        "baseline": [
+          8.343749679625034,
+          6.254999898374081,
+          6.237000226974487,
+          6.256749853491783,
+          6.233000196516514,
+          6.260000169277191,
+          6.237749941647053,
+          6.250250153243542,
+          6.264499854296446,
+          6.260749883949757,
+          6.23875018209219,
+          6.243499927222729,
+          6.237249821424484
+        ],
+        "licm": [
+          8.4239998832345,
+          6.304999813437462,
+          6.287749856710434,
+          6.268499884754419,
+          6.29850011318922,
+          6.267250049859285,
+          6.287999916821718,
+          6.283999886363745,
+          6.287999916821718,
+          6.2790000811219215,
+          6.305249873548746,
+          6.293749902397394,
+          6.2882499769330025
+        ],
+        "pipeline": [
+          8.173500187695026,
+          6.425249855965376,
+          6.4074997790157795,
+          6.378000136464834,
+          6.391999777406454,
+          6.398499943315983,
+          6.397500168532133,
+          6.394499912858009,
+          6.3782501965761185,
+          6.402499973773956,
+          6.370749790221453,
+          6.402499973773956,
+          6.372999865561724
+        ],
+        "both": [
+          8.566750213503838,
+          6.469250191003084,
+          6.427249871194363,
+          6.446499843150377,
+          6.457999814301729,
+          6.42450014129281,
+          6.424750201404095,
+          6.444749888032675,
+          6.442250218242407,
+          6.443249993026257,
+          6.450749933719635,
+          6.449500098824501,
+          6.449750158935785
+        ]
+      },
+      "median_us": {
+        "baseline": 6.250250153243542,
+        "licm": 6.287999916821718,
+        "pipeline": 6.397500168532133,
+        "both": 6.446499843150377
+      },
+      "selected_speedup_samples": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "selected_speedup": 1.0,
+      "variant_speedups": {
+        "baseline": 1.0,
+        "licm": 0.9920158925991761,
+        "pipeline": 0.9778601967348943,
+        "both": 0.9703995257641164
+      },
+      "state_reset_included_every_invocation": true
+    }
+  ]
+}

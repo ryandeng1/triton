@@ -1,0 +1,12 @@
+-- Testing: 6 tests, 6 workers --
+PASS: TRITON :: TritonGPU/matmul-loop-pipeline.mlir (1 of 6)
+PASS: TRITON :: TritonGPU/loop-pipeline-async-latencies.mlir (2 of 6)
+PASS: TRITON :: TritonGPU/pipeline-loop-nest.mlir (3 of 6)
+PASS: TRITON :: TritonGPU/loop-pipeline-cuda.mlir (4 of 6)
+PASS: TRITON :: TritonGPU/loop-pipeline-hopper.mlir (5 of 6)
+PASS: TRITON :: TritonGPU/loop-pipeline.mlir (6 of 6)
+
+Testing Time: 0.27s
+
+Total Discovered Tests: 6
+  Passed: 6 (100.00%)

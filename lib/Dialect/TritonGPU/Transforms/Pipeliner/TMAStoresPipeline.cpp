@@ -1,4 +1,5 @@
 #include "triton/Dialect/Triton/IR/Utility.h"
+#include "triton/Analysis/GlobalMemoryEffects.h"
 #include "triton/Dialect/TritonGPU/IR/Dialect.h"
 #include "triton/Dialect/TritonGPU/Transforms/PipeliningUtility.h"
 #include "triton/Dialect/TritonGPU/Transforms/Schedule.h"
@@ -73,9 +74,10 @@ static void createTMAAsyncCopy(const TMAStore &store, Value alloc) {
   OpBuilder builder(store.op);
   Location loc = store.op->getLoc();
 
-  // Put wait before the local_store to make the store truly async. We only
-  // need the TMA read from the allocation to complete before reusing it.
-  ttng::TMAStoreWaitOp::create(builder, loc, 0, /*read_only=*/true);
+  // The destination regions can overlap across sites or iterations. Complete
+  // the previous write before issuing the next one, while still allowing
+  // intervening pure/local computation to overlap that write.
+  ttng::TMAStoreWaitOp::create(builder, loc, 0, /*read_only=*/false);
   ttg::LocalStoreOp::create(builder, loc, store.src, alloc);
   ttng::FenceAsyncSharedOp::create(builder, loc, false);
   auto desc = store.desc;
@@ -107,6 +109,21 @@ bool mlir::triton::pipelineTMAStores(LoopLikeOpInterface loop) {
   if (tmaStores.empty())
     return false;
   if (hasAcquireOrReleaseOp(loop))
+    return false;
+  DenseSet<Operation *> selected;
+  for (const auto &store : tmaStores)
+    selected.insert(store.op);
+  // getTMAStores selects the after region of scf.while. A store in its before
+  // region would otherwise run before the prior iteration's async write waits.
+  if (loop->walk([&](tt::DescriptorStoreLikeOpInterface store) {
+        return selected.contains(store.getOperation())
+                   ? WalkResult::advance()
+                   : WalkResult::interrupt();
+      }).wasInterrupted())
+    return false;
+  auto function = loop->getParentOfType<tt::FuncOp>();
+  if (!function ||
+      !tt::GlobalMemoryEffects(function).hasOnlyOrderedDescriptorStores(loop))
     return false;
 
   DenseMap<Operation *, Value> storeToAlloc;

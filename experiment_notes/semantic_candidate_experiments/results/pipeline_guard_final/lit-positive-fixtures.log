@@ -1,0 +1,10 @@
+-- Testing: 4 tests, 4 workers --
+PASS: TRITON :: TritonGPU/matmul-loop-pipeline.mlir (1 of 4)
+PASS: TRITON :: TritonGPU/loop-pipeline-async-latencies.mlir (2 of 4)
+PASS: TRITON :: TritonGPU/pipeline-loop-nest.mlir (3 of 4)
+PASS: TRITON :: TritonGPU/loop-pipeline.mlir (4 of 4)
+
+Testing Time: 0.26s
+
+Total Discovered Tests: 4
+  Passed: 4 (100.00%)

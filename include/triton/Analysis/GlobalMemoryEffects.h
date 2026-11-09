@@ -62,6 +62,27 @@ public:
   /// disregard writes. It returns true for an unknown root or unknown effects.
   bool mayModify(Value pointer) const;
 
+  /// Check that overlapping loop iterations may reorder their global accesses.
+  /// Ordinary reads must be immutable or disjoint from every ordinary store;
+  /// distinct store operations must be pairwise disjoint. A single static
+  /// store must still retain its iteration order in the consumer's schedule.
+  /// Descriptor/async reads are accepted only without potentially aliasing
+  /// writes. Descriptor writes, atomics, calls, volatile accesses, barriers and
+  /// unknown effects fail. Explicitly scoped shared/TMEM data effects are
+  /// ignored; this does not replace their existing scheduling/protocol checks.
+  /// allowCompilerProtocols requires a proof for the original scope before
+  /// compiler-owned synchronization was inserted. That proof is invalidated by
+  /// changes to global effects, pointer provenance or argument contracts.
+  /// The query inspects scope afresh and does not use the function snapshot.
+  bool hasIndependentGlobalMemoryAccesses(
+      Operation *scope, bool allowCompilerProtocols = false) const;
+
+  /// Check the separate descriptor-store pipeline's global-effect boundary.
+  /// All global effects must be descriptor stores/reductions/scatters. The
+  /// consumer must fully complete each such operation before issuing the next
+  /// one, including across iterations, and wait before leaving the scope.
+  bool hasOnlyOrderedDescriptorStores(Operation *scope) const;
+
   /// Check a scope's operations recursively without making alias assumptions.
   /// This does not establish no-clobber, execution or dominance facts. Ordinary
   /// stores are allowed regardless of their destination. When the

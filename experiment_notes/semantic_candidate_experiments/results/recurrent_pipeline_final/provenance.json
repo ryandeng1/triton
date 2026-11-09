@@ -1,0 +1,57 @@
+{
+  "repository": "ROCm/aiter",
+  "revision": "ef0a5a26b8cb38ea1308f827985e36cde964a6ab",
+  "upstream_source": "aiter/ops/triton/_triton_kernels/gated_delta_net/decode/fused_sigmoid_gating_recurrent.py",
+  "upstream_source_sha256": "e58e6ad3347877239cc95cefdbaaf736704ee3d93f9bfcd62c83f5c3a0513238",
+  "retained_source_sha256": "5901814a792174ea529123d640afb86a74fad65ea8343c6dfdb09ed10d7813e6",
+  "source_sha256": "5b2794e7edbadf5fc1fa96a6d75be8fe7c22c3037e21fa26aa1fafc7c3a2137b",
+  "baseline_body_ast_equal_to_upstream": true,
+  "pipeline_inverse_edit_body_ast_equal": true,
+  "changes": [
+    "range(T) -> tl.range(T, num_stages=2)"
+  ],
+  "launch_num_stages_distinct_from_loop_attribute": true,
+  "fixed_launch_configurations": {
+    "upstream500": [
+      32,
+      2,
+      2
+    ],
+    "upstream1024": [
+      8,
+      1,
+      3
+    ],
+    "decode16": [
+      16,
+      1,
+      2
+    ]
+  },
+  "enable_contract_load_reuse": false,
+  "isolation_reason": "Current alias contracts also enable redundant-load reuse; disable uniformly to isolate contract LICM",
+  "retune_configurations": [
+    [
+      8,
+      1,
+      3
+    ],
+    [
+      16,
+      1,
+      2
+    ],
+    [
+      32,
+      2,
+      2
+    ],
+    [
+      64,
+      4,
+      1
+    ]
+  ],
+  "reused_oracle_and_timing_harness_sha256": "362500d747e8f81a3966574a309f7d1cf8d4989f02db308fa7bc01b942b32d86",
+  "scope": "Every timestep output, indexed final-state writes, identical state reset before each invocation; no complete-model claim"
+}

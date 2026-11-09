@@ -1,0 +1,160 @@
+-- Testing: 1 tests, 1 workers --
+FAIL: TRITON :: TritonGPU/partition-scheduling.mlir (1 of 1)
+******************** TEST 'TRITON :: TritonGPU/partition-scheduling.mlir' FAILED ********************
+Exit Code: 1
+
+Command Output (stdout):
+--
+# RUN: at line 1
+/home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/bin/triton-opt /home/ryandeng/tpaa/triton/test/TritonGPU/partition-scheduling.mlir --split-input-file --tritongpu-hoist-tmem-alloc --tritongpu-partition-scheduling -allow-unregistered-dialect | FileCheck /home/ryandeng/tpaa/triton/test/TritonGPU/partition-scheduling.mlir
+# executed command: /home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/bin/triton-opt /home/ryandeng/tpaa/triton/test/TritonGPU/partition-scheduling.mlir --split-input-file --tritongpu-hoist-tmem-alloc --tritongpu-partition-scheduling -allow-unregistered-dialect
+# executed command: FileCheck /home/ryandeng/tpaa/triton/test/TritonGPU/partition-scheduling.mlir
+# .---command stderr------------
+# | /home/ryandeng/tpaa/triton/test/TritonGPU/partition-scheduling.mlir:141:16: error: CHECK-DAG: expected string not found in input
+# |  // CHECK-DAG: [[TRANS_USER:%.*]] = ttg.memdesc_trans [[K_SHARED]] {{.*}}partition = array<i32: 0>
+# |                ^
+# | <stdin>:66:56: note: scanning from here
+# |  %1 = ttg.local_alloc %0 {ttg.partition = array<i32: 2>} : (tensor<64x64xf16, #blocked1>) -> !ttg.memdesc<64x64xf16, #shared, #smem>
+# |                                                        ^
+# | <stdin>:66:56: note: with "K_SHARED" equal to "%1"
+# |  %1 = ttg.local_alloc %0 {ttg.partition = array<i32: 2>} : (tensor<64x64xf16, #blocked1>) -> !ttg.memdesc<64x64xf16, #shared, #smem>
+# |                                                        ^
+# | <stdin>:66:56: note: pattern attempts to capture variables: "TRANS_USER"
+# |  %1 = ttg.local_alloc %0 {ttg.partition = array<i32: 2>} : (tensor<64x64xf16, #blocked1>) -> !ttg.memdesc<64x64xf16, #shared, #smem>
+# |                                                        ^
+# | <stdin>:67:2: note: possible intended match here
+# |  %2 = ttg.memdesc_trans %1 {order = array<i32: 1, 0>, ttg.partition = array<i32: 1>} : !ttg.memdesc<64x64xf16, #shared, #smem> -> !ttg.memdesc<64x64xf16, #shared1, #smem>
+# |  ^
+# | /home/ryandeng/tpaa/triton/test/TritonGPU/partition-scheduling.mlir:166:12: error: CHECK: expected string not found in input
+# |  // CHECK: scf.for
+# |            ^
+# | <stdin>:73:29: note: scanning from here
+# |  tt.func @optimize_broadcast(%arg0: i32, %arg1: !tt.tensordesc<128x128xf32, #shared2>) {
+# |                             ^
+# | <stdin>:73:52: note: possible intended match here
+# |  tt.func @optimize_broadcast(%arg0: i32, %arg1: !tt.tensordesc<128x128xf32, #shared2>) {
+# |                                                    ^
+# | /home/ryandeng/tpaa/triton/test/TritonGPU/partition-scheduling.mlir:202:12: error: CHECK: expected string not found in input
+# |  // CHECK: scf.for
+# |            ^
+# | <stdin>:76:47: note: scanning from here
+# |  tt.func @clone_multi_partition_repeated_users(%arg0: i32, %arg1: !tt.tensordesc<128x128xf32, #shared2>) {
+# |                                               ^
+# | <stdin>:76:70: note: possible intended match here
+# |  tt.func @clone_multi_partition_repeated_users(%arg0: i32, %arg1: !tt.tensordesc<128x128xf32, #shared2>) {
+# |                                                                      ^
+# | /home/ryandeng/tpaa/triton/test/TritonGPU/partition-scheduling.mlir:245:12: error: CHECK: expected string not found in input
+# |  // CHECK: "tt.scan"
+# |            ^
+# | <stdin>:79:28: note: scanning from here
+# |  tt.func @scan_in_partition(%arg0: i32, %arg1: !tt.tensordesc<128x128xf32, #shared2>) {
+# |                            ^
+# | <stdin>:79:48: note: possible intended match here
+# |  tt.func @scan_in_partition(%arg0: i32, %arg1: !tt.tensordesc<128x128xf32, #shared2>) {
+# |                                                ^
+# | /home/ryandeng/tpaa/triton/test/TritonGPU/partition-scheduling.mlir:265:12: error: CHECK: expected string not found in input
+# |  // CHECK: scf.for %{{.*}} = %c0_i32 to %arg0 step %c1_i32 : i32
+# |            ^
+# | <stdin>:82:24: note: scanning from here
+# |  tt.func @no_partitions(%arg0: i32) {
+# |                        ^
+# | /home/ryandeng/tpaa/triton/test/TritonGPU/partition-scheduling.mlir:340:17: error: CHECK-NEXT: expected string not found in input
+# |  // CHECK-NEXT: ttg.partition = array<i32: 0, 1>
+# |                 ^
+# | <stdin>:131:243: note: scanning from here
+# |  %11 = ttng.tc_gen5_mma %9, %10, %result[%arg6], %arg3, %true {ttg.partition = array<i32: 1>} : !ttg.memdesc<128x64xf16, #shared, #smem>, !ttg.memdesc<64x128xf16, #shared, #smem>, !ttg.memdesc<128x128xf32, #tmem, #ttng.tensor_memory, mutable>
+# |                                                                                                                                                                                                                                                   ^
+# | <stdin>:139:13: note: possible intended match here
+# |  scf.yield {ttg.partition = array<i32: 1, 2>} %13, %5#0, %5#1, %14 : i1, !tt.tensordesc<128x64xf16, #shared>, !tt.tensordesc<64x128xf16, #shared>, !ttg.async.token
+# |             ^
+# | /home/ryandeng/tpaa/triton/test/TritonGPU/partition-scheduling.mlir:385:17: error: CHECK-NEXT: expected string not found in input
+# |  // CHECK-NEXT: ttg.partition = array<i32: 0, 1>
+# |                 ^
+# | <stdin>:159:91: note: scanning from here
+# |  %8 = ttng.tc_gen5_mma %6, %7, %result[%arg4], %arg3, %true {ttg.partition = array<i32: 1>} : !ttg.memdesc<128x64xf16, #shared, #smem>, !ttg.memdesc<64x128xf16, #shared, #smem>, !ttg.memdesc<128x128xf32, #tmem, #ttng.tensor_memory, mutable>
+# |                                                                                           ^
+# | <stdin>:167:13: note: possible intended match here
+# |  scf.yield {ttg.partition = array<i32: 1, 2>} %10, %11 : i1, !ttg.async.token
+# |             ^
+# | /home/ryandeng/tpaa/triton/test/TritonGPU/partition-scheduling.mlir:432:12: error: CHECK: expected string not found in input
+# |  // CHECK: scf.for
+# |            ^
+# | <stdin>:177:32: note: scanning from here
+# |  tt.func @if_stmt_yield_outputs(%arg0: i32, %arg1: i32, %arg2: i32, %arg3: i32, %arg4: i32, %arg5: !tt.tensordesc<1x128x64xbf16, #shared> {tt.nv_tma_desc = 1 : i32}, %arg6: !tt.tensordesc<1x64x64xf32, #shared1> {tt.nv_tma_desc = 1 : i32}) {
+# |                                ^
+# | <stdin>:177:103: note: possible intended match here
+# |  tt.func @if_stmt_yield_outputs(%arg0: i32, %arg1: i32, %arg2: i32, %arg3: i32, %arg4: i32, %arg5: !tt.tensordesc<1x128x64xbf16, #shared> {tt.nv_tma_desc = 1 : i32}, %arg6: !tt.tensordesc<1x64x64xf32, #shared1> {tt.nv_tma_desc = 1 : i32}) {
+# |                                                                                                       ^
+# | /home/ryandeng/tpaa/triton/test/TritonGPU/partition-scheduling.mlir:535:21: error: CHECK-COUNT: expected string not found in input (1 out of 10)
+# |  // CHECK-COUNT-10: {ttg.partition = array<i32: 0, 2>}
+# |                     ^
+# | <stdin>:205:9: note: scanning from here
+# |  scf.for %arg6 = %0 to %4 step %c148_i32 : i32 {
+# |         ^
+# | <stdin>:224:68: note: possible intended match here
+# |  %25 = ttg.memdesc_trans %24 {loop.cluster = 0 : i32, loop.stage = 2 : i32, order = array<i32: 1, 0>} : !ttg.memdesc<128x128xf8E4M3FN, #shared, #smem> -> !ttg.memdesc<128x128xf8E4M3FN, #shared1, #smem>
+# |                                                                    ^
+# | /home/ryandeng/tpaa/triton/test/TritonGPU/partition-scheduling.mlir:632:20: error: CHECK-COUNT: expected string not found in input (1 out of 2)
+# |  // CHECK-COUNT-2: ttg.partition = array<i32: 0>
+# |                    ^
+# | <stdin>:254:138: note: scanning from here
+# |  %4 = ttng.tc_gen5_mma_scaled %arg0, %3, %result[%arg6], %arg2, %arg3, %true, %true lhs = e5m2 rhs = e5m2 {ttg.partition = array<i32: 1>} : !ttg.memdesc<128x128xf16, #shared, #smem>, !ttg.memdesc<128x128xf16, #shared2, #smem>, !ttg.memdesc<128x128xf32, #tmem, #ttng.tensor_memory, mutable>, !ttg.memdesc<1x2x32x4x4xi8, #shared1, #smem>, !ttg.memdesc<1x2x32x4x4xi8, #shared1, #smem>
+# |                                                                                                                                          ^
+# | <stdin>:255:13: note: possible intended match here
+# |  scf.yield {ttg.partition = array<i32: 1, 2>} %4 : !ttg.async.token
+# |             ^
+# | /home/ryandeng/tpaa/triton/test/TritonGPU/partition-scheduling.mlir:706:20: error: CHECK-COUNT: expected string not found in input (1 out of 2)
+# |  // CHECK-COUNT-2: ttg.partition = array<i32: 0>
+# |                    ^
+# | <stdin>:293:137: note: scanning from here
+# |  %11 = ttng.tc_gen5_mma_scaled %arg0, %arg1, %result[%arg6], %7, %10, %true, %true lhs = e2m1 rhs = e2m1 {ttg.partition = array<i32: 1>} : !ttg.memdesc<256x128xi8, #shared, #smem>, !ttg.memdesc<128x128xi8, #shared1, #smem>, !ttg.memdesc<256x128xf32, #tmem, #ttng.tensor_memory, mutable>, !ttg.memdesc<256x16xf8E4M3FN, #shared7, #smem>, !ttg.memdesc<128x16xf8E4M3FN, #shared10, #smem>
+# |                                                                                                                                         ^
+# | <stdin>:294:13: note: possible intended match here
+# |  scf.yield {ttg.partition = array<i32: 1, 2>} %11 : !ttg.async.token
+# |             ^
+# | /home/ryandeng/tpaa/triton/test/TritonGPU/partition-scheduling.mlir:761:12: error: CHECK: expected string not found in input
+# |  // CHECK: "softmax_work"{{.*}}ttg.partition = array<i32: 0>}
+# |            ^
+# | <stdin>:333:83: note: scanning from here
+# |  %result_4, %token_5 = ttng.tmem_load %result[%14] {ttg.partition = array<i32: 0>} : !ttg.memdesc<128x128xf32, #tmem, #ttng.tensor_memory, mutable> -> tensor<128x128xf32, #blocked>
+# |                                                                                   ^
+# | <stdin>:334:392: note: possible intended match here
+# |  %15:4 = builtin.unrealized_conversion_cast %result_4, %arg29, %arg28 : tensor<128x128xf32, #blocked>, tensor<128xf32, #ttg.slice<{dim = 1, parent = #blocked}>>, tensor<128xf32, #ttg.slice<{dim = 1, parent = #blocked}>> to tensor<128x128xf32, #blocked>, tensor<128x128xf16, #blocked>, tensor<128xf32, #ttg.slice<{dim = 1, parent = #blocked}>>, tensor<128xf32, #ttg.slice<{dim = 1, parent = #blocked}>> {ttg.partition = array<i32: 0>}
+# |                                                                                                                                                                                                                                                                                                                                                                                                        ^
+# | /home/ryandeng/tpaa/triton/test/TritonGPU/partition-scheduling.mlir:807:12: error: CHECK: expected string not found in input
+# |  // CHECK: scf.condition({{.*}}) {ttg.partition = array<i32: 0, 1, 2, 3>}
+# |            ^
+# | <stdin>:360:31: note: scanning from here
+# |  tt.func @clc_while_partitions(%arg0: !tt.tensordesc<128x64xf16, #shared>, %arg1: !tt.tensordesc<128x64xf16, #shared>, %arg2: !tt.ptr<i32>) {
+# |                               ^
+# | <stdin>:366:2: note: possible intended match here
+# |  scf.condition(%arg4) %arg3, %arg4 : i32, i1
+# |  ^
+# | 
+# | Input file: <stdin>
+# | Check file: /home/ryandeng/tpaa/triton/test/TritonGPU/partition-scheduling.mlir
+# | 
+# | -dump-input=help explains the following input dump.
+# | 
+# | Input was:
+# | <<<<<<
+# |              .
+# |              .
+# |              .
+# |           
+# | ...
+# `---data was truncated (10240/45871) (change limit with -D output_limit=N)
+# error: command failed with exit status: 1
+
+--
+
+********************
+********************
+Failed Tests (1):
+  TRITON :: TritonGPU/partition-scheduling.mlir
+
+
+Testing Time: 0.09s
+
+Total Discovered Tests: 1
+  Failed: 1 (100.00%)

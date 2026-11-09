@@ -15,6 +15,15 @@ def check_capabilities():
             pytest.skip("CUDA 8.0+ required")
 
 
+def _compile_pipeline_contract(kernel, args, grid, attributes, **options):
+    baseline = kernel.warmup(*args, grid=grid, **options)
+    attrs = {key: list(value) for key, value in baseline.src.attrs.items()}
+    for key, value in attributes.items():
+        attrs.setdefault(key, []).extend(value)
+    source = type(baseline.src)(baseline.src.fn, baseline.src.signature, constexprs=baseline.src.constants, attrs=attrs)
+    return triton.compile(source, target=baseline.metadata.target, options=options)
+
+
 @triton.jit
 def matmul_kernel(  #
         a_ptr, scale_ptr, b_ptr, output_ptr,  #
@@ -354,7 +363,16 @@ def test_pipeline_vecadd(device):
     b = torch.randn(SIZE, dtype=torch.float16, device=device)
     output = torch.empty(SIZE, dtype=torch.float16, device=device)
     grid = (triton.cdiv(SIZE, NUM_BLOCKS * BLOCK_SIZE), 1)
-    handler = vecadd_kernel[grid](a, b, output, SIZE, NUM_BLOCKS, BLOCK_SIZE, NUM_STAGES)
+    args = (a, b, output, SIZE, NUM_BLOCKS, BLOCK_SIZE, NUM_STAGES)
+    if is_cuda():
+        # The host allocates these tensors independently. The two inputs may
+        # share an alias group, but neither overlaps the output's footprint.
+        attributes = {(i, ): [("tt.experimental_alias_group", 0 if i < 2 else 1)] for i in range(3)}
+        handler = _compile_pipeline_contract(vecadd_kernel, args, grid, attributes, num_warps=4,
+                                             num_stages=NUM_STAGES)
+        handler[(grid[0], 1, 1)](*args)
+    else:
+        handler = vecadd_kernel[grid](*args)
     ref_out = a + b
     torch.testing.assert_close(ref_out, output)
     if is_cuda():
@@ -363,6 +381,128 @@ def test_pipeline_vecadd(device):
         assert ttgir.count("ttg.async_copy_global_to_local") / 2 == NUM_STAGES, "num_stages not match"
         # 2. check alloc
         assert ttgir.count("ttg.local_alloc") == 2, "alloc number not match"
+
+
+@triton.jit(do_not_specialize=["T", "N"])
+def _pipeline_global_recurrence(X, T, N, BLOCK: tl.constexpr, STAGES: tl.constexpr, CARRIED: tl.constexpr):
+    cols = tl.arange(0, BLOCK)
+    mask = cols < N
+    if CARRIED:
+        read = X + cols
+        write = X + BLOCK + cols
+        for _ in tl.range(0, T, num_stages=STAGES):
+            value = tl.load(read, mask=mask, other=0)
+            tl.store(write, value + 1, mask=mask)
+            read += BLOCK
+            write += BLOCK
+    else:
+        for t in tl.range(0, T, num_stages=STAGES):
+            value = tl.load(X + t * BLOCK + cols, mask=mask, other=0)
+            tl.store(X + (t + 1) * BLOCK + cols, value + 1, mask=mask)
+
+
+@pytest.mark.parametrize("stages", [1, 2, 3, 4])
+@pytest.mark.parametrize("trips", [0, 1, 2, 17])
+@pytest.mark.parametrize("carried", [False, True])
+def test_pipeline_global_recurrence_preserves_iteration_order(device, stages, trips, carried):
+    if not is_cuda():
+        pytest.skip("NVIDIA global-memory pipeline dependence guard")
+    check_capabilities()
+    block, width = 128, 93
+    storage = torch.full((trips + 3, block), -1000., dtype=torch.float32, device=device)
+    value = storage[1:-1]
+    value[0].copy_(torch.arange(block, dtype=torch.float32, device=device))
+    expected = storage.clone()
+    for row in range(1, trips + 1):
+        expected[row + 1, :width] = expected[row, :width] + 1
+    kernel = _pipeline_global_recurrence[(1, )](value, trips, width, block, stages, carried, num_warps=4,
+                                               num_stages=1)
+    # One CTA owns all columns. Every access is an ordinary tensor access with
+    # a sequential dependence; masked columns and the surrounding rows survive.
+    assert torch.equal(storage, expected)
+    assert "ttg.async_copy_global_to_local" not in kernel.asm["ttgir"]
+
+
+@triton.jit(do_not_specialize=["T", "N"])
+def _pipeline_contract_copy(Input, Output, T, N, BLOCK: tl.constexpr):
+    cols = tl.arange(0, BLOCK)
+    read = Input + cols
+    write = Output + cols
+    for _ in range(T):
+        value = tl.load(read, mask=cols < N, other=0)
+        tl.store(write, value + 1, mask=cols < N)
+        read += BLOCK
+        write += BLOCK
+
+
+@triton.jit(do_not_specialize=["T", "N"])
+def _pipeline_contract_copy_explicit(Input, Output, T, N, BLOCK: tl.constexpr):
+    cols = tl.arange(0, BLOCK)
+    read = Input + cols
+    write = Output + cols
+    for _ in tl.range(0, T, num_stages=3):
+        value = tl.load(read, mask=cols < N, other=0)
+        tl.store(write, value + 1, mask=cols < N)
+        read += BLOCK
+        write += BLOCK
+
+
+@pytest.mark.parametrize("contract", ["missing", "same_group", "distinct", "immutable"])
+@pytest.mark.parametrize("pipeline", ["explicit3", "auto2", "auto3"])
+@pytest.mark.parametrize("trips", [0, 3])
+def test_pipeline_contract_preserves_masked_copies(device, contract, pipeline, trips):
+    if not is_cuda():
+        pytest.skip("NVIDIA contract-licensed loop pipelining")
+    check_capabilities()
+    block, width, guard = 128, 93, 128
+    input = torch.arange(trips * block, dtype=torch.float32, device=device)
+    storage = torch.full((max(trips, 1) * block + 2 * guard, ), -1000., dtype=torch.float32, device=device)
+    output = storage[guard:-guard]
+    expected = storage.clone()
+    if trips:
+        expected[guard:-guard].view(trips, block)[:, :width] = input.view(trips, block)[:, :width] + 1
+    attributes = {}
+    if contract in ("same_group", "distinct"):
+        attributes = {
+            (i, ): [("tt.experimental_alias_group", i if contract == "distinct" else 0)] for i in range(2)
+        }
+    elif contract == "immutable":
+        attributes = {(0, ): [("tt.experimental_immutable", 1)]}
+    options = dict(num_warps=4, num_stages=1, enable_contract_licm=False, enable_contract_load_reuse=False,
+                   contract_pipeline_stages=0 if pipeline == "explicit3" else int(pipeline[-1]))
+    function = _pipeline_contract_copy_explicit if pipeline == "explicit3" else _pipeline_contract_copy
+    args = (input, output, trips, width, block)
+    kernel = _compile_pipeline_contract(function, args, (1, ), attributes, **options)
+    kernel[(1, 1, 1)](*args)
+    assert torch.equal(storage, expected)
+    assert torch.equal(input, torch.arange(trips * block, dtype=torch.float32, device=device))
+    assert ("ttg.async_copy_global_to_local" in kernel.asm["ttgir"]) == (contract in ("distinct", "immutable"))
+
+
+@pytest.mark.parametrize("contract", ["missing", "same_group"])
+@pytest.mark.parametrize("trips", [2, 7])
+def test_pipeline_overlapping_argument_views_preserve_recurrence(device, contract, trips):
+    if not is_cuda():
+        pytest.skip("NVIDIA global-memory pipeline dependence guard")
+    check_capabilities()
+    block, width = 128, 93
+    storage = torch.full((trips + 3, block), -1000., dtype=torch.float32, device=device)
+    storage[1].copy_(torch.arange(block, dtype=torch.float32, device=device))
+    expected = storage.clone()
+    for row in range(1, trips + 1):
+        expected[row + 1, :width] = expected[row, :width] + 1
+    # Distinct pointer values are views of the same allocation. The later
+    # input row is exactly the preceding iteration's output row.
+    input, output = storage[1:-2], storage[2:-1]
+    attributes = {}
+    if contract == "same_group":
+        attributes = {(i, ): [("tt.experimental_alias_group", 0)] for i in range(2)}
+    args = (input, output, trips, width, block)
+    kernel = _compile_pipeline_contract(_pipeline_contract_copy_explicit, args, (1, ), attributes,
+                                        num_warps=4, num_stages=1)
+    kernel[(1, 1, 1)](*args)
+    assert torch.equal(storage, expected)
+    assert "ttg.async_copy_global_to_local" not in kernel.asm["ttgir"]
 
 
 @pytest.mark.parametrize("ROW_COUNT", [0, 1, 2, 3])
@@ -574,9 +714,15 @@ def test_scatter_pipeline(device):
     torch.testing.assert_close(c, ref)
 
     if is_cuda():
-        # NVIDIA: pipelineTMAStores hoists the wait, leaving one wait inside
-        # the persistent loop and one drain wait after the loop.
-        assert kernel.asm["ttgir"].count("tma_store_wait") == 2, "expected pipelined TMA scatter"
+        # The inner K-loop still pipelines its descriptor reads. The outer
+        # loop has no descriptor alias contract, so its store completion must
+        # precede the next iteration's potentially overlapping global reads.
+        ttgir = kernel.asm["ttgir"]
+        assert "ttng.async_tma_copy_global_to_local" in ttgir
+        assert ttgir.count("ttng.async_tma_scatter") == 1
+        assert ttgir.count("tma_store_wait") == 1
+        after_scatter = ttgir.split("ttng.async_tma_scatter", 1)[1].splitlines()[1]
+        assert "ttng.async_tma_store_wait {pendings = 0 : i32}" in after_scatter
     else:
         # AMD: 5 async_tdm_wait ops total:
         #   2 from load pipeline (1 inside inner K-loop + 1 in epilogue)

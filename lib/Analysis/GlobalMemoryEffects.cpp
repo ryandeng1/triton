@@ -2,9 +2,11 @@
 
 #include "mlir/Dialect/SCF/IR/SCF.h"
 #include "mlir/Interfaces/SideEffectInterfaces.h"
+#include "mlir/Interfaces/LoopLikeInterface.h"
 #include "triton/Dialect/Triton/IR/Dialect.h"
 #include "triton/Dialect/Triton/IR/Utility.h"
 #include "triton/Dialect/TritonGPU/IR/Dialect.h"
+#include "triton/Dialect/TritonNvidiaGPU/IR/Dialect.h"
 #include "llvm/ADT/STLExtras.h"
 
 namespace mlir::triton {
@@ -69,6 +71,15 @@ BlockArgument GlobalMemoryEffects::getArgumentRoot(Value pointer) const {
                      arg.getOwner() == &func.getBody().front()
                  ? Value(arg)
                  : Value();
+    if (auto partitions =
+            dyn_cast<gpu::WarpSpecializePartitionsOp>(
+                arg.getOwner()->getParentOp())) {
+      if (!budget || arg.getOwner() != &arg.getOwner()->getParent()->front() ||
+          arg.getArgNumber() >= partitions.getExplicitCaptures().size())
+        return {};
+      return self(self, partitions.getExplicitCaptures()[arg.getArgNumber()],
+                  anchor, budget - 1);
+    }
     auto loop = dyn_cast<scf::ForOp>(arg.getOwner()->getParentOp());
     if (!loop || arg.getOwner() != loop.getBody() || arg.getArgNumber() == 0 ||
         !budget)
@@ -127,6 +138,155 @@ bool GlobalMemoryEffects::mayModify(Value pointer) const {
   return llvm::any_of(writtenArguments, [&](BlockArgument written) {
     return mayAlias(arg, written);
   });
+}
+
+namespace {
+struct ScopedGlobalAccesses {
+  SmallVector<Value> reads;
+  SmallVector<Value> stores;
+  bool supported = true;
+};
+
+bool isPrivateScratch(gpu::GlobalScratchAllocOp alloc) {
+  return alloc && !alloc.getThirdPartyAllocation() &&
+         !alloc.getSharedClusterState();
+}
+
+bool isPrivateDescriptorScratch(Value pointer) {
+  auto type = dyn_cast<PointerType>(pointer.getType());
+  if (!type || type.getAddressSpace() != PtrAddrSpace::Global)
+    return false;
+  // Descriptor-ring lowering uses scalar addptrs rooted in private scratch.
+  // Do not look through casts, calls, region captures, or arbitrary pointers.
+  for (unsigned budget = 64; budget; --budget) {
+    if (auto alloc = pointer.getDefiningOp<gpu::GlobalScratchAllocOp>())
+      return isPrivateScratch(alloc);
+    auto add = pointer.getDefiningOp<AddPtrOp>();
+    if (!add)
+      return false;
+    pointer = add.getPtr();
+  }
+  return false;
+}
+
+ScopedGlobalAccesses collectGlobalAccesses(Operation *scope,
+                                         bool orderedDescriptorStores,
+                                         bool allowCompilerProtocols = false) {
+  ScopedGlobalAccesses accesses;
+  accesses.supported = !scope->walk([&](Operation *op) {
+    if (orderedDescriptorStores && op != scope && isa<LoopLikeOpInterface>(op))
+      return WalkResult::interrupt();
+    if (isa<CallOp, AtomicOpInterface, AtomicPollOp, gpu::BarrierOp>(op))
+      return WalkResult::interrupt();
+    if (auto copy = dyn_cast<gpu::AsyncCopyGlobalToLocalOp>(op);
+        copy && copy.getIsVolatile())
+      return WalkResult::interrupt();
+    if (auto copy = dyn_cast<nvidia_gpu::AsyncTMACopyGlobalToLocalOp>(op);
+        copy && copy.getIsVolatile())
+      return WalkResult::interrupt();
+    if (!allowCompilerProtocols &&
+        isa<nvidia_gpu::InitBarrierOp, nvidia_gpu::InvalBarrierOp>(op))
+      return WalkResult::interrupt();
+    if (allowCompilerProtocols &&
+        isa<gpu::AsyncWaitOp, gpu::AsyncCommitGroupOp,
+             nvidia_gpu::FenceAsyncSharedOp,
+             nvidia_gpu::FenceMBarrierInitReleaseClusterOp,
+             nvidia_gpu::WarpGroupDotWaitOp, nvidia_gpu::TMAStoreWaitOp>(op))
+      return WalkResult::advance();
+    if (allowCompilerProtocols) {
+      // Lowering tt.make_tensor_descriptor introduces private global scratch
+      // and descriptor updates. Their unvalued GlobalMemory effects describe
+      // the descriptor, not the user tensor whose address it encodes. Only the
+      // compiler-proven original scope may rely on the descriptor ring's
+      // lifetime/order protocol; source or arbitrary-address updates still
+      // fail the generic global-write check below.
+      if (auto alloc = dyn_cast<gpu::GlobalScratchAllocOp>(op);
+          isPrivateScratch(alloc))
+        return WalkResult::advance();
+      if (auto create = dyn_cast<nvidia_gpu::TensormapCreateOp>(op);
+          create && isPrivateDescriptorScratch(create.getDescPtr()))
+        return WalkResult::advance();
+      if (auto fence = dyn_cast<nvidia_gpu::TensormapFenceproxyAcquireOp>(op);
+          fence && isPrivateDescriptorScratch(fence.getDescPtr()))
+        return WalkResult::advance();
+    }
+    if (auto load = dyn_cast<LoadOp>(op)) {
+      if (orderedDescriptorStores || load.getIsVolatile())
+        return WalkResult::interrupt();
+      accesses.reads.push_back(load.getPtr());
+      return WalkResult::advance();
+    }
+    if (auto store = dyn_cast<StoreOp>(op)) {
+      if (orderedDescriptorStores)
+        return WalkResult::interrupt();
+      accesses.stores.push_back(store.getPtr());
+      return WalkResult::advance();
+    }
+    if (isa<DescriptorStoreLikeOpInterface>(op))
+      return orderedDescriptorStores ? WalkResult::advance()
+                                     : WalkResult::interrupt();
+    if (auto effects = dyn_cast<MemoryEffectOpInterface>(op)) {
+      SmallVector<MemoryEffects::EffectInstance> instances;
+      effects.getEffects(instances);
+      // Delaying a global store across a shared-memory release/barrier can
+      // change publication even when the barrier has no global-memory effect.
+      // The bounded store-only path admits ordinary local storage operations,
+      // not arbitrary asynchronous shared/TMEM protocols.
+      if (orderedDescriptorStores && !instances.empty() &&
+          !isa<gpu::LocalAllocOp, gpu::LocalLoadOp, gpu::LocalStoreOp,
+               gpu::LocalDeallocOp>(op))
+        return WalkResult::interrupt();
+      for (const auto &effect : instances) {
+        if (!allowCompilerProtocols &&
+            gpu::SharedMemoryEffect::classof(&effect) &&
+            gpu::SharedMemoryEffect(&effect).getKind() ==
+                gpu::SharedKind::Barrier)
+          return WalkResult::interrupt();
+        if (isa<gpu::SharedMemory, nvidia_gpu::TensorMemory>(
+                effect.getResource()))
+          continue;
+        if (!orderedDescriptorStores &&
+            isa<GlobalMemory>(effect.getResource()) &&
+            isa<MemoryEffects::Read>(effect.getEffect())) {
+          // A descriptor cannot currently resolve to an argument pointer. It
+          // therefore conflicts conservatively with any ordinary store.
+          accesses.reads.push_back(effect.getValue());
+          continue;
+        }
+        return WalkResult::interrupt();
+      }
+      return WalkResult::advance();
+    }
+    return isMemoryEffectFree(op) ||
+                   op->hasTrait<OpTrait::HasRecursiveMemoryEffects>()
+               ? WalkResult::advance()
+               : WalkResult::interrupt();
+  }).wasInterrupted();
+  return accesses;
+}
+} // namespace
+
+bool GlobalMemoryEffects::hasIndependentGlobalMemoryAccesses(
+    Operation *scope, bool allowCompilerProtocols) const {
+  auto accesses = collectGlobalAccesses(scope, false, allowCompilerProtocols);
+  if (!accesses.supported)
+    return false;
+  for (Value read : accesses.reads) {
+    if (isExplicitlyImmutableGlobal(read))
+      continue;
+    if (llvm::any_of(accesses.stores,
+                     [&](Value store) { return mayAlias(read, store); }))
+      return false;
+  }
+  for (auto [index, store] : llvm::enumerate(accesses.stores))
+    for (Value other : ArrayRef<Value>(accesses.stores).drop_front(index + 1))
+      if (mayAlias(store, other))
+        return false;
+  return true;
+}
+
+bool GlobalMemoryEffects::hasOnlyOrderedDescriptorStores(Operation *scope) const {
+  return collectGlobalAccesses(scope, true).supported;
 }
 
 bool GlobalMemoryEffects::hasOnlyOrdinaryEffects(

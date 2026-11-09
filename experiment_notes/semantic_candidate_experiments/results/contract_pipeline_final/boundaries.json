@@ -1,0 +1,140 @@
+[
+  {
+    "case": {
+      "id": "mixed_varlen",
+      "cohort": "diagnostic_correctness_only",
+      "B": 1,
+      "T": 13,
+      "H": 4,
+      "HV": 8,
+      "K": 64,
+      "V": 64,
+      "dtype": "bfloat16",
+      "qk_dtype": "float32",
+      "parameter_dtype": "float32",
+      "lengths": [
+        0,
+        1,
+        4,
+        8
+      ],
+      "negative_index": true,
+      "scale": 0.125
+    },
+    "validation": {
+      "baseline": {
+        "max_output_error": 1.2116601763589863e-08,
+        "max_state_error": 1.023893533846909e-07,
+        "same_config_bitwise_equal_to_original": true,
+        "guards_passed": true
+      },
+      "licm": {
+        "max_output_error": 1.2116601763589863e-08,
+        "max_state_error": 1.023893533846909e-07,
+        "same_config_bitwise_equal_to_original": true,
+        "guards_passed": true
+      },
+      "pipeline": {
+        "max_output_error": 1.2116601763589863e-08,
+        "max_state_error": 1.023893533846909e-07,
+        "same_config_bitwise_equal_to_original": true,
+        "guards_passed": true
+      },
+      "both": {
+        "max_output_error": 1.2116601763589863e-08,
+        "max_state_error": 1.023893533846909e-07,
+        "same_config_bitwise_equal_to_original": true,
+        "guards_passed": true
+      }
+    }
+  },
+  {
+    "case": {
+      "id": "no_initial_state",
+      "cohort": "diagnostic_correctness_only",
+      "B": 2,
+      "T": 4,
+      "H": 4,
+      "HV": 8,
+      "K": 128,
+      "V": 128,
+      "dtype": "float16",
+      "qk_dtype": "float32",
+      "parameter_dtype": "float32",
+      "initial": false,
+      "scale": 0.08838834764831845
+    },
+    "validation": {
+      "baseline": {
+        "max_output_error": 5.117789940098372e-09,
+        "max_state_error": 0.0,
+        "same_config_bitwise_equal_to_original": true,
+        "guards_passed": true
+      },
+      "licm": {
+        "max_output_error": 5.117789940098372e-09,
+        "max_state_error": 0.0,
+        "same_config_bitwise_equal_to_original": true,
+        "guards_passed": true
+      },
+      "pipeline": {
+        "max_output_error": 5.117789940098372e-09,
+        "max_state_error": 0.0,
+        "same_config_bitwise_equal_to_original": true,
+        "guards_passed": true
+      },
+      "both": {
+        "max_output_error": 5.117789940098372e-09,
+        "max_state_error": 0.0,
+        "same_config_bitwise_equal_to_original": true,
+        "guards_passed": true
+      }
+    }
+  },
+  {
+    "case": {
+      "id": "all_empty",
+      "cohort": "boundary",
+      "B": 1,
+      "T": 0,
+      "H": 1,
+      "HV": 1,
+      "K": 60,
+      "V": 60,
+      "dtype": "float32",
+      "qk_dtype": "float32",
+      "parameter_dtype": "float32",
+      "lengths": [
+        0,
+        0
+      ],
+      "scale": 1.0
+    },
+    "validation": {
+      "baseline": {
+        "max_output_error": 0.0,
+        "max_state_error": 0.0,
+        "same_config_bitwise_equal_to_original": true,
+        "guards_passed": true
+      },
+      "licm": {
+        "max_output_error": 0.0,
+        "max_state_error": 0.0,
+        "same_config_bitwise_equal_to_original": true,
+        "guards_passed": true
+      },
+      "pipeline": {
+        "max_output_error": 0.0,
+        "max_state_error": 0.0,
+        "same_config_bitwise_equal_to_original": true,
+        "guards_passed": true
+      },
+      "both": {
+        "max_output_error": 0.0,
+        "max_state_error": 0.0,
+        "same_config_bitwise_equal_to_original": true,
+        "guards_passed": true
+      }
+    }
+  }
+]

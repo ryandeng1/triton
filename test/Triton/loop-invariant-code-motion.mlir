@@ -1,10 +1,16 @@
 // RUN: triton-opt --split-input-file %s -triton-licm | FileCheck %s
+// RUN: triton-opt --split-input-file %s -triton-licm="enable-memory-contracts=false" | FileCheck %s --check-prefix=NO-CONTRACT
 
 tt.func @hoist_load_without_mask(%arg0: tensor<1024x!tt.ptr<f32>>, %arg1: tensor<1024xi32>, %arg2: tensor<1024xi32>, %arg3: i32, %arg4 : i32, %arg5: tensor<1024x!tt.ptr<f32>>) {
   %cst = arith.constant dense<0.000000e+00> : tensor<1024xf32>
   %c1_i32 = arith.constant 1 : i32
   // Check if the load is hoisted
   // CHECK-LABEL: hoist_load_without_mask
+  // NO-CONTRACT-LABEL: hoist_load_without_mask
+  // NO-CONTRACT: tt.load
+  // NO-CONTRACT: scf.for
+  // NO-CONTRACT-NOT: tt.load
+  // NO-CONTRACT: tt.return
   // CHECK: %[[TRIP_COUNT_CMP:.*]] = arith.cmpi slt, %[[LB:.*]], %[[UB:.*]]
   // CHECK: %[[SPLAT:.*]] = tt.splat %[[TRIP_COUNT_CMP]]
   // CHECK: %[[LOAD:.*]] = tt.load %[[_:.*]], %[[SPLAT]]
@@ -187,6 +193,11 @@ tt.func @do_not_hoist_from_for_with_licm_disabled(%lb: i32, %ub: i32, %step: i32
 // The contract is about memory contents through all aliases, not just the
 // absence of stores through %weights. The entry guard must survive hoisting.
 // CHECK-LABEL: @immutable_with_output_store
+// NO-CONTRACT-LABEL: @immutable_with_output_store
+// NO-CONTRACT-NOT: tt.load
+// NO-CONTRACT: scf.for
+// NO-CONTRACT: tt.load
+// NO-CONTRACT: tt.store
 // CHECK: %[[ENTRY:.*]] = arith.cmpi slt
 // CHECK: %[[GUARD:.*]] = arith.andi %[[ENTRY]], %{{.*}}
 // CHECK: tt.load %{{.*}}, %[[GUARD]]
@@ -374,6 +385,11 @@ tt.func @immutable_select_stays(%weights: !tt.ptr<f32> {tt.experimental_immutabl
 // The caller provides disjoint access footprints. The pass proves the input
 // is not modified; the caller asserts neither initialization nor immutability.
 // CHECK-LABEL: @alias_groups_derive_invariant
+// NO-CONTRACT-LABEL: @alias_groups_derive_invariant
+// NO-CONTRACT-NOT: tt.load
+// NO-CONTRACT: scf.for
+// NO-CONTRACT: tt.load
+// NO-CONTRACT: tt.store
 // CHECK: %[[ENTRY:.*]] = arith.cmpi slt
 // CHECK: %[[GUARD:.*]] = arith.andi %[[ENTRY]], %{{.*}}
 // CHECK: tt.load %{{.*}}, %[[GUARD]]

@@ -1,0 +1,110 @@
+{
+  "by_opportunity": {
+    "atomic_sites": {
+      "direct_benchmark_reference_functions": 19,
+      "direct_test_reference_functions": 46,
+      "functions": 58,
+      "registration_found_functions": 43,
+      "static_host_path_functions": 57
+    },
+    "licm_pairs": {
+      "direct_benchmark_reference_functions": 26,
+      "direct_test_reference_functions": 29,
+      "functions": 35,
+      "registration_found_functions": 25,
+      "static_host_path_functions": 35
+    }
+  },
+  "counts": {
+    "atomic_exact_bodies": 58,
+    "atomic_functions": 58,
+    "atomic_sites": 91,
+    "atomic_sites_in_loops": 25,
+    "contracts_reviewed_functions": 1,
+    "contracts_unreviewed_functions": 92,
+    "direct_benchmark_reference_functions": 45,
+    "direct_test_reference_functions": 75,
+    "legality_rejected_functions": 0,
+    "licm_exact_bodies": 34,
+    "licm_functions": 35,
+    "licm_load_sites": 60,
+    "licm_pairs": 62,
+    "registration_found_functions": 68,
+    "static_host_path_functions": 92,
+    "total_functions": 93
+  },
+  "funnel_limit": "Only one source function/site has contract and compiler/correctness/performance follow-through in this funnel run. The other92functions were not reviewed here; previous independent experiments are not reconciled into these counts. No population legality or profitability fraction is estimated.",
+  "parse_errors": [],
+  "pilot_report": "pilot/production/summary.json",
+  "pilot_reports": {
+    "generic": {
+      "baseline_us_range": [
+        1.5964800119400024,
+        2.6099199056625366
+      ],
+      "compiled_variants": 9,
+      "correctness": "passed",
+      "geometric_mean_speedup": 1.295279921724741,
+      "native_manual_ptx_instructions_equal": true,
+      "native_to_manual_ratio_range": [
+        0.9946405492445204,
+        1.0058673321504903
+      ],
+      "native_transformed_specializations": 3,
+      "native_us_range": [
+        1.2617599964141846,
+        1.8403199315071106
+      ],
+      "report": "pilot/generic/summary.json",
+      "reset_us_range": [
+        0.6166400015354156,
+        0.9536000341176987
+      ],
+      "source_atomic_sites": 1,
+      "source_functions": 1,
+      "specializations": 3,
+      "speedup_range": [
+        1.2114942508228244,
+        1.4181881427134087
+      ],
+      "status": "gpu_pilot",
+      "timed_shape_dtype_cases": 21,
+      "timing": "measured_pilot"
+    },
+    "production": {
+      "baseline_us_range": [
+        1.5695999562740326,
+        2.6028800010681152
+      ],
+      "compiled_variants": 54,
+      "correctness": "passed",
+      "geometric_mean_speedup": 1.2996664050671645,
+      "native_manual_ptx_instructions_equal": true,
+      "native_to_manual_ratio_range": [
+        0.9922344683826845,
+        1.0045849209342173
+      ],
+      "native_transformed_specializations": 18,
+      "native_us_range": [
+        1.2323199957609177,
+        1.8374399840831757
+      ],
+      "report": "pilot/production/summary.json",
+      "reset_us_range": [
+        0.6179200112819672,
+        0.9567999839782715
+      ],
+      "source_atomic_sites": 1,
+      "source_functions": 1,
+      "specializations": 18,
+      "speedup_range": [
+        1.2138207979619298,
+        1.4318524597076308
+      ],
+      "status": "gpu_jit_specialized_pilot",
+      "timed_shape_dtype_cases": 21,
+      "timing": "measured_pilot"
+    }
+  },
+  "statuses": "Unreviewed contracts, absent static links and unattempted compilations are not legality rejections. Exact body dedup is inherited from the survey, not semantic dedup. Runtime dispatch is unverified for this inventory."
+}

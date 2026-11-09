@@ -1,0 +1,134 @@
+-- Testing: 1 tests, 1 workers --
+FAIL: TRITON :: TritonGPU/partition-scheduling.mlir (1 of 1)
+******************** TEST 'TRITON :: TritonGPU/partition-scheduling.mlir' FAILED ********************
+Exit Code: 1
+
+Command Output (stdout):
+--
+# RUN: at line 1
+/home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/bin/triton-opt /home/ryandeng/tpaa/triton/test/TritonGPU/partition-scheduling.mlir --split-input-file --tritongpu-hoist-tmem-alloc --tritongpu-partition-scheduling -allow-unregistered-dialect | FileCheck /home/ryandeng/tpaa/triton/test/TritonGPU/partition-scheduling.mlir
+# executed command: /home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/bin/triton-opt /home/ryandeng/tpaa/triton/test/TritonGPU/partition-scheduling.mlir --split-input-file --tritongpu-hoist-tmem-alloc --tritongpu-partition-scheduling -allow-unregistered-dialect
+# executed command: FileCheck /home/ryandeng/tpaa/triton/test/TritonGPU/partition-scheduling.mlir
+# .---command stderr------------
+# | /home/ryandeng/tpaa/triton/test/TritonGPU/partition-scheduling.mlir:143:12: error: CHECK: expected string not found in input
+# |  // CHECK: [[K_SHARED:%.*]] = ttg.local_alloc {{.*}}partition = array<i32: 2>
+# |            ^
+# | <stdin>:66:34: note: scanning from here
+# |  tt.func public @mma_operand_view(%arg0: !ttg.memdesc<256x64xf16, #shared, #smem>, %arg1: !tt.tensordesc<64x64xf16, #shared>, %arg2: !tt.tensordesc<64x64xf16, #shared>, %arg3: f32, %arg4: i32) {
+# |                                  ^
+# | <stdin>:66:34: note: pattern attempts to capture variables: "K_SHARED"
+# |  tt.func public @mma_operand_view(%arg0: !ttg.memdesc<256x64xf16, #shared, #smem>, %arg1: !tt.tensordesc<64x64xf16, #shared>, %arg2: !tt.tensordesc<64x64xf16, #shared>, %arg3: f32, %arg4: i32) {
+# |                                  ^
+# | <stdin>:76:2: note: possible intended match here
+# |  %3 = ttg.local_alloc %2 {ttg.partition = array<i32: 3>} : (tensor<64x64xf16, #blocked1>) -> !ttg.memdesc<64x64xf16, #shared, #smem>
+# |  ^
+# | /home/ryandeng/tpaa/triton/test/TritonGPU/partition-scheduling.mlir:194:12: error: CHECK: expected string not found in input
+# |  // CHECK: ttg.local_store [[X1_P0]] {{.*}}partition = array<i32: 0>
+# |            ^
+# | <stdin>:103:54: note: scanning from here
+# |  %10 = tt.broadcast %8 {ttg.partition = array<i32: 1>} : tensor<1x128xf32> -> tensor<128x128xf32>
+# |                                                      ^
+# | <stdin>:103:54: note: with "X1_P0" equal to "%9"
+# |  %10 = tt.broadcast %8 {ttg.partition = array<i32: 1>} : tensor<1x128xf32> -> tensor<128x128xf32>
+# |                                                      ^
+# | <stdin>:106:47: note: possible intended match here
+# |  } {tt.warp_specialize, ttg.global_pipeline_preprotocol_proof, ttg.partition = array<i32: 0, 1>, ttg.partition.stages = [0 : i32, 0 : i32], ttg.warp_specialize.tag = 2 : i32}
+# |                                               ^
+# | /home/ryandeng/tpaa/triton/test/TritonGPU/partition-scheduling.mlir:235:12: error: CHECK: expected string not found in input
+# |  // CHECK: ttg.local_store [[X1_P0]] {{.*}}partition = array<i32: 0>
+# |            ^
+# | <stdin>:125:54: note: scanning from here
+# |  %11 = tt.broadcast %9 {ttg.partition = array<i32: 1>} : tensor<1x128xf32> -> tensor<128x128xf32>
+# |                                                      ^
+# | <stdin>:125:54: note: with "X1_P0" equal to "%10"
+# |  %11 = tt.broadcast %9 {ttg.partition = array<i32: 1>} : tensor<1x128xf32> -> tensor<128x128xf32>
+# |                                                      ^
+# | <stdin>:129:47: note: possible intended match here
+# |  } {tt.warp_specialize, ttg.global_pipeline_preprotocol_proof, ttg.partition = array<i32: 0, 1>, ttg.partition.stages = [0 : i32, 0 : i32], ttg.warp_specialize.tag = 3 : i32}
+# |                                               ^
+# | 
+# | Input file: <stdin>
+# | Check file: /home/ryandeng/tpaa/triton/test/TritonGPU/partition-scheduling.mlir
+# | 
+# | -dump-input=help explains the following input dump.
+# | 
+# | Input was:
+# | <<<<<<
+# |              .
+# |              .
+# |              .
+# |             61:  ttg.local_store %4#0, %0 : tensor<256xf32, #ttg.slice<{dim = 1, parent = #blocked}>> -> !ttg.memdesc<256xf32, #shared1, #smem, mutable> 
+# |             62:  ttg.local_store %result_4, %1 : tensor<256x64xf32, #blocked> -> !ttg.memdesc<256x64xf32, #shared2, #smem, mutable> 
+# |             63:  ttg.local_store %4#1, %2 : tensor<256xf32, #ttg.slice<{dim = 1, parent = #blocked}>> -> !ttg.memdesc<256xf32, #shared1, #smem, mutable> 
+# |             64:  tt.return 
+# |             65:  } 
+# |             66:  tt.func public @mma_operand_view(%arg0: !ttg.memdesc<256x64xf16, #shared, #smem>, %arg1: !tt.tensordesc<64x64xf16, #shared>, %arg2: !tt.tensordesc<64x64xf16, #shared>, %arg3: f32, %arg4: i32) { 
+# | check:143'0                                     {                                                                                                                                                                    search range start (exclusive)
+# | check:143'1                                                                                                                                                                                                          error: no match found in search range
+# | check:143'2                                                                                                                                                                                                          pattern attempts to capture variables: "K_SHARED"
+# |             67:  %c64_i32 = arith.constant 64 : i32 
+# |             68:  %c0_i32 = arith.constant 0 : i32 
+# |             69:  %false = arith.constant false 
+# |             70:  %true = arith.constant true 
+# |             71:  %0 = ttg.local_alloc : () -> !ttg.memdesc<64x64xf16, #shared2, #smem, mutable> 
+# |             72:  %1 = ttg.local_alloc : () -> !ttg.memdesc<256x64xf32, #shared2, #smem, mutable> 
+# |             73:  %result, %token = ttng.tmem_alloc : () -> (!ttg.memdesc<256x64xf32, #tmem, #ttng.tensor_memory, mutable>, !ttg.async.token) 
+# |             74:  scf.for %arg5 = %c0_i32 to %arg4 step %c64_i32 : i32 { 
+# |             75:  %2 = tt.descriptor_load %arg1[%arg5, %c0_i32] {ttg.partition = array<i32: 3>} : !tt.tensordesc<64x64xf16, #shared> -> tensor<64x64xf16, #blocked1> 
+# |             76:  %3 = ttg.local_alloc %2 {ttg.partition = array<i32: 3>} : (tensor<64x64xf16, #blocked1>) -> !ttg.memdesc<64x64xf16, #shared, #smem> 
+# | check:143'3      ?                                                                                                                                     possible intended match
+# |             77:  %4 = ttg.memdesc_trans %3 {order = array<i32: 1, 0>, ttg.partition = array<i32: 0>} : !ttg.memdesc<64x64xf16, #shared, #smem> -> !ttg.memdesc<64x64xf16, #shared3, #smem> 
+# |             78:  %5 = ttg.memdesc_trans %3 {order = array<i32: 1, 0>, ttg.partition = array<i32: 2>} : !ttg.memdesc<64x64xf16, #shared, #smem> -> !ttg.memdesc<64x64xf16, #shared3, #smem> 
+# |             79:  %6 = ttg.memdesc_subslice %5[0, 0] {ttg.partition = array<i32: 2>} : !ttg.memdesc<64x64xf16, #shared3, #smem> -> !ttg.memdesc<64x64xf16, #shared3, #smem> 
+# |             80:  %7 = ttng.tc_gen5_mma %arg0, %6, %result[%token], %false, %true {ttg.partition = array<i32: 2>} : !ttg.memdesc<256x64xf16, #shared, #smem>, !ttg.memdesc<64x64xf16, #shared3, #smem>, !ttg.memdesc<256x64xf32, #tmem, #ttng.tensor_memory, mutable> 
+# |             81:  %8 = ttg.local_load %4 {ttg.partition = array<i32: 0>} : !ttg.memdesc<64x64xf16, #shared3, #smem> -> tensor<64x64xf16, #blocked1> 
+# |             82:  ttg.local_store %8, %0 {data, ttg.partition = array<i32: 0>} : tensor<64x64xf16, #blocked1> -> !ttg.memdesc<64x64xf16, #shared2, #smem, mutable> 
+# |             83:  %result_0, %token_1 = ttng.tmem_load %result[%7] {ttg.partition = array<i32: 1>} : !ttg.memdesc<256x64xf32, #tmem, #ttng.tensor_memory, mutable> -> tensor<256x64xf32, #blocked> 
+# |             84:  ttg.local_store %result_0, %1 {data, ttg.partition = array<i32: 1>} : tensor<256x64xf32, #blocked> -> !ttg.memdesc<256x64xf32, #shared2, #smem, mutable> 
+# |             85:  } {tt.warp_specialize, ttg.global_pipeline_preprotocol_proof, ttg.partition = array<i32: 0, 1, 2, 3>, ttg.partition.stages = [0 : i32, 0 : i32, 1 : i32, 0 : i32], ttg.warp_specialize.tag = 1 : i32} 
+# |             86:  tt.return 
+# |             87:  } 
+# |             88:  tt.func @optimize_broadcast(%arg0: i32, %arg1: !tt.tensordesc<128x128xf32, #shared2>) { 
+# | check:143'4                                 }                                                              search range end (exclusive)
+# |             89:  %c1_i32 = arith.constant 1 : i32 
+# |             90:  %c0_i32 = arith.constant 0 : i32 
+# |             91:  %0 = ttg.local_alloc : () -> !ttg.memdesc<128x128xf32, #shared2, #smem, mutable> 
+# |             92:  %1 = ttg.local_alloc : () -> !ttg.memdesc<128x128xf32, #shared2, #smem, mutable> 
+# |             93:  %2 = ttg.local_alloc : () -> !ttg.memdesc<128x128xf32, #shared2, #smem, mutable> 
+# |              .
+# |              .
+# |              .
+# |             98:  ttg.local_store %5, %0 {ttg.partition = array<i32: 1>} : tensor<128x128xf32, #blocked1> -> !ttg.memdesc<128x128xf32, #shared2, #smem, mutable> 
+# |             99:  %6 = builtin.unrealized_conversion_cast to tensor<128xf32> {data, ttg.partition = array<i32: 0>} 
+# |            100:  %7 = tt.expand_dims %6 {axis = 0 : i32, ttg.partition = array<i32: 0>} : tensor<128xf32> -> tensor<1x128xf32> 
+# |            101:  %8 = tt.expand_dims %6 {axis = 0 : i32, ttg.partition = array<i32: 1>} : tensor<128xf32> -> tensor<1x128xf32> 
+# |            102:  %9 = tt.broadcast %7 {ttg.partition = array<i32: 0>} : tensor<1x128xf32> -> tensor<128x128xf32> 
+# |            103:  %10 = tt.broadcast %8 {ttg.partition = array<i32: 1>} : tensor<1x128xf32> -> tensor<128x128xf32> 
+# | check:194'0                                                         {                                               search range start (exclusive)
+# | check:194'1                                                                                                         error: no match found in search range
+# | check:194'2                                                                                                         with "X1_P0" equal to "%9"
+# |            104:  ttg.local_store %9, %1 {data, ttg.partition = array<i32: 0>} : tensor<128x128xf32> -> !ttg.memdesc<128x128xf32, #shared2, #smem, mutable> 
+# |            105:  ttg.local_store %10, %2 {data, ttg.partition = array<i32: 1>} : tensor<128x128xf32> -> !ttg.memdesc<128x128xf32, #shared2, #smem, mutable> 
+# |            106:  } {tt.warp_specialize, ttg.global_pipeline_preprotocol_proof, ttg.partition = array<i32: 0, 1>, ttg.partition.stages = [0 : i32, 0 : i32], ttg.warp_specialize.tag = 2 : i32} 
+# | check:194'3                                                   ?                                                                                                                                  possible intended match
+# |            107:  tt.return 
+# |            108:  } 
+# |            109:  tt.func @clone_multi_partition_repeated_users(%arg0: i32, %arg1: !tt.tensordesc<128x128xf32, #shared2>) { 
+# | check:194'4                                                   }                                                              search range end (exclusive)
+# |            110:  %c1_i32 = arith.constant 1 : i3
+# | ...
+# `---data was truncated (10240/13454) (change limit with -D output_limit=N)
+# error: command failed with exit status: 1
+
+--
+
+********************
+********************
+Failed Tests (1):
+  TRITON :: TritonGPU/partition-scheduling.mlir
+
+
+Testing Time: 0.07s
+
+Total Discovered Tests: 1
+  Failed: 1 (100.00%)

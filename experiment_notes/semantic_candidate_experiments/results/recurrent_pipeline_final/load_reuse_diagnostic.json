@@ -1,0 +1,37 @@
+{
+  "case": "upstream500",
+  "config": [
+    32,
+    2,
+    2
+  ],
+  "alias_and_immutable_ptx_equal": {
+    "ordinary": false,
+    "pipeline": false
+  },
+  "explanation": "Alias contracts enable redundant-load reuse in addition to LICM. Main factorial experiment uniformly disables that pass.",
+  "alias": {
+    "registers": 116,
+    "spills": 0,
+    "shared": 256,
+    "ptx_sha256": "236d24b489400047f3c4369304f72a8cfe26ba9de7cf7546f4f893a196d062f9",
+    "cubin_sha256": "61c020af77bf2223757d9a10a56f30ea577ee1f2695c73be8292809e4e64a23c",
+    "ttgir_async_copy_count": 0,
+    "ttgir_async_wait_count": 0,
+    "ptx_cp_async_count": 0,
+    "ptx_local_load_store_count": 0,
+    "ttgir_load_count": 9
+  },
+  "immutable": {
+    "registers": 116,
+    "spills": 0,
+    "shared": 256,
+    "ptx_sha256": "247b2ab67c2db6e646a4445bc3729efe3e21eff8a64864b213b2ff93cb7e77b7",
+    "cubin_sha256": "3fb29a44b4139053c280039c190e3aa1864266117d48823f9803d27f634c2211",
+    "ttgir_async_copy_count": 0,
+    "ttgir_async_wait_count": 0,
+    "ptx_cp_async_count": 0,
+    "ptx_local_load_store_count": 0,
+    "ttgir_load_count": 10
+  }
+}

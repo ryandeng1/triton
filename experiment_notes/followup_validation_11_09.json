@@ -1,0 +1,23 @@
+{
+  "date": "2026-11-09 00:23:51.248317+00:00",
+  "scope": "Python experiment harnesses and repository notes; no native compiler changes or rebuild",
+  "native_library_sha256": "600f64d69c767567ecf271b1393ab08c8ce187c0f520581357979e21c71ba3dd",
+  "native_library_unchanged": true,
+  "checks": {
+    "llvm_attribute_pairs_identical_ptx_cubin_sass": 9,
+    "manual_mask_pairs_identical_machine_code": 2,
+    "recurrent_full_output_state_validation_records": 120,
+    "unfold_jit_specializations": 18,
+    "unfold_benchmark_input_cases": 21,
+    "unfold_correctness_variants_per_case": 3,
+    "unfold_geometric_mean_recomputed": 1.2996664050671645,
+    "manifest_atomic_sites": 91,
+    "manifest_licm_pairs": 62,
+    "manifest_distinct_functions": 93
+  },
+  "known_failure": {
+    "artifact": "semantic_candidate_experiments/results/pipeline_alias_probe_final/README.md",
+    "description": "Current compiler miscompiles one-CTA global recurrence at loop stages3 for T=2,4,17; stages1/2 pass. No native fix implemented."
+  },
+  "remaining": "Full funnel contract review and profitability distribution; automatic dependence-safe prefetch; broader floating reduction contracts."
+}

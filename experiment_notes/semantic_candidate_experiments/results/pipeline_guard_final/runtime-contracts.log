@@ -1,0 +1,35 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: /home/ryandeng/tpaa/triton
+configfile: pytest.ini
+plugins: platformdirs-4.14.5
+collected 308 items / 86 deselected / 222 selected
+
+python/test/unit/runtime/test_specialize.py ......................................................F
+
+=================================== FAILURES ===================================
+_ test_semantic_graph_rms_infers_immutable_regions_and_preserves_empty_ctas[False] _
+python/test/unit/runtime/test_specialize.py:622: in test_semantic_graph_rms_infers_immutable_regions_and_preserves_empty_ctas
+    assert original_ir.count("async_copy_global_to_local") > inferred_ir.count("async_copy_global_to_local")
+E   assert 0 > 2
+E    +  where 0 = <built-in method count of str object at 0x53b81890>('async_copy_global_to_local')
+E    +    where <built-in method count of str object at 0x53b81890> = '#blocked = #ttg.blocked<{sizePerThread = [2], threadsPerWarp = [32], warpsPerCTA = [4], order = [0]}>\n#blocked1 = #t...oc41 = loc("normalized"(#loc20))\n#loc42 = loc(callsite(#loc15 at #loc36))\n#loc44 = loc(callsite(#loc16 at #loc42))\n'.count
+E    +  and   2 = <built-in method count of str object at 0x53723e60>('async_copy_global_to_local')
+E    +    where <built-in method count of str object at 0x53723e60> = '#blocked = #ttg.blocked<{sizePerThread = [2], threadsPerWarp = [32], warpsPerCTA = [4], order = [0]}>\n#blocked1 = #t...oc41 = loc("normalized"(#loc20))\n#loc42 = loc(callsite(#loc15 at #loc37))\n#loc44 = loc(callsite(#loc16 at #loc42))\n'.count
+------------------------------ Captured log call -------------------------------
+DEBUG    torch.__trace:meta_utils.py:298 
+DEBUG    torch.__trace:meta_utils.py:537 
+DEBUG    torch.__trace:meta_utils.py:2385 
+DEBUG    torch.__trace:meta_utils.py:298 
+DEBUG    torch.__trace:meta_utils.py:537 
+DEBUG    torch.__trace:meta_utils.py:2385 
+DEBUG    torch.__trace:meta_utils.py:298 
+DEBUG    torch.__trace:meta_utils.py:537 
+DEBUG    torch.__trace:meta_utils.py:2385 
+DEBUG    torch.__trace:meta_utils.py:298 
+DEBUG    torch.__trace:meta_utils.py:537 
+DEBUG    torch.__trace:meta_utils.py:2385
+=========================== short test summary info ============================
+FAILED python/test/unit/runtime/test_specialize.py::test_semantic_graph_rms_infers_immutable_regions_and_preserves_empty_ctas[False]
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+================= 1 failed, 54 passed, 86 deselected in 4.60s ==================

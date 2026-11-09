@@ -34,12 +34,14 @@ namespace gpu {
 #define GEN_PASS_DEF_TRITONGPUPIPELINE
 #include "triton/Dialect/TritonGPU/Transforms/Passes.h.inc"
 
-static void pipelineWgmma(ModuleOp moduleOp, unsigned numStages) {
+static void pipelineWgmma(ModuleOp moduleOp, unsigned numStages,
+                          const DenseSet<Operation *> &rejectedLoops) {
   SmallVector<scf::ForOp> loops;
   moduleOp->walk([&](scf::ForOp forOp) { loops.push_back(forOp); });
 
   for (scf::ForOp forOp : loops) {
-    if (getNumStagesOrDefault(forOp, numStages) >= 1)
+    if (!rejectedLoops.contains(forOp) &&
+        getNumStagesOrDefault(forOp, numStages) >= 1)
       mlir::triton::asyncLaunchDots(forOp);
   }
 }
@@ -174,6 +176,22 @@ struct PipelinePass : public impl::TritonGPUPipelineBase<PipelinePass> {
 
   void runOnOperation() override {
     ModuleOp moduleOp = getOperation();
+    DenseSet<Operation *> rejectedLoops;
+    // Explicit latencies and serialized schedules are not memory-dependence
+    // proofs. Reject before lowerLoops creates any asynchronous operations.
+    moduleOp.walk([&](scf::ForOp loop) {
+      bool containsRejectedLoop =
+          loop.walk([&](scf::ForOp nested) {
+                return rejectedLoops.contains(nested)
+                           ? WalkResult::interrupt()
+                           : WalkResult::advance();
+              }).wasInterrupted();
+      if (containsRejectedLoop ||
+          !hasSafeGlobalPipelineAccesses(loop, /*allowCompilerProtocols=*/true)) {
+        rejectedLoops.insert(loop);
+        clearUnsafePipelineSchedule(loop);
+      }
+    });
     // Transform the loop by introducing async operations to prepare it for
     // pipeline expansion.
     lowerLoops(moduleOp);
@@ -195,7 +213,7 @@ struct PipelinePass : public impl::TritonGPUPipelineBase<PipelinePass> {
     // Cleanup the IR from the pipeline attributes.
     removePipeliningAttributes(moduleOp);
 
-    pipelineWgmma(moduleOp, numStages);
+    pipelineWgmma(moduleOp, numStages, rejectedLoops);
 
     // schedule the waits
     mlir::triton::updateWaits(getOperation());

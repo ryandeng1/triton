@@ -1,0 +1,21 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: /home/ryandeng/tpaa/triton
+configfile: pytest.ini
+plugins: platformdirs-4.14.5
+collected 97 items
+
+python/test/unit/language/test_pipeliner.py .............................................................................................F
+
+=================================== FAILURES ===================================
+____________________________ test_scatter_pipeline _____________________________
+python/test/unit/language/test_pipeliner.py:719: in test_scatter_pipeline
+    assert kernel.asm["ttgir"].count("tma_store_wait") == 2, "expected pipelined TMA scatter"
+E   AssertionError: expected pipelined TMA scatter
+E   assert 1 == 2
+E    +  where 1 = <built-in method count of str object at 0x3adb4dc0>('tma_store_wait')
+E    +    where <built-in method count of str object at 0x3adb4dc0> = '#blocked = #ttg.blocked<{sizePerThread = [1, 4], threadsPerWarp = [32, 1], warpsPerCTA = [1, 4], order = [1, 0]}>\n#l...9 = loc(callsite(#loc5 at #loc42))\n#loc70 = loc(callsite(#loc3 at #loc43))\n#loc71 = loc(callsite(#loc5 at #loc43))\n'.count
+=========================== short test summary info ============================
+FAILED python/test/unit/language/test_pipeliner.py::test_scatter_pipeline - A...
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+======================== 1 failed, 93 passed in 29.48s =========================

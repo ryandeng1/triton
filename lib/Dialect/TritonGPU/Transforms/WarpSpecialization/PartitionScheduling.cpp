@@ -1585,6 +1585,13 @@ struct PartitionScheduling
     // run partitioner on each op
     size_t idx = 0;
     for (auto op : ops) {
+      // Standalone partitioning must obey the same gate as the normal
+      // assign-latencies path, including while and outer-loop source hints.
+      if (!hasSafeGlobalPipelineAccesses(op)) {
+        clearUnsafePipelineSchedule(op);
+        continue;
+      }
+      op->setAttr(kGlobalPipelineProofAttrName, UnitAttr::get(&getContext()));
       analyze(idx, op);
       if (hasPartition(op))
         cloneMultiPartitionDataOps(op);

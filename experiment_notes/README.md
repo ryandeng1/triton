@@ -1,6 +1,6 @@
 # Semantic optimization findings
 
-Consolidated 2026-11-08. Semantic information can improve Triton kernels when
+Consolidated 2026-11-09. Semantic information can improve Triton kernels when
 it establishes a missing dependence, ownership, or value fact and enables a
 profitable transformation. Reconstructing the compiler's own buffer protocol
 often adds no useful information: releases may already follow the last use,
@@ -27,6 +27,9 @@ runs rather than absolute timings across experiments.
 | Persistent AITER RMSNorm, native immutable-input contract | Forward 1.11–1.48×; backward 1.05–1.06× | Large-shape regression now profiled: occupancy falls while DRAM traffic barely changes. Resource guard declines measured losses, but also misses a held-out 17% gain. AMD-origin kernels compiled on NVIDIA. |
 | FlagGems CTC, native immutable input across CTA barriers | Complete training-forward 1.021–1.024× at T1024/N64/U128; 1.047–1.053× at T256/N256/U64 | 139 source-study records and 51 rebuilt-native confirmations. Full saved alpha and loss checked; barriers retained. Most other cases gain 0–3%. Backward is excluded. |
 | AITER recurrent delta rule, native alias-derived LICM | About 1.134× at upstream T1024/D128; 1.09× at larger decode; 1.056× at T500/D60 | Three of six cases improve; three are neutral/slower. Includes state reset, every timestep output and final state. New pointer provenance makes alias-only and immutable PTX identical. Supported long-T tests do not establish production prevalence. |
+| Recurrent explicit loop pipelining | T500 1.214–1.216× after four-configuration tuning; T1024 and short decode regress | Three fresh seeds, reset included, full output/state checks. Adding LICM makes the best T500 pipeline about 3.3% slower. Historical source scheduling oracle; now recovered by automatic contract-licensed pipelining below. |
+| Contract-licensed automatic pipelining and variant selection | T63 1.207–1.210×; T500 1.214–1.218×; LICM selected at T1024/larger decode; baseline retained at short decode/T2048 | Unchanged kernel body; same contracts across four variants/configurations; three fresh seeds, reset included, 204 validation records. Per-shape calibration, not a static profitability model. |
+| LLVM argument-contract probe | Identical PTX, cubin and SASS in all nine attribute-on/off pairs | Audited readonly/no-capture/noalias attributes survive LLVM optimization, but global loads remain side-effecting inline PTX. No runtime timing of identical code. |
 | Transformer Engine MoE unpermute backward | Native hoist 1.19×, 1.11×, approximately 1.00× | Best tested configuration per variant after bounded tuning; manual and contract variants matched machine code. |
 | Producer-unique embedding backward | Source specialization 1.16–1.26×; frequency-scaled 1.41–2.18× | Includes dense zeroing and final copy. These historical timings used finite, non-subnormal BF16 gradients and predate the automatic proof pipeline below. |
 | Unchanged FlagGems indexed updates, native Triton pass | Unique RMW 1.15–1.25×; initialized-zero 1.15–1.28× | Correct native transformation, but the ordering control below recovers essentially all of this gain while retaining atomics. Reset/count/conversion included. Gluon correctness also validated. |
@@ -34,6 +37,7 @@ runs rather than absolute timings across experiments.
 | Native private-output ordering relaxation | 1.192× geometric mean with unique indices; 1.179× with fourfold repeated indices | 72 measurements; atomics retained, unchanged source, native/manual relaxed timings within 0.3%. Includes reset/count/conversion; no uniqueness or immutable-index contracts. |
 | Four-way atomic ordering control | Original→relaxed 1.189×; original→acquire 1.150×; release→relaxed 1.070× | 36 paired cases. Acquire still uses `atom` and beats release's `red`; release also emits a GPU fence. Pure CTA-barrier cost remains unisolated. |
 | Persistent FlagGems integer frequency counter | Uniform indices 1.54–1.76×; hot-32 indices 1.003–1.34× | 114 measurements, best tested block/grid per variant including nonpersistent launches. Native loop relaxation matches manual relaxed within 0.03% geometrically. Reset+count only; Cambricon-origin body on B300. |
+| FlagGems unfold backward, private-output atomic relaxation | 1.300× geometric mean over 21 upstream benchmark inputs | All 18 actual JIT specializations transform; native/manual relaxed code agrees. Reset+accumulation only, excluding allocation, final dtype conversion and dispatch. One source kernel; no corpus-wide profitability claim. |
 | Segmented-unique FlagGems scatter-add | Ordinary RMW 0.65–0.91× consumer ratio; known-zero stores about 1.00–1.03× | 96 screening and 26 confirmation cases. With topk producer included, known-zero gains stay below 0.5% on tuned shapes. Baseline already uses relaxed atomics; native expansion was not implemented. |
 | Complete coverage and direct output writes | 1.40–2.30× over the previous unique-index implementation | Shared-output consumer ablation, including required initialization/conversion; bounded tuning over block sizes 128/256. Full permutations need one write launch; unique subsets need zeroing plus write. |
 | Real embedding backward vs Inductor, frequency scaling enabled | 1.69–14.61× GPU speedup over the faster tested mode | Output-only graphs include arange/randperm generation. Inductor default and max-autotune-no-cudagraphs retain atomic-update/count work. External CUDA graphs give all variants the same timing protocol. |
@@ -203,6 +207,23 @@ including platform-specific code and helpers, rather than proven legal or
 profitable transformations. The Liger general-path scalar-load miss is not a
 production plain-backward opportunity: its fast plain path already hoists it.
 
+The subsequent [FlagGems funnel](semantic_candidate_experiments/results/semantic_funnel_final/README.md)
+retains every one of the 91 generic atomic sites and 62 LICM load-loop pairs,
+covering 93 distinct functions. Static analysis resolves caller paths for 92,
+direct test references for 75 and benchmark references for 45; runtime backend
+dispatch remains unverified. Only the new `unfold_backward` pilot has undergone
+contract review in this funnel, with the other 92 explicitly unreviewed. Missing
+links and unattempted compilations are not legality rejections. This establishes
+an auditable inventory, not the requested corpus-wide profitability distribution.
+The pilot's fresh, zeroed output licenses the existing private-atomic pass
+without an unordered-reduction contract. All 18 actual JIT specializations
+transform across 21 upstream shape/dtype inputs, with 1.300× geometric mean
+speedup for reset plus accumulation. Value-one/divisibility specialization,
+pointer alignment and default launch options are copied from the original JIT
+warmup. Exact integer collision and FP64 summation-bound checks pass. The earlier
+generic-scalar pilot is retained separately; final conversion, allocation and
+runtime dispatch remain outside both timings.
+
 Two analysis gaps are now closed in native Triton LICM. Explicit immutable global
 inputs may move across existing CTA barriers, retaining masks, entry guards and
 all barriers. This recovers the manual CTC hoist on unchanged training-forward
@@ -216,10 +237,61 @@ root-changing/cross-carried pointers and unknown operations are rejected.
 AITER also exposes the current profitability limits. The residency heuristic
 accepts all three negative cases. At T500, both native and manual code hoist the
 loads and dependent negative exponential, but manual gains about 14% versus
-native's 6%. Masked inactive values and downstream IR scheduling differ; this is
-not a missing dependent-expression hoist. The long-T workloads are exact upstream
+native's 6%. A later isolated manual `other=0` versus undefined control produces
+identical executable bytes at BV16 and BV32, while native and manual code still
+differ. That control does not explain or resolve the historical gap. The long-T workloads are exact upstream
 test shapes; a malformed legacy decode benchmark branch was not used as an
 equivalent baseline, and chunked prefill remains a stronger algorithmic candidate.
+
+The [LLVM probe](semantic_candidate_experiments/results/llvm_contract_probe_final/README.md)
+adds argument attributes before LLVM optimization without changing memory
+instructions. All nine pairs produce identical PTX/cubin/SASS across T500 BV16,
+T500 BV32 and the negative T2048 case, each with original, immutable and manual
+source variants. Only disjoint modified allocations receive `noalias`; readonly
+and no-capture follow an audited use/escape proof. Invocation-scoped immutability
+does not license `!invariant.load`. This rules out the simple attribute-only
+route on these cases, not a richer representation of global memory in LLVM.
+
+The [loop-pipelining control](semantic_candidate_experiments/results/recurrent_pipeline_final/README.md)
+changes only `range(T)` to `tl.range(T, num_stages=2)`, distinct from launch-level
+stages. It initially regresses at fixed configurations, but a four-configuration
+screen and three fresh seeds recover 1.214–1.216× at T500. Combining LICM gives
+1.174–1.176× against original and is slower than pipelining alone. T1024 remains
+about 0.966× and short decode 0.975–0.980×. The factorial comparison disables
+contract load reuse uniformly: otherwise alias groups enable an additional
+redundant-load elimination and cease to be equivalent to immutable-only LICM.
+These archived source-oracle results are the control for the automatic implementation below.
+
+A separate [global-dependence reproducer](semantic_candidate_experiments/results/pipeline_alias_probe_final/README.md)
+found an actual correctness failure in the pre-guard compiler: with loop stages3,
+the valid one-CTA recurrence `X[t+1,:] = X[t,:] + 1` prefetches row one before
+iteration zero writes it. Stages1/2 pass the tested cases. The generated prologue
+and wrong output agree, and an independent source/IR review confirms the missing
+global RAW dependence. This requires dependence preservation or refusal to
+prefetch; `num_stages` is not a no-alias contract. The archived reproducer predates
+the native fix below; it is not an independently built upstream-release result.
+
+The [native dependence guard](semantic_candidate_experiments/results/pipeline_guard_final/README.md)
+now checks global read/write and store/store conflicts before NVIDIA pipelining
+or warp partitioning, including explicit latencies and saved schedules. The
+recurrence passes, as do 33 compiler tests and 319 selected runtime cases.
+Compiler-created protocols require a prior proof and fresh provenance checks;
+source synchronization, unknown effects and unresolved mixed descriptor accesses
+conservatively decline. Some persistent pipelines therefore lose overlap until
+stronger descriptor facts are available. AMD's separate pipeliner is unchanged.
+
+[Automatic contract pipelining](semantic_candidate_experiments/results/contract_pipeline_final/README.md)
+adds opt-in `contract_pipeline_stages=2` and independent `enable_contract_licm`
+controls. With the same checked alias contracts on unchanged source, a four-variant,
+four-configuration selector confirms T63 1.207–1.210× and T500 1.214–1.218× from
+pipelining alone. It chooses LICM for T1024 (1.134–1.135×) and larger decode
+(1.082–1.085×), and the baseline for short decode/T2048. All 204 output/state
+validation records pass, including T=0. Calibration costs 4.2–10.3 seconds per
+shape in this run and is excluded from steady-state timing. This is an experiment
+selector, not a general runtime autotuner or static profitability guard. The prior
+T1024 0.819× ratio compared pipeline-plus-LICM with LICM; LICM itself already gained
+about 1.134×. The new semantic fact licenses motion; selecting useful motion still
+requires performance information.
 
 The new opt-in [private-reduction ownership pass](../lib/Dialect/Triton/Transforms/PrivateReductionOwnership.cpp)
 recognizes IR roles rather than kernel names. Private initialized disjoint outputs,
@@ -323,6 +395,22 @@ Retained evidence and reproducers:
   changes and reproduction commands. The first application establishes a second
   consumer of reusable memory facts; its small main-case changes are not a new
   general LayerNorm speedup.
+- [LLVM contract probe](semantic_candidate_experiments/results/llvm_contract_probe_final/README.md),
+  [recurrent loop-pipeline controls](semantic_candidate_experiments/results/recurrent_pipeline_final/README.md),
+  and [global-dependence reproducer](semantic_candidate_experiments/results/pipeline_alias_probe_final/README.md)
+  preserve the earlier November 9 experiments and their original compiler fingerprints. The
+  [atomic-ordering RFC](atomic_ordering_rfc.md) is a local draft proposing an
+  advisory diagnostic and proof-based optimization, with no default change or
+  automatic source fix. It has not been posted upstream.
+- [FlagGems funnel manifest and pilot](semantic_candidate_experiments/results/semantic_funnel_final/README.md)
+  separate complete source inventory from the one newly reviewed/measured kernel.
+  Prior kernel studies remain separately recorded rather than silently counted
+  as new funnel experiments.
+- [November 9 evidence checks](followup_validation_11_09.json) verify aggregate
+  counts, code equality and the earlier unchanged native-library hash.
+  [Native guard validation](semantic_candidate_experiments/results/pipeline_guard_final/final_validation.json)
+  and [automatic pipeline results](semantic_candidate_experiments/results/contract_pipeline_final/summary.json)
+  identify the later rebuilt compiler and supersede the earlier no-native-fix status.
 - [Experiment scripts](semantic_candidate_experiments/) and pinned `vendor/`
   sources/licenses remain. RMSNorm, MoE, irregular-kernel, and Mamba harnesses
   expose `--help`; analyses can consume newly generated reports.

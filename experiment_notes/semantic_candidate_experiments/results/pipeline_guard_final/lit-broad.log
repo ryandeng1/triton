@@ -1,0 +1,773 @@
+lit: /home/ryandeng/tpaa/.venv-semantic/lib/python3.12/site-packages/lit/discovery.py:273: warning: input 'test/Triton/loop-aware-cse.mlir' contained no tests
+-- Testing: 28 tests, 24 workers --
+PASS: TRITON :: TritonGPU/loop-pipeline-combine-waits.mlir (1 of 28)
+PASS: TRITON :: NVWS/lower_warp_group.mlir (2 of 28)
+PASS: TRITON :: NVWS/invalid.mlir (3 of 28)
+PASS: TRITON :: TritonGPU/loop-pipeline-indirect-load.mlir (4 of 28)
+PASS: TRITON :: TritonGPU/loop-schedule.mlir (5 of 28)
+PASS: TRITON :: TritonGPU/loop-pipeline-hopper-remove-wait.mlir (6 of 28)
+PASS: TRITON :: TritonGPU/partition-loops.mlir (7 of 28)
+PASS: TRITON :: TritonGPU/pipeline-split-cluster-unscheduled-op.mlir (8 of 28)
+PASS: TRITON :: TritonGPU/optimize-partition-warps.mlir (9 of 28)
+PASS: TRITON :: TritonGPU/samples/descriptor-matmul-pipeline.mlir (10 of 28)
+PASS: TRITON :: NVWS/insert_aref.mlir (11 of 28)
+PASS: TRITON :: NVWS/hoist_tmem_store.mlir (12 of 28)
+PASS: TRITON :: NVWS/assign_stage_phase.mlir (13 of 28)
+PASS: TRITON :: NVWS/lower_aref.mlir (14 of 28)
+PASS: TRITON :: NVWS/aref-tmem-insertion.mlir (15 of 28)
+PASS: TRITON :: Triton/loop-invariant-code-motion.mlir (16 of 28)
+PASS: TRITON :: TritonGPU/pipeline-schedule-loop.mlir (17 of 28)
+FAIL: TRITON :: TritonGPU/partition-scheduling.mlir (18 of 28)
+******************** TEST 'TRITON :: TritonGPU/partition-scheduling.mlir' FAILED ********************
+Exit Code: 2
+
+Command Output (stdout):
+--
+# RUN: at line 1
+/home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/bin/triton-opt /home/ryandeng/tpaa/triton/test/TritonGPU/partition-scheduling.mlir --split-input-file --tritongpu-hoist-tmem-alloc --tritongpu-partition-scheduling -allow-unregistered-dialect | FileCheck /home/ryandeng/tpaa/triton/test/TritonGPU/partition-scheduling.mlir
+# executed command: /home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/bin/triton-opt /home/ryandeng/tpaa/triton/test/TritonGPU/partition-scheduling.mlir --split-input-file --tritongpu-hoist-tmem-alloc --tritongpu-partition-scheduling -allow-unregistered-dialect
+# .---command stderr------------
+# | triton-opt: /home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/include/triton/Dialect/Triton/IR/Dialect.h.inc:116: void mlir::triton::TritonDialect::LatencyAttrHelper::removeAttr(mlir::Operation*) const: Assertion `op->hasDiscardableAttrOfType<::mlir::IntegerAttr>(name)' failed.
+# | PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace and instructions to reproduce the bug.
+# | Stack dump:
+# | 0.	Program arguments: /home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/bin/triton-opt /home/ryandeng/tpaa/triton/test/TritonGPU/partition-scheduling.mlir --split-input-file --tritongpu-hoist-tmem-alloc --tritongpu-partition-scheduling -allow-unregistered-dialect
+# | Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or set the environment var `LLVM_SYMBOLIZER_PATH` to point to it):
+# | 0  triton-opt 0x000057f7e562e3da
+# | 1  triton-opt 0x000057f7e562b2de
+# | 2  triton-opt 0x000057f7e562eecb
+# | 3  libc.so.6  0x0000705b98045330
+# | 4  libc.so.6  0x0000705b9809ec0c pthread_kill + 284
+# | 5  libc.so.6  0x0000705b9804527e gsignal + 30
+# | 6  libc.so.6  0x0000705b980288ff abort + 223
+# | 7  libc.so.6  0x0000705b9802881b
+# | 8  libc.so.6  0x0000705b9803b517
+# | 9  triton-opt 0x000057f7dd7dd8b5
+# | 10 triton-opt 0x000057f7dd7e0fc1
+# | 11 triton-opt 0x000057f7dd2ed2bd
+# | 12 triton-opt 0x000057f7dd7e15cb
+# | 13 triton-opt 0x000057f7dd864e61
+# | 14 triton-opt 0x000057f7ddeac6bb
+# | 15 triton-opt 0x000057f7ddead239
+# | 16 triton-opt 0x000057f7ddeb4232
+# | 17 triton-opt 0x000057f7ddeb3aa2
+# | 18 triton-opt 0x000057f7ddea357e
+# | 19 triton-opt 0x000057f7ddea27e5
+# | 20 triton-opt 0x000057f7e52371d7
+# | 21 triton-opt 0x000057f7e5236e40
+# | 22 triton-opt 0x000057f7dde98832
+# | 23 triton-opt 0x000057f7dde98c31
+# | 24 triton-opt 0x000057f7dde98e6d
+# | 25 triton-opt 0x000057f7dd235dd3
+# | 26 libc.so.6  0x0000705b9802a1ca
+# | 27 libc.so.6  0x0000705b9802a28b __libc_start_main + 139
+# | 28 triton-opt 0x000057f7dd29cc05
+# `-----------------------------
+# error: command failed with exit status: -6
+# executed command: FileCheck /home/ryandeng/tpaa/triton/test/TritonGPU/partition-scheduling.mlir
+# .---command stderr------------
+# | FileCheck error: '<stdin>' is empty.
+# | FileCheck command line:  FileCheck /home/ryandeng/tpaa/triton/test/TritonGPU/partition-scheduling.mlir
+# `-----------------------------
+# error: command failed with exit status: 2
+
+--
+
+********************
+PASS: TRITON :: NVWS/ops.mlir (19 of 28)
+FAIL: TRITON :: TritonGPU/loop-pipeline-async-latencies.mlir (20 of 28)
+******************** TEST 'TRITON :: TritonGPU/loop-pipeline-async-latencies.mlir' FAILED ********************
+Exit Code: 2
+
+Command Output (stdout):
+--
+# RUN: at line 1
+/home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/bin/triton-opt /home/ryandeng/tpaa/triton/test/TritonGPU/loop-pipeline-async-latencies.mlir --tritongpu-assign-latencies --tritongpu-schedule-loops --tritongpu-pipeline -canonicalize -cse | FileCheck /home/ryandeng/tpaa/triton/test/TritonGPU/loop-pipeline-async-latencies.mlir
+# executed command: /home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/bin/triton-opt /home/ryandeng/tpaa/triton/test/TritonGPU/loop-pipeline-async-latencies.mlir --tritongpu-assign-latencies --tritongpu-schedule-loops --tritongpu-pipeline -canonicalize -cse
+# .---command stderr------------
+# | triton-opt: /home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/include/triton/Dialect/Triton/IR/Dialect.h.inc:116: void mlir::triton::TritonDialect::LatencyAttrHelper::removeAttr(mlir::Operation*) const: Assertion `op->hasDiscardableAttrOfType<::mlir::IntegerAttr>(name)' failed.
+# | PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace and instructions to reproduce the bug.
+# | Stack dump:
+# | 0.	Program arguments: /home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/bin/triton-opt /home/ryandeng/tpaa/triton/test/TritonGPU/loop-pipeline-async-latencies.mlir --tritongpu-assign-latencies --tritongpu-schedule-loops --tritongpu-pipeline -canonicalize -cse
+# | Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or set the environment var `LLVM_SYMBOLIZER_PATH` to point to it):
+# | 0  triton-opt 0x00005af7a549d3da
+# | 1  triton-opt 0x00005af7a549a2de
+# | 2  triton-opt 0x00005af7a549decb
+# | 3  libc.so.6  0x0000775bc1e45330
+# | 4  libc.so.6  0x0000775bc1e9ec0c pthread_kill + 284
+# | 5  libc.so.6  0x0000775bc1e4527e gsignal + 30
+# | 6  libc.so.6  0x0000775bc1e288ff abort + 223
+# | 7  libc.so.6  0x0000775bc1e2881b
+# | 8  libc.so.6  0x0000775bc1e3b517
+# | 9  triton-opt 0x00005af79d64c8b5
+# | 10 triton-opt 0x00005af79d64ffc1
+# | 11 triton-opt 0x00005af79d15c2bd
+# | 12 triton-opt 0x00005af79d6505cb
+# | 13 triton-opt 0x00005af79d128843
+# | 14 triton-opt 0x00005af79d128843
+# | 15 triton-opt 0x00005af79d648655
+# | 16 triton-opt 0x00005af79dd1b6bb
+# | 17 triton-opt 0x00005af79dd1c239
+# | 18 triton-opt 0x00005af79dd23232
+# | 19 triton-opt 0x00005af79dd22aa2
+# | 20 triton-opt 0x00005af79dd1257e
+# | 21 triton-opt 0x00005af79dd117e5
+# | 22 triton-opt 0x00005af7a50a5d21
+# | 23 triton-opt 0x00005af79dd07832
+# | 24 triton-opt 0x00005af79dd07c31
+# | 25 triton-opt 0x00005af79dd07e6d
+# | 26 triton-opt 0x00005af79d0a4dd3
+# | 27 libc.so.6  0x0000775bc1e2a1ca
+# | 28 libc.so.6  0x0000775bc1e2a28b __libc_start_main + 139
+# | 29 triton-opt 0x00005af79d10bc05
+# `-----------------------------
+# error: command failed with exit status: -6
+# executed command: FileCheck /home/ryandeng/tpaa/triton/test/TritonGPU/loop-pipeline-async-latencies.mlir
+# .---command stderr------------
+# | FileCheck error: '<stdin>' is empty.
+# | FileCheck command line:  FileCheck /home/ryandeng/tpaa/triton/test/TritonGPU/loop-pipeline-async-latencies.mlir
+# `-----------------------------
+# error: command failed with exit status: 2
+
+--
+
+********************
+FAIL: TRITON :: TritonGPU/matmul-loop-pipeline.mlir (21 of 28)
+******************** TEST 'TRITON :: TritonGPU/matmul-loop-pipeline.mlir' FAILED ********************
+Exit Code: 2
+
+Command Output (stdout):
+--
+# RUN: at line 1
+/home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/bin/triton-opt /home/ryandeng/tpaa/triton/test/TritonGPU/matmul-loop-pipeline.mlir -split-input-file -tritongpu-pipeline | FileCheck /home/ryandeng/tpaa/triton/test/TritonGPU/matmul-loop-pipeline.mlir
+# executed command: /home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/bin/triton-opt /home/ryandeng/tpaa/triton/test/TritonGPU/matmul-loop-pipeline.mlir -split-input-file -tritongpu-pipeline
+# .---command stderr------------
+# | triton-opt: /home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/include/triton/Dialect/Triton/IR/Dialect.h.inc:116: void mlir::triton::TritonDialect::LatencyAttrHelper::removeAttr(mlir::Operation*) const: Assertion `op->hasDiscardableAttrOfType<::mlir::IntegerAttr>(name)' failed.
+# | PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace and instructions to reproduce the bug.
+# | Stack dump:
+# | 0.	Program arguments: /home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/bin/triton-opt /home/ryandeng/tpaa/triton/test/TritonGPU/matmul-loop-pipeline.mlir -split-input-file -tritongpu-pipeline
+# | Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or set the environment var `LLVM_SYMBOLIZER_PATH` to point to it):
+# | 0  triton-opt 0x0000621edf9863da
+# | 1  triton-opt 0x0000621edf9832de
+# | 2  triton-opt 0x0000621edf986ecb
+# | 3  libc.so.6  0x000074c571a45330
+# | 4  libc.so.6  0x000074c571a9ec0c pthread_kill + 284
+# | 5  libc.so.6  0x000074c571a4527e gsignal + 30
+# | 6  libc.so.6  0x000074c571a288ff abort + 223
+# | 7  libc.so.6  0x000074c571a2881b
+# | 8  libc.so.6  0x000074c571a3b517
+# | 9  triton-opt 0x0000621ed7b358b5
+# | 10 triton-opt 0x0000621ed7b38fc1
+# | 11 triton-opt 0x0000621ed76452bd
+# | 12 triton-opt 0x0000621ed7b395cb
+# | 13 triton-opt 0x0000621ed7611843
+# | 14 triton-opt 0x0000621ed7611843
+# | 15 triton-opt 0x0000621ed7b31655
+# | 16 triton-opt 0x0000621ed82046bb
+# | 17 triton-opt 0x0000621ed8205239
+# | 18 triton-opt 0x0000621ed820c232
+# | 19 triton-opt 0x0000621ed820baa2
+# | 20 triton-opt 0x0000621ed81fb57e
+# | 21 triton-opt 0x0000621ed81fa7e5
+# | 22 triton-opt 0x0000621edf58f1d7
+# | 23 triton-opt 0x0000621edf58ee40
+# | 24 triton-opt 0x0000621ed81f0832
+# | 25 triton-opt 0x0000621ed81f0c31
+# | 26 triton-opt 0x0000621ed81f0e6d
+# | 27 triton-opt 0x0000621ed758ddd3
+# | 28 libc.so.6  0x000074c571a2a1ca
+# | 29 libc.so.6  0x000074c571a2a28b __libc_start_main + 139
+# | 30 triton-opt 0x0000621ed75f4c05
+# `-----------------------------
+# error: command failed with exit status: -6
+# executed command: FileCheck /home/ryandeng/tpaa/triton/test/TritonGPU/matmul-loop-pipeline.mlir
+# .---command stderr------------
+# | FileCheck error: '<stdin>' is empty.
+# | FileCheck command line:  FileCheck /home/ryandeng/tpaa/triton/test/TritonGPU/matmul-loop-pipeline.mlir
+# `-----------------------------
+# error: command failed with exit status: 2
+
+--
+
+********************
+FAIL: TRITON :: TritonGPU/loop-pipeline-expand.mlir (22 of 28)
+******************** TEST 'TRITON :: TritonGPU/loop-pipeline-expand.mlir' FAILED ********************
+Exit Code: 1
+
+Command Output (stdout):
+--
+# RUN: at line 1
+/home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/bin/triton-opt /home/ryandeng/tpaa/triton/test/TritonGPU/loop-pipeline-expand.mlir -split-input-file -tritongpu-pipeline | FileCheck /home/ryandeng/tpaa/triton/test/TritonGPU/loop-pipeline-expand.mlir --check-prefixes=CHECK
+# executed command: /home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/bin/triton-opt /home/ryandeng/tpaa/triton/test/TritonGPU/loop-pipeline-expand.mlir -split-input-file -tritongpu-pipeline
+# .---command stderr------------
+# | triton-opt: /home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/include/triton/Dialect/Triton/IR/Dialect.h.inc:116: void mlir::triton::TritonDialect::LatencyAttrHelper::removeAttr(mlir::Operation*) const: Assertion `op->hasDiscardableAttrOfType<::mlir::IntegerAttr>(name)' failed.
+# | PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace and instructions to reproduce the bug.
+# | Stack dump:
+# | 0.	Program arguments: /home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/bin/triton-opt /home/ryandeng/tpaa/triton/test/TritonGPU/loop-pipeline-expand.mlir -split-input-file -tritongpu-pipeline
+# | Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or set the environment var `LLVM_SYMBOLIZER_PATH` to point to it):
+# | 0  triton-opt 0x00005a1ad63f63da
+# | 1  triton-opt 0x00005a1ad63f32de
+# | 2  triton-opt 0x00005a1ad63f6ecb
+# | 3  libc.so.6  0x00007bf557845330
+# | 4  libc.so.6  0x00007bf55789ec0c pthread_kill + 284
+# | 5  libc.so.6  0x00007bf55784527e gsignal + 30
+# | 6  libc.so.6  0x00007bf5578288ff abort + 223
+# | 7  libc.so.6  0x00007bf55782881b
+# | 8  libc.so.6  0x00007bf55783b517
+# | 9  triton-opt 0x00005a1ace5a58b5
+# | 10 triton-opt 0x00005a1ace5a8fc1
+# | 11 triton-opt 0x00005a1ace0b52bd
+# | 12 triton-opt 0x00005a1ace5a95cb
+# | 13 triton-opt 0x00005a1ace081843
+# | 14 triton-opt 0x00005a1ace081843
+# | 15 triton-opt 0x00005a1ace5a1655
+# | 16 triton-opt 0x00005a1acec746bb
+# | 17 triton-opt 0x00005a1acec75239
+# | 18 triton-opt 0x00005a1acec7c232
+# | 19 triton-opt 0x00005a1acec7baa2
+# | 20 triton-opt 0x00005a1acec6b57e
+# | 21 triton-opt 0x00005a1acec6a7e5
+# | 22 triton-opt 0x00005a1ad5fff1d7
+# | 23 triton-opt 0x00005a1ad5ffee8e
+# | 24 triton-opt 0x00005a1acec60832
+# | 25 triton-opt 0x00005a1acec60c31
+# | 26 triton-opt 0x00005a1acec60e6d
+# | 27 triton-opt 0x00005a1acdffddd3
+# | 28 libc.so.6  0x00007bf55782a1ca
+# | 29 libc.so.6  0x00007bf55782a28b __libc_start_main + 139
+# | 30 triton-opt 0x00005a1ace064c05
+# `-----------------------------
+# error: command failed with exit status: -6
+# executed command: FileCheck /home/ryandeng/tpaa/triton/test/TritonGPU/loop-pipeline-expand.mlir --check-prefixes=CHECK
+# .---command stderr------------
+# | /home/ryandeng/tpaa/triton/test/TritonGPU/loop-pipeline-expand.mlir:40:18: error: CHECK-LABEL: expected string not found in input
+# |  // CHECK-LABEL: @expand_loop_without_results
+# |                  ^
+# | <stdin>:8:37: note: scanning from here
+# |  tt.func public @pipeline_load_mmav3(%arg0: tensor<256x128xf32, #mma>, %arg1: tensor<256x32x!tt.ptr<f32>, #blocked>, %arg2: tensor<32x128x!tt.ptr<f32>, #blocked1>, %arg3: tensor<256x32xi32, #blocked>, %arg4: tensor<32x128xi32, #blocked1>) -> (tensor<256x128xf32, #mma>, tensor<256x32x!tt.ptr<f32>, #blocked>, tensor<32x128x!tt.ptr<f32>, #blocked1>) {
+# |                                     ^
+# | <stdin>:19:62: note: possible intended match here
+# |  %0 = ttg.local_alloc : () -> !ttg.memdesc<4x256x32xf32, #shared, #smem, mutable>
+# |                                                              ^
+# | 
+# | Input file: <stdin>
+# | Check file: /home/ryandeng/tpaa/triton/test/TritonGPU/loop-pipeline-expand.mlir
+# | 
+# | -dump-input=help explains the following input dump.
+# | 
+# | Input was:
+# | <<<<<<
+# |             1: #blocked = #ttg.blocked<{sizePerThread = [1, 4], threadsPerWarp = [4, 8], warpsPerCTA = [4, 1], order = [1, 0]}> 
+# |             2: #blocked1 = #ttg.blocked<{sizePerThread = [1, 4], threadsPerWarp = [1, 32], warpsPerCTA = [4, 1], order = [1, 0]}> 
+# |             3: #mma = #ttg.nvidia_mma<{versionMajor = 3, versionMinor = 0, warpsPerCTA = [4, 1], instrShape = [16, 128, 8]}> 
+# |             4: #shared = #ttg.nvmma_shared<{swizzlingByteWidth = 128, transposed = false, elementBitWidth = 32}> 
+# |             5: #shared1 = #ttg.nvmma_shared<{swizzlingByteWidth = 128, transposed = true, elementBitWidth = 32}> 
+# |             6: #smem = #ttg.shared_memory 
+# |             7: module attributes {"ttg.num-ctas" = 1 : i32, "ttg.num-warps" = 4 : i32, ttg.target = "cuda:90", "ttg.threads-per-warp" = 32 : i32} { 
+# |             8:  tt.func public @pipeline_load_mmav3(%arg0: tensor<256x128xf32, #mma>, %arg1: tensor<256x32x!tt.ptr<f32>, #blocked>, %arg2: tensor<32x128x!tt.ptr<f32>, #blocked1>, %arg3: tensor<256x32xi32, #blocked>, %arg4: tensor<32x128xi32, #blocked1>) -> (tensor<256x128xf32, #mma>, tensor<256x32x!tt.ptr<f32>, #blocked>, tensor<32x128x!tt.ptr<f32>, #blocked1>) { 
+# | label:40'0                                        {                                                                                                                                                                                                                                                                                                                             search range start (exclusive)
+# | label:40'1                                                                                                                                                                                                                                                                                                                                                                      error: no match found in search range
+# |             9:  %c2_i32 = arith.constant 2 : i32 
+# |            10:  %cst = arith.constant dense<true> : tensor<32x128xi1, #blocked1> 
+# |            11:  %cst_0 = arith.constant dense<true> : tensor<256x32xi1, #blocked> 
+# |            12:  %c126_i32 = arith.constant 126 : i32 
+# |            13:  %c125_i32 = arith.constant 125 : i32 
+# |            14:  %c4_i32 = arith.constant 4 : i32 
+# |            15:  %c-1_i32 = arith.constant -1 : i32 
+# |            16:  %c0_i32 = arith.constant 0 : i32 
+# |            17:  %c1_i32 = arith.constant 1 : i32 
+# |            18:  %c128_i32 = arith.constant 128 : i32 
+# |            19:  %0 = ttg.local_alloc : () -> !ttg.memdesc<4x256x32xf32, #shared, #smem, mutable> 
+# | label:40'2                                                                  ?                      possible intended match
+# |            20:  %1 = ttg.local_alloc : () -> !ttg.memdesc<4x32x128xf32, #shared1, #smem, mutable> 
+# |            21:  %2 = ttg.memdesc_index %0[%c0_i32] : !ttg.memdesc<4x256x32xf32, #shared, #smem, mutable> -> !ttg.memdesc<256x32xf32, #shared, #smem, mutable> 
+# |            22:  %3 = ttg.async_copy_global_to_local %arg1, %2 mask %cst_0 : tensor<256x32x!tt.ptr<f32>, #blocked> -> <256x32xf32, #shared, #smem, mutable> 
+# |            23:  %4 = ttg.async_commit_group tokens %3 
+# |            24:  %5 = ttg.memdesc_index %1[%c0_i32] : !ttg.memdesc<4x32x128xf32, #shared1, #smem, mutable> -> !ttg.memdesc<32x128xf32, #shared1, #smem, mutable> 
+# |             .
+# |             .
+# |             .
+# |            74:  ttg.local_dealloc %0 : !ttg.memdesc<4x256x32xf32, #shared, #smem, mutable> 
+# |            75:  tt.return %25, %24#1, %24#2 : tensor<256x128xf32, #mma>, tensor<256x32x!tt.ptr<f32>, #blocked>, tensor<32x128x!tt.ptr<f32>, #blocked1> 
+# |            76:  } 
+# |            77: } 
+# |            78:  
+# |            79: // ----- 
+# | label:40'3              } search range end (exclusive)
+# | >>>>>>
+# `-----------------------------
+# error: command failed with exit status: 1
+
+--
+
+********************
+FAIL: TRITON :: TritonGPU/automatic-warp-specialization.mlir (23 of 28)
+******************** TEST 'TRITON :: TritonGPU/automatic-warp-specialization.mlir' FAILED ********************
+Exit Code: 2
+
+Command Output (stdout):
+--
+# RUN: at line 1
+/home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/bin/triton-opt /home/ryandeng/tpaa/triton/test/TritonGPU/automatic-warp-specialization.mlir -split-input-file -allow-unregistered-dialect -tritongpu-hoist-tmem-alloc -tritongpu-assign-latencies -tritongpu-schedule-loops -tritongpu-automatic-warp-specialization=num-stages=2 | FileCheck /home/ryandeng/tpaa/triton/test/TritonGPU/automatic-warp-specialization.mlir --check-prefix=CHECK --check-prefix=BASE --check-prefix=CLEAN
+# executed command: /home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/bin/triton-opt /home/ryandeng/tpaa/triton/test/TritonGPU/automatic-warp-specialization.mlir -split-input-file -allow-unregistered-dialect -tritongpu-hoist-tmem-alloc -tritongpu-assign-latencies -tritongpu-schedule-loops -tritongpu-automatic-warp-specialization=num-stages=2
+# .---command stderr------------
+# | triton-opt: /home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/include/triton/Dialect/Triton/IR/Dialect.h.inc:116: void mlir::triton::TritonDialect::LatencyAttrHelper::removeAttr(mlir::Operation*) const: Assertion `op->hasDiscardableAttrOfType<::mlir::IntegerAttr>(name)' failed.
+# | PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace and instructions to reproduce the bug.
+# | Stack dump:
+# | 0.	Program arguments: /home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/bin/triton-opt /home/ryandeng/tpaa/triton/test/TritonGPU/automatic-warp-specialization.mlir -split-input-file -allow-unregistered-dialect -tritongpu-hoist-tmem-alloc -tritongpu-assign-latencies -tritongpu-schedule-loops -tritongpu-automatic-warp-specialization=num-stages=2
+# | Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or set the environment var `LLVM_SYMBOLIZER_PATH` to point to it):
+# | 0  triton-opt 0x0000644efde103da
+# | 1  triton-opt 0x0000644efde0d2de
+# | 2  triton-opt 0x0000644efde10ecb
+# | 3  libc.so.6  0x000078270d845330
+# | 4  libc.so.6  0x000078270d89ec0c pthread_kill + 284
+# | 5  libc.so.6  0x000078270d84527e gsignal + 30
+# | 6  libc.so.6  0x000078270d8288ff abort + 223
+# | 7  libc.so.6  0x000078270d82881b
+# | 8  libc.so.6  0x000078270d83b517
+# | 9  triton-opt 0x0000644ef5fbf8b5
+# | 10 triton-opt 0x0000644ef5fc2fc1
+# | 11 triton-opt 0x0000644ef5acf2bd
+# | 12 triton-opt 0x0000644ef5fc35cb
+# | 13 triton-opt 0x0000644ef5a9b843
+# | 14 triton-opt 0x0000644ef5a9b843
+# | 15 triton-opt 0x0000644ef5f87bc3
+# | 16 triton-opt 0x0000644ef668e6bb
+# | 17 triton-opt 0x0000644ef668f239
+# | 18 triton-opt 0x0000644ef6696232
+# | 19 triton-opt 0x0000644ef6695aa2
+# | 20 triton-opt 0x0000644ef668557e
+# | 21 triton-opt 0x0000644ef66847e5
+# | 22 triton-opt 0x0000644efda191d7
+# | 23 triton-opt 0x0000644efda18e40
+# | 24 triton-opt 0x0000644ef667a832
+# | 25 triton-opt 0x0000644ef667ac31
+# | 26 triton-opt 0x0000644ef667ae6d
+# | 27 triton-opt 0x0000644ef5a17dd3
+# | 28 libc.so.6  0x000078270d82a1ca
+# | 29 libc.so.6  0x000078270d82a28b __libc_start_main + 139
+# | 30 triton-opt 0x0000644ef5a7ec05
+# `-----------------------------
+# error: command failed with exit status: -6
+# executed command: FileCheck /home/ryandeng/tpaa/triton/test/TritonGPU/automatic-warp-specialization.mlir --check-prefix=CHECK --check-prefix=BASE --check-prefix=CLEAN
+# .---command stderr------------
+# | FileCheck error: '<stdin>' is empty.
+# | FileCheck command line:  FileCheck /home/ryandeng/tpaa/triton/test/TritonGPU/automatic-warp-specialization.mlir --check-prefix=CHECK --check-prefix=BASE --check-prefix=CLEAN
+# `-----------------------------
+# error: command failed with exit status: 2
+
+--
+
+********************
+FAIL: TRITON :: TritonGPU/pipeline-loop-nest.mlir (24 of 28)
+******************** TEST 'TRITON :: TritonGPU/pipeline-loop-nest.mlir' FAILED ********************
+Exit Code: 2
+
+Command Output (stdout):
+--
+# RUN: at line 1
+/home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/bin/triton-opt /home/ryandeng/tpaa/triton/test/TritonGPU/pipeline-loop-nest.mlir -pass-pipeline='builtin.module(convert-triton-to-tritongpu{num-warps=4 target=cuda:100},tritongpu-coalesce,tritongpu-accelerate-matmul,tritongpu-remove-layout-conversions,tritongpu-optimize-dot-operands,cse,tritongpu-fuse-nested-loops,canonicalize,tritongpu-optimize-accumulator-init,tritongpu-hoist-tmem-alloc,tritongpu-assign-latencies,tritongpu-schedule-loops,tritongpu-pipeline,triton-nvidia-gpu-remove-tmem-tokens,canonicalize)' | FileCheck /home/ryandeng/tpaa/triton/test/TritonGPU/pipeline-loop-nest.mlir --check-prefix=BLACKWELL
+# executed command: /home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/bin/triton-opt /home/ryandeng/tpaa/triton/test/TritonGPU/pipeline-loop-nest.mlir '-pass-pipeline=builtin.module(convert-triton-to-tritongpu{num-warps=4 target=cuda:100},tritongpu-coalesce,tritongpu-accelerate-matmul,tritongpu-remove-layout-conversions,tritongpu-optimize-dot-operands,cse,tritongpu-fuse-nested-loops,canonicalize,tritongpu-optimize-accumulator-init,tritongpu-hoist-tmem-alloc,tritongpu-assign-latencies,tritongpu-schedule-loops,tritongpu-pipeline,triton-nvidia-gpu-remove-tmem-tokens,canonicalize)'
+# .---command stderr------------
+# | triton-opt: /home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/include/triton/Dialect/Triton/IR/Dialect.h.inc:116: void mlir::triton::TritonDialect::LatencyAttrHelper::removeAttr(mlir::Operation*) const: Assertion `op->hasDiscardableAttrOfType<::mlir::IntegerAttr>(name)' failed.
+# | PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace and instructions to reproduce the bug.
+# | Stack dump:
+# | 0.	Program arguments: /home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/bin/triton-opt /home/ryandeng/tpaa/triton/test/TritonGPU/pipeline-loop-nest.mlir "-pass-pipeline=builtin.module(convert-triton-to-tritongpu{num-warps=4 target=cuda:100},tritongpu-coalesce,tritongpu-accelerate-matmul,tritongpu-remove-layout-conversions,tritongpu-optimize-dot-operands,cse,tritongpu-fuse-nested-loops,canonicalize,tritongpu-optimize-accumulator-init,tritongpu-hoist-tmem-alloc,tritongpu-assign-latencies,tritongpu-schedule-loops,tritongpu-pipeline,triton-nvidia-gpu-remove-tmem-tokens,canonicalize)"
+# | Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or set the environment var `LLVM_SYMBOLIZER_PATH` to point to it):
+# | 0  triton-opt 0x00005b385ad7f3da
+# | 1  triton-opt 0x00005b385ad7c2de
+# | 2  triton-opt 0x00005b385ad7fecb
+# | 3  libc.so.6  0x00007f1e64245330
+# | 4  libc.so.6  0x00007f1e6429ec0c pthread_kill + 284
+# | 5  libc.so.6  0x00007f1e6424527e gsignal + 30
+# | 6  libc.so.6  0x00007f1e642288ff abort + 223
+# | 7  libc.so.6  0x00007f1e6422881b
+# | 8  libc.so.6  0x00007f1e6423b517
+# | 9  triton-opt 0x00005b3852f2e8b5
+# | 10 triton-opt 0x00005b3852f31fc1
+# | 11 triton-opt 0x00005b3852a3e2bd
+# | 12 triton-opt 0x00005b3852f325cb
+# | 13 triton-opt 0x00005b3852a0a843
+# | 14 triton-opt 0x00005b3852a0a843
+# | 15 triton-opt 0x00005b3852a0a843
+# | 16 triton-opt 0x00005b3852f2a655
+# | 17 triton-opt 0x00005b38535fd6bb
+# | 18 triton-opt 0x00005b38535fe239
+# | 19 triton-opt 0x00005b3853605232
+# | 20 triton-opt 0x00005b3853604aa2
+# | 21 triton-opt 0x00005b38535f457e
+# | 22 triton-opt 0x00005b38535f37e5
+# | 23 triton-opt 0x00005b385a987d21
+# | 24 triton-opt 0x00005b38535e9832
+# | 25 triton-opt 0x00005b38535e9c31
+# | 26 triton-opt 0x00005b38535e9e6d
+# | 27 triton-opt 0x00005b3852986dd3
+# | 28 libc.so.6  0x00007f1e6422a1ca
+# | 29 libc.so.6  0x00007f1e6422a28b __libc_start_main + 139
+# | 30 triton-opt 0x00005b38529edc05
+# `-----------------------------
+# error: command failed with exit status: -6
+# executed command: FileCheck /home/ryandeng/tpaa/triton/test/TritonGPU/pipeline-loop-nest.mlir --check-prefix=BLACKWELL
+# .---command stderr------------
+# | FileCheck error: '<stdin>' is empty.
+# | FileCheck command line:  FileCheck /home/ryandeng/tpaa/triton/test/TritonGPU/pipeline-loop-nest.mlir --check-prefix=BLACKWELL
+# `-----------------------------
+# error: command failed with exit status: 2
+
+--
+
+********************
+FAIL: TRITON :: TritonGPU/loop-pipeline.mlir (25 of 28)
+******************** TEST 'TRITON :: TritonGPU/loop-pipeline.mlir' FAILED ********************
+Exit Code: 1
+
+Command Output (stdout):
+--
+# RUN: at line 1
+/home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/bin/triton-opt /home/ryandeng/tpaa/triton/test/TritonGPU/loop-pipeline.mlir -split-input-file -tritongpu-assign-latencies -tritongpu-schedule-loops -tritongpu-pipeline=num-stages=3 -canonicalize | FileCheck /home/ryandeng/tpaa/triton/test/TritonGPU/loop-pipeline.mlir --check-prefixes=COMMON,CHECK
+# executed command: /home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/bin/triton-opt /home/ryandeng/tpaa/triton/test/TritonGPU/loop-pipeline.mlir -split-input-file -tritongpu-assign-latencies -tritongpu-schedule-loops -tritongpu-pipeline=num-stages=3 -canonicalize
+# .---command stderr------------
+# | triton-opt: /home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/include/triton/Dialect/Triton/IR/Dialect.h.inc:116: void mlir::triton::TritonDialect::LatencyAttrHelper::removeAttr(mlir::Operation*) const: Assertion `op->hasDiscardableAttrOfType<::mlir::IntegerAttr>(name)' failed.
+# | PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace and instructions to reproduce the bug.
+# | Stack dump:
+# | 0.	Program arguments: /home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/bin/triton-opt /home/ryandeng/tpaa/triton/test/TritonGPU/loop-pipeline.mlir -split-input-file -tritongpu-assign-latencies -tritongpu-schedule-loops -tritongpu-pipeline=num-stages=3 -canonicalize
+# | Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or set the environment var `LLVM_SYMBOLIZER_PATH` to point to it):
+# | 0  triton-opt 0x00005d8132f143da
+# | 1  triton-opt 0x00005d8132f112de
+# | 2  triton-opt 0x00005d8132f14ecb
+# | 3  libc.so.6  0x00007573dee45330
+# | 4  libc.so.6  0x00007573dee9ec0c pthread_kill + 284
+# | 5  libc.so.6  0x00007573dee4527e gsignal + 30
+# | 6  libc.so.6  0x00007573dee288ff abort + 223
+# | 7  libc.so.6  0x00007573dee2881b
+# | 8  libc.so.6  0x00007573dee3b517
+# | 9  triton-opt 0x00005d812b0c38b5
+# | 10 triton-opt 0x00005d812b0c6fc1
+# | 11 triton-opt 0x00005d812abd32bd
+# | 12 triton-opt 0x00005d812b0c75cb
+# | 13 triton-opt 0x00005d812ab9f843
+# | 14 triton-opt 0x00005d812ab9f843
+# | 15 triton-opt 0x00005d812ab9f843
+# | 16 triton-opt 0x00005d812b0bf655
+# | 17 triton-opt 0x00005d812b7926bb
+# | 18 triton-opt 0x00005d812b793239
+# | 19 triton-opt 0x00005d812b79a232
+# | 20 triton-opt 0x00005d812b799aa2
+# | 21 triton-opt 0x00005d812b78957e
+# | 22 triton-opt 0x00005d812b7887e5
+# | 23 triton-opt 0x00005d8132b1d1d7
+# | 24 triton-opt 0x00005d8132b1ce8e
+# | 25 triton-opt 0x00005d812b77e832
+# | 26 triton-opt 0x00005d812b77ec31
+# | 27 triton-opt 0x00005d812b77ee6d
+# | 28 triton-opt 0x00005d812ab1bdd3
+# | 29 libc.so.6  0x00007573dee2a1ca
+# | 30 libc.so.6  0x00007573dee2a28b __libc_start_main + 139
+# | 31 triton-opt 0x00005d812ab82c05
+# `-----------------------------
+# error: command failed with exit status: -6
+# executed command: FileCheck /home/ryandeng/tpaa/triton/test/TritonGPU/loop-pipeline.mlir --check-prefixes=COMMON,CHECK
+# .---command stderr------------
+# | /home/ryandeng/tpaa/triton/test/TritonGPU/loop-pipeline.mlir:888:17: error: CHECK-LABEL: expected string not found in input
+# | // CHECK-LABEL: nested_loops
+# |                 ^
+# | <stdin>:681:46: note: scanning from here
+# |  tt.func @load_two_users_incompatible_layouts(%arg0: !tt.ptr<f16> {tt.divisibility = 16 : i32}, %arg1: !tt.ptr<f16> {tt.divisibility = 16 : i32}) -> (tensor<128x16xf32, #mma>, tensor<128x64xf32, #mma>) {
+# |                                              ^
+# | <stdin>:700:14: note: possible intended match here
+# |  %13 = ttg.convert_layout %5 : tensor<128x64xf16, #blocked> -> tensor<128x64xf16, #ttg.dot_op<{opIdx = 0, parent = #mma, kWidth = 2}>>
+# |              ^
+# | 
+# | Input file: <stdin>
+# | Check file: /home/ryandeng/tpaa/triton/test/TritonGPU/loop-pipeline.mlir
+# | 
+# | -dump-input=help explains the following input dump.
+# | 
+# | Input was:
+# | <<<<<<
+# |              .
+# |              .
+# |              .
+# |            676: #mma = #ttg.nvidia_mma<{versionMajor = 2, versionMinor = 0, warpsPerCTA = [4, 1], instrShape = [16, 8]}> 
+# |            677: #shared = #ttg.swizzled_shared<{vec = 4, perPhase = 1, maxPhase = 2, order = [0, 1]}> 
+# |            678: #shared1 = #ttg.swizzled_shared<{vec = 4, perPhase = 1, maxPhase = 2, order = [1, 0]}> 
+# |            679: #smem = #ttg.shared_memory 
+# |            680: module attributes {"ttg.num-ctas" = 1 : i32, "ttg.num-warps" = 4 : i32} { 
+# |            681:  tt.func @load_two_users_incompatible_layouts(%arg0: !tt.ptr<f16> {tt.divisibility = 16 : i32}, %arg1: !tt.ptr<f16> {tt.divisibility = 16 : i32}) -> (tensor<128x16xf32, #mma>, tensor<128x64xf32, #mma>) { 
+# | label:888'0                                                 {                                                                                                                                                                 search range start (exclusive)
+# | label:888'1                                                                                                                                                                                                                   error: no match found in search range
+# |            682:  %c0_i32 = arith.constant 0 : i32 
+# |            683:  %cst = arith.constant dense<0.000000e+00> : tensor<128x16xf32, #mma> 
+# |            684:  %cst_0 = arith.constant dense<0.000000e+00> : tensor<128x64xf32, #mma> 
+# |            685:  %c1_i32 = arith.constant 1 : i32 
+# |            686:  %c8_i32 = arith.constant 8 : i32 
+# |              .
+# |              .
+# |              .
+# |            695:  %8 = tt.splat %arg0 : !tt.ptr<f16> -> tensor<64x16x!tt.ptr<f16>, #blocked1> 
+# |            696:  %9 = tt.broadcast %7 : tensor<64x1xi32, #blocked1> -> tensor<64x16xi32, #blocked1> 
+# |            697:  %10 = tt.addptr %8, %9 : tensor<64x16x!tt.ptr<f16>, #blocked1>, tensor<64x16xi32, #blocked1> 
+# |            698:  %11:2 = scf.for %arg2 = %c0_i32 to %c8_i32 step %c1_i32 iter_args(%arg3 = %cst, %arg4 = %cst_0) -> (tensor<128x16xf32, #mma>, tensor<128x64xf32, #mma>) : i32 { 
+# |            699:  %12 = tt.load %10 : tensor<64x16x!tt.ptr<f16>, #blocked1> 
+# |            700:  %13 = ttg.convert_layout %5 : tensor<128x64xf16, #blocked> -> tensor<128x64xf16, #ttg.dot_op<{opIdx = 0, parent = #mma, kWidth = 2}>> 
+# | label:888'2                  ?                                                                                                                           possible intended match
+# |            701:  %14 = ttg.convert_layout %12 : tensor<64x16xf16, #blocked1> -> tensor<64x16xf16, #ttg.dot_op<{opIdx = 1, parent = #mma, kWidth = 2}>> 
+# |            702:  %15 = tt.dot %13, %14, %cst : tensor<128x64xf16, #ttg.dot_op<{opIdx = 0, parent = #mma, kWidth = 2}>> * tensor<64x16xf16, #ttg.dot_op<{opIdx = 1, parent = #mma, kWidth = 2}>> -> tensor<128x16xf32, #mma> 
+# |            703:  %16 = arith.truncf %15 : tensor<128x16xf32, #mma> to tensor<128x16xf16, #mma> 
+# |            704:  %17 = ttg.convert_layout %16 : tensor<128x16xf16, #mma> -> tensor<128x16xf16, #ttg.dot_op<{opIdx = 0, parent = #mma, kWidth = 2}>> 
+# |            705:  %18 = ttg.local_alloc %12 : (tensor<64x16xf16, #blocked1>) -> !ttg.memdesc<64x16xf16, #shared, #smem> 
+# |              .
+# |              .
+# |              .
+# |            710:  } 
+# |            711:  tt.return %11#0, %11#1 : tensor<128x16xf32, #mma>, tensor<128x64xf32, #mma> 
+# |            712:  } 
+# |            713: } 
+# |            714:  
+# |            715: // ----- 
+# | label:888'3              } search range end (exclusive)
+# | >>>>>>
+# `-----------------------------
+# error: command failed with exit status: 1
+
+--
+
+********************
+FAIL: TRITON :: TritonGPU/pipeline-assign-latencies.mlir (26 of 28)
+******************** TEST 'TRITON :: TritonGPU/pipeline-assign-latencies.mlir' FAILED ********************
+Exit Code: 1
+
+Command Output (stdout):
+--
+# RUN: at line 1
+/home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/bin/triton-opt /home/ryandeng/tpaa/triton/test/TritonGPU/pipeline-assign-latencies.mlir -split-input-file -allow-unregistered-dialect -tritongpu-assign-latencies=num-stages=3 -canonicalize | FileCheck /home/ryandeng/tpaa/triton/test/TritonGPU/pipeline-assign-latencies.mlir
+# executed command: /home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/bin/triton-opt /home/ryandeng/tpaa/triton/test/TritonGPU/pipeline-assign-latencies.mlir -split-input-file -allow-unregistered-dialect -tritongpu-assign-latencies=num-stages=3 -canonicalize
+# .---command stderr------------
+# | triton-opt: /home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/include/triton/Dialect/Triton/IR/Dialect.h.inc:116: void mlir::triton::TritonDialect::LatencyAttrHelper::removeAttr(mlir::Operation*) const: Assertion `op->hasDiscardableAttrOfType<::mlir::IntegerAttr>(name)' failed.
+# | PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace and instructions to reproduce the bug.
+# | Stack dump:
+# | 0.	Program arguments: /home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/bin/triton-opt /home/ryandeng/tpaa/triton/test/TritonGPU/pipeline-assign-latencies.mlir -split-input-file -allow-unregistered-dialect -tritongpu-assign-latencies=num-stages=3 -canonicalize
+# | Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or set the environment var `LLVM_SYMBOLIZER_PATH` to point to it):
+# | 0  triton-opt 0x00005a4f2272e3da
+# | 1  triton-opt 0x00005a4f2272b2de
+# | 2  triton-opt 0x00005a4f2272eecb
+# | 3  libc.so.6  0x000074cf9e245330
+# | 4  libc.so.6  0x000074cf9e29ec0c pthread_kill + 284
+# | 5  libc.so.6  0x000074cf9e24527e gsignal + 30
+# | 6  libc.so.6  0x000074cf9e2288ff abort + 223
+# | 7  libc.so.6  0x000074cf9e22881b
+# | 8  libc.so.6  0x000074cf9e23b517
+# | 9  triton-opt 0x00005a4f1a8dd8b5
+# | 10 triton-opt 0x00005a4f1a8e0fc1
+# | 11 triton-opt 0x00005a4f1a3ed2bd
+# | 12 triton-opt 0x00005a4f1a8e15cb
+# | 13 triton-opt 0x00005a4f1a3b9843
+# | 14 triton-opt 0x00005a4f1a3b9843
+# | 15 triton-opt 0x00005a4f1a8a5bc3
+# | 16 triton-opt 0x00005a4f1afac6bb
+# | 17 triton-opt 0x00005a4f1afad239
+# | 18 triton-opt 0x00005a4f1afb4232
+# | 19 triton-opt 0x00005a4f1afb3aa2
+# | 20 triton-opt 0x00005a4f1afa357e
+# | 21 triton-opt 0x00005a4f1afa27e5
+# | 22 triton-opt 0x00005a4f223371d7
+# | 23 triton-opt 0x00005a4f22336e8e
+# | 24 triton-opt 0x00005a4f1af98832
+# | 25 triton-opt 0x00005a4f1af98c31
+# | 26 triton-opt 0x00005a4f1af98e6d
+# | 27 triton-opt 0x00005a4f1a335dd3
+# | 28 libc.so.6  0x000074cf9e22a1ca
+# | 29 libc.so.6  0x000074cf9e22a28b __libc_start_main + 139
+# | 30 triton-opt 0x00005a4f1a39cc05
+# `-----------------------------
+# error: command failed with exit status: -6
+# executed command: FileCheck /home/ryandeng/tpaa/triton/test/TritonGPU/pipeline-assign-latencies.mlir
+# .---command stderr------------
+# | /home/ryandeng/tpaa/triton/test/TritonGPU/pipeline-assign-latencies.mlir:1066:17: error: CHECK-LABEL: expected string not found in input
+# | // CHECK-LABEL: @attention_forward
+# |                 ^
+# | <stdin>:713:40: note: scanning from here
+# |  tt.func public @changed_acc_before_mma(%arg0: tensor<128x128x!tt.ptr<f16>, #blocked> {tt.contiguity = dense<[1, 16]> : tensor<2xi32>, tt.divisibility = dense<16> : tensor<2xi32>}, %arg1: tensor<128x128x!tt.ptr<f16>, #blocked> {tt.contiguity = dense<[1, 16]> : tensor<2xi32>, tt.divisibility = dense<16> : tensor<2xi32>}, %arg2: i32) -> tensor<128x128xf16, #blocked1> {
+# |                                        ^
+# | <stdin>:719:81: note: possible intended match here
+# |  %result, %token = ttng.tmem_alloc : () -> (!ttg.memdesc<128x128xf32, #tmem, #ttng.tensor_memory, mutable>, !ttg.async.token)
+# |                                                                                 ^
+# | 
+# | Input file: <stdin>
+# | Check file: /home/ryandeng/tpaa/triton/test/TritonGPU/pipeline-assign-latencies.mlir
+# | 
+# | -dump-input=help explains the following input dump.
+# | 
+# | Input was:
+# | <<<<<<
+# |               .
+# |               .
+# |               .
+# |             708: #blocked1 = #ttg.blocked<{sizePerThread = [1, 128], threadsPerWarp = [32, 1], warpsPerCTA = [4, 1], order = [1, 0]}> 
+# |             709: #shared = #ttg.nvmma_shared<{swizzlingByteWidth = 128, transposed = false, elementBitWidth = 16}> 
+# |             710: #smem = #ttg.shared_memory 
+# |             711: #tmem = #ttng.tensor_memory_encoding<blockM = 128, blockN = 128, colStride = 1> 
+# |             712: module attributes {"ttg.num-ctas" = 1 : i32, "ttg.num-warps" = 4 : i32, ttg.target = "cuda:100", "ttg.threads-per-warp" = 32 : i32} { 
+# |             713:  tt.func public @changed_acc_before_mma(%arg0: tensor<128x128x!tt.ptr<f16>, #blocked> {tt.contiguity = dense<[1, 16]> : tensor<2xi32>, tt.divisibility = dense<16> : tensor<2xi32>}, %arg1: tensor<128x128x!tt.ptr<f16>, #blocked> {tt.contiguity = dense<[1, 16]> : tensor<2xi32>, tt.divisibility = dense<16> : tensor<2xi32>}, %arg2: i32) -> tensor<128x128xf16, #blocked1> { 
+# | label:1066'0                                           {                                                                                                                                                                                                                                                                                                                                             search range start (exclusive)
+# | label:1066'1                                                                                                                                                                                                                                                                                                                                                                                         error: no match found in search range
+# |             714:  %true = arith.constant true 
+# |             715:  %cst = arith.constant dense<0.000000e+00> : tensor<128x128xf32, #blocked1> 
+# |             716:  %cst_0 = arith.constant dense<2.000000e+00> : tensor<128x128xf32, #blocked1> 
+# |             717:  %c0_i32 = arith.constant 0 : i32 
+# |             718:  %c1_i32 = arith.constant 1 : i32 
+# |             719:  %result, %token = ttng.tmem_alloc : () -> (!ttg.memdesc<128x128xf32, #tmem, #ttng.tensor_memory, mutable>, !ttg.async.token) 
+# | label:1066'2                                                                                     ?                                               possible intended match
+# |             720:  %0 = ttng.tmem_store %cst, %result[%token], %true : tensor<128x128xf32, #blocked1> -> !ttg.memdesc<128x128xf32, #tmem, #ttng.tensor_memory, mutable> 
+# |             721:  %1 = scf.for %arg3 = %c0_i32 to %arg2 step %c1_i32 iter_args(%arg4 = %0) -> (!ttg.async.token) : i32 { 
+# |             722:  %3 = tt.load %arg0 {tt.latency = 2 : i32} : tensor<128x128x!tt.ptr<f16>, #blocked> 
+# |             723:  %4 = ttg.local_alloc %3 : (tensor<128x128xf16, #blocked>) -> !ttg.memdesc<128x128xf16, #shared, #smem, mutable> 
+# |             724:  %5 = tt.load %arg1 {tt.latency = 2 : i32} : tensor<128x128x!tt.ptr<f16>, #blocked> 
+# |               .
+# |               .
+# |               .
+# |             733:  %2 = arith.truncf %result_1 : tensor<128x128xf32, #blocked1> to tensor<128x128xf16, #blocked1> 
+# |             734:  tt.return %2 : tensor<128x128xf16, #blocked1> 
+# |             735:  } 
+# |             736: } 
+# |             737:  
+# |             738: // ----- 
+# | label:1066'3              } search range end (exclusive)
+# | >>>>>>
+# `-----------------------------
+# error: command failed with exit status: 1
+
+--
+
+********************
+FAIL: TRITON :: TritonGPU/loop-pipeline-blackwell.mlir (27 of 28)
+******************** TEST 'TRITON :: TritonGPU/loop-pipeline-blackwell.mlir' FAILED ********************
+Exit Code: 1
+
+Command Output (stdout):
+--
+# RUN: at line 1
+/home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/bin/triton-opt /home/ryandeng/tpaa/triton/test/TritonGPU/loop-pipeline-blackwell.mlir -split-input-file -tritongpu-hoist-tmem-alloc -tritongpu-assign-latencies -tritongpu-schedule-loops -tritongpu-pipeline -triton-nvidia-gpu-remove-tmem-tokens -canonicalize | FileCheck /home/ryandeng/tpaa/triton/test/TritonGPU/loop-pipeline-blackwell.mlir --check-prefixes=CHECK
+# executed command: /home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/bin/triton-opt /home/ryandeng/tpaa/triton/test/TritonGPU/loop-pipeline-blackwell.mlir -split-input-file -tritongpu-hoist-tmem-alloc -tritongpu-assign-latencies -tritongpu-schedule-loops -tritongpu-pipeline -triton-nvidia-gpu-remove-tmem-tokens -canonicalize
+# .---command stderr------------
+# | triton-opt: /home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/include/triton/Dialect/Triton/IR/Dialect.h.inc:116: void mlir::triton::TritonDialect::LatencyAttrHelper::removeAttr(mlir::Operation*) const: Assertion `op->hasDiscardableAttrOfType<::mlir::IntegerAttr>(name)' failed.
+# | PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace and instructions to reproduce the bug.
+# | Stack dump:
+# | 0.	Program arguments: /home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/bin/triton-opt /home/ryandeng/tpaa/triton/test/TritonGPU/loop-pipeline-blackwell.mlir -split-input-file -tritongpu-hoist-tmem-alloc -tritongpu-assign-latencies -tritongpu-schedule-loops -tritongpu-pipeline -triton-nvidia-gpu-remove-tmem-tokens -canonicalize
+# | Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or set the environment var `LLVM_SYMBOLIZER_PATH` to point to it):
+# | 0  triton-opt 0x000058a9567a63da
+# | 1  triton-opt 0x000058a9567a32de
+# | 2  triton-opt 0x000058a9567a6ecb
+# | 3  libc.so.6  0x0000729e45645330
+# | 4  libc.so.6  0x0000729e4569ec0c pthread_kill + 284
+# | 5  libc.so.6  0x0000729e4564527e gsignal + 30
+# | 6  libc.so.6  0x0000729e456288ff abort + 223
+# | 7  libc.so.6  0x0000729e4562881b
+# | 8  libc.so.6  0x0000729e4563b517
+# | 9  triton-opt 0x000058a94e9558b5
+# | 10 triton-opt 0x000058a94e958fc1
+# | 11 triton-opt 0x000058a94e4652bd
+# | 12 triton-opt 0x000058a94e9595cb
+# | 13 triton-opt 0x000058a94e431843
+# | 14 triton-opt 0x000058a94e431843
+# | 15 triton-opt 0x000058a94e951655
+# | 16 triton-opt 0x000058a94f0246bb
+# | 17 triton-opt 0x000058a94f025239
+# | 18 triton-opt 0x000058a94f02c232
+# | 19 triton-opt 0x000058a94f02baa2
+# | 20 triton-opt 0x000058a94f01b57e
+# | 21 triton-opt 0x000058a94f01a7e5
+# | 22 triton-opt 0x000058a9563af1d7
+# | 23 triton-opt 0x000058a9563aee8e
+# | 24 triton-opt 0x000058a94f010832
+# | 25 triton-opt 0x000058a94f010c31
+# | 26 triton-opt 0x000058a94f010e6d
+# | 27 triton-opt 0x000058a94e3addd3
+# | 28 libc.so.6  0x0000729e4562a1ca
+# | 29 libc.so.6  0x0000729e4562a28b __libc_start_main + 139
+# | 30 triton-opt 0x000058a94e414c05
+# `-----------------------------
+# error: command failed with exit status: -6
+# executed command: FileCheck /home/ryandeng/tpaa/triton/test/TritonGPU/loop-pipeline-blackwell.mlir --check-prefixes=CHECK
+# .---command stderr------------
+# | /home/ryandeng/tpaa/triton/test/TritonGPU/loop-pipeline-blackwell.mlir:422:17: error: CHECK-LABEL: expected string not found in input
+# | // CHECK-LABEL: @load_into_async_mma
+# |                 ^
+# | <stdin>:299:35: note: scanning from here
+# |  tt.func private @pipelined_gather(%arg0: !tt.tensordesc<1x128xbf16, #shared>, %arg1: !tt.tensordesc<1x32xbf16, #shared1>, %arg2: tensor<32xi32, #ttg.slice<{dim = 0, parent = #blocked}>>, %arg3: tensor<128xi32, #ttg.slice<{dim = 0, parent = #blocked}>>) -> tensor<32x32xf32, #blocked1> {
+# |                                   ^
+# | <stdin>:309:48: note: possible intended match here
+# |  %cst = arith.constant dense<0.000000e+00> : tensor<32x32xf32, #mma>
+# |                                                ^
+# | 
+# | Input file: <stdin>
+# | Check file: /home/ryandeng/tpaa/triton/test/TritonGPU/loop-pipeline-blackwell.mlir
+# | 
+# | -dump-input=help explains the following input dump.
+# | 
+# | Input was:
+# | <<<<<<
+# |              .
+# |              .
+# |              .
+# |            294: #shared = #ttg.nvmma_shared<{swizzlingByteWidth = 128, transposed = false, elementBitWidth = 16}> 
+# |            295: #shared1 = #ttg.nvmma_shared<{swizzlingByteWidth = 64, transposed = false, elementBitWidth = 16}> 
+# |            296: #shared2 = #ttg.swizzled_shared<{vec = 1, perPhase = 1, maxPhase = 1, order = [0]}> 
+# |            297: #smem = #ttg.shared_memory 
+# |            298: module attributes {"ttg.num-ctas" = 1 : i32, "ttg.num-warps" = 4 : i32, ttg.target = "cuda:100"} { 
+# |            299:  tt.func private @pipelined_gather(%arg0: !tt.tensordesc<1x128xbf16, #shared>, %arg1: !tt.tensordesc<1x32xbf16, #shared1>, %arg2: tensor<32xi32, #ttg.slice<{dim = 0, parent = #blocked}>>, %arg3: tensor<128xi32, #ttg.slice<{dim = 0, parent = #blocked}>>) -> tensor<32x32xf32, #blocked1> { 
+# | label:422'0                                      {                                                                                                                                                                                                                                                                search range start (exclusive)
+# | label:422'1                                                                                                                                                                                                                                                                                                       error: no match found in search range
+# |            300:  %c256_i32 = arith.constant 256 : i32 
+# |            301:  %c768_i32 = arith.constant 768 : i32 
+# |            302:  %true = arith.constant true 
+# |            303:  %c2_i32 = arith.constant 2 : i32 
+# |            304:  %c1_i32 = arith.constant 1 : i32 
+# |            305:  %c-1_i32 = arith.constant -1 : i32 
+# |            306:  %c0_i32 = arith.constant 0 : i32 
+# |            307:  %c128_i32 = arith.constant 128 : i32 
+# |            308:  %c1024_i32 = arith.constant 1024 : i32 
+# |            309:  %cst = arith.constant dense<0.000000e+00> : tensor<32x32xf32, #mma> 
+# | label:422'2                                                    ?                       possible intended match
+# |            310:  %0 = ttg.local_alloc : () -> !ttg.memdesc<2x32x128xbf16, #shared, #smem, mutable> 
+# |            311:  %1 = ttg.local_alloc : () -> !ttg.memdesc<2x128x32xbf16, #shared1, #smem, mutable> 
+# |            312:  %2 = ttg.local_alloc : () -> !ttg.memdesc<2x1xi64, #shared2, #smem, mutable> 
+# |            313:  %3 = ttg.memdesc_index %2[%c0_i32] : !ttg.memdesc<2x1xi64, #shared2, #smem, mutable> -> !ttg.memdesc<1xi64, #shared2, #smem, mutable> 
+# |            314:  ttng.init_barrier %3, 1 : !ttg.memdesc<1xi64, #shared2, #smem, mutable> 
+# |              .
+# |              .
+# |              .
+# |            700:  %result_3 = ttng.tmem_load %result : !ttg.memdesc<128x128xf32, #tmem, #ttng.tensor_memory, mutable> -> tensor<128x128xf32, #blocked> 
+# |            701:  tt.return %result_3 : tensor<128x128xf32, #blocked> 
+# |            702:  } 
+# |            703: } 
+# |            704:  
+# |            705: // ----- 
+# | label:422'3              } search range end (exclusive)
+# | >>>>>>
+# `-----------------------------
+# error: command failed with exit status: 1
+
+--
+
+********************
+PASS: TRITON :: TritonGPU/pipeline-lower-loop.mlir (28 of 28)
+
+1 warning(s) in tests
+********************
+Failed Tests (9):
+  TRITON :: TritonGPU/automatic-warp-specialization.mlir
+  TRITON :: TritonGPU/loop-pipeline-async-latencies.mlir
+  TRITON :: TritonGPU/loop-pipeline-blackwell.mlir
+  TRITON :: TritonGPU/loop-pipeline-expand.mlir
+  TRITON :: TritonGPU/loop-pipeline.mlir
+  TRITON :: TritonGPU/matmul-loop-pipeline.mlir
+  TRITON :: TritonGPU/partition-scheduling.mlir
+  TRITON :: TritonGPU/pipeline-assign-latencies.mlir
+  TRITON :: TritonGPU/pipeline-loop-nest.mlir
+
+
+Testing Time: 0.40s
+
+Total Discovered Tests: 28
+  Passed: 19 (67.86%)
+  Failed:  9 (32.14%)

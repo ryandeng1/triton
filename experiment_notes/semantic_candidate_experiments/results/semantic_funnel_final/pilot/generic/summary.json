@@ -1,0 +1,2754 @@
+{
+  "benchmark": {
+    "distinction": "Seven host configurations times three input dtypes. Explicit runtime scalars yield three compiler specializations, each compiled in three variants; not 21 independent source kernels.",
+    "dtypes": [
+      "fp16",
+      "fp32",
+      "bf16"
+    ],
+    "function": "test_unfold_backward",
+    "input_cases": 21,
+    "path": "benchmark/test_unfold.py",
+    "sha256": "1484aae056f9965abe2c3d9ca8704d1530adb9514895645e615b6528c5e1b50c",
+    "shape_line": 36,
+    "shapes": [
+      [
+        [
+          32,
+          64
+        ],
+        1,
+        16,
+        16
+      ],
+      [
+        [
+          16,
+          33
+        ],
+        0,
+        5,
+        2
+      ],
+      [
+        [
+          4,
+          8,
+          12
+        ],
+        -1,
+        6,
+        4
+      ],
+      [
+        [
+          7,
+          13
+        ],
+        1,
+        13,
+        3
+      ],
+      [
+        [
+          6,
+          20
+        ],
+        1,
+        7,
+        4
+      ],
+      [
+        [
+          2,
+          3,
+          17
+        ],
+        -1,
+        9,
+        1
+      ],
+      [
+        [
+          2,
+          17
+        ],
+        1,
+        4,
+        6
+      ]
+    ]
+  },
+  "compiler": {
+    "native_library_sha256": "600f64d69c767567ecf271b1393ab08c8ce187c0f520581357979e21c71ba3dd",
+    "native_library_sha256_at_finalization": "600f64d69c767567ecf271b1393ab08c8ce187c0f520581357979e21c71ba3dd",
+    "native_library_unchanged_since_compilation": true,
+    "version": "3.9.0"
+  },
+  "contract": {
+    "assumptions": [
+      "Same-stream initialized output is private until completion; invocation inputs remain live and within allocation bounds.",
+      "Original wrapper valid-input domain is retained; no arbitrary pointer aliases or concurrent external observers.",
+      "Compilation applies exactly the private-output/disjoint-input contract already implied by this allocation; no unordered-reduction assertion or changed atomic expression."
+    ],
+    "evidence": [
+      {
+        "fact": "Fresh torch.zeros fp32 output is allocated inside the wrapper before the launch.",
+        "line": 80,
+        "path": "src/flag_gems/ops/unfold_backward.py"
+      },
+      {
+        "fact": "One launch consumes grad_in and the new output; output is only returned/cast after the launch.",
+        "line": 87,
+        "path": "src/flag_gems/ops/unfold_backward.py"
+      },
+      {
+        "fact": "Kernel has one unused-result atomic-add and reads only grad_in. Output is never read by ordinary accesses.",
+        "line": 55,
+        "path": "src/flag_gems/ops/unfold_backward.py"
+      }
+    ],
+    "host_function": "unfold_backward",
+    "output_argument": "grad_out_ptr",
+    "status": "manually_reviewed_for_wrapper_and_pilot"
+  },
+  "correctness": {
+    "cases": 21,
+    "colliding_cases": 12,
+    "exact_small_integer_cases": 21,
+    "random_reference": "CPU float64 torch.ops.aten.unfold_backward of represented input values; per-destination gamma_(n-1)*sum(abs(x)) error bound; before the wrapper's final dtype conversion",
+    "status": "passed",
+    "variants": 3
+  },
+  "function": "_unfold_backward_kernel",
+  "manual_only_sem_keyword_ast_audited": true,
+  "native_manual_ptx_instructions_equal": {
+    "bf16": true,
+    "fp16": true,
+    "fp32": true
+  },
+  "original_body_ast_equal": true,
+  "original_body_ast_sha256": "9a808247c8579132e6968b078b39cf366388d8d2096a38c7359eead389957f0a",
+  "revision": "3f1f896fd90f5db42d167d64fcb9691326071bc2",
+  "source_path": "src/flag_gems/ops/unfold_backward.py",
+  "source_sha256": "9995254fa17719711b5e16844006be62799003233a629a046a1094d4cc1c6707",
+  "status": "gpu_pilot",
+  "target": {
+    "arch": 103,
+    "backend": "cuda",
+    "warp_size": 32
+  },
+  "timing": {
+    "cases": [
+      {
+        "backing_allocations_verified_disjoint": true,
+        "destinations_with_collisions": 0,
+        "device_timing": {
+          "median_us": {
+            "baseline": 2.290239930152893,
+            "manual": 1.7532800137996674,
+            "private": 1.7599999904632568,
+            "reset_only": 0.8009599894285202
+          },
+          "order": "randomized interleaving; clocks not locked",
+          "repetitions": 100,
+          "rounds": 9,
+          "samples_us": {
+            "baseline": [
+              2.311359941959381,
+              2.2972799837589264,
+              2.287359982728958,
+              2.2947199642658234,
+              2.2896000742912292,
+              2.290239930152893,
+              2.289920002222061,
+              2.2857600450515747,
+              2.2918400168418884
+            ],
+            "manual": [
+              1.7564800381660461,
+              1.746239960193634,
+              1.7561599612236023,
+              1.7587199807167053,
+              1.74112007021904,
+              1.75135999917984,
+              1.7440000176429749,
+              1.7587199807167053,
+              1.7532800137996674
+            ],
+            "private": [
+              1.7660799622535706,
+              1.7472000420093536,
+              1.7599999904632568,
+              1.761920005083084,
+              1.7452800273895264,
+              1.7446400225162506,
+              1.7664000391960144,
+              1.7417599260807037,
+              1.7664000391960144
+            ],
+            "reset_only": [
+              0.8409599959850311,
+              0.8054400235414505,
+              0.8048000186681747,
+              0.8009599894285202,
+              0.8019199967384338,
+              0.7865600287914276,
+              0.7983999699354172,
+              0.7948800176382065,
+              0.7894399762153625
+            ]
+          },
+          "warmup_ms": 50
+        },
+        "dtype": "fp16",
+        "exact_integer_correctness": {
+          "baseline": true,
+          "manual": true,
+          "private": true
+        },
+        "grid": [
+          16,
+          1,
+          1
+        ],
+        "input_elements": 2048,
+        "maximum_contributions": 1,
+        "native_to_manual": 1.0038328028670254,
+        "output_elements": 2048,
+        "random_maximum_error": {
+          "baseline": 0.0,
+          "manual": 0.0,
+          "private": 0.0
+        },
+        "random_maximum_error_bound": 0.0,
+        "reset_only_ms": 0.0008009599894285202,
+        "reset_plus_kernel_ms": {
+          "baseline": 0.002290239930152893,
+          "manual": 0.0017532800137996674,
+          "private": 0.001759999990463257
+        },
+        "shape": [
+          [
+            32,
+            64
+          ],
+          1,
+          16,
+          16
+        ],
+        "speedup": 1.3012726946379525
+      },
+      {
+        "backing_allocations_verified_disjoint": true,
+        "destinations_with_collisions": 0,
+        "device_timing": {
+          "median_us": {
+            "baseline": 2.3078399896621704,
+            "manual": 1.7315199971199036,
+            "private": 1.722240000963211,
+            "reset_only": 0.798719972372055
+          },
+          "order": "randomized interleaving; clocks not locked",
+          "repetitions": 100,
+          "rounds": 9,
+          "samples_us": {
+            "baseline": [
+              2.3532800376415253,
+              2.311359941959381,
+              2.3052799701690674,
+              2.2896000742912292,
+              2.333119958639145,
+              2.3100799322128296,
+              2.3078399896621704,
+              2.3052799701690674,
+              2.2915199398994446
+            ],
+            "manual": [
+              1.7315199971199036,
+              1.732800006866455,
+              1.7177599668502808,
+              1.7263999581336975,
+              1.7209599912166595,
+              1.732800006866455,
+              1.7398400604724884,
+              1.719679981470108,
+              1.7481599748134613
+            ],
+            "private": [
+              1.7350399494171143,
+              1.7177599668502808,
+              1.7350399494171143,
+              1.722240000963211,
+              1.7299200594425201,
+              1.7193600535392761,
+              1.7183999717235565,
+              1.7273600399494171,
+              1.7174400389194489
+            ],
+            "reset_only": [
+              0.8044800162315369,
+              0.7993599772453308,
+              0.7980799674987793,
+              0.7945600152015686,
+              0.785600021481514,
+              0.7990399748086929,
+              0.7952000200748444,
+              0.7999999821186066,
+              0.798719972372055
+            ]
+          },
+          "warmup_ms": 50
+        },
+        "dtype": "fp32",
+        "exact_integer_correctness": {
+          "baseline": true,
+          "manual": true,
+          "private": true
+        },
+        "grid": [
+          16,
+          1,
+          1
+        ],
+        "input_elements": 2048,
+        "maximum_contributions": 1,
+        "native_to_manual": 0.9946405492445204,
+        "output_elements": 2048,
+        "random_maximum_error": {
+          "baseline": 0.0,
+          "manual": 0.0,
+          "private": 0.0
+        },
+        "random_maximum_error_bound": 0.0,
+        "reset_only_ms": 0.0007987199723720551,
+        "reset_plus_kernel_ms": {
+          "baseline": 0.0023078399896621703,
+          "manual": 0.0017315199971199035,
+          "private": 0.0017222400009632112
+        },
+        "shape": [
+          [
+            32,
+            64
+          ],
+          1,
+          16,
+          16
+        ],
+        "speedup": 1.3400222897920417
+      },
+      {
+        "backing_allocations_verified_disjoint": true,
+        "destinations_with_collisions": 0,
+        "device_timing": {
+          "median_us": {
+            "baseline": 2.412800043821335,
+            "manual": 1.7343999445438385,
+            "private": 1.7395199835300446,
+            "reset_only": 0.7968000322580338
+          },
+          "order": "randomized interleaving; clocks not locked",
+          "repetitions": 100,
+          "rounds": 9,
+          "samples_us": {
+            "baseline": [
+              2.4083200097084045,
+              2.412800043821335,
+              2.4143999814987183,
+              2.410240024328232,
+              2.4217599630355835,
+              2.407680004835129,
+              2.4143999814987183,
+              2.4115200340747833,
+              2.4140800535678864
+            ],
+            "manual": [
+              1.7535999417304993,
+              1.732800006866455,
+              1.7443199455738068,
+              1.7315199971199036,
+              1.7231999337673187,
+              1.7423999309539795,
+              1.7343999445438385,
+              1.7289599776268005,
+              1.7446400225162506
+            ],
+            "private": [
+              1.743360012769699,
+              1.7475199699401855,
+              1.7395199835300446,
+              1.733119934797287,
+              1.7472000420093536,
+              1.7395199835300446,
+              1.738560050725937,
+              1.7369599640369415,
+              1.7312000691890717
+            ],
+            "reset_only": [
+              0.7990399748086929,
+              0.8064000308513641,
+              0.7964800298213959,
+              0.7968000322580338,
+              0.7865600287914276,
+              0.8054400235414505,
+              0.798719972372055,
+              0.7948800176382065,
+              0.7891199737787247
+            ]
+          },
+          "warmup_ms": 50
+        },
+        "dtype": "bf16",
+        "exact_integer_correctness": {
+          "baseline": true,
+          "manual": true,
+          "private": true
+        },
+        "grid": [
+          16,
+          1,
+          1
+        ],
+        "input_elements": 2048,
+        "maximum_contributions": 1,
+        "native_to_manual": 1.002952052092894,
+        "output_elements": 2048,
+        "random_maximum_error": {
+          "baseline": 0.0,
+          "manual": 0.0,
+          "private": 0.0
+        },
+        "random_maximum_error_bound": 0.0,
+        "reset_only_ms": 0.0007968000322580338,
+        "reset_plus_kernel_ms": {
+          "baseline": 0.0024128000438213347,
+          "manual": 0.0017343999445438385,
+          "private": 0.0017395199835300447
+        },
+        "shape": [
+          [
+            32,
+            64
+          ],
+          1,
+          16,
+          16
+        ],
+        "speedup": 1.3870493392809369
+      },
+      {
+        "backing_allocations_verified_disjoint": true,
+        "destinations_with_collisions": 363,
+        "device_timing": {
+          "median_us": {
+            "baseline": 2.0444799959659576,
+            "manual": 1.6422399878501892,
+            "private": 1.6489599645137787,
+            "reset_only": 0.9302400052547455
+          },
+          "order": "randomized interleaving; clocks not locked",
+          "repetitions": 100,
+          "rounds": 9,
+          "samples_us": {
+            "baseline": [
+              2.04352006316185,
+              2.0380799472332,
+              2.0390400290489197,
+              2.0448000729084015,
+              2.0444799959659576,
+              2.038400024175644,
+              2.0534400641918182,
+              2.054080069065094,
+              2.0473599433898926
+            ],
+            "manual": [
+              1.6700799763202667,
+              1.6448000073432922,
+              1.653759926557541,
+              1.6291199624538422,
+              1.6422399878501892,
+              1.650879979133606,
+              1.6278399527072906,
+              1.6291199624538422,
+              1.6326400637626648
+            ],
+            "private": [
+              1.640319973230362,
+              1.6553600132465363,
+              1.6412800550460815,
+              1.6313600540161133,
+              1.695999950170517,
+              1.6489599645137787,
+              1.6316799819469452,
+              1.6489599645137787,
+              1.6540800034999847
+            ],
+            "reset_only": [
+              0.9273599833250046,
+              0.9328000247478485,
+              0.9302400052547455,
+              0.9279999881982803,
+              0.9411200135946274,
+              0.9251199662685394,
+              0.9366399794816971,
+              0.942080020904541,
+              0.9299200028181076
+            ]
+          },
+          "warmup_ms": 50
+        },
+        "dtype": "fp16",
+        "exact_integer_correctness": {
+          "baseline": true,
+          "manual": true,
+          "private": true
+        },
+        "grid": [
+          8,
+          1,
+          1
+        ],
+        "input_elements": 990,
+        "maximum_contributions": 3,
+        "native_to_manual": 1.0040919577609277,
+        "output_elements": 528,
+        "random_maximum_error": {
+          "baseline": 0.0,
+          "manual": 0.0,
+          "private": 0.0
+        },
+        "random_maximum_error_bound": 6.501214422430327e-07,
+        "reset_only_ms": 0.0009302400052547455,
+        "reset_plus_kernel_ms": {
+          "baseline": 0.002044479995965958,
+          "manual": 0.0016422399878501892,
+          "private": 0.0016489599645137787
+        },
+        "shape": [
+          [
+            16,
+            33
+          ],
+          0,
+          5,
+          2
+        ],
+        "speedup": 1.239860299803461
+      },
+      {
+        "backing_allocations_verified_disjoint": true,
+        "destinations_with_collisions": 363,
+        "device_timing": {
+          "median_us": {
+            "baseline": 2.6099199056625366,
+            "manual": 1.8374399840831757,
+            "private": 1.8403199315071106,
+            "reset_only": 0.9536000341176987
+          },
+          "order": "randomized interleaving; clocks not locked",
+          "repetitions": 100,
+          "rounds": 9,
+          "samples_us": {
+            "baseline": [
+              2.6099199056625366,
+              2.613759934902191,
+              2.622399926185608,
+              2.614719867706299,
+              2.5945600867271423,
+              2.603839933872223,
+              2.598080039024353,
+              2.6019200682640076,
+              2.624639868736267
+            ],
+            "manual": [
+              1.8358400464057922,
+              1.8403199315071106,
+              1.8371200561523438,
+              1.8387199938297272,
+              1.8451200425624847,
+              1.8358400464057922,
+              1.8451200425624847,
+              1.8246400356292725,
+              1.8374399840831757
+            ],
+            "private": [
+              1.8483200669288635,
+              1.841920018196106,
+              1.8387199938297272,
+              1.8406400084495544,
+              1.836480051279068,
+              1.844799965620041,
+              1.8403199315071106,
+              1.839040070772171,
+              1.828480064868927
+            ],
+            "reset_only": [
+              0.9836799651384354,
+              0.9462399780750275,
+              0.9391999989748001,
+              0.960640013217926,
+              0.9536000341176987,
+              0.9545599669218063,
+              0.9455999732017517,
+              0.9408000111579895,
+              0.9577599912881851
+            ]
+          },
+          "warmup_ms": 50
+        },
+        "dtype": "fp32",
+        "exact_integer_correctness": {
+          "baseline": true,
+          "manual": true,
+          "private": true
+        },
+        "grid": [
+          8,
+          1,
+          1
+        ],
+        "input_elements": 990,
+        "maximum_contributions": 3,
+        "native_to_manual": 1.0015673695189409,
+        "output_elements": 528,
+        "random_maximum_error": {
+          "baseline": 2.086162567138672e-07,
+          "manual": 2.384185791015625e-07,
+          "private": 2.086162567138672e-07
+        },
+        "random_maximum_error_bound": 6.872128574963095e-07,
+        "reset_only_ms": 0.0009536000341176987,
+        "reset_plus_kernel_ms": {
+          "baseline": 0.0026099199056625368,
+          "manual": 0.0018374399840831756,
+          "private": 0.0018403199315071106
+        },
+        "shape": [
+          [
+            16,
+            33
+          ],
+          0,
+          5,
+          2
+        ],
+        "speedup": 1.4181881427134087
+      },
+      {
+        "backing_allocations_verified_disjoint": true,
+        "destinations_with_collisions": 363,
+        "device_timing": {
+          "median_us": {
+            "baseline": 2.0236800611019135,
+            "manual": 1.6752000153064728,
+            "private": 1.6704000532627106,
+            "reset_only": 0.7763200253248215
+          },
+          "order": "randomized interleaving; clocks not locked",
+          "repetitions": 100,
+          "rounds": 9,
+          "samples_us": {
+            "baseline": [
+              2.027519941329956,
+              2.027200013399124,
+              2.0284800231456757,
+              2.0211200416088104,
+              2.016959935426712,
+              2.0236800611019135,
+              2.0233599841594696,
+              2.020159959793091,
+              2.04352006316185
+            ],
+            "manual": [
+              1.6953599452972412,
+              1.6752000153064728,
+              1.679999977350235,
+              1.6704000532627106,
+              1.6627199947834015,
+              1.6764800250530243,
+              1.6767999529838562,
+              1.6752000153064728,
+              1.6684800386428833
+            ],
+            "private": [
+              1.6617600619792938,
+              1.6742399334907532,
+              1.6704000532627106,
+              1.6735999286174774,
+              1.6556799411773682,
+              1.6739200055599213,
+              1.6704000532627106,
+              1.6543999314308167,
+              1.6707199811935425
+            ],
+            "reset_only": [
+              0.7772800326347351,
+              0.7763200253248215,
+              0.77504001557827,
+              0.7807999849319458,
+              0.7692799717187881,
+              0.783040001988411,
+              0.7689599692821503,
+              0.7676800340414047,
+              0.7772800326347351
+            ]
+          },
+          "warmup_ms": 50
+        },
+        "dtype": "bf16",
+        "exact_integer_correctness": {
+          "baseline": true,
+          "manual": true,
+          "private": true
+        },
+        "grid": [
+          8,
+          1,
+          1
+        ],
+        "input_elements": 990,
+        "maximum_contributions": 3,
+        "native_to_manual": 0.9971346931710215,
+        "output_elements": 528,
+        "random_maximum_error": {
+          "baseline": 0.0,
+          "manual": 0.0,
+          "private": 0.0
+        },
+        "random_maximum_error_bound": 6.128103271496686e-07,
+        "reset_only_ms": 0.0007763200253248215,
+        "reset_plus_kernel_ms": {
+          "baseline": 0.0020236800611019134,
+          "manual": 0.0016752000153064728,
+          "private": 0.0016704000532627105
+        },
+        "shape": [
+          [
+            16,
+            33
+          ],
+          0,
+          5,
+          2
+        ],
+        "speedup": 1.2114942508228244
+      },
+      {
+        "backing_allocations_verified_disjoint": true,
+        "destinations_with_collisions": 64,
+        "device_timing": {
+          "median_us": {
+            "baseline": 1.7500799894332886,
+            "manual": 1.3651199638843536,
+            "private": 1.3648000359535217,
+            "reset_only": 0.674239993095398
+          },
+          "order": "randomized interleaving; clocks not locked",
+          "repetitions": 100,
+          "rounds": 9,
+          "samples_us": {
+            "baseline": [
+              1.7430399358272552,
+              1.7500799894332886,
+              1.7526400089263916,
+              1.748799979686737,
+              1.7500799894332886,
+              1.7334400117397308,
+              1.7545600235462189,
+              1.759680062532425,
+              1.7481599748134613
+            ],
+            "manual": [
+              1.350719928741455,
+              1.3676799833774567,
+              1.3491199910640717,
+              1.3539199531078339,
+              1.3676799833774567,
+              1.3686400651931763,
+              1.3737599551677704,
+              1.3651199638843536,
+              1.3580800592899323
+            ],
+            "private": [
+              1.3955199718475342,
+              1.3711999356746674,
+              1.3648000359535217,
+              1.3660800457000732,
+              1.3648000359535217,
+              1.3635200262069702,
+              1.3526399433612823,
+              1.3504000008106232,
+              1.3504000008106232
+            ],
+            "reset_only": [
+              0.6831999868154526,
+              0.674239993095398,
+              0.6777600198984146,
+              0.6700800359249115,
+              0.6723199784755707,
+              0.6675200164318085,
+              0.6784000247716904,
+              0.6761600077152252,
+              0.6707199662923813
+            ]
+          },
+          "warmup_ms": 50
+        },
+        "dtype": "fp16",
+        "exact_integer_correctness": {
+          "baseline": true,
+          "manual": true,
+          "private": true
+        },
+        "grid": [
+          3,
+          1,
+          1
+        ],
+        "input_elements": 384,
+        "maximum_contributions": 2,
+        "native_to_manual": 0.9997656411602672,
+        "output_elements": 384,
+        "random_maximum_error": {
+          "baseline": 0.0,
+          "manual": 0.0,
+          "private": 0.0
+        },
+        "random_maximum_error_bound": 2.2692257959679242e-07,
+        "reset_only_ms": 0.000674239993095398,
+        "reset_plus_kernel_ms": {
+          "baseline": 0.0017500799894332886,
+          "manual": 0.0013651199638843536,
+          "private": 0.0013648000359535216
+        },
+        "shape": [
+          [
+            4,
+            8,
+            12
+          ],
+          -1,
+          6,
+          4
+        ],
+        "speedup": 1.282297731044966
+      },
+      {
+        "backing_allocations_verified_disjoint": true,
+        "destinations_with_collisions": 64,
+        "device_timing": {
+          "median_us": {
+            "baseline": 2.446720004081726,
+            "manual": 1.7241600155830383,
+            "private": 1.7295999825000763,
+            "reset_only": 0.859839990735054
+          },
+          "order": "randomized interleaving; clocks not locked",
+          "repetitions": 100,
+          "rounds": 9,
+          "samples_us": {
+            "baseline": [
+              2.4531200528144836,
+              2.4409599602222443,
+              2.454719990491867,
+              2.446720004081726,
+              2.4374400079250336,
+              2.4531200528144836,
+              2.436159998178482,
+              2.4489599466323853,
+              2.4352000653743744
+            ],
+            "manual": [
+              1.7401599884033203,
+              1.7187200486660004,
+              1.7136000096797943,
+              1.733119934797287,
+              1.716800034046173,
+              1.7151999473571777,
+              1.7324799299240112,
+              1.7241600155830383,
+              1.7318400740623474
+            ],
+            "private": [
+              1.7625600099563599,
+              1.7212800681591034,
+              1.730560064315796,
+              1.7395199835300446,
+              1.7190399765968323,
+              1.7148800194263458,
+              1.7295999825000763,
+              1.7420800030231476,
+              1.7238399386405945
+            ],
+            "reset_only": [
+              0.8588799834251404,
+              0.859839990735054,
+              0.8515200018882751,
+              0.8659200370311737,
+              0.8633600175380707,
+              0.8627200126647949,
+              0.8617600053548813,
+              0.8553600311279297,
+              0.8534400165081024
+            ]
+          },
+          "warmup_ms": 50
+        },
+        "dtype": "fp32",
+        "exact_integer_correctness": {
+          "baseline": true,
+          "manual": true,
+          "private": true
+        },
+        "grid": [
+          3,
+          1,
+          1
+        ],
+        "input_elements": 384,
+        "maximum_contributions": 2,
+        "native_to_manual": 1.0031551403975683,
+        "output_elements": 384,
+        "random_maximum_error": {
+          "baseline": 1.1920928955078125e-07,
+          "manual": 1.1920928955078125e-07,
+          "private": 1.1920928955078125e-07
+        },
+        "random_maximum_error_bound": 2.2454965093501043e-07,
+        "reset_only_ms": 0.000859839990735054,
+        "reset_plus_kernel_ms": {
+          "baseline": 0.002446720004081726,
+          "manual": 0.0017241600155830383,
+          "private": 0.0017295999825000764
+        },
+        "shape": [
+          [
+            4,
+            8,
+            12
+          ],
+          -1,
+          6,
+          4
+        ],
+        "speedup": 1.414616112880088
+      },
+      {
+        "backing_allocations_verified_disjoint": true,
+        "destinations_with_collisions": 64,
+        "device_timing": {
+          "median_us": {
+            "baseline": 2.313600033521652,
+            "manual": 1.7203199863433838,
+            "private": 1.730239987373352,
+            "reset_only": 0.8524800091981888
+          },
+          "order": "randomized interleaving; clocks not locked",
+          "repetitions": 100,
+          "rounds": 9,
+          "samples_us": {
+            "baseline": [
+              2.31455996632576,
+              2.3126399517059326,
+              2.313600033521652,
+              2.3081600666046143,
+              2.3235200345516205,
+              2.3238399624824524,
+              2.3056000471115112,
+              2.3155200481414795,
+              2.3104000091552734
+            ],
+            "manual": [
+              1.7507199943065643,
+              1.7260800302028656,
+              1.7270399630069733,
+              1.7180800437927246,
+              1.711679995059967,
+              1.7174400389194489,
+              1.7203199863433838,
+              1.711679995059967,
+              1.7388799786567688
+            ],
+            "private": [
+              1.7228800058364868,
+              1.7414399981498718,
+              1.730239987373352,
+              1.7379200458526611,
+              1.7235200107097626,
+              1.74112007021904,
+              1.7449599504470825,
+              1.7273600399494171,
+              1.7295999825000763
+            ],
+            "reset_only": [
+              0.8691199868917465,
+              0.8502399921417236,
+              0.8508799970149994,
+              0.8591999858617783,
+              0.854400023818016,
+              0.8524800091981888,
+              0.8502399921417236,
+              0.8432000130414963,
+              0.8540800213813782
+            ]
+          },
+          "warmup_ms": 50
+        },
+        "dtype": "bf16",
+        "exact_integer_correctness": {
+          "baseline": true,
+          "manual": true,
+          "private": true
+        },
+        "grid": [
+          3,
+          1,
+          1
+        ],
+        "input_elements": 384,
+        "maximum_contributions": 2,
+        "native_to_manual": 1.0057663696921022,
+        "output_elements": 384,
+        "random_maximum_error": {
+          "baseline": 0.0,
+          "manual": 0.0,
+          "private": 0.0
+        },
+        "random_maximum_error_bound": 2.435408677781145e-07,
+        "reset_only_ms": 0.0008524800091981887,
+        "reset_plus_kernel_ms": {
+          "baseline": 0.0023136000335216523,
+          "manual": 0.0017203199863433838,
+          "private": 0.001730239987373352
+        },
+        "shape": [
+          [
+            4,
+            8,
+            12
+          ],
+          -1,
+          6,
+          4
+        ],
+        "speedup": 1.3371555682480147
+      },
+      {
+        "backing_allocations_verified_disjoint": true,
+        "destinations_with_collisions": 0,
+        "device_timing": {
+          "median_us": {
+            "baseline": 1.6047999262809753,
+            "manual": 1.2611199915409088,
+            "private": 1.2649600207805634,
+            "reset_only": 0.6239999830722809
+          },
+          "order": "randomized interleaving; clocks not locked",
+          "repetitions": 100,
+          "rounds": 9,
+          "samples_us": {
+            "baseline": [
+              1.6332800686359406,
+              1.6086399555206299,
+              1.594880074262619,
+              1.610880047082901,
+              1.6079999506473541,
+              1.6047999262809753,
+              1.5916800498962402,
+              1.5964800119400024,
+              1.5967999398708344
+            ],
+            "manual": [
+              1.2707200646400452,
+              1.2563200294971466,
+              1.2627199292182922,
+              1.2582400441169739,
+              1.2611199915409088,
+              1.2588800489902496,
+              1.2505599856376648,
+              1.2668800354003906,
+              1.2665599584579468
+            ],
+            "private": [
+              1.2697599828243256,
+              1.2617599964141846,
+              1.260479986667633,
+              1.2646399438381195,
+              1.2726399302482605,
+              1.2668800354003906,
+              1.268800050020218,
+              1.249919980764389,
+              1.2649600207805634
+            ],
+            "reset_only": [
+              0.6172800064086914,
+              0.6239999830722809,
+              0.6332799792289734,
+              0.6307200342416763,
+              0.6227200105786324,
+              0.6335999816656113,
+              0.6089600175619125,
+              0.6080000102519989,
+              0.6243199855089188
+            ]
+          },
+          "warmup_ms": 50
+        },
+        "dtype": "fp16",
+        "exact_integer_correctness": {
+          "baseline": true,
+          "manual": true,
+          "private": true
+        },
+        "grid": [
+          1,
+          1,
+          1
+        ],
+        "input_elements": 91,
+        "maximum_contributions": 1,
+        "native_to_manual": 1.0030449356646567,
+        "output_elements": 91,
+        "random_maximum_error": {
+          "baseline": 0.0,
+          "manual": 0.0,
+          "private": 0.0
+        },
+        "random_maximum_error_bound": 0.0,
+        "reset_only_ms": 0.0006239999830722809,
+        "reset_plus_kernel_ms": {
+          "baseline": 0.0016047999262809754,
+          "manual": 0.0012611199915409088,
+          "private": 0.0012649600207805633
+        },
+        "shape": [
+          [
+            7,
+            13
+          ],
+          1,
+          13,
+          3
+        ],
+        "speedup": 1.2686566372988677
+      },
+      {
+        "backing_allocations_verified_disjoint": true,
+        "destinations_with_collisions": 0,
+        "device_timing": {
+          "median_us": {
+            "baseline": 1.6368000209331512,
+            "manual": 1.2835200130939484,
+            "private": 1.2835200130939484,
+            "reset_only": 0.6300800293684006
+          },
+          "order": "randomized interleaving; clocks not locked",
+          "repetitions": 100,
+          "rounds": 9,
+          "samples_us": {
+            "baseline": [
+              1.6396799683570862,
+              1.645440012216568,
+              1.632000058889389,
+              1.6288000345230103,
+              1.6380800306797028,
+              1.6368000209331512,
+              1.6281600296497345,
+              1.6467200219631195,
+              1.6345599293708801
+            ],
+            "manual": [
+              1.3276800513267517,
+              1.2835200130939484,
+              1.2787200510501862,
+              1.2848000228404999,
+              1.2992000579833984,
+              1.2787200510501862,
+              1.2828800082206726,
+              1.2937599420547485,
+              1.2800000607967377
+            ],
+            "private": [
+              1.2851199507713318,
+              1.2860800325870514,
+              1.281919926404953,
+              1.2860800325870514,
+              1.2796799838542938,
+              1.2803199887275696,
+              1.2835200130939484,
+              1.279360055923462,
+              1.2912000715732574
+            ],
+            "reset_only": [
+              0.6345599889755249,
+              0.6332799792289734,
+              0.6319999694824219,
+              0.6304000318050385,
+              0.6265600025653839,
+              0.6291200220584869,
+              0.6275200098752975,
+              0.6275200098752975,
+              0.6300800293684006
+            ]
+          },
+          "warmup_ms": 50
+        },
+        "dtype": "fp32",
+        "exact_integer_correctness": {
+          "baseline": true,
+          "manual": true,
+          "private": true
+        },
+        "grid": [
+          1,
+          1,
+          1
+        ],
+        "input_elements": 91,
+        "maximum_contributions": 1,
+        "native_to_manual": 1.0,
+        "output_elements": 91,
+        "random_maximum_error": {
+          "baseline": 0.0,
+          "manual": 0.0,
+          "private": 0.0
+        },
+        "random_maximum_error_bound": 0.0,
+        "reset_only_ms": 0.0006300800293684006,
+        "reset_plus_kernel_ms": {
+          "baseline": 0.0016368000209331511,
+          "manual": 0.0012835200130939485,
+          "private": 0.0012835200130939485
+        },
+        "shape": [
+          [
+            7,
+            13
+          ],
+          1,
+          13,
+          3
+        ],
+        "speedup": 1.2752430848254674
+      },
+      {
+        "backing_allocations_verified_disjoint": true,
+        "destinations_with_collisions": 0,
+        "device_timing": {
+          "median_us": {
+            "baseline": 1.658560037612915,
+            "manual": 1.300159990787506,
+            "private": 1.3036799430847168,
+            "reset_only": 0.6403200328350067
+          },
+          "order": "randomized interleaving; clocks not locked",
+          "repetitions": 100,
+          "rounds": 9,
+          "samples_us": {
+            "baseline": [
+              1.658879965543747,
+              1.661120057106018,
+              1.658560037612915,
+              1.6518400609493256,
+              1.6592000424861908,
+              1.6595199704170227,
+              1.6521599888801575,
+              1.6527999937534332,
+              1.648000031709671
+            ],
+            "manual": [
+              1.287360042333603,
+              1.3017599284648895,
+              1.2892800569534302,
+              1.281919926404953,
+              1.3023999333381653,
+              1.3011200726032257,
+              1.2928000092506409,
+              1.3075199723243713,
+              1.300159990787506
+            ],
+            "private": [
+              1.3187199831008911,
+              1.305920034646988,
+              1.3017599284648895,
+              1.3014400005340576,
+              1.3068799674510956,
+              1.3033600151538849,
+              1.3068799674510956,
+              1.2883199751377106,
+              1.3036799430847168
+            ],
+            "reset_only": [
+              0.6745599955320358,
+              0.6304000318050385,
+              0.6288000196218491,
+              0.6617599725723267,
+              0.6403200328350067,
+              0.6377600133419037,
+              0.6470400094985962,
+              0.687360018491745,
+              0.6377600133419037
+            ]
+          },
+          "warmup_ms": 50
+        },
+        "dtype": "bf16",
+        "exact_integer_correctness": {
+          "baseline": true,
+          "manual": true,
+          "private": true
+        },
+        "grid": [
+          1,
+          1,
+          1
+        ],
+        "input_elements": 91,
+        "maximum_contributions": 1,
+        "native_to_manual": 1.0027073224235108,
+        "output_elements": 91,
+        "random_maximum_error": {
+          "baseline": 0.0,
+          "manual": 0.0,
+          "private": 0.0
+        },
+        "random_maximum_error_bound": 0.0,
+        "reset_only_ms": 0.0006403200328350067,
+        "reset_plus_kernel_ms": {
+          "baseline": 0.001658560037612915,
+          "manual": 0.001300159990787506,
+          "private": 0.0013036799430847167
+        },
+        "shape": [
+          [
+            7,
+            13
+          ],
+          1,
+          13,
+          3
+        ],
+        "speedup": 1.2722141246481824
+      },
+      {
+        "backing_allocations_verified_disjoint": true,
+        "destinations_with_collisions": 54,
+        "device_timing": {
+          "median_us": {
+            "baseline": 1.6303999722003937,
+            "manual": 1.2851199507713318,
+            "private": 1.2809599936008453,
+            "reset_only": 0.6304000318050385
+          },
+          "order": "randomized interleaving; clocks not locked",
+          "repetitions": 100,
+          "rounds": 9,
+          "samples_us": {
+            "baseline": [
+              1.6281600296497345,
+              1.6364799439907074,
+              1.6291199624538422,
+              1.6303999722003937,
+              1.6291199624538422,
+              1.6371199488639832,
+              1.6252799332141876,
+              1.6310399770736694,
+              1.6387200355529785
+            ],
+            "manual": [
+              1.3308799266815186,
+              1.2867200374603271,
+              1.2831999361515045,
+              1.2780800461769104,
+              1.2851199507713318,
+              1.2960000336170197,
+              1.2867200374603271,
+              1.2777599692344666,
+              1.2825599312782288
+            ],
+            "private": [
+              1.2940800189971924,
+              1.2780800461769104,
+              1.289920061826706,
+              1.2800000607967377,
+              1.2796799838542938,
+              1.2809599936008453,
+              1.2841600179672241,
+              1.2761600315570831,
+              1.2921600043773651
+            ],
+            "reset_only": [
+              0.6339199841022491,
+              0.6272000074386597,
+              0.626240000128746,
+              0.6319999694824219,
+              0.6252799928188324,
+              0.6304000318050385,
+              0.6304000318050385,
+              0.6332799792289734,
+              0.623680017888546
+            ]
+          },
+          "warmup_ms": 50
+        },
+        "dtype": "fp16",
+        "exact_integer_correctness": {
+          "baseline": true,
+          "manual": true,
+          "private": true
+        },
+        "grid": [
+          2,
+          1,
+          1
+        ],
+        "input_elements": 168,
+        "maximum_contributions": 2,
+        "native_to_manual": 0.9967629814104204,
+        "output_elements": 120,
+        "random_maximum_error": {
+          "baseline": 0.0,
+          "manual": 0.0,
+          "private": 0.0
+        },
+        "random_maximum_error_bound": 2.832384948872623e-07,
+        "reset_only_ms": 0.0006304000318050385,
+        "reset_plus_kernel_ms": {
+          "baseline": 0.0016303999722003936,
+          "manual": 0.0012851199507713318,
+          "private": 0.0012809599936008454
+        },
+        "shape": [
+          [
+            6,
+            20
+          ],
+          1,
+          7,
+          4
+        ],
+        "speedup": 1.272795388103616
+      },
+      {
+        "backing_allocations_verified_disjoint": true,
+        "destinations_with_collisions": 54,
+        "device_timing": {
+          "median_us": {
+            "baseline": 1.6527999937534332,
+            "manual": 1.3017599284648895,
+            "private": 1.300159990787506,
+            "reset_only": 0.6335999816656113
+          },
+          "order": "randomized interleaving; clocks not locked",
+          "repetitions": 100,
+          "rounds": 9,
+          "samples_us": {
+            "baseline": [
+              1.658560037612915,
+              1.6566400229930878,
+              1.6569599509239197,
+              1.6527999937534332,
+              1.6489599645137787,
+              1.6569599509239197,
+              1.6473600268363953,
+              1.6512000560760498,
+              1.6486400365829468
+            ],
+            "manual": [
+              1.3283200562000275,
+              1.3017599284648895,
+              1.2940800189971924,
+              1.2880000472068787,
+              1.308159977197647,
+              1.2892800569534302,
+              1.3011200726032257,
+              1.3020800054073334,
+              1.3027200102806091
+            ],
+            "private": [
+              1.3094399869441986,
+              1.2886400520801544,
+              1.2883199751377106,
+              1.300159990787506,
+              1.3036799430847168,
+              1.300159990787506,
+              1.3087999820709229,
+              1.2892800569534302,
+              1.2905600666999817
+            ],
+            "reset_only": [
+              0.6415999680757523,
+              0.6390400230884552,
+              0.6335999816656113,
+              0.6259199976921082,
+              0.6233600154519081,
+              0.6409599632024765,
+              0.6387200206518173,
+              0.6224000081419945,
+              0.6288000196218491
+            ]
+          },
+          "warmup_ms": 50
+        },
+        "dtype": "fp32",
+        "exact_integer_correctness": {
+          "baseline": true,
+          "manual": true,
+          "private": true
+        },
+        "grid": [
+          2,
+          1,
+          1
+        ],
+        "input_elements": 168,
+        "maximum_contributions": 2,
+        "native_to_manual": 0.9987709425967118,
+        "output_elements": 120,
+        "random_maximum_error": {
+          "baseline": 2.384185791015625e-07,
+          "manual": 2.384185791015625e-07,
+          "private": 2.384185791015625e-07
+        },
+        "random_maximum_error_bound": 2.6869025940312425e-07,
+        "reset_only_ms": 0.0006335999816656113,
+        "reset_plus_kernel_ms": {
+          "baseline": 0.0016527999937534332,
+          "manual": 0.0013017599284648896,
+          "private": 0.001300159990787506
+        },
+        "shape": [
+          [
+            6,
+            20
+          ],
+          1,
+          7,
+          4
+        ],
+        "speedup": 1.271228160737613
+      },
+      {
+        "backing_allocations_verified_disjoint": true,
+        "destinations_with_collisions": 54,
+        "device_timing": {
+          "median_us": {
+            "baseline": 1.6131199896335602,
+            "manual": 1.2831999361515045,
+            "private": 1.2838399410247803,
+            "reset_only": 0.6326399743556976
+          },
+          "order": "randomized interleaving; clocks not locked",
+          "repetitions": 100,
+          "rounds": 9,
+          "samples_us": {
+            "baseline": [
+              1.6246399283409119,
+              1.6236799955368042,
+              1.6124799847602844,
+              1.608320027589798,
+              1.6073599457740784,
+              1.6156800091266632,
+              1.6105599701404572,
+              1.6131199896335602,
+              1.6185599565505981
+            ],
+            "manual": [
+              1.2716799974441528,
+              1.2940800189971924,
+              1.2841600179672241,
+              1.2831999361515045,
+              1.287039965391159,
+              1.2803199887275696,
+              1.2774400413036346,
+              1.2822400033473969,
+              1.287039965391159
+            ],
+            "private": [
+              1.287360042333603,
+              1.2908799946308136,
+              1.2828800082206726,
+              1.2838399410247803,
+              1.2831999361515045,
+              1.2841600179672241,
+              1.281599998474121,
+              1.2880000472068787,
+              1.281919926404953
+            ],
+            "reset_only": [
+              0.6470400094985962,
+              0.613120011985302,
+              0.6284800171852112,
+              0.6326399743556976,
+              0.639680027961731,
+              0.6345599889755249,
+              0.6304000318050385,
+              0.6348799914121628,
+              0.626240000128746
+            ]
+          },
+          "warmup_ms": 50
+        },
+        "dtype": "bf16",
+        "exact_integer_correctness": {
+          "baseline": true,
+          "manual": true,
+          "private": true
+        },
+        "grid": [
+          2,
+          1,
+          1
+        ],
+        "input_elements": 168,
+        "maximum_contributions": 2,
+        "native_to_manual": 1.000498756939776,
+        "output_elements": 120,
+        "random_maximum_error": {
+          "baseline": 0.0,
+          "manual": 0.0,
+          "private": 0.0
+        },
+        "random_maximum_error_bound": 2.4074689988773464e-07,
+        "reset_only_ms": 0.0006326399743556976,
+        "reset_plus_kernel_ms": {
+          "baseline": 0.00161311998963356,
+          "manual": 0.0012831999361515045,
+          "private": 0.0012838399410247802
+        },
+        "shape": [
+          [
+            6,
+            20
+          ],
+          1,
+          7,
+          4
+        ],
+        "speedup": 1.2564806079688904
+      },
+      {
+        "backing_allocations_verified_disjoint": true,
+        "destinations_with_collisions": 90,
+        "device_timing": {
+          "median_us": {
+            "baseline": 1.69855996966362,
+            "manual": 1.3075199723243713,
+            "private": 1.3104000687599182,
+            "reset_only": 0.6307200342416763
+          },
+          "order": "randomized interleaving; clocks not locked",
+          "repetitions": 100,
+          "rounds": 9,
+          "samples_us": {
+            "baseline": [
+              1.7052799463272095,
+              1.7020800709724426,
+              1.69855996966362,
+              1.6927999258041382,
+              1.690240055322647,
+              1.6998399794101715,
+              1.701119989156723,
+              1.6927999258041382,
+              1.6892799735069275
+            ],
+            "manual": [
+              1.3465599715709686,
+              1.3040000200271606,
+              1.3027200102806091,
+              1.30048006772995,
+              1.3113600015640259,
+              1.3075199723243713,
+              1.3036799430847168,
+              1.308480054140091,
+              1.3120000064373016
+            ],
+            "private": [
+              1.3225600123405457,
+              1.305599957704544,
+              1.3104000687599182,
+              1.3862399756908417,
+              1.30048006772995,
+              1.3078400492668152,
+              1.3132800161838531,
+              1.3052800297737122,
+              1.3104000687599182
+            ],
+            "reset_only": [
+              0.6294400244951248,
+              0.6288000196218491,
+              0.6291200220584869,
+              0.6464000046253204,
+              0.6473600119352341,
+              0.6307200342416763,
+              0.6268800050020218,
+              0.6470400094985962,
+              0.6323199719190598
+            ]
+          },
+          "warmup_ms": 50
+        },
+        "dtype": "fp16",
+        "exact_integer_correctness": {
+          "baseline": true,
+          "manual": true,
+          "private": true
+        },
+        "grid": [
+          4,
+          1,
+          1
+        ],
+        "input_elements": 486,
+        "maximum_contributions": 9,
+        "native_to_manual": 1.0022027169729784,
+        "output_elements": 102,
+        "random_maximum_error": {
+          "baseline": 0.0,
+          "manual": 0.0,
+          "private": 0.0
+        },
+        "random_maximum_error_bound": 4.937991060550719e-06,
+        "reset_only_ms": 0.0006307200342416763,
+        "reset_plus_kernel_ms": {
+          "baseline": 0.0016985599696636199,
+          "manual": 0.0013075199723243712,
+          "private": 0.0013104000687599183
+        },
+        "shape": [
+          [
+            2,
+            3,
+            17
+          ],
+          -1,
+          9,
+          1
+        ],
+        "speedup": 1.296214805048837
+      },
+      {
+        "backing_allocations_verified_disjoint": true,
+        "destinations_with_collisions": 90,
+        "device_timing": {
+          "median_us": {
+            "baseline": 1.8812799453735352,
+            "manual": 1.5104000270366669,
+            "private": 1.5145599842071533,
+            "reset_only": 0.623680017888546
+          },
+          "order": "randomized interleaving; clocks not locked",
+          "repetitions": 100,
+          "rounds": 9,
+          "samples_us": {
+            "baseline": [
+              1.8848000466823578,
+              1.895039975643158,
+              1.8799999356269836,
+              1.876479983329773,
+              1.8806399405002594,
+              1.8812799453735352,
+              1.8969599902629852,
+              1.876479983329773,
+              1.892160028219223
+            ],
+            "manual": [
+              1.5190400183200836,
+              1.5087999403476715,
+              1.5062400698661804,
+              1.5094399452209473,
+              1.5196800231933594,
+              1.5190400183200836,
+              1.51296004652977,
+              1.5104000270366669,
+              1.5097600221633911
+            ],
+            "private": [
+              1.5193599462509155,
+              1.5158399939537048,
+              1.515199989080429,
+              1.5161600708961487,
+              1.5087999403476715,
+              1.5145599842071533,
+              1.5078400075435638,
+              1.50751993060112,
+              1.510079950094223
+            ],
+            "reset_only": [
+              0.6547199934720993,
+              0.6172800064086914,
+              0.623680017888546,
+              0.6172800064086914,
+              0.6121600046753883,
+              0.6268800050020218,
+              0.6300800293684006,
+              0.618240013718605,
+              0.6351999938488007
+            ]
+          },
+          "warmup_ms": 50
+        },
+        "dtype": "fp32",
+        "exact_integer_correctness": {
+          "baseline": true,
+          "manual": true,
+          "private": true
+        },
+        "grid": [
+          4,
+          1,
+          1
+        ],
+        "input_elements": 486,
+        "maximum_contributions": 9,
+        "native_to_manual": 1.0027542088824297,
+        "output_elements": 102,
+        "random_maximum_error": {
+          "baseline": 3.5762786865234375e-07,
+          "manual": 3.2782554626464844e-07,
+          "private": 3.2782554626464844e-07
+        },
+        "random_maximum_error_bound": 4.237781573782992e-06,
+        "reset_only_ms": 0.0006236800178885459,
+        "reset_plus_kernel_ms": {
+          "baseline": 0.0018812799453735351,
+          "manual": 0.0015104000270366668,
+          "private": 0.0015145599842071532
+        },
+        "shape": [
+          [
+            2,
+            3,
+            17
+          ],
+          -1,
+          9,
+          1
+        ],
+        "speedup": 1.242129704330168
+      },
+      {
+        "backing_allocations_verified_disjoint": true,
+        "destinations_with_collisions": 90,
+        "device_timing": {
+          "median_us": {
+            "baseline": 1.7788800597190857,
+            "manual": 1.3513599336147308,
+            "private": 1.3523200154304504,
+            "reset_only": 0.6294400244951248
+          },
+          "order": "randomized interleaving; clocks not locked",
+          "repetitions": 100,
+          "rounds": 9,
+          "samples_us": {
+            "baseline": [
+              1.7814399302005768,
+              1.7721599340438843,
+              1.77279993891716,
+              1.7839999496936798,
+              1.8646399676799774,
+              1.7788800597190857,
+              1.7791999876499176,
+              1.7724800109863281,
+              1.762239933013916
+            ],
+            "manual": [
+              1.3676799833774567,
+              1.361600011587143,
+              1.351040005683899,
+              1.348479986190796,
+              1.351040005683899,
+              1.35903999209404,
+              1.3462400436401367,
+              1.3513599336147308,
+              1.356479972600937
+            ],
+            "private": [
+              1.350719928741455,
+              1.3475200533866882,
+              1.3606399297714233,
+              1.3500800728797913,
+              1.3519999384880066,
+              1.372160017490387,
+              1.3523200154304504,
+              1.353600025177002,
+              1.3609600067138672
+            ],
+            "reset_only": [
+              0.724480003118515,
+              0.634239986538887,
+              0.6467200070619583,
+              0.6275200098752975,
+              0.6307200342416763,
+              0.6259199976921082,
+              0.6294400244951248,
+              0.6294400244951248,
+              0.6252799928188324
+            ]
+          },
+          "warmup_ms": 50
+        },
+        "dtype": "bf16",
+        "exact_integer_correctness": {
+          "baseline": true,
+          "manual": true,
+          "private": true
+        },
+        "grid": [
+          4,
+          1,
+          1
+        ],
+        "input_elements": 486,
+        "maximum_contributions": 9,
+        "native_to_manual": 1.0007104560316151,
+        "output_elements": 102,
+        "random_maximum_error": {
+          "baseline": 0.0,
+          "manual": 0.0,
+          "private": 0.0
+        },
+        "random_maximum_error_bound": 4.696894814083488e-06,
+        "reset_only_ms": 0.0006294400244951248,
+        "reset_plus_kernel_ms": {
+          "baseline": 0.0017788800597190856,
+          "manual": 0.0013513599336147308,
+          "private": 0.0013523200154304505
+        },
+        "shape": [
+          [
+            2,
+            3,
+            17
+          ],
+          -1,
+          9,
+          1
+        ],
+        "speedup": 1.3154283301448133
+      },
+      {
+        "backing_allocations_verified_disjoint": true,
+        "destinations_with_collisions": 0,
+        "device_timing": {
+          "median_us": {
+            "baseline": 1.5964800119400024,
+            "manual": 1.2544000148773193,
+            "private": 1.2617599964141846,
+            "reset_only": 0.6166400015354156
+          },
+          "order": "randomized interleaving; clocks not locked",
+          "repetitions": 100,
+          "rounds": 9,
+          "samples_us": {
+            "baseline": [
+              1.6025599837303162,
+              1.5894399583339691,
+              1.5936000645160675,
+              1.5999999642372131,
+              1.5961599349975586,
+              1.5990400314331055,
+              1.5964800119400024,
+              1.600639969110489,
+              1.594880074262619
+            ],
+            "manual": [
+              1.2544000148773193,
+              1.2595200538635254,
+              1.2428800016641617,
+              1.2457600235939026,
+              1.2544000148773193,
+              1.2460800260305405,
+              1.268800050020218,
+              1.2624000012874603,
+              1.2464000284671783
+            ],
+            "private": [
+              1.2883199751377106,
+              1.2464000284671783,
+              1.2518399953842163,
+              1.2620800733566284,
+              1.2617599964141846,
+              1.2435200065374374,
+              1.2614400684833527,
+              1.2617599964141846,
+              1.2652799487113953
+            ],
+            "reset_only": [
+              0.6166400015354156,
+              0.6137600168585777,
+              0.6140799820423126,
+              0.6294400244951248,
+              0.6249599903821945,
+              0.6143999844789505,
+              0.6239999830722809,
+              0.6089600175619125,
+              0.618240013718605
+            ]
+          },
+          "warmup_ms": 50
+        },
+        "dtype": "fp16",
+        "exact_integer_correctness": {
+          "baseline": true,
+          "manual": true,
+          "private": true
+        },
+        "grid": [
+          1,
+          1,
+          1
+        ],
+        "input_elements": 24,
+        "maximum_contributions": 1,
+        "native_to_manual": 1.0058673321504903,
+        "output_elements": 34,
+        "random_maximum_error": {
+          "baseline": 0.0,
+          "manual": 0.0,
+          "private": 0.0
+        },
+        "random_maximum_error_bound": 0.0,
+        "reset_only_ms": 0.0006166400015354157,
+        "reset_plus_kernel_ms": {
+          "baseline": 0.0015964800119400025,
+          "manual": 0.0012544000148773193,
+          "private": 0.0012617599964141846
+        },
+        "shape": [
+          [
+            2,
+            17
+          ],
+          1,
+          4,
+          6
+        ],
+        "speedup": 1.2652802565282335
+      },
+      {
+        "backing_allocations_verified_disjoint": true,
+        "destinations_with_collisions": 0,
+        "device_timing": {
+          "median_us": {
+            "baseline": 1.6326400637626648,
+            "manual": 1.281919926404953,
+            "private": 1.2831999361515045,
+            "reset_only": 0.631679967045784
+          },
+          "order": "randomized interleaving; clocks not locked",
+          "repetitions": 100,
+          "rounds": 9,
+          "samples_us": {
+            "baseline": [
+              1.6633599996566772,
+              1.6310399770736694,
+              1.6281600296497345,
+              1.6281600296497345,
+              1.6326400637626648,
+              1.6390399634838104,
+              1.6380800306797028,
+              1.6396799683570862,
+              1.629440039396286
+            ],
+            "manual": [
+              1.2863999605178833,
+              1.279360055923462,
+              1.2803199887275696,
+              1.2838399410247803,
+              1.281919926404953,
+              1.2889599800109863,
+              1.2777599692344666,
+              1.2822400033473969,
+              1.2700800597667694
+            ],
+            "private": [
+              1.2921600043773651,
+              1.2947200238704681,
+              1.3526399433612823,
+              1.2825599312782288,
+              1.2831999361515045,
+              1.281919926404953,
+              1.2851199507713318,
+              1.279360055923462,
+              1.281599998474121
+            ],
+            "reset_only": [
+              0.6319999694824219,
+              0.6339199841022491,
+              0.6377600133419037,
+              0.6384000182151794,
+              0.6265600025653839,
+              0.623680017888546,
+              0.6275200098752975,
+              0.6275200098752975,
+              0.631679967045784
+            ]
+          },
+          "warmup_ms": 50
+        },
+        "dtype": "fp32",
+        "exact_integer_correctness": {
+          "baseline": true,
+          "manual": true,
+          "private": true
+        },
+        "grid": [
+          1,
+          1,
+          1
+        ],
+        "input_elements": 24,
+        "maximum_contributions": 1,
+        "native_to_manual": 1.000998509907043,
+        "output_elements": 34,
+        "random_maximum_error": {
+          "baseline": 0.0,
+          "manual": 0.0,
+          "private": 0.0
+        },
+        "random_maximum_error_bound": 0.0,
+        "reset_only_ms": 0.000631679967045784,
+        "reset_plus_kernel_ms": {
+          "baseline": 0.0016326400637626647,
+          "manual": 0.001281919926404953,
+          "private": 0.0012831999361515045
+        },
+        "shape": [
+          [
+            2,
+            17
+          ],
+          1,
+          4,
+          6
+        ],
+        "speedup": 1.272319314992471
+      },
+      {
+        "backing_allocations_verified_disjoint": true,
+        "destinations_with_collisions": 0,
+        "device_timing": {
+          "median_us": {
+            "baseline": 1.656000018119812,
+            "manual": 1.2908799946308136,
+            "private": 1.289920061826706,
+            "reset_only": 0.6291200220584869
+          },
+          "order": "randomized interleaving; clocks not locked",
+          "repetitions": 100,
+          "rounds": 9,
+          "samples_us": {
+            "baseline": [
+              1.6662399470806122,
+              1.6579200327396393,
+              1.656319946050644,
+              1.6515199840068817,
+              1.656000018119812,
+              1.6579200327396393,
+              1.656000018119812,
+              1.6492800414562225,
+              1.6521599888801575
+            ],
+            "manual": [
+              1.329600065946579,
+              1.2960000336170197,
+              1.2905600666999817,
+              1.2838399410247803,
+              1.2912000715732574,
+              1.3072000443935394,
+              1.2908799946308136,
+              1.2822400033473969,
+              1.2800000607967377
+            ],
+            "private": [
+              1.2889599800109863,
+              1.289920061826706,
+              1.2835200130939484,
+              1.2892800569534302,
+              1.30048006772995,
+              1.2905600666999817,
+              1.2992000579833984,
+              1.2851199507713318,
+              1.2912000715732574
+            ],
+            "reset_only": [
+              0.6335999816656113,
+              0.6291200220584869,
+              0.6278400123119354,
+              0.63680000603199,
+              0.6255999952554703,
+              0.6275200098752975,
+              0.6319999694824219,
+              0.6361600011587143,
+              0.626240000128746
+            ]
+          },
+          "warmup_ms": 50
+        },
+        "dtype": "bf16",
+        "exact_integer_correctness": {
+          "baseline": true,
+          "manual": true,
+          "private": true
+        },
+        "grid": [
+          1,
+          1,
+          1
+        ],
+        "input_elements": 24,
+        "maximum_contributions": 1,
+        "native_to_manual": 0.9992563733204478,
+        "output_elements": 34,
+        "random_maximum_error": {
+          "baseline": 0.0,
+          "manual": 0.0,
+          "private": 0.0
+        },
+        "random_maximum_error_bound": 0.0,
+        "reset_only_ms": 0.0006291200220584869,
+        "reset_plus_kernel_ms": {
+          "baseline": 0.001656000018119812,
+          "manual": 0.0012908799946308137,
+          "private": 0.001289920061826706
+        },
+        "shape": [
+          [
+            2,
+            17
+          ],
+          1,
+          4,
+          6
+        ],
+        "speedup": 1.2838004982841231
+      }
+    ],
+    "geometric_mean_speedup": 1.295279921724741,
+    "gpu": "NVIDIA B300 SXM6 PC",
+    "helper": {
+      "path": "coverage_experiment.py",
+      "sha256": "db50502fc3f549eb7550f594521835097e0d14d994f477e77da7bbaa812330d2"
+    },
+    "protocol": "Shared physical input/output buffers; CUDA graphs capture100 repetitions;9 randomized-order rounds;50ms warmup; medians across rounds. GPU exclusively assigned to this experiment. Clocks not locked.",
+    "scope": "Output zero reset plus unchanged extracted kernel only. Excludes allocation, final dtype conversion, package dispatch, and full benchmark harness. Seven exact repository benchmark shapes; three dtypes. Small launch-bound cases; not a distribution over the full inventory. Reset-only is separately captured and measured, not subtracted.",
+    "status": "measured_pilot"
+  },
+  "variants": [
+    {
+      "assembly": {
+        "ptx": {
+          "path": "fp16.baseline.ptx.gz",
+          "sha256": "86c2a42004e3e604e782c79b3406c8fbf20724b9674d471adb28d4ddd80c1ef3"
+        },
+        "ttgir": {
+          "path": "fp16.baseline.ttgir.gz",
+          "sha256": "c2678610102441549189e7633e2bcebbff90819a5913ddff82c89c27a4d8c77b"
+        },
+        "ttir": {
+          "path": "fp16.baseline.ttir.gz",
+          "sha256": "7bf65f7e0de1ea7d7dfc182834b6a3b4fe8aba7a581cea46c0f8cbd712893b62"
+        }
+      },
+      "attributes": {},
+      "constants": {
+        "BLOCK": 128
+      },
+      "dtype": "fp16",
+      "options": {
+        "enable_contract_load_reuse": false,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "num_stages": 1,
+        "num_warps": 4
+      },
+      "ptx_atomics": [
+        "@%p1 atom.global.gpu.acq_rel.add.f32 %r1, [ %rd2 + 0 ], %r2;"
+      ],
+      "ptx_cta_barriers": 2,
+      "shared_bytes": 0,
+      "signature": {
+        "BLOCK": "constexpr",
+        "D": "i32",
+        "L": "i32",
+        "grad_in_ptr": "*fp16",
+        "grad_out_ptr": "*fp32",
+        "inner_total": "i32",
+        "numel_in": "i32",
+        "prod_after": "i32",
+        "size": "i32",
+        "step": "i32"
+      },
+      "transformed": false,
+      "ttir_atomics": [
+        "%2 = tt.atomic_rmw fadd, acq_rel, gpu, %1, %vals_f32, %mask_4 : (tensor<128x!tt.ptr<f32>>, tensor<128xf32>, tensor<128xi1>) -> tensor<128xf32> loc(#loc19)"
+      ],
+      "variant": "baseline"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "fp16.private.ptx.gz",
+          "sha256": "3b5dfa0bce5c8c96056e7f3a1d2cfdf922fc555fa4ad0b1e89210ce0807cf0cd"
+        },
+        "ttgir": {
+          "path": "fp16.private.ttgir.gz",
+          "sha256": "2afe8a228377d075836d4ba4bdaf36b59b34872a9537ef79fe0f909e7e027529"
+        },
+        "ttir": {
+          "path": "fp16.private.ttir.gz",
+          "sha256": "cff6ccc6e2d7e78155d47860c557afd06c40b85bcfc16f03636ef3bc52baa78b"
+        }
+      },
+      "attributes": {
+        "(0,)": [
+          [
+            "tt.experimental_alias_group",
+            0
+          ]
+        ],
+        "(1,)": [
+          [
+            "tt.experimental_alias_group",
+            1
+          ],
+          [
+            "tt.experimental_private",
+            1
+          ],
+          [
+            "tt.experimental_num_ctas",
+            1
+          ]
+        ]
+      },
+      "constants": {
+        "BLOCK": 128
+      },
+      "dtype": "fp16",
+      "options": {
+        "enable_contract_load_reuse": false,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": true,
+        "num_stages": 1,
+        "num_warps": 4
+      },
+      "ptx_atomics": [
+        "@%p1 red.global.gpu.relaxed.add.f32 [ %rd2 + 0 ], %r1;"
+      ],
+      "ptx_cta_barriers": 0,
+      "shared_bytes": 0,
+      "signature": {
+        "BLOCK": "constexpr",
+        "D": "i32",
+        "L": "i32",
+        "grad_in_ptr": "*fp16",
+        "grad_out_ptr": "*fp32",
+        "inner_total": "i32",
+        "numel_in": "i32",
+        "prod_after": "i32",
+        "size": "i32",
+        "step": "i32"
+      },
+      "transformed": true,
+      "ttir_atomics": [
+        "%2 = tt.atomic_rmw fadd, relaxed, gpu, %1, %vals_f32, %mask_4 : (tensor<128x!tt.ptr<f32>>, tensor<128xf32>, tensor<128xi1>) -> tensor<128xf32> loc(#loc19)"
+      ],
+      "variant": "private"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "fp16.manual.ptx.gz",
+          "sha256": "bb10ded31c4a6686643b2f72f4b048ee84872e9806ea974949afd95a0a86252b"
+        },
+        "ttgir": {
+          "path": "fp16.manual.ttgir.gz",
+          "sha256": "761995fb56c6568d5f699599c6b3627688a577369fdce01af753f3d1b0f587f7"
+        },
+        "ttir": {
+          "path": "fp16.manual.ttir.gz",
+          "sha256": "07301c65a863db08dc7b3e77ca5f1968a74fcb9eb3ff37224665466f513d7b82"
+        }
+      },
+      "attributes": {},
+      "constants": {
+        "BLOCK": 128
+      },
+      "dtype": "fp16",
+      "options": {
+        "enable_contract_load_reuse": false,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "num_stages": 1,
+        "num_warps": 4
+      },
+      "ptx_atomics": [
+        "@%p1 red.global.gpu.relaxed.add.f32 [ %rd2 + 0 ], %r1;"
+      ],
+      "ptx_cta_barriers": 0,
+      "shared_bytes": 0,
+      "signature": {
+        "BLOCK": "constexpr",
+        "D": "i32",
+        "L": "i32",
+        "grad_in_ptr": "*fp16",
+        "grad_out_ptr": "*fp32",
+        "inner_total": "i32",
+        "numel_in": "i32",
+        "prod_after": "i32",
+        "size": "i32",
+        "step": "i32"
+      },
+      "transformed": false,
+      "ttir_atomics": [
+        "%2 = tt.atomic_rmw fadd, relaxed, gpu, %1, %vals_f32, %mask_4 : (tensor<128x!tt.ptr<f32>>, tensor<128xf32>, tensor<128xi1>) -> tensor<128xf32> loc(#loc19)"
+      ],
+      "variant": "manual"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "fp32.baseline.ptx.gz",
+          "sha256": "2ab2cc8e34e98f05661c6e4fb5c5b0a7da6c947b27c9bbf2a51a0fd75890dc5f"
+        },
+        "ttgir": {
+          "path": "fp32.baseline.ttgir.gz",
+          "sha256": "dfabc19dd886a3198dcb878f75b8e36590d32f86cb7a40586337305976588e41"
+        },
+        "ttir": {
+          "path": "fp32.baseline.ttir.gz",
+          "sha256": "123b8d34169d403c94a359ff9eda2fb886effaaab2040f6f4d6ba1e5f2027da4"
+        }
+      },
+      "attributes": {},
+      "constants": {
+        "BLOCK": 128
+      },
+      "dtype": "fp32",
+      "options": {
+        "enable_contract_load_reuse": false,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "num_stages": 1,
+        "num_warps": 4
+      },
+      "ptx_atomics": [
+        "@%p1 atom.global.gpu.acq_rel.add.f32 %r2, [ %rd2 + 0 ], %r3;"
+      ],
+      "ptx_cta_barriers": 2,
+      "shared_bytes": 0,
+      "signature": {
+        "BLOCK": "constexpr",
+        "D": "i32",
+        "L": "i32",
+        "grad_in_ptr": "*fp32",
+        "grad_out_ptr": "*fp32",
+        "inner_total": "i32",
+        "numel_in": "i32",
+        "prod_after": "i32",
+        "size": "i32",
+        "step": "i32"
+      },
+      "transformed": false,
+      "ttir_atomics": [
+        "%2 = tt.atomic_rmw fadd, acq_rel, gpu, %1, %vals_7, %mask_4 : (tensor<128x!tt.ptr<f32>>, tensor<128xf32>, tensor<128xi1>) -> tensor<128xf32> loc(#loc18)"
+      ],
+      "variant": "baseline"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "fp32.private.ptx.gz",
+          "sha256": "ba51565d36f6783ddf3f1a3d1d19314251110706d2ca5b5c9f2ea582d6dfdab4"
+        },
+        "ttgir": {
+          "path": "fp32.private.ttgir.gz",
+          "sha256": "59e847233192b970c144e00b33e7574b327544c8ad3827b2bdb59639fada00a0"
+        },
+        "ttir": {
+          "path": "fp32.private.ttir.gz",
+          "sha256": "9ecf14d3a6b8f39180bafc89044199003a1967532bbfce26c9b5ece05d7c72d7"
+        }
+      },
+      "attributes": {
+        "(0,)": [
+          [
+            "tt.experimental_alias_group",
+            0
+          ]
+        ],
+        "(1,)": [
+          [
+            "tt.experimental_alias_group",
+            1
+          ],
+          [
+            "tt.experimental_private",
+            1
+          ],
+          [
+            "tt.experimental_num_ctas",
+            1
+          ]
+        ]
+      },
+      "constants": {
+        "BLOCK": 128
+      },
+      "dtype": "fp32",
+      "options": {
+        "enable_contract_load_reuse": false,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": true,
+        "num_stages": 1,
+        "num_warps": 4
+      },
+      "ptx_atomics": [
+        "@%p1 red.global.gpu.relaxed.add.f32 [ %rd2 + 0 ], %r2;"
+      ],
+      "ptx_cta_barriers": 0,
+      "shared_bytes": 0,
+      "signature": {
+        "BLOCK": "constexpr",
+        "D": "i32",
+        "L": "i32",
+        "grad_in_ptr": "*fp32",
+        "grad_out_ptr": "*fp32",
+        "inner_total": "i32",
+        "numel_in": "i32",
+        "prod_after": "i32",
+        "size": "i32",
+        "step": "i32"
+      },
+      "transformed": true,
+      "ttir_atomics": [
+        "%2 = tt.atomic_rmw fadd, relaxed, gpu, %1, %vals_7, %mask_4 : (tensor<128x!tt.ptr<f32>>, tensor<128xf32>, tensor<128xi1>) -> tensor<128xf32> loc(#loc18)"
+      ],
+      "variant": "private"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "fp32.manual.ptx.gz",
+          "sha256": "8c659444a85c31ac340bb9fe29bf5ae106abb1735825d091be9c2967d134e3b4"
+        },
+        "ttgir": {
+          "path": "fp32.manual.ttgir.gz",
+          "sha256": "7c0e080161810164dccf8f247f0b96cb773f6ddb73b2b8711ef6165ff2323af1"
+        },
+        "ttir": {
+          "path": "fp32.manual.ttir.gz",
+          "sha256": "3234e78047de4612fd08890761f284cd14d9a5ccfa51e114ec6ea3d5c6f244d3"
+        }
+      },
+      "attributes": {},
+      "constants": {
+        "BLOCK": 128
+      },
+      "dtype": "fp32",
+      "options": {
+        "enable_contract_load_reuse": false,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "num_stages": 1,
+        "num_warps": 4
+      },
+      "ptx_atomics": [
+        "@%p1 red.global.gpu.relaxed.add.f32 [ %rd2 + 0 ], %r2;"
+      ],
+      "ptx_cta_barriers": 0,
+      "shared_bytes": 0,
+      "signature": {
+        "BLOCK": "constexpr",
+        "D": "i32",
+        "L": "i32",
+        "grad_in_ptr": "*fp32",
+        "grad_out_ptr": "*fp32",
+        "inner_total": "i32",
+        "numel_in": "i32",
+        "prod_after": "i32",
+        "size": "i32",
+        "step": "i32"
+      },
+      "transformed": false,
+      "ttir_atomics": [
+        "%2 = tt.atomic_rmw fadd, relaxed, gpu, %1, %vals_7, %mask_4 : (tensor<128x!tt.ptr<f32>>, tensor<128xf32>, tensor<128xi1>) -> tensor<128xf32> loc(#loc18)"
+      ],
+      "variant": "manual"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "bf16.baseline.ptx.gz",
+          "sha256": "6b6d998af716ca82ecf1828cecc3fc6499afcd5346d46feb753556ed4da79ed1"
+        },
+        "ttgir": {
+          "path": "bf16.baseline.ttgir.gz",
+          "sha256": "6eb211797b12987deac11af364dac8c54501145f9f0953b537092d566a1f1456"
+        },
+        "ttir": {
+          "path": "bf16.baseline.ttir.gz",
+          "sha256": "fd02a0942de3735d01cae74d01b3d101fc1f7b8ee7c979bd94c7b955e6ad9710"
+        }
+      },
+      "attributes": {},
+      "constants": {
+        "BLOCK": 128
+      },
+      "dtype": "bf16",
+      "options": {
+        "enable_contract_load_reuse": false,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "num_stages": 1,
+        "num_warps": 4
+      },
+      "ptx_atomics": [
+        "@%p1 atom.global.gpu.acq_rel.add.f32 %r1, [ %rd2 + 0 ], %r2;"
+      ],
+      "ptx_cta_barriers": 2,
+      "shared_bytes": 0,
+      "signature": {
+        "BLOCK": "constexpr",
+        "D": "i32",
+        "L": "i32",
+        "grad_in_ptr": "*bf16",
+        "grad_out_ptr": "*fp32",
+        "inner_total": "i32",
+        "numel_in": "i32",
+        "prod_after": "i32",
+        "size": "i32",
+        "step": "i32"
+      },
+      "transformed": false,
+      "ttir_atomics": [
+        "%2 = tt.atomic_rmw fadd, acq_rel, gpu, %1, %vals_f32, %mask_4 : (tensor<128x!tt.ptr<f32>>, tensor<128xf32>, tensor<128xi1>) -> tensor<128xf32> loc(#loc19)"
+      ],
+      "variant": "baseline"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "bf16.private.ptx.gz",
+          "sha256": "b0aca09bd5015b030f80ca4ee539c766bb11047c44b5f576f31f94bccda1dd5b"
+        },
+        "ttgir": {
+          "path": "bf16.private.ttgir.gz",
+          "sha256": "576385d9d8c023a3fdfa18110883b94bd690d8ad617484ba17c019a496f3f6f3"
+        },
+        "ttir": {
+          "path": "bf16.private.ttir.gz",
+          "sha256": "e92977e59a35aa8ed6b8920ce8eb85461d8f6ebc8d3e328f192d8ca0ebf6e88b"
+        }
+      },
+      "attributes": {
+        "(0,)": [
+          [
+            "tt.experimental_alias_group",
+            0
+          ]
+        ],
+        "(1,)": [
+          [
+            "tt.experimental_alias_group",
+            1
+          ],
+          [
+            "tt.experimental_private",
+            1
+          ],
+          [
+            "tt.experimental_num_ctas",
+            1
+          ]
+        ]
+      },
+      "constants": {
+        "BLOCK": 128
+      },
+      "dtype": "bf16",
+      "options": {
+        "enable_contract_load_reuse": false,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": true,
+        "num_stages": 1,
+        "num_warps": 4
+      },
+      "ptx_atomics": [
+        "@%p1 red.global.gpu.relaxed.add.f32 [ %rd2 + 0 ], %r1;"
+      ],
+      "ptx_cta_barriers": 0,
+      "shared_bytes": 0,
+      "signature": {
+        "BLOCK": "constexpr",
+        "D": "i32",
+        "L": "i32",
+        "grad_in_ptr": "*bf16",
+        "grad_out_ptr": "*fp32",
+        "inner_total": "i32",
+        "numel_in": "i32",
+        "prod_after": "i32",
+        "size": "i32",
+        "step": "i32"
+      },
+      "transformed": true,
+      "ttir_atomics": [
+        "%2 = tt.atomic_rmw fadd, relaxed, gpu, %1, %vals_f32, %mask_4 : (tensor<128x!tt.ptr<f32>>, tensor<128xf32>, tensor<128xi1>) -> tensor<128xf32> loc(#loc19)"
+      ],
+      "variant": "private"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "bf16.manual.ptx.gz",
+          "sha256": "b9b371dc827be7c42f742e998f7ce71d9545cebc69bfc21e5d74a7c99a86f921"
+        },
+        "ttgir": {
+          "path": "bf16.manual.ttgir.gz",
+          "sha256": "077122042026b86d19127fc74333bf9450dbefbb5da4963361cb39abc189edcd"
+        },
+        "ttir": {
+          "path": "bf16.manual.ttir.gz",
+          "sha256": "6af06c57f9787961f68d01df884e518c2c4487d3540bc83221be2a55b2e625b6"
+        }
+      },
+      "attributes": {},
+      "constants": {
+        "BLOCK": 128
+      },
+      "dtype": "bf16",
+      "options": {
+        "enable_contract_load_reuse": false,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "num_stages": 1,
+        "num_warps": 4
+      },
+      "ptx_atomics": [
+        "@%p1 red.global.gpu.relaxed.add.f32 [ %rd2 + 0 ], %r1;"
+      ],
+      "ptx_cta_barriers": 0,
+      "shared_bytes": 0,
+      "signature": {
+        "BLOCK": "constexpr",
+        "D": "i32",
+        "L": "i32",
+        "grad_in_ptr": "*bf16",
+        "grad_out_ptr": "*fp32",
+        "inner_total": "i32",
+        "numel_in": "i32",
+        "prod_after": "i32",
+        "size": "i32",
+        "step": "i32"
+      },
+      "transformed": false,
+      "ttir_atomics": [
+        "%2 = tt.atomic_rmw fadd, relaxed, gpu, %1, %vals_f32, %mask_4 : (tensor<128x!tt.ptr<f32>>, tensor<128xf32>, tensor<128xi1>) -> tensor<128xf32> loc(#loc19)"
+      ],
+      "variant": "manual"
+    }
+  ]
+}

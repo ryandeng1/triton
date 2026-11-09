@@ -1,0 +1,134 @@
+{
+  "records": [
+    {
+      "case": "upstream500",
+      "seed": 68023,
+      "selected_config_indices": {
+        "original": 2,
+        "alias": 2,
+        "pipeline": 0,
+        "pipeline_alias": 0
+      },
+      "selected_configurations": {
+        "original": [
+          32,
+          2,
+          2
+        ],
+        "alias": [
+          32,
+          2,
+          2
+        ],
+        "pipeline": [
+          8,
+          1,
+          3
+        ],
+        "pipeline_alias": [
+          8,
+          1,
+          3
+        ]
+      },
+      "independently_selected_screen_median_us": {
+        "original": 419.30800676345825,
+        "alias": 396.807998418808,
+        "pipeline": 345.24399042129517,
+        "pipeline_alias": 356.59998655319214
+      },
+      "screen_speedups": {
+        "pipeline_vs_original": 1.2145265910401049,
+        "pipeline_alias_vs_alias": 1.1127538232804117
+      }
+    },
+    {
+      "case": "upstream1024",
+      "seed": 68024,
+      "selected_config_indices": {
+        "original": 0,
+        "alias": 0,
+        "pipeline": 0,
+        "pipeline_alias": 0
+      },
+      "selected_configurations": {
+        "original": [
+          8,
+          1,
+          3
+        ],
+        "alias": [
+          8,
+          1,
+          3
+        ],
+        "pipeline": [
+          8,
+          1,
+          3
+        ],
+        "pipeline_alias": [
+          8,
+          1,
+          3
+        ]
+      },
+      "independently_selected_screen_median_us": {
+        "original": 759.332001209259,
+        "alias": 669.4080233573914,
+        "pipeline": 785.5520248413086,
+        "pipeline_alias": 816.8320059776306
+      },
+      "screen_speedups": {
+        "pipeline_vs_original": 0.9666221678477038,
+        "pipeline_alias_vs_alias": 0.8195173774516904
+      }
+    },
+    {
+      "case": "decode16",
+      "seed": 68025,
+      "selected_config_indices": {
+        "original": 1,
+        "alias": 1,
+        "pipeline": 1,
+        "pipeline_alias": 1
+      },
+      "selected_configurations": {
+        "original": [
+          16,
+          1,
+          2
+        ],
+        "alias": [
+          16,
+          1,
+          2
+        ],
+        "pipeline": [
+          16,
+          1,
+          2
+        ],
+        "pipeline_alias": [
+          16,
+          1,
+          2
+        ]
+      },
+      "independently_selected_screen_median_us": {
+        "original": 6.321500055491924,
+        "alias": 6.4210002310574055,
+        "pipeline": 6.458749994635582,
+        "pipeline_alias": 6.483249831944704
+      },
+      "screen_speedups": {
+        "pipeline_vs_original": 0.9787497674847838,
+        "pipeline_alias_vs_alias": 0.990398395480523
+      }
+    }
+  ],
+  "positive_screen": true,
+  "confirmation_needed": true,
+  "native_library_sha256": "600f64d69c767567ecf271b1393ab08c8ce187c0f520581357979e21c71ba3dd",
+  "harness_sha256": "5d393235f02e82050787999eefb4c97a72b2f8cded68f41f89952d92592c340a"
+}

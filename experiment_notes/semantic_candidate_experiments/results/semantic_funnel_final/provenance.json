@@ -1,0 +1,17 @@
+{
+  "archive": {
+    "archive_sha256": "d7808e09b537e4c3342f35e54254d4622ee0e3d1f70d07767f77eecbeb3321b5",
+    "files_extracted": 2354,
+    "revision": "3f1f896fd90f5db42d167d64fcb9691326071bc2",
+    "url": "https://codeload.github.com/flagos-ai/FlagGems/tar.gz/3f1f896fd90f5db42d167d64fcb9691326071bc2"
+  },
+  "inputs": {
+    "atomic_sites.json": "053c0e0c73a55fae8e8fbdca4a268fda1a9bd75a66f13f076c50ff666517bdc2",
+    "licm_candidates.json": "2a449b5551072c9d043526f286ef40d8b8a74fcbde8ecb758c8c5aa6b3179a71"
+  },
+  "mapping": "Only statically resolved source calls/imported function references count. Operator-only references and filename hints do not count as case mappings. NVIDIA same-name definitions are candidates, not verified overrides.",
+  "repository": "flagos-ai/FlagGems",
+  "reproduction": "python3 experiment_notes/semantic_candidate_experiments/semantic_funnel_experiment.py --fetch; .venv-semantic/bin/python .../semantic_funnel_experiment.py --compile-pilot",
+  "revision": "3f1f896fd90f5db42d167d64fcb9691326071bc2",
+  "script_sha256": "afdef9aae3c17907a08842ab2e9743ece863382a904d320556e3e14b966d5a26"
+}

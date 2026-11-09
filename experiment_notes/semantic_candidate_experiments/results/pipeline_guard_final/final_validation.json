@@ -1,0 +1,59 @@
+{
+  "native_library_sha256": "e7e15b9337405e632e887ceae9c96d9ea85e38aa1e9c35dec937d7b148d06178",
+  "git_head": "dc0ec185e4021be0dd939f3df2f15c4a2862232f",
+  "lit_files_passed": 33,
+  "distinct_runtime_cases": 319,
+  "runtime_count_explanation": "97 pipeliner cases plus 222 semantic/native contract cases; the combined 309-case run overlaps 212 of those contract cases.",
+  "benchmark_validation_records": 204,
+  "benchmark_boundary_cases": 3,
+  "benchmark_source_body_unchanged": true,
+  "logs": {
+    "lit-all-final.log": {
+      "passed": 33,
+      "sha256": "579d4a731d636cf8df4fbfe829e5eb63656578c103cbbb57d1555f810be9f347"
+    },
+    "runtime-all-final.log": {
+      "passed": 309,
+      "deselected": 96,
+      "sha256": "6c4588c55f364f78207ba39d9c3e08c8af36928d7dfbd101895f02dcec971447"
+    },
+    "runtime-contracts-native-final.log": {
+      "passed": 222,
+      "deselected": 86,
+      "sha256": "6028a750dfe313c0e27d7f088f5f1c8e3b46557fc7e26996293fc337b94df280"
+    }
+  },
+  "build_log": "build-final-volatile.log",
+  "earlier_runtime_manifest": "runtime_validation.json",
+  "scope": "NVIDIA pipeline/automatic WS; not the separate AMD pipeliner or Gluon automatic inference",
+  "working_diff_sha256": "6d715f6e6ce657980a95ea57dd8636d8d12ba18cb3fddbd52e06b09886152d70",
+  "source_hashes": {
+    "include/triton/Analysis/GlobalMemoryEffects.h": "bfc45e66709be6fcecd6d55be6871388562380750d142388949f1966fe0e7ffe",
+    "include/triton/Dialect/Triton/Transforms/Passes.td": "90d6c9c7e6abdd95304861c0f3dbb2218dbc45282bc5dbe95a5d7db2259db3b9",
+    "include/triton/Dialect/TritonGPU/Transforms/Passes.td": "01ac04209c63dc908c864957a6e1b2aeec6b7d9afc666af9922b571519de0eed",
+    "include/triton/Dialect/TritonGPU/Transforms/PipeliningUtility.h": "53cae5c9fb5f937604d35c13843846a2bfa5c68e2dc8dc6731f597ab3daee6ea",
+    "lib/Analysis/GlobalMemoryEffects.cpp": "d0c207db94ebfff5ed0e8cffc6cf3133ab95ecf2bda27d5fed9f4bd3b764d741",
+    "lib/Dialect/Triton/Transforms/LoopInvariantCodeMotion.cpp": "acac86c6da79d58342e30713ad8be4939adc55b25a0f473299a97a31d56579c0",
+    "lib/Dialect/TritonGPU/Transforms/Pipeliner/AssignLatencies.cpp": "5b08a4f4567fa5b57baf01b29c9f838693212db00c00ad875f534e3634b4e1ed",
+    "lib/Dialect/TritonGPU/Transforms/Pipeliner/PipeliningUtility.cpp": "167c33ea1dd98bbebe8d0a60c946a046b06b779f039545d6a480d18b6373c714",
+    "lib/Dialect/TritonGPU/Transforms/Pipeliner/SoftwarePipeliner.cpp": "8f17dd68fefb620f23ddef50774331a1ed7bcdf255a856516785fc6d8dbf7879",
+    "lib/Dialect/TritonGPU/Transforms/Pipeliner/TMAStoresPipeline.cpp": "78dfa8c795e232e187ee95d4b3986bc31547881c65d1f651d275084dcc1b294f",
+    "lib/Dialect/TritonGPU/Transforms/WarpSpecialization/PartitionScheduling.cpp": "9335342b8e96832439db2d39ddfd605291270c717b5325acd2b4533218d7361c",
+    "python/src/passes.cc": "52a575195f5ae1a64410c605787c18e429318bd5994a703963e992ae6ebd50a4",
+    "python/test/unit/language/test_pipeliner.py": "8936d347c164dbbcc98fac3faaab52a98dcc072023efb9d4ca37e74d9a57b43c",
+    "python/test/unit/runtime/test_specialize.py": "8a077037b2df8180692e1eb23d18ee81f386a2ed27f94f87a016bda0c6092559",
+    "test/Triton/loop-invariant-code-motion.mlir": "fd14cd609f9f502495631a333cb2b34968d4f9fb43f2c811d89e0e34ebf0a6b8",
+    "test/TritonGPU/automatic-warp-specialization.mlir": "3196a832ddbaf26cc94e0b4a27dd207c24f74700a24d8396c53a90f971425e7c",
+    "test/TritonGPU/loop-pipeline-async-latencies.mlir": "f5a4b6710f4d65280190a9d8077234c9e7f4d29bf7faf46194461cd2131c74c9",
+    "test/TritonGPU/loop-pipeline-blackwell.mlir": "50b0d7c8d0b75567c2c40fe6237dfc670768dd30d43bfccd92c083837512b63a",
+    "test/TritonGPU/loop-pipeline-cuda.mlir": "7f330a0d50b1222976251d266821c19425eae9c8af3deb15da3881b92c5ae974",
+    "test/TritonGPU/loop-pipeline-hopper.mlir": "f3a3c05ac9c38f5cc3561932373db0e8aafc6b7ec850bc3d4d634777deba2e01",
+    "test/TritonGPU/loop-pipeline.mlir": "f532277ff4f626a1e1b48d2435ce182fab324a6e71cd26f9853443cb91cea9a2",
+    "test/TritonGPU/matmul-loop-pipeline.mlir": "9040e98dd8d238d4581e99f1d7880d9e87b4c2d94d207a059a8a233ea0558810",
+    "test/TritonGPU/partition-scheduling.mlir": "d0ddc4febffa20fd4d334c1eb1a7ea85040aff87025ce69b640d440a22c39ba7",
+    "test/TritonGPU/pipeline-loop-nest.mlir": "edb1a50f66e5540f85dc4ef351a2ec531c51162e0f47d1a3918b49ca42e897b6",
+    "test/TritonGPU/samples/simulated-grouped-gemm.mlir": "6494146286026dcf3d61834d6a4c5cde8b931c3b2797712a9b55e0a5196da01e",
+    "test/TritonGPU/samples/simulated-grouped-gemm.mlir.in": "6494146286026dcf3d61834d6a4c5cde8b931c3b2797712a9b55e0a5196da01e",
+    "third_party/nvidia/backend/compiler.py": "9ca796e7ee45fc597a60e1c377782e4b3a5049c7cce1822090ca9d6b673b23db"
+  }
+}

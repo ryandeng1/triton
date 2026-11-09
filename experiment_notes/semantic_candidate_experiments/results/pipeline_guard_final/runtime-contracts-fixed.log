@@ -1,0 +1,10 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: /home/ryandeng/tpaa/triton
+configfile: pytest.ini
+plugins: platformdirs-4.14.5
+collected 308 items / 86 deselected / 222 selected
+
+python/test/unit/runtime/test_specialize.py ..............................................................................................................................................................................................................................
+
+===================== 222 passed, 86 deselected in 11.15s ======================

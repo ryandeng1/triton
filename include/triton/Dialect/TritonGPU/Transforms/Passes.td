@@ -46,7 +46,10 @@ def TritonGPUAssignLatencies : Pass<"tritongpu-assign-latencies", "mlir::ModuleO
            "number of pipeline stages">,
     Option<"forceTmemSingleBuffer", "force-tmem-single-buffer", "bool",
            /*default*/"false",
-           "Disallow accumulator multi-buffering on explicitly warp-specialized for loops">
+           "Disallow accumulator multi-buffering on explicitly warp-specialized for loops">,
+    Option<"contractPipelineStages", "contract-pipeline-stages", "int32_t",
+           /*default*/"0",
+           "Infer pipeline stages for ordinary loops licensed by memory contracts; zero disables inference">
   ];
 }
 

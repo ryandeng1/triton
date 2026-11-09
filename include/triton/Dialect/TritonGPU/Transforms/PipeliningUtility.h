@@ -20,6 +20,11 @@ static const char *kWarpSpecializeAttrName = "tt.warp_specialize";
 static const char *kLoopStageAttrName = "loop.stage";
 static const char *kLoopClusterAttrName = "loop.cluster";
 static const char *kScheduledMaxStageAttrName = "tt.scheduled_max_stage";
+// Internal proof from before compiler-owned synchronization is introduced.
+// Invalidate if global effects, provenance or argument contracts change. Loop
+// partitioning may copy it only while preserving the original global accesses.
+static const char *kGlobalPipelineProofAttrName =
+    "ttg.global_pipeline_preprotocol_proof";
 class CoarseSchedule;
 class ModuleAxisInfoAnalysis;
 //===----------------------------------------------------------------------===//
@@ -68,6 +73,16 @@ Value sinkValueRedefinition(RewriterBase &rewriter, Value in, Value out,
 
 bool loopHasDistGreaterThanOne(scf::ForOp forOp);
 bool isOuterLoop(scf::ForOp forOp);
+
+/// Drop the serialized schedule and latency policy for a rejected loop.
+/// This also disables automatic warp specialization before its partitioning
+/// pass can consume an unsafe source hint.
+void clearUnsafePipelineSchedule(Operation *loop);
+
+/// Global-memory legality gate. Shared/TMEM protocol checks remain the
+/// responsibility of the existing schedulers and lowerers.
+bool hasSafeGlobalPipelineAccesses(Operation *loop,
+                                  bool allowCompilerProtocols = false);
 
 /// Function to mask operations during scheduling.
 Operation *predicateOp(RewriterBase &rewriter, Operation *op, Value pred);

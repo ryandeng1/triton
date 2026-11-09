@@ -1,0 +1,8 @@
+-- Testing: 2 tests, 2 workers --
+PASS: TRITON :: TritonGPU/loop-pipeline-cuda.mlir (1 of 2)
+PASS: TRITON :: TritonGPU/loop-pipeline-hopper.mlir (2 of 2)
+
+Testing Time: 0.17s
+
+Total Discovered Tests: 2
+  Passed: 2 (100.00%)

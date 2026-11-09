@@ -1,0 +1,35 @@
+{
+  "date_utc": "2026-11-09T01:06:53.158599+00:00",
+  "native_library_sha256": "3693135e7987232de287baafbe715c2dc0869d947aebfc66f3080a82e3c70d67",
+  "final_selected_cases": 319,
+  "targeted_61_are_subset_of_full_97": true,
+  "runs": [
+    {
+      "log": "runtime-full-final.log",
+      "passed": 97,
+      "sha256": "9d895eecbaee88c0fd6609f956ca6578b227db1e16f1313a040fb71ab70e256c"
+    },
+    {
+      "log": "runtime-contracts-fixed.log",
+      "passed": 222,
+      "sha256": "929770c6e8e72c871571622a239f6024ffc7531bad354bca3902c3345a5db404"
+    }
+  ],
+  "commands": [
+    "../.venv-semantic/bin/python -m pytest -x -s --tb=short python/test/unit/language/test_pipeliner.py",
+    "../.venv-semantic/bin/python -m pytest -x -s --tb=short python/test/unit/runtime/test_specialize.py -k 'semantic or native_'"
+  ],
+  "source_hashes": {
+    "python/test/unit/language/test_pipeliner.py": "8936d347c164dbbcc98fac3faaab52a98dcc072023efb9d4ca37e74d9a57b43c",
+    "python/test/unit/runtime/test_specialize.py": "8a077037b2df8180692e1eb23d18ee81f386a2ed27f94f87a016bda0c6092559"
+  },
+  "expected_behavior_changes": [
+    "NVIDIA persistent scatter retains inner TMA load pipeline but completes its outer descriptor store before the next iteration because descriptor alias separation is unproved.",
+    "Uncontracted persistent RMSNorm declines pipelining; alias-derived variant retains X pipeline and hoists W. LICM assertion checks load placement independently of async-copy counts."
+  ],
+  "resolved_failures": [
+    "Initial missing-latency attribute cleanup assertion fixed by native patch and make before reruns.",
+    "Old scatter overlap count and RMSNorm relative-copy-count expectations updated after inspecting actual conservative behavior."
+  ],
+  "gpu_released": true
+}

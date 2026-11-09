@@ -58,6 +58,11 @@ def TritonLoopUnroll : Pass</*cli-arg*/"triton-loop-unroll", /*Op*/"mlir::Module
 
 def TritonLoopInvariantCodeMotion : Pass</*cli-arg*/"triton-licm", /*Op*/"mlir::ModuleOp"> {
   let summary = "MLIR's LICM plus hoist load ops out of loops with masks.";
+  let options = [
+    Option<"enableMemoryContracts", "enable-memory-contracts", "bool",
+           /*default*/"true",
+           "Use immutable and alias contracts for load hoisting across writes">
+  ];
   let description = [{
     This pass uses MLIR's LICM pass as base. Additionally, it hoists load ops
     out of loops that consist of pure/read-only ops. For scf.for loops, it

@@ -461,7 +461,7 @@ module attributes {"ttg.num-ctas" = 1 : i32, "ttg.num-warps" = 4 : i32, ttg.targ
     // CHECK: scf.for
     scf.for %arg4 = %c0_i32 to %arg3 step %arg2  : i32 {
       %1 = arith.divsi %arg4, %arg2 : i32
-      // CHECK: ttng.async_tma_store_wait {pendings = 0 : i32, read_only}
+      // CHECK: ttng.async_tma_store_wait {pendings = 0 : i32}
       // CHECK-NEXT: ttg.local_store
       // CHECK-NEXT: ttng.fence_async_shared
       // CHECK-NEXT: ttng.async_tma_copy_local_to_global
@@ -484,7 +484,7 @@ module attributes {"ttg.num-ctas" = 1 : i32, "ttg.num-warps" = 4 : i32, ttg.targ
     scf.for %arg4 = %c0_i32 to %arg3 step %arg2  : i32 {
       %1 = arith.divsi %arg4, %arg2 : i32
       %2 = tt.splat %1 : i32 -> tensor<8xi32, #blocked1>
-      // CHECK: ttng.async_tma_store_wait {pendings = 0 : i32, read_only}
+      // CHECK: ttng.async_tma_store_wait {pendings = 0 : i32}
       // CHECK-NEXT: ttg.local_store
       // CHECK-NEXT: ttng.fence_async_shared
       // CHECK-NEXT: ttng.async_tma_scatter
@@ -512,7 +512,7 @@ module attributes {"ttg.num-ctas" = 1 : i32, "ttg.num-warps" = 4 : i32, ttg.targ
       %desc = tt.make_tensor_descriptor %arg1, [%c128_i32, %c128_i32], [%c128_i64, %c1_i64] : <f32>, <128x128xf32, #shared>
       // CHECK: ttng.tensormap_create
       // CHECK: ttng.tensormap_fenceproxy_acquire
-      // CHECK: ttng.async_tma_store_wait {pendings = 0 : i32, read_only}
+      // CHECK: ttng.async_tma_store_wait {pendings = 0 : i32}
       // CHECK-NEXT: ttg.local_store
       // CHECK-NEXT: ttng.fence_async_shared
       // CHECK-NEXT: ttng.async_tma_copy_local_to_global
@@ -536,11 +536,11 @@ module attributes {"ttg.num-ctas" = 1 : i32, "ttg.num-warps" = 4 : i32, ttg.targ
     scf.for %arg4 = %c0_i32 to %arg3 step %arg2  : i32 {
       %1 = arith.divsi %arg4, %arg2 : i32
       %2 = arith.divsi %arg2, %arg4 : i32
-      // CHECK: ttng.async_tma_store_wait {pendings = 0 : i32, read_only}
+      // CHECK: ttng.async_tma_store_wait {pendings = 0 : i32}
       // CHECK-NEXT: ttg.local_store %{{.+}}, %[[ALLOC]]
       // CHECK-NEXT: ttng.fence_async_shared
       // CHECK-NEXT: ttng.async_tma_copy_local_to_global %{{.*}} %[[ALLOC]]
-      // CHECK: ttng.async_tma_store_wait {pendings = 0 : i32, read_only}
+      // CHECK: ttng.async_tma_store_wait {pendings = 0 : i32}
       // CHECK-NEXT: ttg.local_store %{{.+}}, %[[ALLOC]]
       // CHECK-NEXT: ttng.fence_async_shared
       // CHECK-NEXT: ttng.async_tma_copy_local_to_global %{{.*}} %[[ALLOC]]
@@ -1120,7 +1120,7 @@ module attributes {"ttg.num-ctas" = 1 : i32, "ttg.num-warps" = 4 : i32, ttg.targ
     } do {
     ^bb0(%keep_going: i1):
       %c0 = arith.constant 0 : i32
-      // CHECK: ttng.async_tma_store_wait {pendings = 0 : i32, read_only}
+      // CHECK: ttng.async_tma_store_wait {pendings = 0 : i32}
       // CHECK-NEXT: ttg.local_store {{.*}}, %[[ALLOC]]
       // CHECK-NEXT: ttng.fence_async_shared
       // CHECK-NEXT: ttng.async_tma_copy_local_to_global {{.*}} %[[ALLOC]]
@@ -1138,51 +1138,34 @@ module attributes {"ttg.num-ctas" = 1 : i32, "ttg.num-warps" = 4 : i32, ttg.targ
 #blocked_while_store = #ttg.blocked<{sizePerThread = [1, 1], threadsPerWarp = [1, 32], warpsPerCTA = [1, 4], order = [1, 0]}>
 #shared_while_store = #ttg.nvmma_shared<{swizzlingByteWidth = 64, transposed = false, elementBitWidth = 8}>
 module attributes {"ttg.num-ctas" = 1 : i32, "ttg.num-warps" = 4 : i32, ttg.target = "cuda:90", "ttg.threads-per-warp" = 32 : i32} {
+  // Before-region writes are not selected for asynchronous conversion.
+  // Keep both writes synchronous rather than moving the previous after-region
+  // write across the next before-region write.
   // CHECK-LABEL: tma_store_pipeline_while_device
+  // CHECK-NOT: ttng.async_tma_copy_local_to_global
+  // CHECK: tt.descriptor_store
+  // CHECK: tt.descriptor_store
+  // CHECK: tt.return
   tt.func public @tma_store_pipeline_while_device(%src: tensor<128x128xf32, #blocked_while_store>, %base: !tt.ptr<f32>, %run: i1, %before_only: i32) {
     %c128_i32 = arith.constant 128 : i32
     %c128_i64 = arith.constant 128 : i64
     %c1_i64 = arith.constant 1 : i64
-    // CHECK: [[ZERO:%.*]] = arith.constant 0 : i32
-    // CHECK: %[[ALLOC:.+]] = ttg.local_alloc : () -> !ttg.memdesc<128x128xf32, #[[$SHARED:.+]], #smem, mutable>
-    // CHECK-NEXT: [[DESC_RING:%.*]] = ttg.global_scratch_alloc {alignment = 128 : i32, nbytes = 256 : i32}
-    // CHECK-NEXT: {{%.*}} = scf.while ({{.*}}, {{.*}}, [[BEFORE_COUNTER:%.*]] = [[ZERO]])
     %loop = scf.while (%keep_going = %run, %unused = %before_only) : (i1, i32) -> i1 {
-      // CHECK: %[[BEFORE_DESC:.*]] = tt.make_tensor_descriptor %{{.*}}
-      // CHECK: tt.descriptor_store %[[BEFORE_DESC]]
       %before_c0 = arith.constant 0 : i32
       %before_desc = tt.make_tensor_descriptor %base, [%c128_i32, %c128_i32], [%c128_i64, %c1_i64] : <f32>, <128x128xf32, #shared_while_store>
       tt.descriptor_store %before_desc[%before_c0, %before_c0], %src : !tt.tensordesc<128x128xf32, #shared_while_store>, tensor<128x128xf32, #blocked_while_store>
       %continue = arith.cmpi sgt, %unused, %before_c0 : i32
-      // CHECK: scf.condition({{.*}}) {{%.*}}, [[BEFORE_COUNTER]] : i1, i32
       scf.condition(%continue) %keep_going : i1
     } do {
-    // CHECK: ^bb0({{%.*}}: i1, [[AFTER_COUNTER:%.*]]: i32):
     ^bb0(%keep_going: i1):
       %c0 = arith.constant 0 : i32
-      // CHECK: [[DESC_OFFSET:%.*]] = arith.muli [[AFTER_COUNTER]], {{.*}} : i32
-      // CHECK-NEXT: [[DESC_SLOT:%.*]] = tt.addptr [[DESC_RING]], [[DESC_OFFSET]]
-      // CHECK-NEXT: ttng.tensormap_create [[DESC_SLOT]]
-      // CHECK-NEXT: ttng.tensormap_fenceproxy_acquire [[DESC_SLOT]]
-      // CHECK-NEXT: [[DESC:%.*]] = ttng.reinterpret_tensor_descriptor [[DESC_SLOT]]
-      // CHECK-NEXT: [[COUNTER_INC:%.*]] = arith.addi [[AFTER_COUNTER]], {{.*}} : i32
-      // CHECK-NEXT: [[COUNTER_WRAP:%.*]] = arith.cmpi sge, [[COUNTER_INC]], {{.*}} : i32
-      // CHECK-NEXT: [[NEXT_COUNTER:%.*]] = arith.select [[COUNTER_WRAP]], [[ZERO]], [[COUNTER_INC]] : i32
       %desc = tt.make_tensor_descriptor %base, [%c128_i32, %c128_i32], [%c128_i64, %c1_i64] : <f32>, <128x128xf32, #shared_while_store>
-      // CHECK: ttng.async_tma_store_wait {pendings = 0 : i32, read_only}
-      // CHECK-NEXT: ttg.local_store {{.*}}, %[[ALLOC]]
-      // CHECK-NEXT: ttng.fence_async_shared
-      // CHECK-NEXT: ttng.async_tma_copy_local_to_global [[DESC]]{{.*}} %[[ALLOC]]
       tt.descriptor_store %desc[%c0, %c0], %src : !tt.tensordesc<128x128xf32, #shared_while_store>, tensor<128x128xf32, #blocked_while_store>
       %true = arith.constant true
       %next_keep_going = arith.xori %keep_going, %true : i1
       %next_unused = arith.extui %keep_going : i1 to i32
-      // CHECK: scf.yield {{.*}}, {{.*}}, [[NEXT_COUNTER]] : i1, i32, i32
       scf.yield %next_keep_going, %next_unused : i1, i32
     }
-    // CHECK: ttng.async_tma_store_wait {pendings = 0 : i32}
-    // CHECK-NEXT: ttg.local_dealloc %[[ALLOC]]
-    // CHECK-NOT: tt.make_tensor_descriptor
     tt.return
   }
 }
@@ -1238,5 +1221,30 @@ module attributes {"ttg.num-ctas" = 1 : i32, "ttg.num-warps" = 4 : i32, ttg.targ
       scf.yield %arg5, %1 : !ttg.memdesc<32x32xbf16, #shared1, #smem, mutable>, tensor<64x32xf32, #mma>
     }
     tt.return %0#1 : tensor<64x32xf32, #mma>
+  }
+}
+
+// -----
+
+#store_guard = #ttg.blocked<{sizePerThread = [1, 1], threadsPerWarp = [1, 32], warpsPerCTA = [1, 4], order = [1, 0]}>
+#store_shared = #ttg.nvmma_shared<{swizzlingByteWidth = 64, transposed = false, elementBitWidth = 32}>
+module attributes {"ttg.num-ctas" = 1 : i32, "ttg.num-warps" = 4 : i32, ttg.target = "cuda:90", "ttg.threads-per-warp" = 32 : i32} {
+// Descriptor reads and writes can overlap. Neither the load pipeline nor the
+// independent TMA-store pipeline may make this memory recurrence asynchronous.
+// CHECK-LABEL: @tma_guard_mixed_read_write
+// CHECK-NOT: ttng.async_tma_copy
+// CHECK: tt.descriptor_load
+// CHECK: tt.descriptor_store
+// CHECK-NOT: ttng.async_tma_copy
+// CHECK: tt.return
+  tt.func @tma_guard_mixed_read_write(%desc: !tt.tensordesc<128x128xf32, #store_shared>, %n: i32) {
+    %c0 = arith.constant 0 : i32
+    %c1 = arith.constant 1 : i32
+    scf.for %i = %c0 to %n step %c1 : i32 {
+      %x = tt.descriptor_load %desc[%i, %c0] : !tt.tensordesc<128x128xf32, #store_shared> -> tensor<128x128xf32, #store_guard>
+      %next = arith.addi %i, %c1 : i32
+      tt.descriptor_store %desc[%next, %c0], %x : !tt.tensordesc<128x128xf32, #store_shared>, tensor<128x128xf32, #store_guard>
+    } {tt.num_stages = 3 : i32}
+    tt.return
   }
 }

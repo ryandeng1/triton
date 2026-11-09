@@ -49,7 +49,14 @@ void init_triton_passes_ttir(py::module_ &m) {
   ADD_PASS_WRAPPER_0("add_rewrite_tensor_descriptor_to_pointer",
                      createTritonRewriteTensorDescriptorToPointer);
   ADD_PASS_WRAPPER_0("add_loop_unroll", createTritonLoopUnroll);
-  ADD_PASS_WRAPPER_0("add_triton_licm", createTritonLoopInvariantCodeMotion);
+  m.def(
+      "add_triton_licm",
+      [](mlir::PassManager &pm, bool enableMemoryContracts) {
+        TritonLoopInvariantCodeMotionOptions options;
+        options.enableMemoryContracts = enableMemoryContracts;
+        pm.addPass(createTritonLoopInvariantCodeMotion(options));
+      },
+      py::arg("pm"), py::arg("enable_memory_contracts") = true);
   m.def("add_specialize_indexed_updates",
         [](mlir::PassManager &pm, const std::string &target) {
           TritonSpecializeIndexedUpdatesOptions options;
@@ -94,6 +101,8 @@ void init_triton_passes_ttgpuir(py::module_ &m) {
                             createTritonGPUAssignLatencies, int);
   ADD_PASS_OPTION_WRAPPER_2("add_assign_latencies",
                             createTritonGPUAssignLatencies, int, bool);
+  ADD_PASS_OPTION_WRAPPER_3("add_assign_latencies",
+                            createTritonGPUAssignLatencies, int, bool, int);
   ADD_PASS_WRAPPER_0("add_schedule_loops", createTritonGPUScheduleLoops);
   ADD_PASS_OPTION_WRAPPER_2("add_pipeline", createTritonGPUPipeline, int, bool);
   ADD_PASS_OPTION_WRAPPER_1("add_warp_specialize",

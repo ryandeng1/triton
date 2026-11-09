@@ -1,0 +1,284 @@
+{
+  "records": [
+    {
+      "case": "decode16",
+      "selection": {
+        "variant": "baseline",
+        "config": [
+          16,
+          1,
+          2
+        ],
+        "baseline_config": [
+          16,
+          1,
+          2
+        ],
+        "screened_best_speedup": 1.0,
+        "minimum_screen_gain": 1.02,
+        "rule": "lowest validated median across four variants and four launch configurations; retain best baseline below 2% gain",
+        "calibration_wall_seconds": 7.017079372002627,
+        "excluded_from_steady_state_timings": true
+      },
+      "confirmed_speedups": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "variant_speedups": [
+        {
+          "baseline": 1.0,
+          "licm": 0.9946169787018688,
+          "pipeline": 0.9783078153940576,
+          "both": 0.9705459128160875
+        },
+        {
+          "baseline": 1.0,
+          "licm": 0.981815329407715,
+          "pipeline": 0.9777993295341759,
+          "both": 0.9758794284623997
+        },
+        {
+          "baseline": 1.0,
+          "licm": 0.9920158925991761,
+          "pipeline": 0.9778601967348943,
+          "both": 0.9703995257641164
+        }
+      ]
+    },
+    {
+      "case": "upstream1024",
+      "selection": {
+        "variant": "licm",
+        "config": [
+          8,
+          1,
+          3
+        ],
+        "baseline_config": [
+          8,
+          1,
+          3
+        ],
+        "screened_best_speedup": 1.1330806311766484,
+        "minimum_screen_gain": 1.02,
+        "rule": "lowest validated median across four variants and four launch configurations; retain best baseline below 2% gain",
+        "calibration_wall_seconds": 6.63545780899949,
+        "excluded_from_steady_state_timings": true
+      },
+      "confirmed_speedups": [
+        1.1343373466618023,
+        1.1347949907030115,
+        1.1350047148877302
+      ],
+      "variant_speedups": [
+        {
+          "baseline": 1.0,
+          "licm": 1.1343373466618023,
+          "pipeline": 0.9657457251670865,
+          "both": 0.9286063160996848
+        },
+        {
+          "baseline": 1.0,
+          "licm": 1.1347949907030115,
+          "pipeline": 0.9655758060866966,
+          "both": 0.9284186298628923
+        },
+        {
+          "baseline": 1.0,
+          "licm": 1.1350047148877302,
+          "pipeline": 0.9669708346744704,
+          "both": 0.9297139069153824
+        }
+      ]
+    },
+    {
+      "case": "decode64",
+      "selection": {
+        "variant": "licm",
+        "config": [
+          16,
+          1,
+          2
+        ],
+        "baseline_config": [
+          16,
+          1,
+          2
+        ],
+        "screened_best_speedup": 1.0907521732741177,
+        "minimum_screen_gain": 1.02,
+        "rule": "lowest validated median across four variants and four launch configurations; retain best baseline below 2% gain",
+        "calibration_wall_seconds": 10.285096495001198,
+        "excluded_from_steady_state_timings": true
+      },
+      "confirmed_speedups": [
+        1.0851757481255604,
+        1.0821978014975424,
+        1.0819252029364395
+      ],
+      "variant_speedups": [
+        {
+          "baseline": 1.0,
+          "licm": 1.0851757481255604,
+          "pipeline": 1.0549919922856772,
+          "both": 0.9643483656367242
+        },
+        {
+          "baseline": 1.0,
+          "licm": 1.0821978014975424,
+          "pipeline": 1.0556441967628107,
+          "both": 0.9634329261932139
+        },
+        {
+          "baseline": 1.0,
+          "licm": 1.0819252029364395,
+          "pipeline": 1.0520961469203656,
+          "both": 0.9648001291261478
+        }
+      ]
+    },
+    {
+      "case": "upstream63",
+      "selection": {
+        "variant": "pipeline",
+        "config": [
+          8,
+          1,
+          3
+        ],
+        "baseline_config": [
+          8,
+          1,
+          3
+        ],
+        "screened_best_speedup": 1.2067621434152385,
+        "minimum_screen_gain": 1.02,
+        "rule": "lowest validated median across four variants and four launch configurations; retain best baseline below 2% gain",
+        "calibration_wall_seconds": 4.221251901999494,
+        "excluded_from_steady_state_timings": true
+      },
+      "confirmed_speedups": [
+        1.2080000219596068,
+        1.2101602899664319,
+        1.2072876898866853
+      ],
+      "variant_speedups": [
+        {
+          "baseline": 1.0,
+          "licm": 0.9813499644011522,
+          "pipeline": 1.2080000219596068,
+          "both": 1.186608835747622
+        },
+        {
+          "baseline": 1.0,
+          "licm": 0.9834689647426407,
+          "pipeline": 1.2101602899664319,
+          "both": 1.193277317419849
+        },
+        {
+          "baseline": 1.0,
+          "licm": 0.9824260662386335,
+          "pipeline": 1.2072876898866853,
+          "both": 1.1874155321119158
+        }
+      ]
+    },
+    {
+      "case": "upstream500",
+      "selection": {
+        "variant": "pipeline",
+        "config": [
+          8,
+          1,
+          3
+        ],
+        "baseline_config": [
+          32,
+          2,
+          2
+        ],
+        "screened_best_speedup": 1.2142021911066077,
+        "minimum_screen_gain": 1.02,
+        "rule": "lowest validated median across four variants and four launch configurations; retain best baseline below 2% gain",
+        "calibration_wall_seconds": 4.7596666979989095,
+        "excluded_from_steady_state_timings": true
+      },
+      "confirmed_speedups": [
+        1.2178485719930479,
+        1.2139771583707808,
+        1.217140947277246
+      ],
+      "variant_speedups": [
+        {
+          "baseline": 1.0,
+          "licm": 1.056070829730441,
+          "pipeline": 1.2178485719930479,
+          "both": 1.176930955226394
+        },
+        {
+          "baseline": 1.0,
+          "licm": 1.0545822030511194,
+          "pipeline": 1.2139771583707808,
+          "both": 1.1734365847013573
+        },
+        {
+          "baseline": 1.0,
+          "licm": 1.0554182525433826,
+          "pipeline": 1.217140947277246,
+          "both": 1.1757300632938426
+        }
+      ]
+    },
+    {
+      "case": "upstream2048",
+      "selection": {
+        "variant": "baseline",
+        "config": [
+          8,
+          1,
+          3
+        ],
+        "baseline_config": [
+          8,
+          1,
+          3
+        ],
+        "screened_best_speedup": 1.0,
+        "minimum_screen_gain": 1.02,
+        "rule": "lowest validated median across four variants and four launch configurations; retain best baseline below 2% gain",
+        "calibration_wall_seconds": 8.616271970000525,
+        "excluded_from_steady_state_timings": true
+      },
+      "confirmed_speedups": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "variant_speedups": [
+        {
+          "baseline": 1.0,
+          "licm": 0.9890768432856037,
+          "pipeline": 0.9933829734935751,
+          "both": 0.9325032824047313
+        },
+        {
+          "baseline": 1.0,
+          "licm": 0.9913788173409112,
+          "pipeline": 0.9936524994055925,
+          "both": 0.9340255109869855
+        },
+        {
+          "baseline": 1.0,
+          "licm": 0.9891235750817442,
+          "pipeline": 0.9944528686237434,
+          "both": 0.9332559069183672
+        }
+      ]
+    }
+  ],
+  "native_library_unchanged": true,
+  "native_library_sha256": "e7e15b9337405e632e887ceae9c96d9ea85e38aa1e9c35dec937d7b148d06178",
+  "unchanged_source": true,
+  "boundary_cases": 3
+}

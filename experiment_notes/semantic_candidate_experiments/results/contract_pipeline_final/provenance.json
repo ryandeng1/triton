@@ -1,0 +1,18 @@
+{
+  "revision": "ef0a5a26b8cb38ea1308f827985e36cde964a6ab",
+  "upstream_path": "aiter/ops/triton/_triton_kernels/gated_delta_net/decode/fused_sigmoid_gating_recurrent.py",
+  "copied_source_sha256": "5901814a792174ea529123d640afb86a74fad65ea8343c6dfdb09ed10d7813e6",
+  "source_unchanged": true,
+  "source_rewritten_for_pipeline": false,
+  "native_library_sha256": "e7e15b9337405e632e887ceae9c96d9ea85e38aa1e9c35dec937d7b148d06178",
+  "harness_sha256": "8cb8e93699b2dde4ccd0900f6519da457319c7589df89bf9c4efe61cece7a428",
+  "oracle_harness_sha256": "362500d747e8f81a3966574a309f7d1cf8d4989f02db308fa7bc01b942b32d86",
+  "gpu": "NVIDIA B300 SXM6 PC",
+  "torch": "2.14.1+cu130",
+  "triton": "3.9.0",
+  "selection_has_runtime_calibration": true,
+  "all_four_variants_share_same_alias_contracts": true,
+  "enable_contract_load_reuse": false,
+  "contract": "Different groups have disjoint full backing storage for this invocation; all inputs remain defined and no external concurrent writes occur.",
+  "timing_scope": "Kernel outputs and final state plus state reset; excludes allocation, host guards, compilation, calibration and validation. Not a model or strongest-provider comparison."
+}

@@ -1,0 +1,108 @@
+-- Testing: 1 tests, 1 workers --
+FAIL: TRITON :: TritonGPU/automatic-warp-specialization.mlir (1 of 1)
+******************** TEST 'TRITON :: TritonGPU/automatic-warp-specialization.mlir' FAILED ********************
+Exit Code: 1
+
+Command Output (stdout):
+--
+# RUN: at line 1
+/home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/bin/triton-opt /home/ryandeng/tpaa/triton/test/TritonGPU/automatic-warp-specialization.mlir -split-input-file -allow-unregistered-dialect -tritongpu-hoist-tmem-alloc -tritongpu-assign-latencies -tritongpu-schedule-loops -tritongpu-automatic-warp-specialization=num-stages=2 | FileCheck /home/ryandeng/tpaa/triton/test/TritonGPU/automatic-warp-specialization.mlir --check-prefix=CHECK --check-prefix=BASE --check-prefix=CLEAN
+# executed command: /home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/bin/triton-opt /home/ryandeng/tpaa/triton/test/TritonGPU/automatic-warp-specialization.mlir -split-input-file -allow-unregistered-dialect -tritongpu-hoist-tmem-alloc -tritongpu-assign-latencies -tritongpu-schedule-loops -tritongpu-automatic-warp-specialization=num-stages=2
+# executed command: FileCheck /home/ryandeng/tpaa/triton/test/TritonGPU/automatic-warp-specialization.mlir --check-prefix=CHECK --check-prefix=BASE --check-prefix=CLEAN
+# RUN: at line 2
+/home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/bin/triton-opt /home/ryandeng/tpaa/triton/test/TritonGPU/automatic-warp-specialization.mlir -split-input-file -allow-unregistered-dialect -tritongpu-hoist-tmem-alloc -tritongpu-assign-latencies -tritongpu-schedule-loops -tritongpu-automatic-warp-specialization=num-stages=2 -tritongpu-pipeline | FileCheck /home/ryandeng/tpaa/triton/test/TritonGPU/automatic-warp-specialization.mlir --check-prefix=CHECK --check-prefix=PIPELINE --check-prefix=CLEAN
+# executed command: /home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/bin/triton-opt /home/ryandeng/tpaa/triton/test/TritonGPU/automatic-warp-specialization.mlir -split-input-file -allow-unregistered-dialect -tritongpu-hoist-tmem-alloc -tritongpu-assign-latencies -tritongpu-schedule-loops -tritongpu-automatic-warp-specialization=num-stages=2 -tritongpu-pipeline
+# .---command stderr------------
+# | /home/ryandeng/tpaa/triton/test/TritonGPU/automatic-warp-specialization.mlir:476:16: warning: operation scheduled before its operands. Pipelining will be disabled.
+# |         %mma = ttng.tc_gen5_mma %a_s, %b_s, %acc_mem[%acc_tok], %false, %true : !ttg.memdesc<128x64xf16, #clc_aws_shared, #clc_aws_smem>, !ttg.memdesc<64x128xf16, #clc_aws_shared_t, #clc_aws_smem>, !ttg.memdesc<128x128xf32, #clc_aws_tmem, #ttng.tensor_memory, mutable>
+# |                ^
+# | /home/ryandeng/tpaa/triton/test/TritonGPU/automatic-warp-specialization.mlir:476:16: note: see current operation: %30 = ttng.tc_gen5_mma %28, %29, %result[%arg6], %false, %true {loop.cluster = 2 : i32, loop.stage = 1 : i32} : !ttg.memdesc<128x64xf16, #ttg.nvmma_shared<{swizzlingByteWidth = 128, transposed = false, elementBitWidth = 16}>, #ttg.shared_memory, mutable>, !ttg.memdesc<64x128xf16, #ttg.nvmma_shared<{swizzlingByteWidth = 128, transposed = true, elementBitWidth = 16}>, #ttg.shared_memory, mutable>, !ttg.memdesc<128x128xf32, #ttng.tensor_memory_encoding<blockM = 128, blockN = 128, colStride = 1>, #ttng.tensor_memory, mutable>
+# | /home/ryandeng/tpaa/triton/test/TritonGPU/automatic-warp-specialization.mlir:477:29: note: operand defined here: %47:2 = "ttng.tmem_load"(%10#0, %46) <{resultSegmentSizes = array<i32: 1, 1, 0>}> {loop.cluster = 0 : i32, loop.stage = 3 : i32} : (!ttg.memdesc<128x128xf32, #ttng.tensor_memory_encoding<blockM = 128, blockN = 128, colStride = 1>, #ttng.tensor_memory, mutable>, !ttg.async.token) -> (tensor<128x128xf32, #ttg.blocked<{sizePerThread = [1, 128], threadsPerWarp = [32, 1], warpsPerCTA = [4, 1], order = [0, 1]}>>, !ttg.async.token)
+# |         %value, %load_tok = ttng.tmem_load %acc_mem[%mma] : !ttg.memdesc<128x128xf32, #clc_aws_tmem, #ttng.tensor_memory, mutable> -> tensor<128x128xf32, #clc_aws_acc>
+# |                             ^
+# `-----------------------------
+# executed command: FileCheck /home/ryandeng/tpaa/triton/test/TritonGPU/automatic-warp-specialization.mlir --check-prefix=CHECK --check-prefix=PIPELINE --check-prefix=CLEAN
+# RUN: at line 3
+/home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/bin/triton-opt /home/ryandeng/tpaa/triton/test/TritonGPU/automatic-warp-specialization.mlir -split-input-file -allow-unregistered-dialect -tritongpu-hoist-tmem-alloc -tritongpu-assign-latencies -tritongpu-schedule-loops -tritongpu-automatic-warp-specialization=num-stages=2 -tritongpu-pipeline -tritongpu-optimize-partition-warps | FileCheck /home/ryandeng/tpaa/triton/test/TritonGPU/automatic-warp-specialization.mlir --check-prefix=OPT --check-prefix=CLEAN
+# executed command: /home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12/bin/triton-opt /home/ryandeng/tpaa/triton/test/TritonGPU/automatic-warp-specialization.mlir -split-input-file -allow-unregistered-dialect -tritongpu-hoist-tmem-alloc -tritongpu-assign-latencies -tritongpu-schedule-loops -tritongpu-automatic-warp-specialization=num-stages=2 -tritongpu-pipeline -tritongpu-optimize-partition-warps
+# .---command stderr------------
+# | /home/ryandeng/tpaa/triton/test/TritonGPU/automatic-warp-specialization.mlir:476:16: warning: operation scheduled before its operands. Pipelining will be disabled.
+# |         %mma = ttng.tc_gen5_mma %a_s, %b_s, %acc_mem[%acc_tok], %false, %true : !ttg.memdesc<128x64xf16, #clc_aws_shared, #clc_aws_smem>, !ttg.memdesc<64x128xf16, #clc_aws_shared_t, #clc_aws_smem>, !ttg.memdesc<128x128xf32, #clc_aws_tmem, #ttng.tensor_memory, mutable>
+# |                ^
+# | /home/ryandeng/tpaa/triton/test/TritonGPU/automatic-warp-specialization.mlir:476:16: note: see current operation: %30 = ttng.tc_gen5_mma %28, %29, %result[%arg6], %false, %true {loop.cluster = 2 : i32, loop.stage = 1 : i32} : !ttg.memdesc<128x64xf16, #ttg.nvmma_shared<{swizzlingByteWidth = 128, transposed = false, elementBitWidth = 16}>, #ttg.shared_memory, mutable>, !ttg.memdesc<64x128xf16, #ttg.nvmma_shared<{swizzlingByteWidth = 128, transposed = true, elementBitWidth = 16}>, #ttg.shared_memory, mutable>, !ttg.memdesc<128x128xf32, #ttng.tensor_memory_encoding<blockM = 128, blockN = 128, colStride = 1>, #ttng.tensor_memory, mutable>
+# | /home/ryandeng/tpaa/triton/test/TritonGPU/automatic-warp-specialization.mlir:477:29: note: operand defined here: %47:2 = "ttng.tmem_load"(%10#0, %46) <{resultSegmentSizes = array<i32: 1, 1, 0>}> {loop.cluster = 0 : i32, loop.stage = 3 : i32} : (!ttg.memdesc<128x128xf32, #ttng.tensor_memory_encoding<blockM = 128, blockN = 128, colStride = 1>, #ttng.tensor_memory, mutable>, !ttg.async.token) -> (tensor<128x128xf32, #ttg.blocked<{sizePerThread = [1, 128], threadsPerWarp = [32, 1], warpsPerCTA = [4, 1], order = [0, 1]}>>, !ttg.async.token)
+# |         %value, %load_tok = ttng.tmem_load %acc_mem[%mma] : !ttg.memdesc<128x128xf32, #clc_aws_tmem, #ttng.tensor_memory, mutable> -> tensor<128x128xf32, #clc_aws_acc>
+# |                             ^
+# `-----------------------------
+# executed command: FileCheck /home/ryandeng/tpaa/triton/test/TritonGPU/automatic-warp-specialization.mlir --check-prefix=OPT --check-prefix=CLEAN
+# .---command stderr------------
+# | /home/ryandeng/tpaa/triton/test/TritonGPU/automatic-warp-specialization.mlir:159:15: error: OPT-SAME: expected string not found in input
+# |  // OPT-SAME: num_warps(2)
+# |               ^
+# | <stdin>:414:12: note: scanning from here
+# |  partition0(%arg2: !ttg.memdesc<2x1xi64, #shared1, #smem, mutable>, %arg3: !ttg.memdesc<2x128x64xf16, #shared2, #smem, mutable>, %arg4: !ttg.memdesc<1x128x128xf32, #tmem, #ttng.tensor_memory, mutable>, %arg5: !ttg.memdesc<2x1xi64, #shared1, #smem, mutable>, %arg6: !ttg.memdesc<1x1xi64, #shared1, #smem, mutable>, %arg7: !ttg.memdesc<1x1xi64, #shared1, #smem, mutable>, %arg8: !ttg.memdesc<64x128x!tt.ptr<f16>, #shared, #smem>, %arg9: !tt.tensordesc<1x64xf16, #shared2>) num_warps(4) {
+# |            ^
+# | <stdin>:414:472: note: possible intended match here
+# |  partition0(%arg2: !ttg.memdesc<2x1xi64, #shared1, #smem, mutable>, %arg3: !ttg.memdesc<2x128x64xf16, #shared2, #smem, mutable>, %arg4: !ttg.memdesc<1x128x128xf32, #tmem, #ttng.tensor_memory, mutable>, %arg5: !ttg.memdesc<2x1xi64, #shared1, #smem, mutable>, %arg6: !ttg.memdesc<1x1xi64, #shared1, #smem, mutable>, %arg7: !ttg.memdesc<1x1xi64, #shared1, #smem, mutable>, %arg8: !ttg.memdesc<64x128x!tt.ptr<f16>, #shared, #smem>, %arg9: !tt.tensordesc<1x64xf16, #shared2>) num_warps(4) {
+# |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        ^
+# | /home/ryandeng/tpaa/triton/test/TritonGPU/automatic-warp-specialization.mlir:177:15: error: OPT-SAME: is not on the same line as the previous match
+# |  // OPT-SAME: num_warps(4)
+# |               ^
+# | <stdin>:748:1425: note: 'next' match was here
+# |  partition0(%arg6: !ttg.memdesc<1x1xi64, #shared1, #smem, mutable>, %arg7: !ttg.memdesc<1x256xf32, #shared1, #smem, mutable>, %arg8: !ttg.memdesc<1x1xi64, #shared1, #smem, mutable>, %arg9: !ttg.memdesc<1x1xi64, #shared1, #smem, mutable>, %arg10: !ttg.memdesc<1x256xf32, #shared1, #smem, mutable>, %arg11: !ttg.memdesc<1x1xi64, #shared1, #smem, mutable>, %arg12: !tt.ptr<f32>, %arg13: !ttg.memdesc<1x256x64xf32, #tmem, #ttng.tensor_memory, mutable>, %arg14: !ttg.memdesc<1x1xi64, #shared1, #smem, mutable>, %arg15: !ttg.memdesc<1x1xi64, #shared1, #smem, mutable>, %arg16: i32, %arg17: !ttg.memdesc<2x1xi64, #shared1, #smem, mutable>, %arg18: !ttg.memdesc<2x64x64xf16, #shared, #smem, mutable>, %arg19: !ttg.memdesc<2x256x64xf32, #tmem, #ttng.tensor_memory, mutable>, %arg20: !ttg.memdesc<256x64xf16, #shared, #smem>, %arg21: !ttg.memdesc<2x1xi64, #shared1, #smem, mutable>, %arg22: !ttg.memdesc<2x1xi64, #shared1, #smem, mutable>, %arg23: !ttg.memdesc<2x1xi64, #shared1, #smem, mutable>, %arg24: !ttg.memdesc<2x64x64xf16, #shared, #smem, mutable>, %arg25: !ttg.memdesc<1x1xi64, #shared1, #smem, mutable>, %arg26: !ttg.memdesc<1x256x64xf16, #shared, #smem, mutable>, %arg27: !ttg.memdesc<1x1xi64, #shared1, #smem, mutable>, %arg28: !ttg.memdesc<2x1xi64, #shared1, #smem, mutable>, %arg29: !ttg.memdesc<2x1xi64, #shared1, #smem, mutable>, %arg30: !tt.tensordesc<64x64xf16, #shared>, %arg31: !tt.tensordesc<64x64xf16, #shared>) num_warps(4) {
+# |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 ^
+# | <stdin>:533:12: note: previous match ended here
+# |  partition1(%arg2: !ttg.memdesc<2x1xi64, #shared1, #smem, mutable>, %arg3: !ttg.memdesc<2x128x64xf16, #shared2, #smem, mutable>, %arg4: !ttg.memdesc<1x128x128xf32, #tmem, #ttng.tensor_memory, mutable>, %arg5: !ttg.memdesc<2x1xi64, #shared1, #smem, mutable>, %arg6: !ttg.memdesc<1x1xi64, #shared1, #smem, mutable>, %arg7: !ttg.memdesc<1x1xi64, #shared1, #smem, mutable>, %arg8: !ttg.memdesc<64x128x!tt.ptr<f16>, #shared, #smem>, %arg9: !tt.tensordesc<1x64xf16, #shared2>) num_warps(2) {
+# |            ^
+# | 
+# | Input file: <stdin>
+# | Check file: /home/ryandeng/tpaa/triton/test/TritonGPU/automatic-warp-specialization.mlir
+# | 
+# | -dump-input=help explains the following input dump.
+# | 
+# | Input was:
+# | <<<<<<
+# |             .
+# |             .
+# |             .
+# |           409:  ttng.wait_barrier %30, %29 : !ttg.memdesc<1xi64, #shared1, #smem, mutable> 
+# |           410:  %31 = ttg.memdesc_index %2[%27] : !ttg.memdesc<1x1xi64, #shared1, #smem, mutable> -> !ttg.memdesc<1xi64, #shared1, #smem, mutable> 
+# |           411:  ttng.arrive_barrier %31, 1 : !ttg.memdesc<1xi64, #shared1, #smem, mutable> 
+# |           412:  ttg.warp_yield %24#0, %24#1 : i32, i32 
+# |           413:  } 
+# |           414:  partition0(%arg2: !ttg.memdesc<2x1xi64, #shared1, #smem, mutable>, %arg3: !ttg.memdesc<2x128x64xf16, #shared2, #smem, mutable>, %arg4: !ttg.memdesc<1x128x128xf32, #tmem, #ttng.tensor_memory, mutable>, %arg5: !ttg.memdesc<2x1xi64, #shared1, #smem, mutable>, %arg6: !ttg.memdesc<1x1xi64, #shared1, #smem, mutable>, %arg7: !ttg.memdesc<1x1xi64, #shared1, #smem, mutable>, %arg8: !ttg.memdesc<64x128x!tt.ptr<f16>, #shared, #smem>, %arg9: !tt.tensordesc<1x64xf16, #shared2>) num_warps(4) { 
+# | same:159'0               {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             search range start (exclusive)
+# | same:159'1                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             error: no match found in search range
+# | same:159'2                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ?                possible intended match
+# |           415:  %cst_0 = arith.constant dense<true> : tensor<64x128xi1, #blocked2> 
+# |           416:  %c31_i32 = arith.constant 31 : i32 
+# |           417:  %c30_i32 = arith.constant 30 : i32 
+# |           418:  %cst_1 = arith.constant dense<1> : tensor<64x128xi32, #blocked2> 
+# |           419:  %c32_i32_2 = arith.constant 32 : i32 
+# |             .
+# |             .
+# |             .
+# |           528:  ttg.local_dealloc %26 : !ttg.memdesc<2x1xi64, #shared1, #smem, mutable> 
+# |           529:  %50 = ttg.memdesc_index %arg6[%46#3] : !ttg.memdesc<1x1xi64, #shared1, #smem, mutable> -> !ttg.memdesc<1xi64, #shared1, #smem, mutable> 
+# |           530:  ttng.tc_gen5_commit %50 : !ttg.memdesc<1xi64, #shared1, #smem, mutable> 
+# |           531:  ttg.warp_return 
+# |           532:  } 
+# |           533:  partition1(%arg2: !ttg.memdesc<2x1xi64, #shared1, #smem, mutable>, %arg3: !ttg.memdesc<2x128x64xf16, #shared2, #smem, mutable>, %arg4: !ttg.memdesc<1x128x128xf32, #tmem, #ttng.tensor_memory, mutable>, %arg5: !ttg.memdesc<2x1xi64, #shared1, #smem, mutable>, %arg6: !ttg.memdesc<1x1xi64, #shared1, #smem, mutable>, %arg7: !ttg.memdesc<1x1xi64, #shared1, #smem, mutable>, %arg8: !ttg.memdesc<64x128x!tt.ptr<f16>, #shared, #smem>, %arg9: !tt.tensordesc<1x64xf16, #shared2>) num_warps(2) { 
+# | same:159'3                }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            search range end (exclusive)
+# | same:177'0               {                                                                                                                                                                                                                                                                                                                            
+# | ...
+# `---data was truncated (10240/15999) (change limit with -D output_limit=N)
+# error: command failed with exit status: 1
+
+--
+
+********************
+********************
+Failed Tests (1):
+  TRITON :: TritonGPU/automatic-warp-specialization.mlir
+
+
+Testing Time: 0.32s
+
+Total Discovered Tests: 1
+  Failed: 1 (100.00%)

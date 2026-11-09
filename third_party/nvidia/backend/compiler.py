@@ -164,8 +164,17 @@ class CUDAOptions:
     enable_private_reduction_ownership: bool = False
     # Argument contracts enable load reuse; this switch permits paired controls.
     enable_contract_load_reuse: bool = True
+    # Keep contract-based load hoisting independently selectable from prefetch.
+    enable_contract_licm: bool = True
+    # Opt-in stage inference; the compiler must establish memory independence.
+    contract_pipeline_stages: int = 0
 
     def __post_init__(self):
+        if (type(self.contract_pipeline_stages) is not int
+                or self.contract_pipeline_stages not in (0, 2, 3, 4)):
+            raise ValueError("contract_pipeline_stages must be 0 (disabled), 2, 3, or 4")
+        if type(self.enable_contract_licm) is not bool:
+            raise ValueError("enable_contract_licm must be a boolean")
         if self.max_occupancy is not None and (type(self.max_occupancy) is not int or self.max_occupancy <= 0):
             raise ValueError("max_occupancy must be a positive integer or None")
         default_libdir = Path(__file__).parent / 'lib'
@@ -351,21 +360,22 @@ class CUDABackend(BaseBackend):
         if capability // 10 in [8, 9]:
             passes.ttgpuir.add_fuse_nested_loops(pm)
             passes.common.add_canonicalizer(pm)
-            passes.ttir.add_triton_licm(pm)
+            passes.ttir.add_triton_licm(pm, opt.enable_contract_licm)
             passes.common.add_canonicalizer(pm)
             passes.ttgpuir.add_combine_tensor_select_and_if(pm)
             nvidia.passes.hopper.add_hopper_warpspec(pm, opt.num_stages, dump_enabled)
-            passes.ttgpuir.add_assign_latencies(pm, opt.num_stages)
+            passes.ttgpuir.add_assign_latencies(pm, opt.num_stages, False, opt.contract_pipeline_stages)
             passes.ttgpuir.add_schedule_loops(pm)
             passes.ttgpuir.add_pipeline(pm, opt.num_stages, dump_enabled)
         elif capability // 10 >= 10:
             passes.ttgpuir.add_fuse_nested_loops(pm)
             passes.common.add_canonicalizer(pm)
-            passes.ttir.add_triton_licm(pm)
+            passes.ttir.add_triton_licm(pm, opt.enable_contract_licm)
             passes.ttgpuir.add_optimize_accumulator_init(pm)
             passes.ttgpuir.add_hoist_tmem_alloc(pm, False)
             nvidia.passes.ttnvgpuir.add_promote_lhs_to_tmem(pm)
-            passes.ttgpuir.add_assign_latencies(pm, opt.num_stages, opt.enable_tmem_single_buffer)
+            passes.ttgpuir.add_assign_latencies(pm, opt.num_stages, opt.enable_tmem_single_buffer,
+                                              opt.contract_pipeline_stages)
             passes.ttgpuir.add_schedule_loops(pm)
             passes.ttgpuir.add_warp_specialize(pm, opt.num_stages, opt.enable_aref_release_scheduling)
             passes.ttgpuir.add_pipeline(pm, opt.num_stages, dump_enabled)
@@ -375,7 +385,7 @@ class CUDABackend(BaseBackend):
             passes.ttgpuir.add_hoist_tmem_alloc(pm, True)
             nvidia.passes.ttnvgpuir.add_remove_tmem_tokens(pm)
         else:
-            passes.ttir.add_triton_licm(pm)
+            passes.ttir.add_triton_licm(pm, opt.enable_contract_licm)
         passes.common.add_canonicalizer(pm)
         passes.ttir.add_loop_aware_cse(pm, opt.enable_contract_load_reuse)
         if capability // 10 == 8:

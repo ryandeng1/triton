@@ -1,0 +1,9 @@
+{
+  "gpu": "NVIDIA B300 SXM6 PC",
+  "torch": "2.14.1+cu130",
+  "triton": "3.9.0",
+  "native_library_sha256": "600f64d69c767567ecf271b1393ab08c8ce187c0f520581357979e21c71ba3dd",
+  "harness_sha256": "c175c712436dbf3c04f733c4f4efe0d05ff86c69b31ef664760bdb1e9bf4ef88",
+  "start_time": 1794182959.3291814,
+  "baseline_native_library_frozen": true
+}

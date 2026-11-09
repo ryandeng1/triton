@@ -1,5 +1,34 @@
-// To regenerate this test case, run `make golden-samples` in the triton root directory
-// RUN: triton-opt %s -tritongpu-pipeline -canonicalize | FileCheck --dump-input-context=50 %s
+// To regenerate this test case, run `make golden-samples` in the triton root directory.
+// The handwritten FALLBACK/LOWER checks are maintained in the .mlir.in source.
+// RUN: triton-opt %s -tritongpu-pipeline -canonicalize | FileCheck %s --check-prefix=FALLBACK --implicit-check-not=async_tma --implicit-check-not=loop.stage --implicit-check-not=ttg.global_scratch_alloc --implicit-check-not="isAsync = true"
+// RUN: triton-opt %s -tritongpu-test-pipeline-lower-loop -canonicalize | FileCheck %s --check-prefix=LOWER
+
+// The persistent loop reads and writes through loop-carried descriptors. Their
+// backing storage may overlap, and the explicit schedule supplies no alias
+// proof. The production pass must keep descriptor updates and global accesses
+// synchronous until descriptor backing-storage contracts are supported.
+// FALLBACK-LABEL: @matmul_kernel_descriptor_persistent
+// FALLBACK: scf.for
+// FALLBACK-COUNT-3: tt.make_tensor_descriptor
+// FALLBACK-COUNT-2: tt.descriptor_load
+// FALLBACK: ttng.warp_group_dot
+// FALLBACK: tt.descriptor_store
+// FALLBACK: tt.return
+
+// The lower-only helper tests descriptor-ring construction mechanically. This
+// is not a claim that the supplied mixed read/write schedule is legal to expand.
+// LOWER-LABEL: @matmul_kernel_descriptor_persistent
+// LOWER-COUNT-3: ttg.global_scratch_alloc {alignment = 128 : i32, nbytes = 384 : i32}
+// LOWER: scf.for
+// LOWER-NOT: tt.make_tensor_descriptor
+// LOWER: ttng.tensormap_create [[DESC0:%[^, ]+]],
+// LOWER-NEXT: ttng.tensormap_fenceproxy_acquire [[DESC0]]
+// LOWER: ttng.tensormap_create [[DESC1:%[^, ]+]],
+// LOWER-NEXT: ttng.tensormap_fenceproxy_acquire [[DESC1]]
+// LOWER: ttng.tensormap_create [[DESC2:%[^, ]+]],
+// LOWER-NEXT: ttng.tensormap_fenceproxy_acquire [[DESC2]]
+// LOWER: tt.return
+
 #nvmma_128 = #ttg.nvmma_shared<{swizzlingByteWidth = 128, transposed = false, elementBitWidth = 16}>
 
 module attributes {"ttg.num-ctas" = 1 : i32, "ttg.num-warps" = 8 : i32, ttg.target = "cuda:90", "ttg.threads-per-warp" = 32 : i32} {
@@ -97,7 +126,7 @@ module attributes {"ttg.num-ctas" = 1 : i32, "ttg.num-warps" = 8 : i32, ttg.targ
         scf.yield %true : i1
       } {loop.cluster = 3 : i32, loop.stage = 2 : i32}
       scf.yield %25, %27#0, %27#1, %27#2, %27#3, %27#4, %27#5, %27#6, %34, %36 : i32, !tt.tensordesc<128x64xf16, #nvmma_128>, !tt.tensordesc<256x64xf16, #nvmma_128>, !tt.tensordesc<128x256xf16, #nvmma_128>, i32, i32, i32, i32, tensor<128x256xf32, #ttg.nvidia_mma<{versionMajor = 3, versionMinor = 0, warpsPerCTA = [8, 1], instrShape = [16, 256, 16]}>>, i1
-    }
+    } {tt.num_stages = 3 : i32, tt.scheduled_max_stage = 2 : i32}
     tt.return
   }
 }

@@ -1,3 +1,5 @@
+// RUN: triton-opt %s -split-input-file -tritongpu-assign-latencies="num-stages=3 contract-pipeline-stages=2" -tritongpu-schedule-loops -tritongpu-pipeline -canonicalize | FileCheck %s --check-prefix=CONTRACT
+// RUN: triton-opt %s -split-input-file -tritongpu-pipeline | FileCheck %s --check-prefix=RAW
 // RUN: triton-opt %s -split-input-file -tritongpu-assign-latencies -tritongpu-schedule-loops -tritongpu-pipeline -canonicalize | FileCheck %s
 
 #blocked = #ttg.blocked<{sizePerThread = [8, 1], threadsPerWarp = [8, 4], warpsPerCTA = [1, 4], order = [0, 1]}>
@@ -197,5 +199,420 @@ module attributes {"ttg.num-ctas" = 1 : i32, "ttg.num-warps" = 4 : i32} {
       scf.yield %5, %6 : tensor<128x256xf32, #mma>, i32
     }
     tt.return %0#0 : tensor<128x256xf32, #mma>
+  }
+}
+
+// -----
+
+#guard = #ttg.blocked<{sizePerThread = [1], threadsPerWarp = [32], warpsPerCTA = [4], order = [0]}>
+module attributes {"ttg.num-ctas" = 1 : i32, "ttg.num-warps" = 4 : i32, ttg.target = "cuda:90", "ttg.threads-per-warp" = 32 : i32} {
+// CHECK-LABEL: @guard_same_root
+// CHECK-NOT: ttg.async_copy_global_to_local
+// CHECK: tt.return
+  tt.func @guard_same_root(%input: !tt.ptr<f32>, %output: !tt.ptr<f32>, %n: i32) {
+    %c0 = arith.constant 0 : i32
+    %c1 = arith.constant 1 : i32
+    %c128 = arith.constant 128 : i32
+    %one = arith.constant dense<1.0> : tensor<128xf32, #guard>
+    %cols = tt.make_range {end = 128 : i32, start = 0 : i32} : tensor<128xi32, #guard>
+    scf.for %i = %c0 to %n step %c1 : i32 {
+      %offset = arith.muli %i, %c128 : i32
+      %base = tt.addptr %input, %offset : !tt.ptr<f32>, i32
+      %splat = tt.splat %base : !tt.ptr<f32> -> tensor<128x!tt.ptr<f32>, #guard>
+      %ptr = tt.addptr %splat, %cols : tensor<128x!tt.ptr<f32>, #guard>, tensor<128xi32, #guard>
+      %x = tt.load %ptr : tensor<128x!tt.ptr<f32>, #guard>
+      %next = arith.addi %offset, %c128 : i32
+      %out = tt.addptr %input, %next : !tt.ptr<f32>, i32
+      %os = tt.splat %out : !tt.ptr<f32> -> tensor<128x!tt.ptr<f32>, #guard>
+      %op = tt.addptr %os, %cols : tensor<128x!tt.ptr<f32>, #guard>, tensor<128xi32, #guard>
+      %y = arith.addf %x, %one : tensor<128xf32, #guard>
+      tt.store %op, %y : tensor<128x!tt.ptr<f32>, #guard>
+    } {tt.num_stages = 3 : i32}
+    tt.return
+  }
+}
+
+// -----
+
+#guard = #ttg.blocked<{sizePerThread = [1], threadsPerWarp = [32], warpsPerCTA = [4], order = [0]}>
+module attributes {"ttg.num-ctas" = 1 : i32, "ttg.num-warps" = 4 : i32, ttg.target = "cuda:90", "ttg.threads-per-warp" = 32 : i32} {
+// CHECK-LABEL: @guard_missing_groups
+// CHECK-NOT: ttg.async_copy_global_to_local
+// CHECK: tt.return
+  tt.func @guard_missing_groups(%input: !tt.ptr<f32>, %output: !tt.ptr<f32>, %n: i32) {
+    %c0 = arith.constant 0 : i32
+    %c1 = arith.constant 1 : i32
+    %c128 = arith.constant 128 : i32
+    %one = arith.constant dense<1.0> : tensor<128xf32, #guard>
+    %cols = tt.make_range {end = 128 : i32, start = 0 : i32} : tensor<128xi32, #guard>
+    scf.for %i = %c0 to %n step %c1 : i32 {
+      %offset = arith.muli %i, %c128 : i32
+      %base = tt.addptr %input, %offset : !tt.ptr<f32>, i32
+      %splat = tt.splat %base : !tt.ptr<f32> -> tensor<128x!tt.ptr<f32>, #guard>
+      %ptr = tt.addptr %splat, %cols : tensor<128x!tt.ptr<f32>, #guard>, tensor<128xi32, #guard>
+      %x = tt.load %ptr : tensor<128x!tt.ptr<f32>, #guard>
+      %next = arith.addi %offset, %c128 : i32
+      %out = tt.addptr %output, %next : !tt.ptr<f32>, i32
+      %os = tt.splat %out : !tt.ptr<f32> -> tensor<128x!tt.ptr<f32>, #guard>
+      %op = tt.addptr %os, %cols : tensor<128x!tt.ptr<f32>, #guard>, tensor<128xi32, #guard>
+      %y = arith.addf %x, %one : tensor<128xf32, #guard>
+      tt.store %op, %y : tensor<128x!tt.ptr<f32>, #guard>
+    } {tt.num_stages = 3 : i32}
+    tt.return
+  }
+}
+
+// -----
+
+#guard = #ttg.blocked<{sizePerThread = [1], threadsPerWarp = [32], warpsPerCTA = [4], order = [0]}>
+module attributes {"ttg.num-ctas" = 1 : i32, "ttg.num-warps" = 4 : i32, ttg.target = "cuda:90", "ttg.threads-per-warp" = 32 : i32} {
+// CHECK-LABEL: @guard_equal_groups
+// CHECK-NOT: ttg.async_copy_global_to_local
+// CHECK: tt.return
+  tt.func @guard_equal_groups(%input: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32}, %output: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32}, %n: i32) {
+    %c0 = arith.constant 0 : i32
+    %c1 = arith.constant 1 : i32
+    %c128 = arith.constant 128 : i32
+    %one = arith.constant dense<1.0> : tensor<128xf32, #guard>
+    %cols = tt.make_range {end = 128 : i32, start = 0 : i32} : tensor<128xi32, #guard>
+    scf.for %i = %c0 to %n step %c1 : i32 {
+      %offset = arith.muli %i, %c128 : i32
+      %base = tt.addptr %input, %offset : !tt.ptr<f32>, i32
+      %splat = tt.splat %base : !tt.ptr<f32> -> tensor<128x!tt.ptr<f32>, #guard>
+      %ptr = tt.addptr %splat, %cols : tensor<128x!tt.ptr<f32>, #guard>, tensor<128xi32, #guard>
+      %x = tt.load %ptr : tensor<128x!tt.ptr<f32>, #guard>
+      %next = arith.addi %offset, %c128 : i32
+      %out = tt.addptr %output, %next : !tt.ptr<f32>, i32
+      %os = tt.splat %out : !tt.ptr<f32> -> tensor<128x!tt.ptr<f32>, #guard>
+      %op = tt.addptr %os, %cols : tensor<128x!tt.ptr<f32>, #guard>, tensor<128xi32, #guard>
+      %y = arith.addf %x, %one : tensor<128xf32, #guard>
+      tt.store %op, %y : tensor<128x!tt.ptr<f32>, #guard>
+    } {tt.num_stages = 3 : i32}
+    tt.return
+  }
+}
+
+// -----
+
+#guard = #ttg.blocked<{sizePerThread = [1], threadsPerWarp = [32], warpsPerCTA = [4], order = [0]}>
+module attributes {"ttg.num-ctas" = 1 : i32, "ttg.num-warps" = 4 : i32, ttg.target = "cuda:90", "ttg.threads-per-warp" = 32 : i32} {
+// CHECK-LABEL: @guard_disjoint_groups
+// CHECK: ttg.async_copy_global_to_local
+// CHECK: tt.return
+  tt.func @guard_disjoint_groups(%input: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32}, %output: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32}, %n: i32) {
+    %c0 = arith.constant 0 : i32
+    %c1 = arith.constant 1 : i32
+    %c128 = arith.constant 128 : i32
+    %one = arith.constant dense<1.0> : tensor<128xf32, #guard>
+    %cols = tt.make_range {end = 128 : i32, start = 0 : i32} : tensor<128xi32, #guard>
+    scf.for %i = %c0 to %n step %c1 : i32 {
+      %offset = arith.muli %i, %c128 : i32
+      %base = tt.addptr %input, %offset : !tt.ptr<f32>, i32
+      %splat = tt.splat %base : !tt.ptr<f32> -> tensor<128x!tt.ptr<f32>, #guard>
+      %ptr = tt.addptr %splat, %cols : tensor<128x!tt.ptr<f32>, #guard>, tensor<128xi32, #guard>
+      %x = tt.load %ptr : tensor<128x!tt.ptr<f32>, #guard>
+      %next = arith.addi %offset, %c128 : i32
+      %out = tt.addptr %output, %next : !tt.ptr<f32>, i32
+      %os = tt.splat %out : !tt.ptr<f32> -> tensor<128x!tt.ptr<f32>, #guard>
+      %op = tt.addptr %os, %cols : tensor<128x!tt.ptr<f32>, #guard>, tensor<128xi32, #guard>
+      %y = arith.addf %x, %one : tensor<128xf32, #guard>
+      tt.store %op, %y : tensor<128x!tt.ptr<f32>, #guard>
+    } {tt.num_stages = 3 : i32}
+    tt.return
+  }
+}
+
+// -----
+
+#guard = #ttg.blocked<{sizePerThread = [1], threadsPerWarp = [32], warpsPerCTA = [4], order = [0]}>
+module attributes {"ttg.num-ctas" = 1 : i32, "ttg.num-warps" = 4 : i32, ttg.target = "cuda:90", "ttg.threads-per-warp" = 32 : i32} {
+// CHECK-LABEL: @guard_immutable
+// CHECK: ttg.async_copy_global_to_local
+// CHECK: tt.return
+  tt.func @guard_immutable(%input: !tt.ptr<f32> {tt.experimental_immutable = 1 : i32}, %output: !tt.ptr<f32>, %n: i32) {
+    %c0 = arith.constant 0 : i32
+    %c1 = arith.constant 1 : i32
+    %c128 = arith.constant 128 : i32
+    %one = arith.constant dense<1.0> : tensor<128xf32, #guard>
+    %cols = tt.make_range {end = 128 : i32, start = 0 : i32} : tensor<128xi32, #guard>
+    scf.for %i = %c0 to %n step %c1 : i32 {
+      %offset = arith.muli %i, %c128 : i32
+      %base = tt.addptr %input, %offset : !tt.ptr<f32>, i32
+      %splat = tt.splat %base : !tt.ptr<f32> -> tensor<128x!tt.ptr<f32>, #guard>
+      %ptr = tt.addptr %splat, %cols : tensor<128x!tt.ptr<f32>, #guard>, tensor<128xi32, #guard>
+      %x = tt.load %ptr : tensor<128x!tt.ptr<f32>, #guard>
+      %next = arith.addi %offset, %c128 : i32
+      %out = tt.addptr %output, %next : !tt.ptr<f32>, i32
+      %os = tt.splat %out : !tt.ptr<f32> -> tensor<128x!tt.ptr<f32>, #guard>
+      %op = tt.addptr %os, %cols : tensor<128x!tt.ptr<f32>, #guard>, tensor<128xi32, #guard>
+      %y = arith.addf %x, %one : tensor<128xf32, #guard>
+      tt.store %op, %y : tensor<128x!tt.ptr<f32>, #guard>
+    } {tt.num_stages = 3 : i32}
+    tt.return
+  }
+}
+
+// -----
+
+#guard = #ttg.blocked<{sizePerThread = [1], threadsPerWarp = [32], warpsPerCTA = [4], order = [0]}>
+module attributes {"ttg.num-ctas" = 1 : i32, "ttg.num-warps" = 4 : i32, ttg.target = "cuda:90", "ttg.threads-per-warp" = 32 : i32} {
+// CHECK-LABEL: @guard_volatile
+// CHECK-NOT: ttg.async_copy_global_to_local
+// CHECK: tt.return
+  tt.func @guard_volatile(%input: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32}, %output: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32}, %n: i32) {
+    %c0 = arith.constant 0 : i32
+    %c1 = arith.constant 1 : i32
+    %c128 = arith.constant 128 : i32
+    %one = arith.constant dense<1.0> : tensor<128xf32, #guard>
+    %cols = tt.make_range {end = 128 : i32, start = 0 : i32} : tensor<128xi32, #guard>
+    scf.for %i = %c0 to %n step %c1 : i32 {
+      %offset = arith.muli %i, %c128 : i32
+      %base = tt.addptr %input, %offset : !tt.ptr<f32>, i32
+      %splat = tt.splat %base : !tt.ptr<f32> -> tensor<128x!tt.ptr<f32>, #guard>
+      %ptr = tt.addptr %splat, %cols : tensor<128x!tt.ptr<f32>, #guard>, tensor<128xi32, #guard>
+      %x = tt.load %ptr {isVolatile = true} : tensor<128x!tt.ptr<f32>, #guard>
+      %next = arith.addi %offset, %c128 : i32
+      %out = tt.addptr %output, %next : !tt.ptr<f32>, i32
+      %os = tt.splat %out : !tt.ptr<f32> -> tensor<128x!tt.ptr<f32>, #guard>
+      %op = tt.addptr %os, %cols : tensor<128x!tt.ptr<f32>, #guard>, tensor<128xi32, #guard>
+      %y = arith.addf %x, %one : tensor<128xf32, #guard>
+      tt.store %op, %y : tensor<128x!tt.ptr<f32>, #guard>
+    } {tt.num_stages = 3 : i32}
+    tt.return
+  }
+}
+
+// -----
+
+#guard = #ttg.blocked<{sizePerThread = [1], threadsPerWarp = [32], warpsPerCTA = [4], order = [0]}>
+module attributes {"ttg.num-ctas" = 1 : i32, "ttg.num-warps" = 4 : i32, ttg.target = "cuda:90", "ttg.threads-per-warp" = 32 : i32} {
+// CHECK-LABEL: @guard_two_alias_stores
+// CHECK-NOT: ttg.async_copy_global_to_local
+// CHECK: tt.return
+  tt.func @guard_two_alias_stores(%input: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32}, %output: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32}, %n: i32) {
+    %c0 = arith.constant 0 : i32
+    %c1 = arith.constant 1 : i32
+    %c128 = arith.constant 128 : i32
+    %one = arith.constant dense<1.0> : tensor<128xf32, #guard>
+    %cols = tt.make_range {end = 128 : i32, start = 0 : i32} : tensor<128xi32, #guard>
+    scf.for %i = %c0 to %n step %c1 : i32 {
+      %offset = arith.muli %i, %c128 : i32
+      %base = tt.addptr %input, %offset : !tt.ptr<f32>, i32
+      %splat = tt.splat %base : !tt.ptr<f32> -> tensor<128x!tt.ptr<f32>, #guard>
+      %ptr = tt.addptr %splat, %cols : tensor<128x!tt.ptr<f32>, #guard>, tensor<128xi32, #guard>
+      %x = tt.load %ptr : tensor<128x!tt.ptr<f32>, #guard>
+      %next = arith.addi %offset, %c128 : i32
+      %out = tt.addptr %output, %next : !tt.ptr<f32>, i32
+      %os = tt.splat %out : !tt.ptr<f32> -> tensor<128x!tt.ptr<f32>, #guard>
+      %op = tt.addptr %os, %cols : tensor<128x!tt.ptr<f32>, #guard>, tensor<128xi32, #guard>
+      %y = arith.addf %x, %one : tensor<128xf32, #guard>
+      tt.store %op, %y : tensor<128x!tt.ptr<f32>, #guard>
+      tt.store %op, %x : tensor<128x!tt.ptr<f32>, #guard>
+    } {tt.num_stages = 3 : i32}
+    tt.return
+  }
+}
+
+// -----
+
+#guard = #ttg.blocked<{sizePerThread = [1], threadsPerWarp = [32], warpsPerCTA = [4], order = [0]}>
+module attributes {"ttg.num-ctas" = 1 : i32, "ttg.num-warps" = 4 : i32, ttg.target = "cuda:90", "ttg.threads-per-warp" = 32 : i32} {
+// CHECK-LABEL: @guard_auto_disjoint
+// CHECK-NOT: ttg.async_copy_global_to_local
+// CHECK: tt.return
+// CONTRACT-LABEL: @guard_auto_disjoint
+// CONTRACT: ttg.async_copy_global_to_local
+// CONTRACT: tt.return
+  tt.func @guard_auto_disjoint(%input: !tt.ptr<f32> {tt.experimental_alias_group = 0 : i32}, %output: !tt.ptr<f32> {tt.experimental_alias_group = 1 : i32}, %n: i32) {
+    %c0 = arith.constant 0 : i32
+    %c1 = arith.constant 1 : i32
+    %c128 = arith.constant 128 : i32
+    %one = arith.constant dense<1.0> : tensor<128xf32, #guard>
+    %cols = tt.make_range {end = 128 : i32, start = 0 : i32} : tensor<128xi32, #guard>
+    scf.for %i = %c0 to %n step %c1 : i32 {
+      %offset = arith.muli %i, %c128 : i32
+      %base = tt.addptr %input, %offset : !tt.ptr<f32>, i32
+      %splat = tt.splat %base : !tt.ptr<f32> -> tensor<128x!tt.ptr<f32>, #guard>
+      %ptr = tt.addptr %splat, %cols : tensor<128x!tt.ptr<f32>, #guard>, tensor<128xi32, #guard>
+      %x = tt.load %ptr : tensor<128x!tt.ptr<f32>, #guard>
+      %next = arith.addi %offset, %c128 : i32
+      %out = tt.addptr %output, %next : !tt.ptr<f32>, i32
+      %os = tt.splat %out : !tt.ptr<f32> -> tensor<128x!tt.ptr<f32>, #guard>
+      %op = tt.addptr %os, %cols : tensor<128x!tt.ptr<f32>, #guard>, tensor<128xi32, #guard>
+      %y = arith.addf %x, %one : tensor<128xf32, #guard>
+      tt.store %op, %y : tensor<128x!tt.ptr<f32>, #guard>
+    }
+    tt.return
+  }
+}
+
+// -----
+
+#guard = #ttg.blocked<{sizePerThread = [1], threadsPerWarp = [32], warpsPerCTA = [4], order = [0]}>
+module attributes {"ttg.num-ctas" = 1 : i32, "ttg.num-warps" = 4 : i32, ttg.target = "cuda:90", "ttg.threads-per-warp" = 32 : i32} {
+// CHECK-LABEL: @guard_raw_schedule
+// CHECK-NOT: ttg.async_copy_global_to_local
+// CHECK: tt.return
+// RAW-LABEL: @guard_raw_schedule
+// RAW-NOT: ttg.async_copy_global_to_local
+// RAW-NOT: loop.stage
+// RAW: tt.return
+  tt.func @guard_raw_schedule(%p: tensor<128x!tt.ptr<f32>, #guard>, %n: i32) {
+    %c0 = arith.constant 0 : i32
+    %c1 = arith.constant 1 : i32
+    %one = arith.constant dense<1.0> : tensor<128xf32, #guard>
+    scf.for %i = %c0 to %n step %c1 : i32 {
+      %x = tt.load %p {loop.cluster = 1 : i32, loop.stage = 0 : i32} : tensor<128x!tt.ptr<f32>, #guard>
+      %y = arith.addf %x, %one {loop.cluster = 0 : i32, loop.stage = 2 : i32} : tensor<128xf32, #guard>
+      tt.store %p, %y {loop.cluster = 0 : i32, loop.stage = 2 : i32} : tensor<128x!tt.ptr<f32>, #guard>
+    } {tt.num_stages = 3 : i32, tt.scheduled_max_stage = 2 : i32}
+    tt.return
+  }
+}
+
+// -----
+
+#guard = #ttg.blocked<{sizePerThread = [1], threadsPerWarp = [32], warpsPerCTA = [4], order = [0]}>
+#bar = #ttg.swizzled_shared<{vec = 1, perPhase = 1, maxPhase = 1, order = [0]}>
+module attributes {"ttg.num-ctas" = 1 : i32, "ttg.num-warps" = 4 : i32, ttg.target = "cuda:90", "ttg.threads-per-warp" = 32 : i32} {
+// Even without a local store, a raw barrier can publish global data from another
+// region. An existing serialized schedule is not a pre-protocol memory proof.
+// CHECK-LABEL: @guard_raw_publication
+// CHECK-NOT: ttg.async_copy_global_to_local
+// CHECK: ttng.wait_barrier
+// CHECK: tt.return
+// RAW-LABEL: @guard_raw_publication
+// RAW-NOT: ttg.async_copy_global_to_local
+// RAW-NOT: loop.stage
+// RAW: ttng.wait_barrier
+// RAW: tt.return
+  tt.func @guard_raw_publication(%p: tensor<128x!tt.ptr<f32>, #guard>, %barrier: !ttg.memdesc<1xi64, #bar, #ttg.shared_memory, mutable>, %n: i32) -> tensor<128xf32, #guard> {
+    %c0 = arith.constant 0 : i32
+    %c1 = arith.constant 1 : i32
+    %zero = arith.constant dense<0.0> : tensor<128xf32, #guard>
+    %result = scf.for %i = %c0 to %n step %c1 iter_args(%acc = %zero) -> tensor<128xf32, #guard> : i32 {
+      ttng.wait_barrier %barrier, %c0 {loop.cluster = 1 : i32, loop.stage = 0 : i32} : !ttg.memdesc<1xi64, #bar, #ttg.shared_memory, mutable>
+      %x = tt.load %p {loop.cluster = 1 : i32, loop.stage = 0 : i32} : tensor<128x!tt.ptr<f32>, #guard>
+      %y = arith.addf %x, %acc {loop.cluster = 0 : i32, loop.stage = 2 : i32} : tensor<128xf32, #guard>
+      scf.yield %y : tensor<128xf32, #guard>
+    } {tt.num_stages = 3 : i32, tt.scheduled_max_stage = 2 : i32}
+    tt.return %result : tensor<128xf32, #guard>
+  }
+}
+
+// -----
+
+#guard = #ttg.blocked<{sizePerThread = [1], threadsPerWarp = [32], warpsPerCTA = [4], order = [0]}>
+module attributes {"ttg.num-ctas" = 1 : i32, "ttg.num-warps" = 4 : i32, ttg.target = "cuda:90", "ttg.threads-per-warp" = 32 : i32} {
+  tt.func private @unknown_global_effect(!tt.ptr<f32>)
+// CHECK-LABEL: @guard_unknown_call
+// CHECK-NOT: ttg.async_copy_global_to_local
+// CHECK: tt.call
+// CHECK: tt.return
+  tt.func @guard_unknown_call(%p: !tt.ptr<f32> {tt.experimental_immutable = 1 : i32}, %n: i32) -> tensor<128xf32, #guard> {
+    %c0 = arith.constant 0 : i32
+    %c1 = arith.constant 1 : i32
+    %cols = tt.make_range {end = 128 : i32, start = 0 : i32} : tensor<128xi32, #guard>
+    %base = tt.splat %p : !tt.ptr<f32> -> tensor<128x!tt.ptr<f32>, #guard>
+    %ptrs = tt.addptr %base, %cols : tensor<128x!tt.ptr<f32>, #guard>, tensor<128xi32, #guard>
+    %zero = arith.constant dense<0.0> : tensor<128xf32, #guard>
+    %result = scf.for %i = %c0 to %n step %c1 iter_args(%acc = %zero) -> tensor<128xf32, #guard> : i32 {
+      %x = tt.load %ptrs : tensor<128x!tt.ptr<f32>, #guard>
+      tt.call @unknown_global_effect(%p) : (!tt.ptr<f32>) -> ()
+      %y = arith.addf %acc, %x : tensor<128xf32, #guard>
+      scf.yield %y : tensor<128xf32, #guard>
+    } {tt.num_stages = 3 : i32}
+    tt.return %result : tensor<128xf32, #guard>
+  }
+}
+
+// -----
+
+#guard = #ttg.blocked<{sizePerThread = [1], threadsPerWarp = [32], warpsPerCTA = [4], order = [0]}>
+module attributes {"ttg.num-ctas" = 1 : i32, "ttg.num-warps" = 4 : i32, ttg.target = "cuda:90", "ttg.threads-per-warp" = 32 : i32} {
+// A stale internal proof never licenses newly introduced arbitrary global
+// descriptor writes. Only the compiler's proven private scratch is exempt.
+// CHECK-LABEL: @guard_marked_external_descriptor_create
+// CHECK-NOT: ttg.async_copy_global_to_local
+// CHECK: ttng.tensormap_create
+// CHECK: tt.return
+// RAW-LABEL: @guard_marked_external_descriptor_create
+// RAW-NOT: ttg.async_copy_global_to_local
+// RAW-NOT: loop.stage
+// RAW: ttng.tensormap_create
+// RAW: tt.return
+  tt.func @guard_marked_external_descriptor_create(%p: tensor<128x!tt.ptr<f32>, #guard>, %desc: !tt.ptr<i8>, %source: !tt.ptr<i16>, %n: i32) -> tensor<128xf32, #guard> {
+    %c0 = arith.constant 0 : i32
+    %c1 = arith.constant 1 : i32
+    %c256 = arith.constant 256 : i32
+    %zero = arith.constant dense<0.0> : tensor<128xf32, #guard>
+    %result = scf.for %i = %c0 to %n step %c1 iter_args(%acc = %zero) -> tensor<128xf32, #guard> : i32 {
+      %x = tt.load %p {loop.cluster = 1 : i32, loop.stage = 0 : i32} : tensor<128x!tt.ptr<f32>, #guard>
+      ttng.tensormap_create %desc, %source, [%c256], [%n], [], [%c1] {elem_type = 3 : i32, fill_mode = 0 : i32, interleave_layout = 0 : i32, swizzle_mode = 2 : i32, loop.cluster = 0 : i32, loop.stage = 2 : i32} : (!tt.ptr<i8>, !tt.ptr<i16>, i32, i32, i32) -> ()
+      %y = arith.addf %x, %acc {loop.cluster = 0 : i32, loop.stage = 2 : i32} : tensor<128xf32, #guard>
+      scf.yield %y : tensor<128xf32, #guard>
+    } {tt.num_stages = 3 : i32, tt.scheduled_max_stage = 2 : i32, ttg.global_pipeline_preprotocol_proof}
+    tt.return %result : tensor<128xf32, #guard>
+  }
+
+// CHECK-LABEL: @guard_marked_external_descriptor_fence
+// CHECK-NOT: ttg.async_copy_global_to_local
+// CHECK: ttng.tensormap_fenceproxy_acquire
+// CHECK: tt.return
+// RAW-LABEL: @guard_marked_external_descriptor_fence
+// RAW-NOT: ttg.async_copy_global_to_local
+// RAW-NOT: loop.stage
+// RAW: ttng.tensormap_fenceproxy_acquire
+// RAW: tt.return
+  tt.func @guard_marked_external_descriptor_fence(%p: tensor<128x!tt.ptr<f32>, #guard>, %desc: !tt.ptr<i8>, %n: i32) -> tensor<128xf32, #guard> {
+    %c0 = arith.constant 0 : i32
+    %c1 = arith.constant 1 : i32
+    %zero = arith.constant dense<0.0> : tensor<128xf32, #guard>
+    %result = scf.for %i = %c0 to %n step %c1 iter_args(%acc = %zero) -> tensor<128xf32, #guard> : i32 {
+      %x = tt.load %p {loop.cluster = 1 : i32, loop.stage = 0 : i32} : tensor<128x!tt.ptr<f32>, #guard>
+      ttng.tensormap_fenceproxy_acquire %desc {loop.cluster = 0 : i32, loop.stage = 2 : i32} : !tt.ptr<i8>
+      %y = arith.addf %x, %acc {loop.cluster = 0 : i32, loop.stage = 2 : i32} : tensor<128xf32, #guard>
+      scf.yield %y : tensor<128xf32, #guard>
+    } {tt.num_stages = 3 : i32, tt.scheduled_max_stage = 2 : i32, ttg.global_pipeline_preprotocol_proof}
+    tt.return %result : tensor<128xf32, #guard>
+  }
+}
+
+// -----
+
+#guard = #ttg.blocked<{sizePerThread = [1], threadsPerWarp = [32], warpsPerCTA = [4], order = [0]}>
+#shared = #ttg.swizzled_shared<{vec = 1, perPhase = 1, maxPhase = 1, order = [0]}>
+module attributes {"ttg.num-ctas" = 1 : i32, "ttg.num-warps" = 4 : i32, ttg.target = "cuda:90", "ttg.threads-per-warp" = 32 : i32} {
+// A pre-protocol proof cannot override volatility introduced on an async load.
+// CHECK-LABEL: @guard_marked_volatile_async
+// CHECK-NOT: ttg.async_copy_global_to_local
+// CHECK: scf.for
+// CHECK: ttg.async_copy_global_to_local
+// CHECK-SAME: isVolatile = true
+// CHECK-NOT: ttg.async_copy_global_to_local
+// CHECK: tt.return
+// RAW-LABEL: @guard_marked_volatile_async
+// RAW-NOT: ttg.async_copy_global_to_local
+// RAW: scf.for
+// RAW-NOT: loop.stage
+// RAW: ttg.async_copy_global_to_local
+// RAW-SAME: isVolatile = true
+// RAW-NOT: ttg.async_copy_global_to_local
+// RAW-NOT: loop.stage
+// RAW: tt.return
+  tt.func @guard_marked_volatile_async(%p: tensor<128x!tt.ptr<f32>, #guard>, %n: i32) -> tensor<128xf32, #guard> {
+    %c0 = arith.constant 0 : i32
+    %c1 = arith.constant 1 : i32
+    %zero = arith.constant dense<0.0> : tensor<128xf32, #guard>
+    %buffer = ttg.local_alloc : () -> !ttg.memdesc<128xf32, #shared, #ttg.shared_memory, mutable>
+    %result = scf.for %i = %c0 to %n step %c1 iter_args(%acc = %zero) -> tensor<128xf32, #guard> : i32 {
+      %copy = ttg.async_copy_global_to_local %p, %buffer {isVolatile = true, loop.cluster = 1 : i32, loop.stage = 0 : i32} : tensor<128x!tt.ptr<f32>, #guard> -> !ttg.memdesc<128xf32, #shared, #ttg.shared_memory, mutable>
+      %commit = ttg.async_commit_group tokens %copy {loop.cluster = 1 : i32, loop.stage = 0 : i32}
+      %wait = ttg.async_wait %commit {num = 0 : i32, loop.cluster = 0 : i32, loop.stage = 2 : i32}
+      %x = ttg.local_load %buffer token %wait {loop.cluster = 0 : i32, loop.stage = 2 : i32} : !ttg.memdesc<128xf32, #shared, #ttg.shared_memory, mutable> -> tensor<128xf32, #guard>
+      %y = arith.addf %x, %acc {loop.cluster = 0 : i32, loop.stage = 2 : i32} : tensor<128xf32, #guard>
+      scf.yield %y : tensor<128xf32, #guard>
+    } {tt.num_stages = 3 : i32, tt.scheduled_max_stage = 2 : i32, ttg.global_pipeline_preprotocol_proof}
+    tt.return %result : tensor<128xf32, #guard>
   }
 }

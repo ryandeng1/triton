@@ -1,0 +1,25 @@
+ninja -C /home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12
+ninja: Entering directory `/home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12'
+[1/23] Building CXX object lib/Dialect/Triton/Transforms/CMakeFiles/TritonTransforms.dir/LoopAwareCSE.cpp.o
+[2/23] Building CXX object lib/Dialect/TritonGPU/Transforms/CMakeFiles/TritonGPUTransforms.dir/Pipeliner/AssignLatencies.cpp.o
+[3/23] Building CXX object lib/Dialect/Triton/Transforms/CMakeFiles/TritonTransforms.dir/LoopInvariantCodeMotion.cpp.o
+[4/23] Building CXX object lib/Dialect/TritonGPU/Transforms/CMakeFiles/TritonGPUTransforms.dir/Pipeliner/TMAStoresPipeline.cpp.o
+[5/23] Building CXX object lib/Analysis/CMakeFiles/TritonAnalysis.dir/GlobalMemoryEffects.cpp.o
+[6/23] Linking CXX static library test/lib/Proton/libTritonTestProton.a
+[7/23] Linking CXX static library test/lib/Dialect/libTritonTestDialect.a
+[8/23] Building CXX object lib/Dialect/TritonGPU/Transforms/CMakeFiles/TritonGPUTransforms.dir/Pipeliner/PipeliningUtility.cpp.o
+[9/23] Linking CXX executable unittest/Dialect/TritonGPU/TestSwizzling
+[10/23] Linking CXX executable unittest/Dialect/TritonGPU/DumpLayoutTest
+[11/23] Linking CXX executable unittest/Dialect/TritonGPU/TestPaddedSharedLayout
+[12/23] Linking CXX executable unittest/Dialect/TritonNvidiaGPU/NvmmaSmemAttrsTest
+[13/23] Linking CXX executable unittest/Dialect/TritonGPU/Dialect
+[14/23] Linking CXX executable unittest/Dialect/TritonGPU/LinearLayoutConversions
+[15/23] Linking CXX executable unittest/Analysis/TestTritonAnalysis
+[16/23] Linking CXX executable third_party/nvidia/unittest/Conversion/TritonGPUToLLVM/TestPtxAsmFormat
+[17/23] Linking CXX static library test/lib/Analysis/libTritonTestAnalysis.a
+[18/23] Linking CXX executable bin/triton-llvm-opt
+[19/23] Linking CXX shared library /home/ryandeng/tpaa/triton/python/triton/_C/libtriton.so
+[20/23] Linking CXX executable bin/triton-tensor-layout
+[21/23] Linking CXX executable bin/triton-lsp
+[22/23] Linking CXX executable bin/triton-reduce
+[23/23] Linking CXX executable bin/triton-opt

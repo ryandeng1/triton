@@ -1,0 +1,141 @@
+{
+  "native_library_sha256": "600f64d69c767567ecf271b1393ab08c8ce187c0f520581357979e21c71ba3dd",
+  "harness_sha256": "83fff799e53e0dede17ecb3fbdc7fd26195e90006af93a9e0cd646522b887553",
+  "records": [
+    {
+      "case": "upstream500",
+      "selected": {
+        "original": [
+          32,
+          2,
+          2
+        ],
+        "alias": [
+          32,
+          2,
+          2
+        ],
+        "pipeline": [
+          8,
+          1,
+          3
+        ],
+        "pipeline_alias": [
+          8,
+          1,
+          3
+        ]
+      },
+      "speedups": [
+        {
+          "pipeline_vs_original": 1.2147351882614825,
+          "pipeline_alias_vs_alias": 1.1134373498414827,
+          "alias_vs_original": 1.0566169167607007,
+          "pipeline_alias_vs_original": 1.1761775693598442
+        },
+        {
+          "pipeline_vs_original": 1.2159733301200393,
+          "pipeline_alias_vs_alias": 1.113822717149966,
+          "alias_vs_original": 1.055596480658194,
+          "pipeline_alias_vs_original": 1.1756391967463864
+        },
+        {
+          "pipeline_vs_original": 1.2143354771855488,
+          "pipeline_alias_vs_alias": 1.1128275218292123,
+          "alias_vs_original": 1.0546371136371133,
+          "pipeline_alias_vs_original": 1.173759283430176
+        }
+      ]
+    },
+    {
+      "case": "upstream1024",
+      "selected": {
+        "original": [
+          8,
+          1,
+          3
+        ],
+        "alias": [
+          8,
+          1,
+          3
+        ],
+        "pipeline": [
+          8,
+          1,
+          3
+        ],
+        "pipeline_alias": [
+          8,
+          1,
+          3
+        ]
+      },
+      "speedups": [
+        {
+          "pipeline_vs_original": 0.9662863895928036,
+          "pipeline_alias_vs_alias": 0.8191846868163145,
+          "alias_vs_original": 1.133999116299273,
+          "pipeline_alias_vs_original": 0.9286861107614054
+        },
+        {
+          "pipeline_vs_original": 0.96601517236206,
+          "pipeline_alias_vs_alias": 0.8203792083783098,
+          "alias_vs_original": 1.13303329283024,
+          "pipeline_alias_vs_original": 0.9294759073778305
+        },
+        {
+          "pipeline_vs_original": 0.9664709658133017,
+          "pipeline_alias_vs_alias": 0.8191599737598987,
+          "alias_vs_original": 1.1343460881980314,
+          "pipeline_alias_vs_original": 0.9292347002595599
+        }
+      ]
+    },
+    {
+      "case": "decode16",
+      "selected": {
+        "original": [
+          16,
+          1,
+          2
+        ],
+        "alias": [
+          16,
+          1,
+          2
+        ],
+        "pipeline": [
+          16,
+          1,
+          2
+        ],
+        "pipeline_alias": [
+          16,
+          1,
+          2
+        ]
+      },
+      "speedups": [
+        {
+          "pipeline_vs_original": 0.9777104625510832,
+          "pipeline_alias_vs_alias": 0.975673884305653,
+          "alias_vs_original": 0.9944558792375694,
+          "pipeline_alias_vs_original": 0.970624605289417
+        },
+        {
+          "pipeline_vs_original": 0.9754360754059695,
+          "pipeline_alias_vs_alias": 0.9959051451202524,
+          "alias_vs_original": 0.9818774297275958,
+          "pipeline_alias_vs_original": 0.9778567870153115
+        },
+        {
+          "pipeline_vs_original": 0.9797325730979041,
+          "pipeline_alias_vs_alias": 0.9962601314587815,
+          "alias_vs_original": 0.9770381055612654,
+          "pipeline_alias_vs_original": 0.9735959297078512
+        }
+      ]
+    }
+  ]
+}

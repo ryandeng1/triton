@@ -1,0 +1,869 @@
+{
+  "records": [
+    {
+      "case": "upstream500",
+      "config": [
+        8,
+        1,
+        3
+      ],
+      "source": "original",
+      "contract": "absent",
+      "shared": 256,
+      "ptx_sha256": "2d60b76c604170a44499317db602a2efbf26c680f91570fd21b2d95beb131387"
+    },
+    {
+      "case": "upstream500",
+      "config": [
+        8,
+        1,
+        3
+      ],
+      "source": "original",
+      "contract": "alias",
+      "shared": 256,
+      "ptx_sha256": "37835fef0f9a998e0ad5e76c347330c0041366e401446a5e1ce53c2bb7bb2a1f"
+    },
+    {
+      "case": "upstream500",
+      "config": [
+        8,
+        1,
+        3
+      ],
+      "source": "original",
+      "contract": "immutable",
+      "shared": 256,
+      "ptx_sha256": "37835fef0f9a998e0ad5e76c347330c0041366e401446a5e1ce53c2bb7bb2a1f"
+    },
+    {
+      "case": "upstream500",
+      "config": [
+        8,
+        1,
+        3
+      ],
+      "source": "pipeline",
+      "contract": "absent",
+      "shared": 724,
+      "ptx_sha256": "586c37164df7f57483c2f3f2d172d0ac3766c4a0cab7646f5eb11e7e027b50d3"
+    },
+    {
+      "case": "upstream500",
+      "config": [
+        8,
+        1,
+        3
+      ],
+      "source": "pipeline",
+      "contract": "alias",
+      "shared": 692,
+      "ptx_sha256": "381f533907a9cfcf5ce1e697ddfd52edef3c2f3c3fb0c48bd8d8163d1056f7f8"
+    },
+    {
+      "case": "upstream500",
+      "config": [
+        8,
+        1,
+        3
+      ],
+      "source": "pipeline",
+      "contract": "immutable",
+      "shared": 692,
+      "ptx_sha256": "381f533907a9cfcf5ce1e697ddfd52edef3c2f3c3fb0c48bd8d8163d1056f7f8"
+    },
+    {
+      "case": "upstream500",
+      "config": [
+        16,
+        1,
+        2
+      ],
+      "source": "original",
+      "contract": "absent",
+      "shared": 256,
+      "ptx_sha256": "b5f613114882b32b758fdb48a92e74bf5716d423f81fb1b9f8613fa585552af3"
+    },
+    {
+      "case": "upstream500",
+      "config": [
+        16,
+        1,
+        2
+      ],
+      "source": "original",
+      "contract": "alias",
+      "shared": 256,
+      "ptx_sha256": "984f44260ee8a7042be535aac68823e287d55a9df3082101e00e66fcba9f2ea0"
+    },
+    {
+      "case": "upstream500",
+      "config": [
+        16,
+        1,
+        2
+      ],
+      "source": "original",
+      "contract": "immutable",
+      "shared": 256,
+      "ptx_sha256": "984f44260ee8a7042be535aac68823e287d55a9df3082101e00e66fcba9f2ea0"
+    },
+    {
+      "case": "upstream500",
+      "config": [
+        16,
+        1,
+        2
+      ],
+      "source": "pipeline",
+      "contract": "absent",
+      "shared": 884,
+      "ptx_sha256": "64286a6841c5718176af8662f2af6af899fbf8bd9b275505fca2412d18879339"
+    },
+    {
+      "case": "upstream500",
+      "config": [
+        16,
+        1,
+        2
+      ],
+      "source": "pipeline",
+      "contract": "alias",
+      "shared": 852,
+      "ptx_sha256": "63939489a844ed0718d94406611097fe51618ece28ecee6be11ebe83841ce08c"
+    },
+    {
+      "case": "upstream500",
+      "config": [
+        16,
+        1,
+        2
+      ],
+      "source": "pipeline",
+      "contract": "immutable",
+      "shared": 852,
+      "ptx_sha256": "63939489a844ed0718d94406611097fe51618ece28ecee6be11ebe83841ce08c"
+    },
+    {
+      "case": "upstream500",
+      "config": [
+        32,
+        2,
+        2
+      ],
+      "source": "original",
+      "contract": "absent",
+      "shared": 256,
+      "ptx_sha256": "e660d4bbe6227c24c1bd15d33f5ec839f1fe2b2ac542c95fdc60c906ca05a56c"
+    },
+    {
+      "case": "upstream500",
+      "config": [
+        32,
+        2,
+        2
+      ],
+      "source": "original",
+      "contract": "alias",
+      "shared": 256,
+      "ptx_sha256": "247b2ab67c2db6e646a4445bc3729efe3e21eff8a64864b213b2ff93cb7e77b7"
+    },
+    {
+      "case": "upstream500",
+      "config": [
+        32,
+        2,
+        2
+      ],
+      "source": "original",
+      "contract": "immutable",
+      "shared": 256,
+      "ptx_sha256": "247b2ab67c2db6e646a4445bc3729efe3e21eff8a64864b213b2ff93cb7e77b7"
+    },
+    {
+      "case": "upstream500",
+      "config": [
+        32,
+        2,
+        2
+      ],
+      "source": "pipeline",
+      "contract": "absent",
+      "shared": 948,
+      "ptx_sha256": "c62b4483ab8ff508633948d3324a609308d8e2613898c97204ba47b29d539d12"
+    },
+    {
+      "case": "upstream500",
+      "config": [
+        32,
+        2,
+        2
+      ],
+      "source": "pipeline",
+      "contract": "alias",
+      "shared": 916,
+      "ptx_sha256": "c3b36906c994696fbe95fed12d1a8438cac2ef6029c1aa76094e1155546b223d"
+    },
+    {
+      "case": "upstream500",
+      "config": [
+        32,
+        2,
+        2
+      ],
+      "source": "pipeline",
+      "contract": "immutable",
+      "shared": 916,
+      "ptx_sha256": "c3b36906c994696fbe95fed12d1a8438cac2ef6029c1aa76094e1155546b223d"
+    },
+    {
+      "case": "upstream500",
+      "config": [
+        64,
+        4,
+        1
+      ],
+      "source": "original",
+      "contract": "absent",
+      "shared": 1024,
+      "ptx_sha256": "7b5eb1a46c9512fde24b0e00532f818911828c269753219b243d6622dbdc7168"
+    },
+    {
+      "case": "upstream500",
+      "config": [
+        64,
+        4,
+        1
+      ],
+      "source": "original",
+      "contract": "alias",
+      "shared": 1024,
+      "ptx_sha256": "a55e4f011d8af37393074f0c6bac4686ff776b030c6f631f8b1289995eeede45"
+    },
+    {
+      "case": "upstream500",
+      "config": [
+        64,
+        4,
+        1
+      ],
+      "source": "original",
+      "contract": "immutable",
+      "shared": 1024,
+      "ptx_sha256": "a55e4f011d8af37393074f0c6bac4686ff776b030c6f631f8b1289995eeede45"
+    },
+    {
+      "case": "upstream500",
+      "config": [
+        64,
+        4,
+        1
+      ],
+      "source": "pipeline",
+      "contract": "absent",
+      "shared": 2356,
+      "ptx_sha256": "aaf9cac5d9c637f9a637745a7449089ad9654b8a31657b3134fb54d1f003819d"
+    },
+    {
+      "case": "upstream500",
+      "config": [
+        64,
+        4,
+        1
+      ],
+      "source": "pipeline",
+      "contract": "alias",
+      "shared": 2324,
+      "ptx_sha256": "d3667a3a5bec978932187c165bfeb5fe77c5d07a4bcd05aa9795c1324b3c8940"
+    },
+    {
+      "case": "upstream500",
+      "config": [
+        64,
+        4,
+        1
+      ],
+      "source": "pipeline",
+      "contract": "immutable",
+      "shared": 2324,
+      "ptx_sha256": "d3667a3a5bec978932187c165bfeb5fe77c5d07a4bcd05aa9795c1324b3c8940"
+    },
+    {
+      "case": "upstream1024",
+      "config": [
+        8,
+        1,
+        3
+      ],
+      "source": "original",
+      "contract": "absent",
+      "shared": 512,
+      "ptx_sha256": "e56e3ebfec98b005a27e72e91b875983b796e652b78ccf91989115cec6bdddf5"
+    },
+    {
+      "case": "upstream1024",
+      "config": [
+        8,
+        1,
+        3
+      ],
+      "source": "original",
+      "contract": "alias",
+      "shared": 512,
+      "ptx_sha256": "e9a22f9b6b38ddeb69a48497ed650e43b5a46dedd1d77d45ed70671655e21911"
+    },
+    {
+      "case": "upstream1024",
+      "config": [
+        8,
+        1,
+        3
+      ],
+      "source": "original",
+      "contract": "immutable",
+      "shared": 512,
+      "ptx_sha256": "e9a22f9b6b38ddeb69a48497ed650e43b5a46dedd1d77d45ed70671655e21911"
+    },
+    {
+      "case": "upstream1024",
+      "config": [
+        8,
+        1,
+        3
+      ],
+      "source": "pipeline",
+      "contract": "absent",
+      "shared": 1108,
+      "ptx_sha256": "6619ae8bfd157b01d0c5d2111cb02c150fc93730a3d4e19fde6c57b460fc0f0d"
+    },
+    {
+      "case": "upstream1024",
+      "config": [
+        8,
+        1,
+        3
+      ],
+      "source": "pipeline",
+      "contract": "alias",
+      "shared": 1076,
+      "ptx_sha256": "bbe0b344c843b6f12551e3df7f255e8a66109774140b61173ce9c02845753caf"
+    },
+    {
+      "case": "upstream1024",
+      "config": [
+        8,
+        1,
+        3
+      ],
+      "source": "pipeline",
+      "contract": "immutable",
+      "shared": 1076,
+      "ptx_sha256": "bbe0b344c843b6f12551e3df7f255e8a66109774140b61173ce9c02845753caf"
+    },
+    {
+      "case": "upstream1024",
+      "config": [
+        16,
+        1,
+        2
+      ],
+      "source": "original",
+      "contract": "absent",
+      "shared": 512,
+      "ptx_sha256": "658fe271280bb3cb724b0e902995c65d88a13773073555917a86d220321218b6"
+    },
+    {
+      "case": "upstream1024",
+      "config": [
+        16,
+        1,
+        2
+      ],
+      "source": "original",
+      "contract": "alias",
+      "shared": 512,
+      "ptx_sha256": "537b0ad9e543baf11d53388faff39e20cbade88be0e5f2573aacead3a220667b"
+    },
+    {
+      "case": "upstream1024",
+      "config": [
+        16,
+        1,
+        2
+      ],
+      "source": "original",
+      "contract": "immutable",
+      "shared": 512,
+      "ptx_sha256": "537b0ad9e543baf11d53388faff39e20cbade88be0e5f2573aacead3a220667b"
+    },
+    {
+      "case": "upstream1024",
+      "config": [
+        16,
+        1,
+        2
+      ],
+      "source": "pipeline",
+      "contract": "absent",
+      "shared": 1604,
+      "ptx_sha256": "75a59e718659054bc8cb18d0eb92a159b857b74295b54cbb26b24625d8275961"
+    },
+    {
+      "case": "upstream1024",
+      "config": [
+        16,
+        1,
+        2
+      ],
+      "source": "pipeline",
+      "contract": "alias",
+      "shared": 1572,
+      "ptx_sha256": "006e8e0c7a9aaa5dee3332c170dde0b8d1924a3606d2d2973e62f6a257fd6682"
+    },
+    {
+      "case": "upstream1024",
+      "config": [
+        16,
+        1,
+        2
+      ],
+      "source": "pipeline",
+      "contract": "immutable",
+      "shared": 1572,
+      "ptx_sha256": "006e8e0c7a9aaa5dee3332c170dde0b8d1924a3606d2d2973e62f6a257fd6682"
+    },
+    {
+      "case": "upstream1024",
+      "config": [
+        32,
+        2,
+        2
+      ],
+      "source": "original",
+      "contract": "absent",
+      "shared": 512,
+      "ptx_sha256": "1514a95c51eb4638c83d9a34566c382beb409cc17f13c7db530c2812a38a55b5"
+    },
+    {
+      "case": "upstream1024",
+      "config": [
+        32,
+        2,
+        2
+      ],
+      "source": "original",
+      "contract": "alias",
+      "shared": 512,
+      "ptx_sha256": "7d022268b4a8551c61569f6bb803f26ac178e88c939d11b61ea91ff10fd88b88"
+    },
+    {
+      "case": "upstream1024",
+      "config": [
+        32,
+        2,
+        2
+      ],
+      "source": "original",
+      "contract": "immutable",
+      "shared": 512,
+      "ptx_sha256": "7d022268b4a8551c61569f6bb803f26ac178e88c939d11b61ea91ff10fd88b88"
+    },
+    {
+      "case": "upstream1024",
+      "config": [
+        32,
+        2,
+        2
+      ],
+      "source": "pipeline",
+      "contract": "absent",
+      "shared": 1636,
+      "ptx_sha256": "a105f53a13743471c03c6c98e3af75612e1f55d78ebd4827490fecfa6de1ec24"
+    },
+    {
+      "case": "upstream1024",
+      "config": [
+        32,
+        2,
+        2
+      ],
+      "source": "pipeline",
+      "contract": "alias",
+      "shared": 1604,
+      "ptx_sha256": "f45cc93ed6669af058a8c725032aa0cb3e49e5fc5e2c43d1bcf3b9768e3758b5"
+    },
+    {
+      "case": "upstream1024",
+      "config": [
+        32,
+        2,
+        2
+      ],
+      "source": "pipeline",
+      "contract": "immutable",
+      "shared": 1604,
+      "ptx_sha256": "f45cc93ed6669af058a8c725032aa0cb3e49e5fc5e2c43d1bcf3b9768e3758b5"
+    },
+    {
+      "case": "upstream1024",
+      "config": [
+        64,
+        4,
+        1
+      ],
+      "source": "original",
+      "contract": "absent",
+      "shared": 1024,
+      "ptx_sha256": "9b43d1ace23e319d8f4a13803cf820d960af2aac3f340fb627f083102a9a8f40"
+    },
+    {
+      "case": "upstream1024",
+      "config": [
+        64,
+        4,
+        1
+      ],
+      "source": "original",
+      "contract": "alias",
+      "shared": 1024,
+      "ptx_sha256": "0c78d613001d26e25cae0fddc16318d68859456ad4d30a9833845b3dc4e9e74f"
+    },
+    {
+      "case": "upstream1024",
+      "config": [
+        64,
+        4,
+        1
+      ],
+      "source": "original",
+      "contract": "immutable",
+      "shared": 1024,
+      "ptx_sha256": "0c78d613001d26e25cae0fddc16318d68859456ad4d30a9833845b3dc4e9e74f"
+    },
+    {
+      "case": "upstream1024",
+      "config": [
+        64,
+        4,
+        1
+      ],
+      "source": "pipeline",
+      "contract": "absent",
+      "shared": 2212,
+      "ptx_sha256": "f3ba1c944b83904a7405aabcc482f9d93b2a77dbc71e15b42f91faf7220be7a8"
+    },
+    {
+      "case": "upstream1024",
+      "config": [
+        64,
+        4,
+        1
+      ],
+      "source": "pipeline",
+      "contract": "alias",
+      "shared": 2180,
+      "ptx_sha256": "d7931708e212be553c32e05caee98c2d62aae22764f2aa9b7804ac4d052db5cc"
+    },
+    {
+      "case": "upstream1024",
+      "config": [
+        64,
+        4,
+        1
+      ],
+      "source": "pipeline",
+      "contract": "immutable",
+      "shared": 2180,
+      "ptx_sha256": "d7931708e212be553c32e05caee98c2d62aae22764f2aa9b7804ac4d052db5cc"
+    },
+    {
+      "case": "decode16",
+      "config": [
+        8,
+        1,
+        3
+      ],
+      "source": "original",
+      "contract": "absent",
+      "shared": 512,
+      "ptx_sha256": "03407d35148128c629a0bb1d33ef33b1aa28da1f128c1a416598c9ec5211fb03"
+    },
+    {
+      "case": "decode16",
+      "config": [
+        8,
+        1,
+        3
+      ],
+      "source": "original",
+      "contract": "alias",
+      "shared": 512,
+      "ptx_sha256": "646bee03b073caabc4120b7e1ef8ea29792fe7f425f7ffc39f397485f782f664"
+    },
+    {
+      "case": "decode16",
+      "config": [
+        8,
+        1,
+        3
+      ],
+      "source": "original",
+      "contract": "immutable",
+      "shared": 512,
+      "ptx_sha256": "646bee03b073caabc4120b7e1ef8ea29792fe7f425f7ffc39f397485f782f664"
+    },
+    {
+      "case": "decode16",
+      "config": [
+        8,
+        1,
+        3
+      ],
+      "source": "pipeline",
+      "contract": "absent",
+      "shared": 656,
+      "ptx_sha256": "a081eeddb8078a08ed242375afbf4806808ad97c1f790fcdb485746298b220f0"
+    },
+    {
+      "case": "decode16",
+      "config": [
+        8,
+        1,
+        3
+      ],
+      "source": "pipeline",
+      "contract": "alias",
+      "shared": 656,
+      "ptx_sha256": "717cea0ab519b48e3296f6ff747797c83ebcd262360f6ee3fa9e0d462a3d5b91"
+    },
+    {
+      "case": "decode16",
+      "config": [
+        8,
+        1,
+        3
+      ],
+      "source": "pipeline",
+      "contract": "immutable",
+      "shared": 656,
+      "ptx_sha256": "717cea0ab519b48e3296f6ff747797c83ebcd262360f6ee3fa9e0d462a3d5b91"
+    },
+    {
+      "case": "decode16",
+      "config": [
+        16,
+        1,
+        2
+      ],
+      "source": "original",
+      "contract": "absent",
+      "shared": 512,
+      "ptx_sha256": "d5654b21f23aef965101cb5876e01644ac18f5e5de9992e6e55d1632d0310a40"
+    },
+    {
+      "case": "decode16",
+      "config": [
+        16,
+        1,
+        2
+      ],
+      "source": "original",
+      "contract": "alias",
+      "shared": 512,
+      "ptx_sha256": "746647d46561cf470949da61b7ba3a5c43ddf7cbd6a898b53231478960c69434"
+    },
+    {
+      "case": "decode16",
+      "config": [
+        16,
+        1,
+        2
+      ],
+      "source": "original",
+      "contract": "immutable",
+      "shared": 512,
+      "ptx_sha256": "746647d46561cf470949da61b7ba3a5c43ddf7cbd6a898b53231478960c69434"
+    },
+    {
+      "case": "decode16",
+      "config": [
+        16,
+        1,
+        2
+      ],
+      "source": "pipeline",
+      "contract": "absent",
+      "shared": 1056,
+      "ptx_sha256": "25c971173b06682d2cfd837383e572813d2f9c2da9f325d6c49d6e58c062fca5"
+    },
+    {
+      "case": "decode16",
+      "config": [
+        16,
+        1,
+        2
+      ],
+      "source": "pipeline",
+      "contract": "alias",
+      "shared": 1056,
+      "ptx_sha256": "2d8700ae3c0d2b6d868798c4dca31c0040a9f7e657468fd0ef2e5a4304bcc0d8"
+    },
+    {
+      "case": "decode16",
+      "config": [
+        16,
+        1,
+        2
+      ],
+      "source": "pipeline",
+      "contract": "immutable",
+      "shared": 1056,
+      "ptx_sha256": "2d8700ae3c0d2b6d868798c4dca31c0040a9f7e657468fd0ef2e5a4304bcc0d8"
+    },
+    {
+      "case": "decode16",
+      "config": [
+        32,
+        2,
+        2
+      ],
+      "source": "original",
+      "contract": "absent",
+      "shared": 512,
+      "ptx_sha256": "9caf7742fd8fd35239ea3db9a310e3709fc341655307b99d5458f79032a6b65b"
+    },
+    {
+      "case": "decode16",
+      "config": [
+        32,
+        2,
+        2
+      ],
+      "source": "original",
+      "contract": "alias",
+      "shared": 512,
+      "ptx_sha256": "1ceb98909bcc10049b4355eedefa2e9d76509afb1544ea05c241bdc1724c5918"
+    },
+    {
+      "case": "decode16",
+      "config": [
+        32,
+        2,
+        2
+      ],
+      "source": "original",
+      "contract": "immutable",
+      "shared": 512,
+      "ptx_sha256": "1ceb98909bcc10049b4355eedefa2e9d76509afb1544ea05c241bdc1724c5918"
+    },
+    {
+      "case": "decode16",
+      "config": [
+        32,
+        2,
+        2
+      ],
+      "source": "pipeline",
+      "contract": "absent",
+      "shared": 1088,
+      "ptx_sha256": "62ba982d17482c3e70148448f0c5e8b4ae260b8d8e711a0f12f33de84a9e50d9"
+    },
+    {
+      "case": "decode16",
+      "config": [
+        32,
+        2,
+        2
+      ],
+      "source": "pipeline",
+      "contract": "alias",
+      "shared": 1088,
+      "ptx_sha256": "c092609b3e087b5bc822d724d31ce4f8b2affeeee663b310c5a714befad2014d"
+    },
+    {
+      "case": "decode16",
+      "config": [
+        32,
+        2,
+        2
+      ],
+      "source": "pipeline",
+      "contract": "immutable",
+      "shared": 1088,
+      "ptx_sha256": "c092609b3e087b5bc822d724d31ce4f8b2affeeee663b310c5a714befad2014d"
+    },
+    {
+      "case": "decode16",
+      "config": [
+        64,
+        4,
+        1
+      ],
+      "source": "original",
+      "contract": "absent",
+      "shared": 1024,
+      "ptx_sha256": "b6d6f7137e22c6e35d464859442565fc89fba34dd0145a0f66de80acb2b47301"
+    },
+    {
+      "case": "decode16",
+      "config": [
+        64,
+        4,
+        1
+      ],
+      "source": "original",
+      "contract": "alias",
+      "shared": 1024,
+      "ptx_sha256": "2f1005594654f865ac4a854c3d7d87bec3089ad17d133ed04a313cfbb4d2a975"
+    },
+    {
+      "case": "decode16",
+      "config": [
+        64,
+        4,
+        1
+      ],
+      "source": "original",
+      "contract": "immutable",
+      "shared": 1024,
+      "ptx_sha256": "2f1005594654f865ac4a854c3d7d87bec3089ad17d133ed04a313cfbb4d2a975"
+    },
+    {
+      "case": "decode16",
+      "config": [
+        64,
+        4,
+        1
+      ],
+      "source": "pipeline",
+      "contract": "absent",
+      "shared": 1152,
+      "ptx_sha256": "dc42fbb4740e1ee6f302023d4a782a1df1cd5b60c21cbad066f8b87ab2346c1b"
+    },
+    {
+      "case": "decode16",
+      "config": [
+        64,
+        4,
+        1
+      ],
+      "source": "pipeline",
+      "contract": "alias",
+      "shared": 1152,
+      "ptx_sha256": "1ab37a7cfc00508f4bd33795d321e551e411515e0731f32e6d1c388b8c9b4105"
+    },
+    {
+      "case": "decode16",
+      "config": [
+        64,
+        4,
+        1
+      ],
+      "source": "pipeline",
+      "contract": "immutable",
+      "shared": 1152,
+      "ptx_sha256": "1ab37a7cfc00508f4bd33795d321e551e411515e0731f32e6d1c388b8c9b4105"
+    }
+  ],
+  "harness_sha256": "5d393235f02e82050787999eefb4c97a72b2f8cded68f41f89952d92592c340a"
+}

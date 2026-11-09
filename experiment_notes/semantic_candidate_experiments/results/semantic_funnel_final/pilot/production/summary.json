@@ -1,0 +1,5557 @@
+{
+  "benchmark": {
+    "compiled_variants": 54,
+    "compiler_specializations": 18,
+    "distinction": "All21 pinned host shape/dtype cases use original kernel.warmup with original scalar values, constexpr BLOCK128, pointer/scalar divisibility attributes, and default launch options. These specialized binaries are distinct from the explicitly runtime-i32 generic pilot. Package dispatch/allocation/final casts are not timed.",
+    "dtypes": [
+      "fp16",
+      "fp32",
+      "bf16"
+    ],
+    "function": "test_unfold_backward",
+    "input_cases": 21,
+    "path": "benchmark/test_unfold.py",
+    "sha256": "1484aae056f9965abe2c3d9ca8704d1530adb9514895645e615b6528c5e1b50c",
+    "shape_line": 36,
+    "shapes": [
+      [
+        [
+          32,
+          64
+        ],
+        1,
+        16,
+        16
+      ],
+      [
+        [
+          16,
+          33
+        ],
+        0,
+        5,
+        2
+      ],
+      [
+        [
+          4,
+          8,
+          12
+        ],
+        -1,
+        6,
+        4
+      ],
+      [
+        [
+          7,
+          13
+        ],
+        1,
+        13,
+        3
+      ],
+      [
+        [
+          6,
+          20
+        ],
+        1,
+        7,
+        4
+      ],
+      [
+        [
+          2,
+          3,
+          17
+        ],
+        -1,
+        9,
+        1
+      ],
+      [
+        [
+          2,
+          17
+        ],
+        1,
+        4,
+        6
+      ]
+    ]
+  },
+  "compiler": {
+    "native_library_sha256": "600f64d69c767567ecf271b1393ab08c8ce187c0f520581357979e21c71ba3dd",
+    "native_library_sha256_at_finalization": "600f64d69c767567ecf271b1393ab08c8ce187c0f520581357979e21c71ba3dd",
+    "native_library_unchanged_since_compilation": true,
+    "version": "3.9.0"
+  },
+  "contract": {
+    "assumptions": [
+      "Same-stream initialized output is private until completion; invocation inputs remain live and within allocation bounds.",
+      "Original wrapper valid-input domain is retained; no arbitrary pointer aliases or concurrent external observers.",
+      "Compilation applies exactly the private-output/disjoint-input contract already implied by this allocation; no unordered-reduction assertion or changed atomic expression."
+    ],
+    "evidence": [
+      {
+        "fact": "Fresh torch.zeros fp32 output is allocated inside the wrapper before the launch.",
+        "line": 80,
+        "path": "src/flag_gems/ops/unfold_backward.py"
+      },
+      {
+        "fact": "One launch consumes grad_in and the new output; output is only returned/cast after the launch.",
+        "line": 87,
+        "path": "src/flag_gems/ops/unfold_backward.py"
+      },
+      {
+        "fact": "Kernel has one unused-result atomic-add and reads only grad_in. Output is never read by ordinary accesses.",
+        "line": 55,
+        "path": "src/flag_gems/ops/unfold_backward.py"
+      }
+    ],
+    "host_function": "unfold_backward",
+    "output_argument": "grad_out_ptr",
+    "status": "manually_reviewed_for_wrapper_and_pilot"
+  },
+  "correctness": {
+    "cases": 21,
+    "colliding_cases": 12,
+    "exact_small_integer_cases": 21,
+    "random_reference": "CPU float64 torch.ops.aten.unfold_backward of represented input values; per-destination gamma_(n-1)*sum(abs(x)) error bound; before the wrapper's final dtype conversion",
+    "status": "passed",
+    "variants": 3
+  },
+  "function": "_unfold_backward_kernel",
+  "manual_only_sem_keyword_ast_audited": true,
+  "native_manual_ptx_instructions_equal": {
+    "17b13ff6eb83899d": true,
+    "1d2211aa2f38d486": true,
+    "5586851d90deb0d8": true,
+    "608125c241e45c4a": true,
+    "77300d36d72f4a93": true,
+    "7fa55f9ac214eb1a": true,
+    "8dab4fec226f518e": true,
+    "8e79f6a3bb7fa13c": true,
+    "99059c3b7bb5d417": true,
+    "9b5674f024b6833a": true,
+    "c4b8753aa1364b37": true,
+    "d1cde69352bebd8e": true,
+    "d660ed566faeb88d": true,
+    "dfcde7b652f1a453": true,
+    "e7d8e24a70fda869": true,
+    "f27d61145518df0d": true,
+    "f5ee50e5b6ca0eec": true,
+    "fe46aae8a29f0c75": true
+  },
+  "original_body_ast_equal": true,
+  "original_body_ast_sha256": "9a808247c8579132e6968b078b39cf366388d8d2096a38c7359eead389957f0a",
+  "revision": "3f1f896fd90f5db42d167d64fcb9691326071bc2",
+  "source_path": "src/flag_gems/ops/unfold_backward.py",
+  "source_sha256": "9995254fa17719711b5e16844006be62799003233a629a046a1094d4cc1c6707",
+  "specializations": {
+    "17b13ff6eb83899d": {
+      "baseline_attrs": {
+        "(0,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(1,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(2,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(3,)": [],
+        "(4,)": [],
+        "(5,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(6,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(7,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(8,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(9,)": []
+      },
+      "constants": {
+        "(3,)": 1,
+        "(9,)": 128
+      },
+      "default_launch_options_retained": true,
+      "dtype": "fp32",
+      "options": {
+        "allowed_dot_input_precisions": [
+          "tf32",
+          "tf32x3",
+          "ieee",
+          "bf16x3",
+          "bf16x6"
+        ],
+        "arch": "sm103",
+        "backend_name": "cuda",
+        "clc": false,
+        "debug": false,
+        "default_dot_input_precision": "tf32",
+        "deprecated_fp8_dot_operand_dtypes": [
+          "fp8e4b15"
+        ],
+        "disable_lsr": false,
+        "enable_aref_release_scheduling": false,
+        "enable_contract_load_reuse": false,
+        "enable_fp_fusion": false,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "enable_private_reduction_ownership": false,
+        "enable_reflect_ftz": true,
+        "enable_tmem_packing": false,
+        "enable_tmem_release_scheduling": false,
+        "enable_tmem_single_buffer": false,
+        "extern_libs": [
+          [
+            "libdevice",
+            "/home/ryandeng/tpaa/triton/python/triton/backends/nvidia/lib/libdevice.10.bc"
+          ]
+        ],
+        "fpsan_homomorphic_casts": false,
+        "instrumentation_mode": "",
+        "ir_override": null,
+        "launch_cooperative_grid": false,
+        "launch_pdl": false,
+        "max_num_imprecise_acc_default": 0,
+        "max_occupancy": null,
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 3,
+        "num_warps": 4,
+        "ptx_options": null,
+        "ptx_version": null,
+        "sanitize_overflow": true,
+        "sched4reg": false,
+        "supported_fp8_dtypes": [
+          "fp8e4b15",
+          "fp8e4nv",
+          "fp8e5"
+        ],
+        "warp_size": 32
+      },
+      "original_signature_constants_alignment_retained": true,
+      "signature": {
+        "BLOCK": "constexpr",
+        "D": "i32",
+        "L": "i32",
+        "grad_in_ptr": "*fp32",
+        "grad_out_ptr": "*fp32",
+        "inner_total": "i32",
+        "numel_in": "i32",
+        "prod_after": "constexpr",
+        "size": "i32",
+        "step": "i32"
+      }
+    },
+    "1d2211aa2f38d486": {
+      "baseline_attrs": {
+        "(0,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(1,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(2,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(3,)": [],
+        "(4,)": [],
+        "(5,)": [],
+        "(6,)": [],
+        "(7,)": [],
+        "(8,)": [],
+        "(9,)": []
+      },
+      "constants": {
+        "(3,)": 1,
+        "(9,)": 128
+      },
+      "default_launch_options_retained": true,
+      "dtype": "bf16",
+      "options": {
+        "allowed_dot_input_precisions": [
+          "tf32",
+          "tf32x3",
+          "ieee",
+          "bf16x3",
+          "bf16x6"
+        ],
+        "arch": "sm103",
+        "backend_name": "cuda",
+        "clc": false,
+        "debug": false,
+        "default_dot_input_precision": "tf32",
+        "deprecated_fp8_dot_operand_dtypes": [
+          "fp8e4b15"
+        ],
+        "disable_lsr": false,
+        "enable_aref_release_scheduling": false,
+        "enable_contract_load_reuse": false,
+        "enable_fp_fusion": false,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "enable_private_reduction_ownership": false,
+        "enable_reflect_ftz": true,
+        "enable_tmem_packing": false,
+        "enable_tmem_release_scheduling": false,
+        "enable_tmem_single_buffer": false,
+        "extern_libs": [
+          [
+            "libdevice",
+            "/home/ryandeng/tpaa/triton/python/triton/backends/nvidia/lib/libdevice.10.bc"
+          ]
+        ],
+        "fpsan_homomorphic_casts": false,
+        "instrumentation_mode": "",
+        "ir_override": null,
+        "launch_cooperative_grid": false,
+        "launch_pdl": false,
+        "max_num_imprecise_acc_default": 0,
+        "max_occupancy": null,
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 3,
+        "num_warps": 4,
+        "ptx_options": null,
+        "ptx_version": null,
+        "sanitize_overflow": true,
+        "sched4reg": false,
+        "supported_fp8_dtypes": [
+          "fp8e4b15",
+          "fp8e4nv",
+          "fp8e5"
+        ],
+        "warp_size": 32
+      },
+      "original_signature_constants_alignment_retained": true,
+      "signature": {
+        "BLOCK": "constexpr",
+        "D": "i32",
+        "L": "i32",
+        "grad_in_ptr": "*bf16",
+        "grad_out_ptr": "*fp32",
+        "inner_total": "i32",
+        "numel_in": "i32",
+        "prod_after": "constexpr",
+        "size": "i32",
+        "step": "i32"
+      }
+    },
+    "5586851d90deb0d8": {
+      "baseline_attrs": {
+        "(0,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(1,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(2,)": [],
+        "(3,)": [],
+        "(4,)": [],
+        "(5,)": [],
+        "(6,)": [],
+        "(7,)": [],
+        "(8,)": [],
+        "(9,)": []
+      },
+      "constants": {
+        "(3,)": 1,
+        "(9,)": 128
+      },
+      "default_launch_options_retained": true,
+      "dtype": "bf16",
+      "options": {
+        "allowed_dot_input_precisions": [
+          "tf32",
+          "tf32x3",
+          "ieee",
+          "bf16x3",
+          "bf16x6"
+        ],
+        "arch": "sm103",
+        "backend_name": "cuda",
+        "clc": false,
+        "debug": false,
+        "default_dot_input_precision": "tf32",
+        "deprecated_fp8_dot_operand_dtypes": [
+          "fp8e4b15"
+        ],
+        "disable_lsr": false,
+        "enable_aref_release_scheduling": false,
+        "enable_contract_load_reuse": false,
+        "enable_fp_fusion": false,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "enable_private_reduction_ownership": false,
+        "enable_reflect_ftz": true,
+        "enable_tmem_packing": false,
+        "enable_tmem_release_scheduling": false,
+        "enable_tmem_single_buffer": false,
+        "extern_libs": [
+          [
+            "libdevice",
+            "/home/ryandeng/tpaa/triton/python/triton/backends/nvidia/lib/libdevice.10.bc"
+          ]
+        ],
+        "fpsan_homomorphic_casts": false,
+        "instrumentation_mode": "",
+        "ir_override": null,
+        "launch_cooperative_grid": false,
+        "launch_pdl": false,
+        "max_num_imprecise_acc_default": 0,
+        "max_occupancy": null,
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 3,
+        "num_warps": 4,
+        "ptx_options": null,
+        "ptx_version": null,
+        "sanitize_overflow": true,
+        "sched4reg": false,
+        "supported_fp8_dtypes": [
+          "fp8e4b15",
+          "fp8e4nv",
+          "fp8e5"
+        ],
+        "warp_size": 32
+      },
+      "original_signature_constants_alignment_retained": true,
+      "signature": {
+        "BLOCK": "constexpr",
+        "D": "i32",
+        "L": "i32",
+        "grad_in_ptr": "*bf16",
+        "grad_out_ptr": "*fp32",
+        "inner_total": "i32",
+        "numel_in": "i32",
+        "prod_after": "constexpr",
+        "size": "i32",
+        "step": "i32"
+      }
+    },
+    "608125c241e45c4a": {
+      "baseline_attrs": {
+        "(0,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(1,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(2,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(3,)": [],
+        "(4,)": [],
+        "(5,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(6,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(7,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(8,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(9,)": []
+      },
+      "constants": {
+        "(3,)": 1,
+        "(9,)": 128
+      },
+      "default_launch_options_retained": true,
+      "dtype": "fp16",
+      "options": {
+        "allowed_dot_input_precisions": [
+          "tf32",
+          "tf32x3",
+          "ieee",
+          "bf16x3",
+          "bf16x6"
+        ],
+        "arch": "sm103",
+        "backend_name": "cuda",
+        "clc": false,
+        "debug": false,
+        "default_dot_input_precision": "tf32",
+        "deprecated_fp8_dot_operand_dtypes": [
+          "fp8e4b15"
+        ],
+        "disable_lsr": false,
+        "enable_aref_release_scheduling": false,
+        "enable_contract_load_reuse": false,
+        "enable_fp_fusion": false,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "enable_private_reduction_ownership": false,
+        "enable_reflect_ftz": true,
+        "enable_tmem_packing": false,
+        "enable_tmem_release_scheduling": false,
+        "enable_tmem_single_buffer": false,
+        "extern_libs": [
+          [
+            "libdevice",
+            "/home/ryandeng/tpaa/triton/python/triton/backends/nvidia/lib/libdevice.10.bc"
+          ]
+        ],
+        "fpsan_homomorphic_casts": false,
+        "instrumentation_mode": "",
+        "ir_override": null,
+        "launch_cooperative_grid": false,
+        "launch_pdl": false,
+        "max_num_imprecise_acc_default": 0,
+        "max_occupancy": null,
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 3,
+        "num_warps": 4,
+        "ptx_options": null,
+        "ptx_version": null,
+        "sanitize_overflow": true,
+        "sched4reg": false,
+        "supported_fp8_dtypes": [
+          "fp8e4b15",
+          "fp8e4nv",
+          "fp8e5"
+        ],
+        "warp_size": 32
+      },
+      "original_signature_constants_alignment_retained": true,
+      "signature": {
+        "BLOCK": "constexpr",
+        "D": "i32",
+        "L": "i32",
+        "grad_in_ptr": "*fp16",
+        "grad_out_ptr": "*fp32",
+        "inner_total": "i32",
+        "numel_in": "i32",
+        "prod_after": "constexpr",
+        "size": "i32",
+        "step": "i32"
+      }
+    },
+    "77300d36d72f4a93": {
+      "baseline_attrs": {
+        "(0,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(1,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(2,)": [],
+        "(3,)": [],
+        "(4,)": [],
+        "(5,)": [],
+        "(6,)": [],
+        "(7,)": [],
+        "(8,)": [],
+        "(9,)": []
+      },
+      "constants": {
+        "(3,)": 1,
+        "(9,)": 128
+      },
+      "default_launch_options_retained": true,
+      "dtype": "fp16",
+      "options": {
+        "allowed_dot_input_precisions": [
+          "tf32",
+          "tf32x3",
+          "ieee",
+          "bf16x3",
+          "bf16x6"
+        ],
+        "arch": "sm103",
+        "backend_name": "cuda",
+        "clc": false,
+        "debug": false,
+        "default_dot_input_precision": "tf32",
+        "deprecated_fp8_dot_operand_dtypes": [
+          "fp8e4b15"
+        ],
+        "disable_lsr": false,
+        "enable_aref_release_scheduling": false,
+        "enable_contract_load_reuse": false,
+        "enable_fp_fusion": false,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "enable_private_reduction_ownership": false,
+        "enable_reflect_ftz": true,
+        "enable_tmem_packing": false,
+        "enable_tmem_release_scheduling": false,
+        "enable_tmem_single_buffer": false,
+        "extern_libs": [
+          [
+            "libdevice",
+            "/home/ryandeng/tpaa/triton/python/triton/backends/nvidia/lib/libdevice.10.bc"
+          ]
+        ],
+        "fpsan_homomorphic_casts": false,
+        "instrumentation_mode": "",
+        "ir_override": null,
+        "launch_cooperative_grid": false,
+        "launch_pdl": false,
+        "max_num_imprecise_acc_default": 0,
+        "max_occupancy": null,
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 3,
+        "num_warps": 4,
+        "ptx_options": null,
+        "ptx_version": null,
+        "sanitize_overflow": true,
+        "sched4reg": false,
+        "supported_fp8_dtypes": [
+          "fp8e4b15",
+          "fp8e4nv",
+          "fp8e5"
+        ],
+        "warp_size": 32
+      },
+      "original_signature_constants_alignment_retained": true,
+      "signature": {
+        "BLOCK": "constexpr",
+        "D": "i32",
+        "L": "i32",
+        "grad_in_ptr": "*fp16",
+        "grad_out_ptr": "*fp32",
+        "inner_total": "i32",
+        "numel_in": "i32",
+        "prod_after": "constexpr",
+        "size": "i32",
+        "step": "i32"
+      }
+    },
+    "7fa55f9ac214eb1a": {
+      "baseline_attrs": {
+        "(0,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(1,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(2,)": [],
+        "(3,)": [],
+        "(4,)": [],
+        "(5,)": [],
+        "(6,)": [],
+        "(7,)": [],
+        "(8,)": [],
+        "(9,)": []
+      },
+      "constants": {
+        "(3,)": 1,
+        "(6,)": 1,
+        "(9,)": 128
+      },
+      "default_launch_options_retained": true,
+      "dtype": "fp16",
+      "options": {
+        "allowed_dot_input_precisions": [
+          "tf32",
+          "tf32x3",
+          "ieee",
+          "bf16x3",
+          "bf16x6"
+        ],
+        "arch": "sm103",
+        "backend_name": "cuda",
+        "clc": false,
+        "debug": false,
+        "default_dot_input_precision": "tf32",
+        "deprecated_fp8_dot_operand_dtypes": [
+          "fp8e4b15"
+        ],
+        "disable_lsr": false,
+        "enable_aref_release_scheduling": false,
+        "enable_contract_load_reuse": false,
+        "enable_fp_fusion": false,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "enable_private_reduction_ownership": false,
+        "enable_reflect_ftz": true,
+        "enable_tmem_packing": false,
+        "enable_tmem_release_scheduling": false,
+        "enable_tmem_single_buffer": false,
+        "extern_libs": [
+          [
+            "libdevice",
+            "/home/ryandeng/tpaa/triton/python/triton/backends/nvidia/lib/libdevice.10.bc"
+          ]
+        ],
+        "fpsan_homomorphic_casts": false,
+        "instrumentation_mode": "",
+        "ir_override": null,
+        "launch_cooperative_grid": false,
+        "launch_pdl": false,
+        "max_num_imprecise_acc_default": 0,
+        "max_occupancy": null,
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 3,
+        "num_warps": 4,
+        "ptx_options": null,
+        "ptx_version": null,
+        "sanitize_overflow": true,
+        "sched4reg": false,
+        "supported_fp8_dtypes": [
+          "fp8e4b15",
+          "fp8e4nv",
+          "fp8e5"
+        ],
+        "warp_size": 32
+      },
+      "original_signature_constants_alignment_retained": true,
+      "signature": {
+        "BLOCK": "constexpr",
+        "D": "i32",
+        "L": "i32",
+        "grad_in_ptr": "*fp16",
+        "grad_out_ptr": "*fp32",
+        "inner_total": "i32",
+        "numel_in": "i32",
+        "prod_after": "constexpr",
+        "size": "i32",
+        "step": "constexpr"
+      }
+    },
+    "8dab4fec226f518e": {
+      "baseline_attrs": {
+        "(0,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(1,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(2,)": [],
+        "(3,)": [],
+        "(4,)": [],
+        "(5,)": [],
+        "(6,)": [],
+        "(7,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(8,)": [],
+        "(9,)": []
+      },
+      "constants": {
+        "(9,)": 128
+      },
+      "default_launch_options_retained": true,
+      "dtype": "bf16",
+      "options": {
+        "allowed_dot_input_precisions": [
+          "tf32",
+          "tf32x3",
+          "ieee",
+          "bf16x3",
+          "bf16x6"
+        ],
+        "arch": "sm103",
+        "backend_name": "cuda",
+        "clc": false,
+        "debug": false,
+        "default_dot_input_precision": "tf32",
+        "deprecated_fp8_dot_operand_dtypes": [
+          "fp8e4b15"
+        ],
+        "disable_lsr": false,
+        "enable_aref_release_scheduling": false,
+        "enable_contract_load_reuse": false,
+        "enable_fp_fusion": false,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "enable_private_reduction_ownership": false,
+        "enable_reflect_ftz": true,
+        "enable_tmem_packing": false,
+        "enable_tmem_release_scheduling": false,
+        "enable_tmem_single_buffer": false,
+        "extern_libs": [
+          [
+            "libdevice",
+            "/home/ryandeng/tpaa/triton/python/triton/backends/nvidia/lib/libdevice.10.bc"
+          ]
+        ],
+        "fpsan_homomorphic_casts": false,
+        "instrumentation_mode": "",
+        "ir_override": null,
+        "launch_cooperative_grid": false,
+        "launch_pdl": false,
+        "max_num_imprecise_acc_default": 0,
+        "max_occupancy": null,
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 3,
+        "num_warps": 4,
+        "ptx_options": null,
+        "ptx_version": null,
+        "sanitize_overflow": true,
+        "sched4reg": false,
+        "supported_fp8_dtypes": [
+          "fp8e4b15",
+          "fp8e4nv",
+          "fp8e5"
+        ],
+        "warp_size": 32
+      },
+      "original_signature_constants_alignment_retained": true,
+      "signature": {
+        "BLOCK": "constexpr",
+        "D": "i32",
+        "L": "i32",
+        "grad_in_ptr": "*bf16",
+        "grad_out_ptr": "*fp32",
+        "inner_total": "i32",
+        "numel_in": "i32",
+        "prod_after": "i32",
+        "size": "i32",
+        "step": "i32"
+      }
+    },
+    "8e79f6a3bb7fa13c": {
+      "baseline_attrs": {
+        "(0,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(1,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(2,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(3,)": [],
+        "(4,)": [],
+        "(5,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(6,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(7,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(8,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(9,)": []
+      },
+      "constants": {
+        "(3,)": 1,
+        "(9,)": 128
+      },
+      "default_launch_options_retained": true,
+      "dtype": "bf16",
+      "options": {
+        "allowed_dot_input_precisions": [
+          "tf32",
+          "tf32x3",
+          "ieee",
+          "bf16x3",
+          "bf16x6"
+        ],
+        "arch": "sm103",
+        "backend_name": "cuda",
+        "clc": false,
+        "debug": false,
+        "default_dot_input_precision": "tf32",
+        "deprecated_fp8_dot_operand_dtypes": [
+          "fp8e4b15"
+        ],
+        "disable_lsr": false,
+        "enable_aref_release_scheduling": false,
+        "enable_contract_load_reuse": false,
+        "enable_fp_fusion": false,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "enable_private_reduction_ownership": false,
+        "enable_reflect_ftz": true,
+        "enable_tmem_packing": false,
+        "enable_tmem_release_scheduling": false,
+        "enable_tmem_single_buffer": false,
+        "extern_libs": [
+          [
+            "libdevice",
+            "/home/ryandeng/tpaa/triton/python/triton/backends/nvidia/lib/libdevice.10.bc"
+          ]
+        ],
+        "fpsan_homomorphic_casts": false,
+        "instrumentation_mode": "",
+        "ir_override": null,
+        "launch_cooperative_grid": false,
+        "launch_pdl": false,
+        "max_num_imprecise_acc_default": 0,
+        "max_occupancy": null,
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 3,
+        "num_warps": 4,
+        "ptx_options": null,
+        "ptx_version": null,
+        "sanitize_overflow": true,
+        "sched4reg": false,
+        "supported_fp8_dtypes": [
+          "fp8e4b15",
+          "fp8e4nv",
+          "fp8e5"
+        ],
+        "warp_size": 32
+      },
+      "original_signature_constants_alignment_retained": true,
+      "signature": {
+        "BLOCK": "constexpr",
+        "D": "i32",
+        "L": "i32",
+        "grad_in_ptr": "*bf16",
+        "grad_out_ptr": "*fp32",
+        "inner_total": "i32",
+        "numel_in": "i32",
+        "prod_after": "constexpr",
+        "size": "i32",
+        "step": "i32"
+      }
+    },
+    "99059c3b7bb5d417": {
+      "baseline_attrs": {
+        "(0,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(1,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(2,)": [],
+        "(3,)": [],
+        "(4,)": [],
+        "(5,)": [],
+        "(6,)": [],
+        "(7,)": [],
+        "(8,)": [],
+        "(9,)": []
+      },
+      "constants": {
+        "(3,)": 1,
+        "(6,)": 1,
+        "(9,)": 128
+      },
+      "default_launch_options_retained": true,
+      "dtype": "bf16",
+      "options": {
+        "allowed_dot_input_precisions": [
+          "tf32",
+          "tf32x3",
+          "ieee",
+          "bf16x3",
+          "bf16x6"
+        ],
+        "arch": "sm103",
+        "backend_name": "cuda",
+        "clc": false,
+        "debug": false,
+        "default_dot_input_precision": "tf32",
+        "deprecated_fp8_dot_operand_dtypes": [
+          "fp8e4b15"
+        ],
+        "disable_lsr": false,
+        "enable_aref_release_scheduling": false,
+        "enable_contract_load_reuse": false,
+        "enable_fp_fusion": false,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "enable_private_reduction_ownership": false,
+        "enable_reflect_ftz": true,
+        "enable_tmem_packing": false,
+        "enable_tmem_release_scheduling": false,
+        "enable_tmem_single_buffer": false,
+        "extern_libs": [
+          [
+            "libdevice",
+            "/home/ryandeng/tpaa/triton/python/triton/backends/nvidia/lib/libdevice.10.bc"
+          ]
+        ],
+        "fpsan_homomorphic_casts": false,
+        "instrumentation_mode": "",
+        "ir_override": null,
+        "launch_cooperative_grid": false,
+        "launch_pdl": false,
+        "max_num_imprecise_acc_default": 0,
+        "max_occupancy": null,
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 3,
+        "num_warps": 4,
+        "ptx_options": null,
+        "ptx_version": null,
+        "sanitize_overflow": true,
+        "sched4reg": false,
+        "supported_fp8_dtypes": [
+          "fp8e4b15",
+          "fp8e4nv",
+          "fp8e5"
+        ],
+        "warp_size": 32
+      },
+      "original_signature_constants_alignment_retained": true,
+      "signature": {
+        "BLOCK": "constexpr",
+        "D": "i32",
+        "L": "i32",
+        "grad_in_ptr": "*bf16",
+        "grad_out_ptr": "*fp32",
+        "inner_total": "i32",
+        "numel_in": "i32",
+        "prod_after": "constexpr",
+        "size": "i32",
+        "step": "constexpr"
+      }
+    },
+    "9b5674f024b6833a": {
+      "baseline_attrs": {
+        "(0,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(1,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(2,)": [],
+        "(3,)": [],
+        "(4,)": [],
+        "(5,)": [],
+        "(6,)": [],
+        "(7,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(8,)": [],
+        "(9,)": []
+      },
+      "constants": {
+        "(9,)": 128
+      },
+      "default_launch_options_retained": true,
+      "dtype": "fp32",
+      "options": {
+        "allowed_dot_input_precisions": [
+          "tf32",
+          "tf32x3",
+          "ieee",
+          "bf16x3",
+          "bf16x6"
+        ],
+        "arch": "sm103",
+        "backend_name": "cuda",
+        "clc": false,
+        "debug": false,
+        "default_dot_input_precision": "tf32",
+        "deprecated_fp8_dot_operand_dtypes": [
+          "fp8e4b15"
+        ],
+        "disable_lsr": false,
+        "enable_aref_release_scheduling": false,
+        "enable_contract_load_reuse": false,
+        "enable_fp_fusion": false,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "enable_private_reduction_ownership": false,
+        "enable_reflect_ftz": true,
+        "enable_tmem_packing": false,
+        "enable_tmem_release_scheduling": false,
+        "enable_tmem_single_buffer": false,
+        "extern_libs": [
+          [
+            "libdevice",
+            "/home/ryandeng/tpaa/triton/python/triton/backends/nvidia/lib/libdevice.10.bc"
+          ]
+        ],
+        "fpsan_homomorphic_casts": false,
+        "instrumentation_mode": "",
+        "ir_override": null,
+        "launch_cooperative_grid": false,
+        "launch_pdl": false,
+        "max_num_imprecise_acc_default": 0,
+        "max_occupancy": null,
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 3,
+        "num_warps": 4,
+        "ptx_options": null,
+        "ptx_version": null,
+        "sanitize_overflow": true,
+        "sched4reg": false,
+        "supported_fp8_dtypes": [
+          "fp8e4b15",
+          "fp8e4nv",
+          "fp8e5"
+        ],
+        "warp_size": 32
+      },
+      "original_signature_constants_alignment_retained": true,
+      "signature": {
+        "BLOCK": "constexpr",
+        "D": "i32",
+        "L": "i32",
+        "grad_in_ptr": "*fp32",
+        "grad_out_ptr": "*fp32",
+        "inner_total": "i32",
+        "numel_in": "i32",
+        "prod_after": "i32",
+        "size": "i32",
+        "step": "i32"
+      }
+    },
+    "c4b8753aa1364b37": {
+      "baseline_attrs": {
+        "(0,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(1,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(2,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(3,)": [],
+        "(4,)": [],
+        "(5,)": [],
+        "(6,)": [],
+        "(7,)": [],
+        "(8,)": [],
+        "(9,)": []
+      },
+      "constants": {
+        "(3,)": 1,
+        "(9,)": 128
+      },
+      "default_launch_options_retained": true,
+      "dtype": "fp16",
+      "options": {
+        "allowed_dot_input_precisions": [
+          "tf32",
+          "tf32x3",
+          "ieee",
+          "bf16x3",
+          "bf16x6"
+        ],
+        "arch": "sm103",
+        "backend_name": "cuda",
+        "clc": false,
+        "debug": false,
+        "default_dot_input_precision": "tf32",
+        "deprecated_fp8_dot_operand_dtypes": [
+          "fp8e4b15"
+        ],
+        "disable_lsr": false,
+        "enable_aref_release_scheduling": false,
+        "enable_contract_load_reuse": false,
+        "enable_fp_fusion": false,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "enable_private_reduction_ownership": false,
+        "enable_reflect_ftz": true,
+        "enable_tmem_packing": false,
+        "enable_tmem_release_scheduling": false,
+        "enable_tmem_single_buffer": false,
+        "extern_libs": [
+          [
+            "libdevice",
+            "/home/ryandeng/tpaa/triton/python/triton/backends/nvidia/lib/libdevice.10.bc"
+          ]
+        ],
+        "fpsan_homomorphic_casts": false,
+        "instrumentation_mode": "",
+        "ir_override": null,
+        "launch_cooperative_grid": false,
+        "launch_pdl": false,
+        "max_num_imprecise_acc_default": 0,
+        "max_occupancy": null,
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 3,
+        "num_warps": 4,
+        "ptx_options": null,
+        "ptx_version": null,
+        "sanitize_overflow": true,
+        "sched4reg": false,
+        "supported_fp8_dtypes": [
+          "fp8e4b15",
+          "fp8e4nv",
+          "fp8e5"
+        ],
+        "warp_size": 32
+      },
+      "original_signature_constants_alignment_retained": true,
+      "signature": {
+        "BLOCK": "constexpr",
+        "D": "i32",
+        "L": "i32",
+        "grad_in_ptr": "*fp16",
+        "grad_out_ptr": "*fp32",
+        "inner_total": "i32",
+        "numel_in": "i32",
+        "prod_after": "constexpr",
+        "size": "i32",
+        "step": "i32"
+      }
+    },
+    "d1cde69352bebd8e": {
+      "baseline_attrs": {
+        "(0,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(1,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(2,)": [],
+        "(3,)": [],
+        "(4,)": [],
+        "(5,)": [],
+        "(6,)": [],
+        "(7,)": [],
+        "(8,)": [],
+        "(9,)": []
+      },
+      "constants": {
+        "(3,)": 1,
+        "(4,)": 1,
+        "(9,)": 128
+      },
+      "default_launch_options_retained": true,
+      "dtype": "fp16",
+      "options": {
+        "allowed_dot_input_precisions": [
+          "tf32",
+          "tf32x3",
+          "ieee",
+          "bf16x3",
+          "bf16x6"
+        ],
+        "arch": "sm103",
+        "backend_name": "cuda",
+        "clc": false,
+        "debug": false,
+        "default_dot_input_precision": "tf32",
+        "deprecated_fp8_dot_operand_dtypes": [
+          "fp8e4b15"
+        ],
+        "disable_lsr": false,
+        "enable_aref_release_scheduling": false,
+        "enable_contract_load_reuse": false,
+        "enable_fp_fusion": false,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "enable_private_reduction_ownership": false,
+        "enable_reflect_ftz": true,
+        "enable_tmem_packing": false,
+        "enable_tmem_release_scheduling": false,
+        "enable_tmem_single_buffer": false,
+        "extern_libs": [
+          [
+            "libdevice",
+            "/home/ryandeng/tpaa/triton/python/triton/backends/nvidia/lib/libdevice.10.bc"
+          ]
+        ],
+        "fpsan_homomorphic_casts": false,
+        "instrumentation_mode": "",
+        "ir_override": null,
+        "launch_cooperative_grid": false,
+        "launch_pdl": false,
+        "max_num_imprecise_acc_default": 0,
+        "max_occupancy": null,
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 3,
+        "num_warps": 4,
+        "ptx_options": null,
+        "ptx_version": null,
+        "sanitize_overflow": true,
+        "sched4reg": false,
+        "supported_fp8_dtypes": [
+          "fp8e4b15",
+          "fp8e4nv",
+          "fp8e5"
+        ],
+        "warp_size": 32
+      },
+      "original_signature_constants_alignment_retained": true,
+      "signature": {
+        "BLOCK": "constexpr",
+        "D": "i32",
+        "L": "constexpr",
+        "grad_in_ptr": "*fp16",
+        "grad_out_ptr": "*fp32",
+        "inner_total": "i32",
+        "numel_in": "i32",
+        "prod_after": "constexpr",
+        "size": "i32",
+        "step": "i32"
+      }
+    },
+    "d660ed566faeb88d": {
+      "baseline_attrs": {
+        "(0,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(1,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(2,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(3,)": [],
+        "(4,)": [],
+        "(5,)": [],
+        "(6,)": [],
+        "(7,)": [],
+        "(8,)": [],
+        "(9,)": []
+      },
+      "constants": {
+        "(3,)": 1,
+        "(9,)": 128
+      },
+      "default_launch_options_retained": true,
+      "dtype": "fp32",
+      "options": {
+        "allowed_dot_input_precisions": [
+          "tf32",
+          "tf32x3",
+          "ieee",
+          "bf16x3",
+          "bf16x6"
+        ],
+        "arch": "sm103",
+        "backend_name": "cuda",
+        "clc": false,
+        "debug": false,
+        "default_dot_input_precision": "tf32",
+        "deprecated_fp8_dot_operand_dtypes": [
+          "fp8e4b15"
+        ],
+        "disable_lsr": false,
+        "enable_aref_release_scheduling": false,
+        "enable_contract_load_reuse": false,
+        "enable_fp_fusion": false,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "enable_private_reduction_ownership": false,
+        "enable_reflect_ftz": true,
+        "enable_tmem_packing": false,
+        "enable_tmem_release_scheduling": false,
+        "enable_tmem_single_buffer": false,
+        "extern_libs": [
+          [
+            "libdevice",
+            "/home/ryandeng/tpaa/triton/python/triton/backends/nvidia/lib/libdevice.10.bc"
+          ]
+        ],
+        "fpsan_homomorphic_casts": false,
+        "instrumentation_mode": "",
+        "ir_override": null,
+        "launch_cooperative_grid": false,
+        "launch_pdl": false,
+        "max_num_imprecise_acc_default": 0,
+        "max_occupancy": null,
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 3,
+        "num_warps": 4,
+        "ptx_options": null,
+        "ptx_version": null,
+        "sanitize_overflow": true,
+        "sched4reg": false,
+        "supported_fp8_dtypes": [
+          "fp8e4b15",
+          "fp8e4nv",
+          "fp8e5"
+        ],
+        "warp_size": 32
+      },
+      "original_signature_constants_alignment_retained": true,
+      "signature": {
+        "BLOCK": "constexpr",
+        "D": "i32",
+        "L": "i32",
+        "grad_in_ptr": "*fp32",
+        "grad_out_ptr": "*fp32",
+        "inner_total": "i32",
+        "numel_in": "i32",
+        "prod_after": "constexpr",
+        "size": "i32",
+        "step": "i32"
+      }
+    },
+    "dfcde7b652f1a453": {
+      "baseline_attrs": {
+        "(0,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(1,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(2,)": [],
+        "(3,)": [],
+        "(4,)": [],
+        "(5,)": [],
+        "(6,)": [],
+        "(7,)": [],
+        "(8,)": [],
+        "(9,)": []
+      },
+      "constants": {
+        "(3,)": 1,
+        "(9,)": 128
+      },
+      "default_launch_options_retained": true,
+      "dtype": "fp32",
+      "options": {
+        "allowed_dot_input_precisions": [
+          "tf32",
+          "tf32x3",
+          "ieee",
+          "bf16x3",
+          "bf16x6"
+        ],
+        "arch": "sm103",
+        "backend_name": "cuda",
+        "clc": false,
+        "debug": false,
+        "default_dot_input_precision": "tf32",
+        "deprecated_fp8_dot_operand_dtypes": [
+          "fp8e4b15"
+        ],
+        "disable_lsr": false,
+        "enable_aref_release_scheduling": false,
+        "enable_contract_load_reuse": false,
+        "enable_fp_fusion": false,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "enable_private_reduction_ownership": false,
+        "enable_reflect_ftz": true,
+        "enable_tmem_packing": false,
+        "enable_tmem_release_scheduling": false,
+        "enable_tmem_single_buffer": false,
+        "extern_libs": [
+          [
+            "libdevice",
+            "/home/ryandeng/tpaa/triton/python/triton/backends/nvidia/lib/libdevice.10.bc"
+          ]
+        ],
+        "fpsan_homomorphic_casts": false,
+        "instrumentation_mode": "",
+        "ir_override": null,
+        "launch_cooperative_grid": false,
+        "launch_pdl": false,
+        "max_num_imprecise_acc_default": 0,
+        "max_occupancy": null,
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 3,
+        "num_warps": 4,
+        "ptx_options": null,
+        "ptx_version": null,
+        "sanitize_overflow": true,
+        "sched4reg": false,
+        "supported_fp8_dtypes": [
+          "fp8e4b15",
+          "fp8e4nv",
+          "fp8e5"
+        ],
+        "warp_size": 32
+      },
+      "original_signature_constants_alignment_retained": true,
+      "signature": {
+        "BLOCK": "constexpr",
+        "D": "i32",
+        "L": "i32",
+        "grad_in_ptr": "*fp32",
+        "grad_out_ptr": "*fp32",
+        "inner_total": "i32",
+        "numel_in": "i32",
+        "prod_after": "constexpr",
+        "size": "i32",
+        "step": "i32"
+      }
+    },
+    "e7d8e24a70fda869": {
+      "baseline_attrs": {
+        "(0,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(1,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(2,)": [],
+        "(3,)": [],
+        "(4,)": [],
+        "(5,)": [],
+        "(6,)": [],
+        "(7,)": [],
+        "(8,)": [],
+        "(9,)": []
+      },
+      "constants": {
+        "(3,)": 1,
+        "(4,)": 1,
+        "(9,)": 128
+      },
+      "default_launch_options_retained": true,
+      "dtype": "bf16",
+      "options": {
+        "allowed_dot_input_precisions": [
+          "tf32",
+          "tf32x3",
+          "ieee",
+          "bf16x3",
+          "bf16x6"
+        ],
+        "arch": "sm103",
+        "backend_name": "cuda",
+        "clc": false,
+        "debug": false,
+        "default_dot_input_precision": "tf32",
+        "deprecated_fp8_dot_operand_dtypes": [
+          "fp8e4b15"
+        ],
+        "disable_lsr": false,
+        "enable_aref_release_scheduling": false,
+        "enable_contract_load_reuse": false,
+        "enable_fp_fusion": false,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "enable_private_reduction_ownership": false,
+        "enable_reflect_ftz": true,
+        "enable_tmem_packing": false,
+        "enable_tmem_release_scheduling": false,
+        "enable_tmem_single_buffer": false,
+        "extern_libs": [
+          [
+            "libdevice",
+            "/home/ryandeng/tpaa/triton/python/triton/backends/nvidia/lib/libdevice.10.bc"
+          ]
+        ],
+        "fpsan_homomorphic_casts": false,
+        "instrumentation_mode": "",
+        "ir_override": null,
+        "launch_cooperative_grid": false,
+        "launch_pdl": false,
+        "max_num_imprecise_acc_default": 0,
+        "max_occupancy": null,
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 3,
+        "num_warps": 4,
+        "ptx_options": null,
+        "ptx_version": null,
+        "sanitize_overflow": true,
+        "sched4reg": false,
+        "supported_fp8_dtypes": [
+          "fp8e4b15",
+          "fp8e4nv",
+          "fp8e5"
+        ],
+        "warp_size": 32
+      },
+      "original_signature_constants_alignment_retained": true,
+      "signature": {
+        "BLOCK": "constexpr",
+        "D": "i32",
+        "L": "constexpr",
+        "grad_in_ptr": "*bf16",
+        "grad_out_ptr": "*fp32",
+        "inner_total": "i32",
+        "numel_in": "i32",
+        "prod_after": "constexpr",
+        "size": "i32",
+        "step": "i32"
+      }
+    },
+    "f27d61145518df0d": {
+      "baseline_attrs": {
+        "(0,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(1,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(2,)": [],
+        "(3,)": [],
+        "(4,)": [],
+        "(5,)": [],
+        "(6,)": [],
+        "(7,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(8,)": [],
+        "(9,)": []
+      },
+      "constants": {
+        "(9,)": 128
+      },
+      "default_launch_options_retained": true,
+      "dtype": "fp16",
+      "options": {
+        "allowed_dot_input_precisions": [
+          "tf32",
+          "tf32x3",
+          "ieee",
+          "bf16x3",
+          "bf16x6"
+        ],
+        "arch": "sm103",
+        "backend_name": "cuda",
+        "clc": false,
+        "debug": false,
+        "default_dot_input_precision": "tf32",
+        "deprecated_fp8_dot_operand_dtypes": [
+          "fp8e4b15"
+        ],
+        "disable_lsr": false,
+        "enable_aref_release_scheduling": false,
+        "enable_contract_load_reuse": false,
+        "enable_fp_fusion": false,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "enable_private_reduction_ownership": false,
+        "enable_reflect_ftz": true,
+        "enable_tmem_packing": false,
+        "enable_tmem_release_scheduling": false,
+        "enable_tmem_single_buffer": false,
+        "extern_libs": [
+          [
+            "libdevice",
+            "/home/ryandeng/tpaa/triton/python/triton/backends/nvidia/lib/libdevice.10.bc"
+          ]
+        ],
+        "fpsan_homomorphic_casts": false,
+        "instrumentation_mode": "",
+        "ir_override": null,
+        "launch_cooperative_grid": false,
+        "launch_pdl": false,
+        "max_num_imprecise_acc_default": 0,
+        "max_occupancy": null,
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 3,
+        "num_warps": 4,
+        "ptx_options": null,
+        "ptx_version": null,
+        "sanitize_overflow": true,
+        "sched4reg": false,
+        "supported_fp8_dtypes": [
+          "fp8e4b15",
+          "fp8e4nv",
+          "fp8e5"
+        ],
+        "warp_size": 32
+      },
+      "original_signature_constants_alignment_retained": true,
+      "signature": {
+        "BLOCK": "constexpr",
+        "D": "i32",
+        "L": "i32",
+        "grad_in_ptr": "*fp16",
+        "grad_out_ptr": "*fp32",
+        "inner_total": "i32",
+        "numel_in": "i32",
+        "prod_after": "i32",
+        "size": "i32",
+        "step": "i32"
+      }
+    },
+    "f5ee50e5b6ca0eec": {
+      "baseline_attrs": {
+        "(0,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(1,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(2,)": [],
+        "(3,)": [],
+        "(4,)": [],
+        "(5,)": [],
+        "(6,)": [],
+        "(7,)": [],
+        "(8,)": [],
+        "(9,)": []
+      },
+      "constants": {
+        "(3,)": 1,
+        "(4,)": 1,
+        "(9,)": 128
+      },
+      "default_launch_options_retained": true,
+      "dtype": "fp32",
+      "options": {
+        "allowed_dot_input_precisions": [
+          "tf32",
+          "tf32x3",
+          "ieee",
+          "bf16x3",
+          "bf16x6"
+        ],
+        "arch": "sm103",
+        "backend_name": "cuda",
+        "clc": false,
+        "debug": false,
+        "default_dot_input_precision": "tf32",
+        "deprecated_fp8_dot_operand_dtypes": [
+          "fp8e4b15"
+        ],
+        "disable_lsr": false,
+        "enable_aref_release_scheduling": false,
+        "enable_contract_load_reuse": false,
+        "enable_fp_fusion": false,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "enable_private_reduction_ownership": false,
+        "enable_reflect_ftz": true,
+        "enable_tmem_packing": false,
+        "enable_tmem_release_scheduling": false,
+        "enable_tmem_single_buffer": false,
+        "extern_libs": [
+          [
+            "libdevice",
+            "/home/ryandeng/tpaa/triton/python/triton/backends/nvidia/lib/libdevice.10.bc"
+          ]
+        ],
+        "fpsan_homomorphic_casts": false,
+        "instrumentation_mode": "",
+        "ir_override": null,
+        "launch_cooperative_grid": false,
+        "launch_pdl": false,
+        "max_num_imprecise_acc_default": 0,
+        "max_occupancy": null,
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 3,
+        "num_warps": 4,
+        "ptx_options": null,
+        "ptx_version": null,
+        "sanitize_overflow": true,
+        "sched4reg": false,
+        "supported_fp8_dtypes": [
+          "fp8e4b15",
+          "fp8e4nv",
+          "fp8e5"
+        ],
+        "warp_size": 32
+      },
+      "original_signature_constants_alignment_retained": true,
+      "signature": {
+        "BLOCK": "constexpr",
+        "D": "i32",
+        "L": "constexpr",
+        "grad_in_ptr": "*fp32",
+        "grad_out_ptr": "*fp32",
+        "inner_total": "i32",
+        "numel_in": "i32",
+        "prod_after": "constexpr",
+        "size": "i32",
+        "step": "i32"
+      }
+    },
+    "fe46aae8a29f0c75": {
+      "baseline_attrs": {
+        "(0,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(1,)": [
+          [
+            "tt.divisibility",
+            16
+          ]
+        ],
+        "(2,)": [],
+        "(3,)": [],
+        "(4,)": [],
+        "(5,)": [],
+        "(6,)": [],
+        "(7,)": [],
+        "(8,)": [],
+        "(9,)": []
+      },
+      "constants": {
+        "(3,)": 1,
+        "(6,)": 1,
+        "(9,)": 128
+      },
+      "default_launch_options_retained": true,
+      "dtype": "fp32",
+      "options": {
+        "allowed_dot_input_precisions": [
+          "tf32",
+          "tf32x3",
+          "ieee",
+          "bf16x3",
+          "bf16x6"
+        ],
+        "arch": "sm103",
+        "backend_name": "cuda",
+        "clc": false,
+        "debug": false,
+        "default_dot_input_precision": "tf32",
+        "deprecated_fp8_dot_operand_dtypes": [
+          "fp8e4b15"
+        ],
+        "disable_lsr": false,
+        "enable_aref_release_scheduling": false,
+        "enable_contract_load_reuse": false,
+        "enable_fp_fusion": false,
+        "enable_indexed_update_specialization": false,
+        "enable_private_atomic_relaxation": false,
+        "enable_private_reduction_ownership": false,
+        "enable_reflect_ftz": true,
+        "enable_tmem_packing": false,
+        "enable_tmem_release_scheduling": false,
+        "enable_tmem_single_buffer": false,
+        "extern_libs": [
+          [
+            "libdevice",
+            "/home/ryandeng/tpaa/triton/python/triton/backends/nvidia/lib/libdevice.10.bc"
+          ]
+        ],
+        "fpsan_homomorphic_casts": false,
+        "instrumentation_mode": "",
+        "ir_override": null,
+        "launch_cooperative_grid": false,
+        "launch_pdl": false,
+        "max_num_imprecise_acc_default": 0,
+        "max_occupancy": null,
+        "maxnreg": null,
+        "num_ctas": 1,
+        "num_stages": 3,
+        "num_warps": 4,
+        "ptx_options": null,
+        "ptx_version": null,
+        "sanitize_overflow": true,
+        "sched4reg": false,
+        "supported_fp8_dtypes": [
+          "fp8e4b15",
+          "fp8e4nv",
+          "fp8e5"
+        ],
+        "warp_size": 32
+      },
+      "original_signature_constants_alignment_retained": true,
+      "signature": {
+        "BLOCK": "constexpr",
+        "D": "i32",
+        "L": "i32",
+        "grad_in_ptr": "*fp32",
+        "grad_out_ptr": "*fp32",
+        "inner_total": "i32",
+        "numel_in": "i32",
+        "prod_after": "constexpr",
+        "size": "i32",
+        "step": "constexpr"
+      }
+    }
+  },
+  "status": "gpu_jit_specialized_pilot",
+  "target": {
+    "arch": 103,
+    "backend": "cuda",
+    "warp_size": 32
+  },
+  "timing": {
+    "cases": [
+      {
+        "backing_allocations_verified_disjoint": true,
+        "destinations_with_collisions": 0,
+        "device_timing": {
+          "median_us": {
+            "baseline": 2.2710399329662323,
+            "manual": 1.7215999960899353,
+            "private": 1.71424001455307,
+            "reset_only": 0.7945600152015686
+          },
+          "order": "randomized interleaving; clocks not locked",
+          "repetitions": 100,
+          "rounds": 9,
+          "samples_us": {
+            "baseline": [
+              2.2755199670791626,
+              2.2732800245285034,
+              2.2655999660491943,
+              2.2652800381183624,
+              2.2758400440216064,
+              2.2710399329662323,
+              2.2703999280929565,
+              2.2710399329662323,
+              2.2790400683879852
+            ],
+            "manual": [
+              1.7263999581336975,
+              1.7260800302028656,
+              1.714559942483902,
+              1.7132799327373505,
+              1.7132799327373505,
+              1.7126399278640747,
+              1.7292800545692444,
+              1.7215999960899353,
+              1.7286400496959686
+            ],
+            "private": [
+              1.7280000448226929,
+              1.727679967880249,
+              1.7126399278640747,
+              1.7180800437927246,
+              1.7136000096797943,
+              1.71424001455307,
+              1.7158399522304535,
+              1.709119975566864,
+              1.7120000720024109
+            ],
+            "reset_only": [
+              0.8364800363779068,
+              0.7945600152015686,
+              0.7974400371313095,
+              0.8057600259780884,
+              0.8057600259780884,
+              0.7910399883985519,
+              0.7910399883985519,
+              0.7913599908351898,
+              0.7862400263547897
+            ]
+          },
+          "warmup_ms": 50
+        },
+        "dtype": "fp16",
+        "exact_integer_correctness": {
+          "baseline": true,
+          "manual": true,
+          "private": true
+        },
+        "grid": [
+          16,
+          1,
+          1
+        ],
+        "input_elements": 2048,
+        "maximum_contributions": 1,
+        "native_to_manual": 0.9957249177778921,
+        "output_elements": 2048,
+        "random_maximum_error": {
+          "baseline": 0.0,
+          "manual": 0.0,
+          "private": 0.0
+        },
+        "random_maximum_error_bound": 0.0,
+        "reset_only_ms": 0.0007945600152015686,
+        "reset_plus_kernel_ms": {
+          "baseline": 0.0022710399329662324,
+          "manual": 0.0017215999960899352,
+          "private": 0.00171424001455307
+        },
+        "shape": [
+          [
+            32,
+            64
+          ],
+          1,
+          16,
+          16
+        ],
+        "specialization_id": "608125c241e45c4a",
+        "speedup": 1.3248086112132489
+      },
+      {
+        "backing_allocations_verified_disjoint": true,
+        "destinations_with_collisions": 0,
+        "device_timing": {
+          "median_us": {
+            "baseline": 2.295040041208267,
+            "manual": 1.7215999960899353,
+            "private": 1.7203199863433838,
+            "reset_only": 0.8038400113582611
+          },
+          "order": "randomized interleaving; clocks not locked",
+          "repetitions": 100,
+          "rounds": 9,
+          "samples_us": {
+            "baseline": [
+              2.3267200589179993,
+              2.30335995554924,
+              2.295040041208267,
+              2.2889600694179535,
+              2.290879935026169,
+              2.301439940929413,
+              2.2912000119686127,
+              2.300480008125305,
+              2.290879935026169
+            ],
+            "manual": [
+              1.7257599532604218,
+              1.7280000448226929,
+              1.7187200486660004,
+              1.7215999960899353,
+              1.7286400496959686,
+              1.7161600291728973,
+              1.7219200730323792,
+              1.71424001455307,
+              1.7158399522304535
+            ],
+            "private": [
+              1.7203199863433838,
+              1.724800020456314,
+              1.7254400253295898,
+              1.7177599668502808,
+              1.7177599668502808,
+              1.7231999337673187,
+              1.7177599668502808,
+              1.722559928894043,
+              1.7155200242996216
+            ],
+            "reset_only": [
+              0.8038400113582611,
+              0.8102399855852127,
+              0.793600007891655,
+              0.8083199709653854,
+              0.7926400005817413,
+              0.801599994301796,
+              0.7968000322580338,
+              0.806720033288002,
+              0.804160013794899
+            ]
+          },
+          "warmup_ms": 50
+        },
+        "dtype": "fp32",
+        "exact_integer_correctness": {
+          "baseline": true,
+          "manual": true,
+          "private": true
+        },
+        "grid": [
+          16,
+          1,
+          1
+        ],
+        "input_elements": 2048,
+        "maximum_contributions": 1,
+        "native_to_manual": 0.9992564999131862,
+        "output_elements": 2048,
+        "random_maximum_error": {
+          "baseline": 0.0,
+          "manual": 0.0,
+          "private": 0.0
+        },
+        "random_maximum_error_bound": 0.0,
+        "reset_only_ms": 0.0008038400113582611,
+        "reset_plus_kernel_ms": {
+          "baseline": 0.002295040041208267,
+          "manual": 0.0017215999960899352,
+          "private": 0.0017203199863433838
+        },
+        "shape": [
+          [
+            32,
+            64
+          ],
+          1,
+          16,
+          16
+        ],
+        "specialization_id": "17b13ff6eb83899d",
+        "speedup": 1.334077415496681
+      },
+      {
+        "backing_allocations_verified_disjoint": true,
+        "destinations_with_collisions": 0,
+        "device_timing": {
+          "median_us": {
+            "baseline": 2.401919960975647,
+            "manual": 1.7228800058364868,
+            "private": 1.7263999581336975,
+            "reset_only": 0.7974400371313095
+          },
+          "order": "randomized interleaving; clocks not locked",
+          "repetitions": 100,
+          "rounds": 9,
+          "samples_us": {
+            "baseline": [
+              2.417600005865097,
+              2.401919960975647,
+              2.40447998046875,
+              2.401919960975647,
+              2.401600033044815,
+              2.407680004835129,
+              2.3871999979019165,
+              2.399040013551712,
+              2.39424005150795
+            ],
+            "manual": [
+              1.7590400576591492,
+              1.719679981470108,
+              1.7260800302028656,
+              1.7257599532604218,
+              1.7238399386405945,
+              1.7177599668502808,
+              1.7148800194263458,
+              1.7126399278640747,
+              1.7228800058364868
+            ],
+            "private": [
+              1.7350399494171143,
+              1.7292800545692444,
+              1.7212800681591034,
+              1.7363199591636658,
+              1.7263999581336975,
+              1.738560050725937,
+              1.722240000963211,
+              1.7103999853134155,
+              1.7190399765968323
+            ],
+            "reset_only": [
+              0.7990399748086929,
+              0.8025600016117096,
+              0.7983999699354172,
+              0.7974400371313095,
+              0.7932800054550171,
+              0.7955200225114822,
+              0.7983999699354172,
+              0.7948800176382065,
+              0.7894399762153625
+            ]
+          },
+          "warmup_ms": 50
+        },
+        "dtype": "bf16",
+        "exact_integer_correctness": {
+          "baseline": true,
+          "manual": true,
+          "private": true
+        },
+        "grid": [
+          16,
+          1,
+          1
+        ],
+        "input_elements": 2048,
+        "maximum_contributions": 1,
+        "native_to_manual": 1.00204306294419,
+        "output_elements": 2048,
+        "random_maximum_error": {
+          "baseline": 0.0,
+          "manual": 0.0,
+          "private": 0.0
+        },
+        "random_maximum_error_bound": 0.0,
+        "reset_only_ms": 0.0007974400371313095,
+        "reset_plus_kernel_ms": {
+          "baseline": 0.002401919960975647,
+          "manual": 0.0017228800058364869,
+          "private": 0.0017263999581336976
+        },
+        "shape": [
+          [
+            32,
+            64
+          ],
+          1,
+          16,
+          16
+        ],
+        "specialization_id": "8e79f6a3bb7fa13c",
+        "speedup": 1.3912882409776073
+      },
+      {
+        "backing_allocations_verified_disjoint": true,
+        "destinations_with_collisions": 363,
+        "device_timing": {
+          "median_us": {
+            "baseline": 2.046719938516617,
+            "manual": 1.6473600268363953,
+            "private": 1.6502399742603302,
+            "reset_only": 0.9334400296211243
+          },
+          "order": "randomized interleaving; clocks not locked",
+          "repetitions": 100,
+          "rounds": 9,
+          "samples_us": {
+            "baseline": [
+              2.046719938516617,
+              2.054399996995926,
+              2.0448000729084015,
+              2.040639966726303,
+              2.0496000349521637,
+              2.045760005712509,
+              2.051839977502823,
+              2.0476800203323364,
+              2.0425599813461304
+            ],
+            "manual": [
+              1.6886399686336517,
+              1.6432000696659088,
+              1.6361600160598755,
+              1.629440039396286,
+              1.6550399363040924,
+              1.6556799411773682,
+              1.6473600268363953,
+              1.656319946050644,
+              1.642560064792633
+            ],
+            "private": [
+              1.6518400609493256,
+              1.666879951953888,
+              1.6444799304008484,
+              1.6553600132465363,
+              1.6460800170898438,
+              1.661120057106018,
+              1.637440025806427,
+              1.6502399742603302,
+              1.6502399742603302
+            ],
+            "reset_only": [
+              0.9334400296211243,
+              0.936959981918335,
+              0.9318400174379349,
+              0.9414400160312653,
+              0.9318400174379349,
+              0.9254399687051773,
+              0.9359999746084213,
+              0.9273599833250046,
+              0.9359999746084213
+            ]
+          },
+          "warmup_ms": 50
+        },
+        "dtype": "fp16",
+        "exact_integer_correctness": {
+          "baseline": true,
+          "manual": true,
+          "private": true
+        },
+        "grid": [
+          8,
+          1,
+          1
+        ],
+        "input_elements": 990,
+        "maximum_contributions": 3,
+        "native_to_manual": 1.0017482198044259,
+        "output_elements": 528,
+        "random_maximum_error": {
+          "baseline": 0.0,
+          "manual": 0.0,
+          "private": 0.0
+        },
+        "random_maximum_error_bound": 6.501214422430327e-07,
+        "reset_only_ms": 0.0009334400296211242,
+        "reset_plus_kernel_ms": {
+          "baseline": 0.0020467199385166166,
+          "manual": 0.0016473600268363954,
+          "private": 0.0016502399742603301
+        },
+        "shape": [
+          [
+            16,
+            33
+          ],
+          0,
+          5,
+          2
+        ],
+        "specialization_id": "f27d61145518df0d",
+        "speedup": 1.2402559448567452
+      },
+      {
+        "backing_allocations_verified_disjoint": true,
+        "destinations_with_collisions": 363,
+        "device_timing": {
+          "median_us": {
+            "baseline": 2.6028800010681152,
+            "manual": 1.8358400464057922,
+            "private": 1.8374399840831757,
+            "reset_only": 0.9567999839782715
+          },
+          "order": "randomized interleaving; clocks not locked",
+          "repetitions": 100,
+          "rounds": 9,
+          "samples_us": {
+            "baseline": [
+              2.616640031337738,
+              2.603519856929779,
+              2.5942400097846985,
+              2.603839933872223,
+              2.6022401452064514,
+              2.595840096473694,
+              2.6028800010681152,
+              2.618879973888397,
+              2.598719894886017
+            ],
+            "manual": [
+              1.8537600338459015,
+              1.8544000387191772,
+              1.8281599879264832,
+              1.8358400464057922,
+              1.8345600366592407,
+              1.8374399840831757,
+              1.8198400735855103,
+              1.8278400599956512,
+              1.8457600474357605
+            ],
+            "private": [
+              1.8502399325370789,
+              1.8374399840831757,
+              1.8361599743366241,
+              1.8403199315071106,
+              1.8345600366592407,
+              1.8342399597167969,
+              1.8464000523090363,
+              1.8409599363803864,
+              1.8281599879264832
+            ],
+            "reset_only": [
+              0.9775999933481216,
+              0.9609600156545639,
+              0.9446399658918381,
+              0.9401600062847137,
+              0.9567999839782715,
+              0.9558399766683578,
+              0.9542399644851685,
+              0.9577599912881851,
+              0.9574399888515472
+            ]
+          },
+          "warmup_ms": 50
+        },
+        "dtype": "fp32",
+        "exact_integer_correctness": {
+          "baseline": true,
+          "manual": true,
+          "private": true
+        },
+        "grid": [
+          8,
+          1,
+          1
+        ],
+        "input_elements": 990,
+        "maximum_contributions": 3,
+        "native_to_manual": 1.0008715016760397,
+        "output_elements": 528,
+        "random_maximum_error": {
+          "baseline": 2.086162567138672e-07,
+          "manual": 2.384185791015625e-07,
+          "private": 2.384185791015625e-07
+        },
+        "random_maximum_error_bound": 6.872128574963095e-07,
+        "reset_only_ms": 0.0009567999839782715,
+        "reset_plus_kernel_ms": {
+          "baseline": 0.0026028800010681153,
+          "manual": 0.0018358400464057922,
+          "private": 0.0018374399840831756
+        },
+        "shape": [
+          [
+            16,
+            33
+          ],
+          0,
+          5,
+          2
+        ],
+        "specialization_id": "9b5674f024b6833a",
+        "speedup": 1.4165796018458094
+      },
+      {
+        "backing_allocations_verified_disjoint": true,
+        "destinations_with_collisions": 363,
+        "device_timing": {
+          "median_us": {
+            "baseline": 2.0291200280189514,
+            "manual": 1.6735999286174774,
+            "private": 1.671680063009262,
+            "reset_only": 0.7744000107049942
+          },
+          "order": "randomized interleaving; clocks not locked",
+          "repetitions": 100,
+          "rounds": 9,
+          "samples_us": {
+            "baseline": [
+              2.0278400182724,
+              2.0291200280189514,
+              2.024639993906021,
+              2.030079960823059,
+              2.024960070848465,
+              2.04927995800972,
+              2.0185600221157074,
+              2.036159932613373,
+              2.036159932613373
+            ],
+            "manual": [
+              1.7043200135231018,
+              1.6598400473594666,
+              1.6678400337696075,
+              1.6806399822235107,
+              1.6947199404239655,
+              1.6735999286174774,
+              1.6649599373340607,
+              1.6713599860668182,
+              1.6742399334907532
+            ],
+            "private": [
+              1.6809600591659546,
+              1.6732800006866455,
+              1.6723200678825378,
+              1.6755199432373047,
+              1.6675199568271637,
+              1.669439971446991,
+              1.6713599860668182,
+              1.669439971446991,
+              1.671680063009262
+            ],
+            "reset_only": [
+              0.7820799946784973,
+              0.777600035071373,
+              0.7782399654388428,
+              0.772159993648529,
+              0.7753600180149078,
+              0.7683199644088745,
+              0.7744000107049942,
+              0.7737600058317184,
+              0.7660800218582153
+            ]
+          },
+          "warmup_ms": 50
+        },
+        "dtype": "bf16",
+        "exact_integer_correctness": {
+          "baseline": true,
+          "manual": true,
+          "private": true
+        },
+        "grid": [
+          8,
+          1,
+          1
+        ],
+        "input_elements": 990,
+        "maximum_contributions": 3,
+        "native_to_manual": 0.9988528527186296,
+        "output_elements": 528,
+        "random_maximum_error": {
+          "baseline": 0.0,
+          "manual": 0.0,
+          "private": 0.0
+        },
+        "random_maximum_error_bound": 6.128103271496686e-07,
+        "reset_only_ms": 0.0007744000107049942,
+        "reset_plus_kernel_ms": {
+          "baseline": 0.0020291200280189515,
+          "manual": 0.0016735999286174774,
+          "private": 0.0016716800630092621
+        },
+        "shape": [
+          [
+            16,
+            33
+          ],
+          0,
+          5,
+          2
+        ],
+        "specialization_id": "8dab4fec226f518e",
+        "speedup": 1.2138207979619298
+      },
+      {
+        "backing_allocations_verified_disjoint": true,
+        "destinations_with_collisions": 64,
+        "device_timing": {
+          "median_us": {
+            "baseline": 1.7312000691890717,
+            "manual": 1.3260799646377563,
+            "private": 1.33215993642807,
+            "reset_only": 0.6726399809122086
+          },
+          "order": "randomized interleaving; clocks not locked",
+          "repetitions": 100,
+          "rounds": 9,
+          "samples_us": {
+            "baseline": [
+              1.738560050725937,
+              1.730239987373352,
+              1.7414399981498718,
+              1.7289599776268005,
+              1.7372800409793854,
+              1.7295999825000763,
+              1.7187200486660004,
+              1.7312000691890717,
+              1.7372800409793854
+            ],
+            "manual": [
+              1.3279999792575836,
+              1.3232000172138214,
+              1.4140799641609192,
+              1.3247999548912048,
+              1.3398399949073792,
+              1.3260799646377563,
+              1.3247999548912048,
+              1.326719969511032,
+              1.3199999928474426
+            ],
+            "private": [
+              1.3689599931240082,
+              1.3436800241470337,
+              1.33215993642807,
+              1.3302400708198547,
+              1.3247999548912048,
+              1.3254399597644806,
+              1.3382400572299957,
+              1.3385599851608276,
+              1.3273599743843079
+            ],
+            "reset_only": [
+              0.7072000205516815,
+              0.6726399809122086,
+              0.671359971165657,
+              0.6771200150251389,
+              0.6652799993753433,
+              0.6735999882221222,
+              0.6656000018119812,
+              0.7043199986219406,
+              0.6672000139951706
+            ]
+          },
+          "warmup_ms": 50
+        },
+        "dtype": "fp16",
+        "exact_integer_correctness": {
+          "baseline": true,
+          "manual": true,
+          "private": true
+        },
+        "grid": [
+          3,
+          1,
+          1
+        ],
+        "input_elements": 384,
+        "maximum_contributions": 2,
+        "native_to_manual": 1.0045849209342173,
+        "output_elements": 384,
+        "random_maximum_error": {
+          "baseline": 0.0,
+          "manual": 0.0,
+          "private": 0.0
+        },
+        "random_maximum_error_bound": 2.2692257959679242e-07,
+        "reset_only_ms": 0.0006726399809122086,
+        "reset_plus_kernel_ms": {
+          "baseline": 0.0017312000691890716,
+          "manual": 0.0013260799646377564,
+          "private": 0.0013321599364280701
+        },
+        "shape": [
+          [
+            4,
+            8,
+            12
+          ],
+          -1,
+          6,
+          4
+        ],
+        "specialization_id": "c4b8753aa1364b37",
+        "speedup": 1.2995437123195213
+      },
+      {
+        "backing_allocations_verified_disjoint": true,
+        "destinations_with_collisions": 64,
+        "device_timing": {
+          "median_us": {
+            "baseline": 2.433920055627823,
+            "manual": 1.6966399550437927,
+            "private": 1.6998399794101715,
+            "reset_only": 0.854400023818016
+          },
+          "order": "randomized interleaving; clocks not locked",
+          "repetitions": 100,
+          "rounds": 9,
+          "samples_us": {
+            "baseline": [
+              2.4480000138282776,
+              2.4291199445724487,
+              2.4271999299526215,
+              2.4291199445724487,
+              2.439360022544861,
+              2.444159984588623,
+              2.431039959192276,
+              2.43584007024765,
+              2.433920055627823
+            ],
+            "manual": [
+              1.706559956073761,
+              1.6966399550437927,
+              1.6976000368595123,
+              1.6899199783802032,
+              1.687999963760376,
+              1.695999950170517,
+              1.6940799355506897,
+              1.6969600319862366,
+              1.6988800466060638
+            ],
+            "private": [
+              1.7446400225162506,
+              1.7071999609470367,
+              1.7027199268341064,
+              1.693439930677414,
+              1.6998399794101715,
+              1.6953599452972412,
+              1.7129600048065186,
+              1.690240055322647,
+              1.6896000504493713
+            ],
+            "reset_only": [
+              0.8627200126647949,
+              0.8524800091981888,
+              0.8495999872684479,
+              0.857279971241951,
+              0.8499199897050858,
+              0.8505599945783615,
+              0.854400023818016,
+              0.8582399785518646,
+              0.8575999736785889
+            ]
+          },
+          "warmup_ms": 50
+        },
+        "dtype": "fp32",
+        "exact_integer_correctness": {
+          "baseline": true,
+          "manual": true,
+          "private": true
+        },
+        "grid": [
+          3,
+          1,
+          1
+        ],
+        "input_elements": 384,
+        "maximum_contributions": 2,
+        "native_to_manual": 1.0018860951357804,
+        "output_elements": 384,
+        "random_maximum_error": {
+          "baseline": 1.1920928955078125e-07,
+          "manual": 1.1920928955078125e-07,
+          "private": 1.1920928955078125e-07
+        },
+        "random_maximum_error_bound": 2.2454965093501043e-07,
+        "reset_only_ms": 0.0008544000238180161,
+        "reset_plus_kernel_ms": {
+          "baseline": 0.0024339200556278227,
+          "manual": 0.0016966399550437928,
+          "private": 0.0016998399794101715
+        },
+        "shape": [
+          [
+            4,
+            8,
+            12
+          ],
+          -1,
+          6,
+          4
+        ],
+        "specialization_id": "d660ed566faeb88d",
+        "speedup": 1.4318524597076308
+      },
+      {
+        "backing_allocations_verified_disjoint": true,
+        "destinations_with_collisions": 64,
+        "device_timing": {
+          "median_us": {
+            "baseline": 2.2896000742912292,
+            "manual": 1.6927999258041382,
+            "private": 1.6972799599170685,
+            "reset_only": 0.8595199882984161
+          },
+          "order": "randomized interleaving; clocks not locked",
+          "repetitions": 100,
+          "rounds": 9,
+          "samples_us": {
+            "baseline": [
+              2.300480008125305,
+              2.2832000255584717,
+              2.301120012998581,
+              2.282239943742752,
+              2.2896000742912292,
+              2.284480035305023,
+              2.2896000742912292,
+              2.2835199534893036,
+              2.293439954519272
+            ],
+            "manual": [
+              1.7379200458526611,
+              1.7008000612258911,
+              1.6927999258041382,
+              1.6918399930000305,
+              1.690559983253479,
+              1.6864000260829926,
+              1.6963200271129608,
+              1.693120002746582,
+              1.6918399930000305
+            ],
+            "private": [
+              1.709119975566864,
+              1.709119975566864,
+              1.6937600076198578,
+              1.695680022239685,
+              1.6972799599170685,
+              1.6969600319862366,
+              1.6988800466060638,
+              1.6953599452972412,
+              1.708800047636032
+            ],
+            "reset_only": [
+              0.8617600053548813,
+              0.8575999736785889,
+              0.8595199882984161,
+              0.8563199639320374,
+              0.8588799834251404,
+              0.8649600297212601,
+              0.859839990735054,
+              0.8640000224113464,
+              0.8534400165081024
+            ]
+          },
+          "warmup_ms": 50
+        },
+        "dtype": "bf16",
+        "exact_integer_correctness": {
+          "baseline": true,
+          "manual": true,
+          "private": true
+        },
+        "grid": [
+          3,
+          1,
+          1
+        ],
+        "input_elements": 384,
+        "maximum_contributions": 2,
+        "native_to_manual": 1.0026465231033148,
+        "output_elements": 384,
+        "random_maximum_error": {
+          "baseline": 0.0,
+          "manual": 0.0,
+          "private": 0.0
+        },
+        "random_maximum_error_bound": 2.435408677781145e-07,
+        "reset_only_ms": 0.0008595199882984162,
+        "reset_plus_kernel_ms": {
+          "baseline": 0.002289600074291229,
+          "manual": 0.0016927999258041383,
+          "private": 0.0016972799599170685
+        },
+        "shape": [
+          [
+            4,
+            8,
+            12
+          ],
+          -1,
+          6,
+          4
+        ],
+        "specialization_id": "1d2211aa2f38d486",
+        "speedup": 1.348981976080777
+      },
+      {
+        "backing_allocations_verified_disjoint": true,
+        "destinations_with_collisions": 0,
+        "device_timing": {
+          "median_us": {
+            "baseline": 1.592639982700348,
+            "manual": 1.2415999919176102,
+            "private": 1.2425599992275238,
+            "reset_only": 0.6272000074386597
+          },
+          "order": "randomized interleaving; clocks not locked",
+          "repetitions": 100,
+          "rounds": 9,
+          "samples_us": {
+            "baseline": [
+              1.6073599457740784,
+              1.5990400314331055,
+              1.592639982700348,
+              1.5814399719238281,
+              1.592639982700348,
+              1.5907199680805206,
+              1.570879966020584,
+              1.592639982700348,
+              1.5955199301242828
+            ],
+            "manual": [
+              1.2467200309038162,
+              1.2457600235939026,
+              1.2614400684833527,
+              1.2380799651145935,
+              1.2399999797344208,
+              1.2432000041007996,
+              1.2415999919176102,
+              1.2415999919176102,
+              1.239679977297783
+            ],
+            "private": [
+              1.2566399574279785,
+              1.2460800260305405,
+              1.2409599870443344,
+              1.242239996790886,
+              1.2425599992275238,
+              1.2403199821710587,
+              1.2380799651145935,
+              1.247679963707924,
+              1.2489599734544754
+            ],
+            "reset_only": [
+              0.634239986538887,
+              0.6272000074386597,
+              0.6249599903821945,
+              0.6150399893522263,
+              0.6297600269317627,
+              0.6230400130152702,
+              0.6307200342416763,
+              0.6243199855089188,
+              0.6288000196218491
+            ]
+          },
+          "warmup_ms": 50
+        },
+        "dtype": "fp16",
+        "exact_integer_correctness": {
+          "baseline": true,
+          "manual": true,
+          "private": true
+        },
+        "grid": [
+          1,
+          1,
+          1
+        ],
+        "input_elements": 91,
+        "maximum_contributions": 1,
+        "native_to_manual": 1.0007732017688167,
+        "output_elements": 91,
+        "random_maximum_error": {
+          "baseline": 0.0,
+          "manual": 0.0,
+          "private": 0.0
+        },
+        "random_maximum_error_bound": 0.0,
+        "reset_only_ms": 0.0006272000074386597,
+        "reset_plus_kernel_ms": {
+          "baseline": 0.0015926399827003478,
+          "manual": 0.0012415999919176102,
+          "private": 0.0012425599992275237
+        },
+        "shape": [
+          [
+            7,
+            13
+          ],
+          1,
+          13,
+          3
+        ],
+        "specialization_id": "d1cde69352bebd8e",
+        "speedup": 1.2817409088417961
+      },
+      {
+        "backing_allocations_verified_disjoint": true,
+        "destinations_with_collisions": 0,
+        "device_timing": {
+          "median_us": {
+            "baseline": 1.5727999806404114,
+            "manual": 1.2825599312782288,
+            "private": 1.2851199507713318,
+            "reset_only": 0.6281600147485733
+          },
+          "order": "randomized interleaving; clocks not locked",
+          "repetitions": 100,
+          "rounds": 9,
+          "samples_us": {
+            "baseline": [
+              1.5641599893569946,
+              1.568640023469925,
+              1.5699200332164764,
+              1.5795199573040009,
+              1.5801599621772766,
+              1.5587200224399567,
+              1.5727999806404114,
+              1.5795199573040009,
+              1.5750400722026825
+            ],
+            "manual": [
+              1.3129599392414093,
+              1.2880000472068787,
+              1.2777599692344666,
+              1.2876799702644348,
+              1.2774400413036346,
+              1.2825599312782288,
+              1.2950399518013,
+              1.2800000607967377,
+              1.2800000607967377
+            ],
+            "private": [
+              1.2937599420547485,
+              1.2889599800109863,
+              1.2851199507713318,
+              1.2723200023174286,
+              1.2771199643611908,
+              1.2902399897575378,
+              1.2831999361515045,
+              1.2905600666999817,
+              1.2774400413036346
+            ],
+            "reset_only": [
+              0.6335999816656113,
+              0.626240000128746,
+              0.6239999830722809,
+              0.6281600147485733,
+              0.6249599903821945,
+              0.6332799792289734,
+              0.6268800050020218,
+              0.6294400244951248,
+              0.6291200220584869
+            ]
+          },
+          "warmup_ms": 50
+        },
+        "dtype": "fp32",
+        "exact_integer_correctness": {
+          "baseline": true,
+          "manual": true,
+          "private": true
+        },
+        "grid": [
+          1,
+          1,
+          1
+        ],
+        "input_elements": 91,
+        "maximum_contributions": 1,
+        "native_to_manual": 1.001996023289572,
+        "output_elements": 91,
+        "random_maximum_error": {
+          "baseline": 0.0,
+          "manual": 0.0,
+          "private": 0.0
+        },
+        "random_maximum_error_bound": 0.0,
+        "reset_only_ms": 0.0006281600147485734,
+        "reset_plus_kernel_ms": {
+          "baseline": 0.0015727999806404115,
+          "manual": 0.0012825599312782288,
+          "private": 0.0012851199507713318
+        },
+        "shape": [
+          [
+            7,
+            13
+          ],
+          1,
+          13,
+          3
+        ],
+        "specialization_id": "f5ee50e5b6ca0eec",
+        "speedup": 1.2238546134906811
+      },
+      {
+        "backing_allocations_verified_disjoint": true,
+        "destinations_with_collisions": 0,
+        "device_timing": {
+          "median_us": {
+            "baseline": 1.629440039396286,
+            "manual": 1.2848000228404999,
+            "private": 1.2889599800109863,
+            "reset_only": 0.6400000303983688
+          },
+          "order": "randomized interleaving; clocks not locked",
+          "repetitions": 100,
+          "rounds": 9,
+          "samples_us": {
+            "baseline": [
+              1.6364799439907074,
+              1.6281600296497345,
+              1.629440039396286,
+              1.627199947834015,
+              1.64000004529953,
+              1.6291199624538422,
+              1.6275200247764587,
+              1.6451199352741241,
+              1.634880006313324
+            ],
+            "manual": [
+              1.2729600071907043,
+              1.2857599556446075,
+              1.271360069513321,
+              1.2848000228404999,
+              1.2668800354003906,
+              1.2783999741077423,
+              1.2931199371814728,
+              1.2908799946308136,
+              1.2854400277137756
+            ],
+            "private": [
+              1.2928000092506409,
+              1.287360042333603,
+              1.289920061826706,
+              1.2812800705432892,
+              1.2908799946308136,
+              1.2876799702644348,
+              1.2809599936008453,
+              1.2969599664211273,
+              1.2889599800109863
+            ],
+            "reset_only": [
+              0.6700800359249115,
+              0.63680000603199,
+              0.6278400123119354,
+              0.6428799778223038,
+              0.639680027961731,
+              0.6400000303983688,
+              0.6489600241184235,
+              0.6361600011587143,
+              0.6457599997520447
+            ]
+          },
+          "warmup_ms": 50
+        },
+        "dtype": "bf16",
+        "exact_integer_correctness": {
+          "baseline": true,
+          "manual": true,
+          "private": true
+        },
+        "grid": [
+          1,
+          1,
+          1
+        ],
+        "input_elements": 91,
+        "maximum_contributions": 1,
+        "native_to_manual": 1.003237824639269,
+        "output_elements": 91,
+        "random_maximum_error": {
+          "baseline": 0.0,
+          "manual": 0.0,
+          "private": 0.0
+        },
+        "random_maximum_error_bound": 0.0,
+        "reset_only_ms": 0.0006400000303983689,
+        "reset_plus_kernel_ms": {
+          "baseline": 0.001629440039396286,
+          "manual": 0.0012848000228405,
+          "private": 0.0012889599800109863
+        },
+        "shape": [
+          [
+            7,
+            13
+          ],
+          1,
+          13,
+          3
+        ],
+        "specialization_id": "e7d8e24a70fda869",
+        "speedup": 1.2641509935649031
+      },
+      {
+        "backing_allocations_verified_disjoint": true,
+        "destinations_with_collisions": 54,
+        "device_timing": {
+          "median_us": {
+            "baseline": 1.6150400042533875,
+            "manual": 1.2697599828243256,
+            "private": 1.273919939994812,
+            "reset_only": 0.6339199841022491
+          },
+          "order": "randomized interleaving; clocks not locked",
+          "repetitions": 100,
+          "rounds": 9,
+          "samples_us": {
+            "baseline": [
+              1.62432000041008,
+              1.6278399527072906,
+              1.6150400042533875,
+              1.6230399906635284,
+              1.6288000345230103,
+              1.6147199273109436,
+              1.6105599701404572,
+              1.6070400178432465,
+              1.608320027589798
+            ],
+            "manual": [
+              1.324159950017929,
+              1.2729600071907043,
+              1.2652799487113953,
+              1.2707200646400452,
+              1.268479973077774,
+              1.276479959487915,
+              1.2576000392436981,
+              1.268479973077774,
+              1.2697599828243256
+            ],
+            "private": [
+              1.2828800082206726,
+              1.2758399546146393,
+              1.2643200159072876,
+              1.2601600587368011,
+              1.268479973077774,
+              1.281919926404953,
+              1.2732799351215363,
+              1.2751999497413635,
+              1.273919939994812
+            ],
+            "reset_only": [
+              0.6246399879455566,
+              0.6406400352716446,
+              0.6390400230884552,
+              0.6319999694824219,
+              0.6339199841022491,
+              0.634239986538887,
+              0.6288000196218491,
+              0.6255999952554703,
+              0.6374400109052658
+            ]
+          },
+          "warmup_ms": 50
+        },
+        "dtype": "fp16",
+        "exact_integer_correctness": {
+          "baseline": true,
+          "manual": true,
+          "private": true
+        },
+        "grid": [
+          2,
+          1,
+          1
+        ],
+        "input_elements": 168,
+        "maximum_contributions": 2,
+        "native_to_manual": 1.0032761759913347,
+        "output_elements": 120,
+        "random_maximum_error": {
+          "baseline": 0.0,
+          "manual": 0.0,
+          "private": 0.0
+        },
+        "random_maximum_error_bound": 2.832384948872623e-07,
+        "reset_only_ms": 0.0006339199841022492,
+        "reset_plus_kernel_ms": {
+          "baseline": 0.0016150400042533875,
+          "manual": 0.0012697599828243255,
+          "private": 0.0012739199399948121
+        },
+        "shape": [
+          [
+            6,
+            20
+          ],
+          1,
+          7,
+          4
+        ],
+        "specialization_id": "77300d36d72f4a93",
+        "speedup": 1.2677719796582856
+      },
+      {
+        "backing_allocations_verified_disjoint": true,
+        "destinations_with_collisions": 54,
+        "device_timing": {
+          "median_us": {
+            "baseline": 1.6371199488639832,
+            "manual": 1.2787200510501862,
+            "private": 1.2768000364303589,
+            "reset_only": 0.6339199841022491
+          },
+          "order": "randomized interleaving; clocks not locked",
+          "repetitions": 100,
+          "rounds": 9,
+          "samples_us": {
+            "baseline": [
+              1.650879979133606,
+              1.6463999450206757,
+              1.6368000209331512,
+              1.6371199488639832,
+              1.6329599916934967,
+              1.6473600268363953,
+              1.6361600160598755,
+              1.648000031709671,
+              1.6316799819469452
+            ],
+            "manual": [
+              1.3193599879741669,
+              1.2774400413036346,
+              1.2982399761676788,
+              1.2787200510501862,
+              1.2838399410247803,
+              1.287360042333603,
+              1.2729600071907043,
+              1.2668800354003906,
+              1.2729600071907043
+            ],
+            "private": [
+              1.2828800082206726,
+              1.289920061826706,
+              1.2681600451469421,
+              1.2620800733566284,
+              1.2800000607967377,
+              1.2700800597667694,
+              1.279039978981018,
+              1.263359934091568,
+              1.2768000364303589
+            ],
+            "reset_only": [
+              0.6390400230884552,
+              0.6473600119352341,
+              0.6339199841022491,
+              0.642239972949028,
+              0.6371200084686279,
+              0.6294400244951248,
+              0.6278400123119354,
+              0.6268800050020218,
+              0.6310400366783142
+            ]
+          },
+          "warmup_ms": 50
+        },
+        "dtype": "fp32",
+        "exact_integer_correctness": {
+          "baseline": true,
+          "manual": true,
+          "private": true
+        },
+        "grid": [
+          2,
+          1,
+          1
+        ],
+        "input_elements": 168,
+        "maximum_contributions": 2,
+        "native_to_manual": 0.9984984871252701,
+        "output_elements": 120,
+        "random_maximum_error": {
+          "baseline": 2.384185791015625e-07,
+          "manual": 2.384185791015625e-07,
+          "private": 2.384185791015625e-07
+        },
+        "random_maximum_error_bound": 2.6869025940312425e-07,
+        "reset_only_ms": 0.0006339199841022492,
+        "reset_plus_kernel_ms": {
+          "baseline": 0.001637119948863983,
+          "manual": 0.0012787200510501861,
+          "private": 0.001276800036430359
+        },
+        "shape": [
+          [
+            6,
+            20
+          ],
+          1,
+          7,
+          4
+        ],
+        "specialization_id": "dfcde7b652f1a453",
+        "speedup": 1.2822054371497327
+      },
+      {
+        "backing_allocations_verified_disjoint": true,
+        "destinations_with_collisions": 54,
+        "device_timing": {
+          "median_us": {
+            "baseline": 1.6099199652671814,
+            "manual": 1.2624000012874603,
+            "private": 1.2620800733566284,
+            "reset_only": 0.6300800293684006
+          },
+          "order": "randomized interleaving; clocks not locked",
+          "repetitions": 100,
+          "rounds": 9,
+          "samples_us": {
+            "baseline": [
+              1.5993599593639374,
+              1.6041600704193115,
+              1.613440066576004,
+              1.6099199652671814,
+              1.6025599837303162,
+              1.6236799955368042,
+              1.5894399583339691,
+              1.6153599321842194,
+              1.6140800714492798
+            ],
+            "manual": [
+              1.255040019750595,
+              1.2681600451469421,
+              1.2624000012874603,
+              1.2627199292182922,
+              1.2486399710178375,
+              1.271360069513321,
+              1.2617599964141846,
+              1.2588800489902496,
+              1.2624000012874603
+            ],
+            "private": [
+              1.265919953584671,
+              1.2518399953842163,
+              1.2681600451469421,
+              1.2716799974441528,
+              1.2585599720478058,
+              1.2591999769210815,
+              1.263359934091568,
+              1.2601600587368011,
+              1.2620800733566284
+            ],
+            "reset_only": [
+              0.6588800251483917,
+              0.6323199719190598,
+              0.6319999694824219,
+              0.6310400366783142,
+              0.623680017888546,
+              0.6233600154519081,
+              0.6300800293684006,
+              0.6265600025653839,
+              0.6239999830722809
+            ]
+          },
+          "warmup_ms": 50
+        },
+        "dtype": "bf16",
+        "exact_integer_correctness": {
+          "baseline": true,
+          "manual": true,
+          "private": true
+        },
+        "grid": [
+          2,
+          1,
+          1
+        ],
+        "input_elements": 168,
+        "maximum_contributions": 2,
+        "native_to_manual": 0.9997465716646818,
+        "output_elements": 120,
+        "random_maximum_error": {
+          "baseline": 0.0,
+          "manual": 0.0,
+          "private": 0.0
+        },
+        "random_maximum_error_bound": 2.4074689988773464e-07,
+        "reset_only_ms": 0.0006300800293684006,
+        "reset_plus_kernel_ms": {
+          "baseline": 0.0016099199652671813,
+          "manual": 0.0012624000012874603,
+          "private": 0.0012620800733566283
+        },
+        "shape": [
+          [
+            6,
+            20
+          ],
+          1,
+          7,
+          4
+        ],
+        "specialization_id": "5586851d90deb0d8",
+        "speedup": 1.2756084176065294
+      },
+      {
+        "backing_allocations_verified_disjoint": true,
+        "destinations_with_collisions": 90,
+        "device_timing": {
+          "median_us": {
+            "baseline": 1.6793599724769592,
+            "manual": 1.2867200374603271,
+            "private": 1.2867200374603271,
+            "reset_only": 0.6326399743556976
+          },
+          "order": "randomized interleaving; clocks not locked",
+          "repetitions": 100,
+          "rounds": 9,
+          "samples_us": {
+            "baseline": [
+              1.7027199268341064,
+              1.6793599724769592,
+              1.6777600347995758,
+              1.6812799870967865,
+              1.6710400581359863,
+              1.6816000640392303,
+              1.6755199432373047,
+              1.6793599724769592,
+              1.674560010433197
+            ],
+            "manual": [
+              1.3260799646377563,
+              1.2812800705432892,
+              1.2809599936008453,
+              1.2831999361515045,
+              1.2956799566745758,
+              1.2851199507713318,
+              1.2963199615478516,
+              1.3107199966907501,
+              1.2867200374603271
+            ],
+            "private": [
+              1.2960000336170197,
+              1.3017599284648895,
+              1.2982399761676788,
+              1.2867200374603271,
+              1.2835200130939484,
+              1.2831999361515045,
+              1.279039978981018,
+              1.2931199371814728,
+              1.2841600179672241
+            ],
+            "reset_only": [
+              0.6335999816656113,
+              0.6387200206518173,
+              0.6326399743556976,
+              0.6313599646091461,
+              0.6387200206518173,
+              0.6464000046253204,
+              0.6284800171852112,
+              0.6268800050020218,
+              0.6313599646091461
+            ]
+          },
+          "warmup_ms": 50
+        },
+        "dtype": "fp16",
+        "exact_integer_correctness": {
+          "baseline": true,
+          "manual": true,
+          "private": true
+        },
+        "grid": [
+          4,
+          1,
+          1
+        ],
+        "input_elements": 486,
+        "maximum_contributions": 9,
+        "native_to_manual": 1.0,
+        "output_elements": 102,
+        "random_maximum_error": {
+          "baseline": 0.0,
+          "manual": 0.0,
+          "private": 0.0
+        },
+        "random_maximum_error_bound": 4.937991060550719e-06,
+        "reset_only_ms": 0.0006326399743556976,
+        "reset_plus_kernel_ms": {
+          "baseline": 0.0016793599724769593,
+          "manual": 0.0012867200374603273,
+          "private": 0.0012867200374603273
+        },
+        "shape": [
+          [
+            2,
+            3,
+            17
+          ],
+          -1,
+          9,
+          1
+        ],
+        "specialization_id": "7fa55f9ac214eb1a",
+        "speedup": 1.3051479137541122
+      },
+      {
+        "backing_allocations_verified_disjoint": true,
+        "destinations_with_collisions": 90,
+        "device_timing": {
+          "median_us": {
+            "baseline": 1.8768000602722168,
+            "manual": 1.4854399859905243,
+            "private": 1.4870400726795197,
+            "reset_only": 0.6272000074386597
+          },
+          "order": "randomized interleaving; clocks not locked",
+          "repetitions": 100,
+          "rounds": 9,
+          "samples_us": {
+            "baseline": [
+              1.8991999328136444,
+              1.8857599794864655,
+              1.8768000602722168,
+              1.8751999735832214,
+              1.8748800456523895,
+              1.8825599551200867,
+              1.876160055398941,
+              1.8771199882030487,
+              1.871359944343567
+            ],
+            "manual": [
+              1.4841599762439728,
+              1.4870400726795197,
+              1.4854399859905243,
+              1.4847999811172485,
+              1.4857600629329681,
+              1.4748799800872803,
+              1.4761599898338318,
+              1.4902399480342865,
+              1.4854399859905243
+            ],
+            "private": [
+              1.4793600142002106,
+              1.4828799664974213,
+              1.4892800152301788,
+              1.4950400590896606,
+              1.4739200472831726,
+              1.4873600006103516,
+              1.4876799285411835,
+              1.4803199470043182,
+              1.4870400726795197
+            ],
+            "reset_only": [
+              0.6630399823188782,
+              0.6358399987220764,
+              0.6169600039720535,
+              0.6207999959588051,
+              0.6188800185918808,
+              0.6105599924921989,
+              0.6272000074386597,
+              0.6284800171852112,
+              0.6300800293684006
+            ]
+          },
+          "warmup_ms": 50
+        },
+        "dtype": "fp32",
+        "exact_integer_correctness": {
+          "baseline": true,
+          "manual": true,
+          "private": true
+        },
+        "grid": [
+          4,
+          1,
+          1
+        ],
+        "input_elements": 486,
+        "maximum_contributions": 9,
+        "native_to_manual": 1.001077180299498,
+        "output_elements": 102,
+        "random_maximum_error": {
+          "baseline": 5.364418029785156e-07,
+          "manual": 3.2782554626464844e-07,
+          "private": 3.2782554626464844e-07
+        },
+        "random_maximum_error_bound": 4.237781573782992e-06,
+        "reset_only_ms": 0.0006272000074386597,
+        "reset_plus_kernel_ms": {
+          "baseline": 0.0018768000602722168,
+          "manual": 0.0014854399859905243,
+          "private": 0.0014870400726795198
+        },
+        "shape": [
+          [
+            2,
+            3,
+            17
+          ],
+          -1,
+          9,
+          1
+        ],
+        "specialization_id": "fe46aae8a29f0c75",
+        "speedup": 1.2621045624482619
+      },
+      {
+        "backing_allocations_verified_disjoint": true,
+        "destinations_with_collisions": 90,
+        "device_timing": {
+          "median_us": {
+            "baseline": 1.7455999553203583,
+            "manual": 1.3264000415802002,
+            "private": 1.327040046453476,
+            "reset_only": 0.6310400366783142
+          },
+          "order": "randomized interleaving; clocks not locked",
+          "repetitions": 100,
+          "rounds": 9,
+          "samples_us": {
+            "baseline": [
+              1.7455999553203583,
+              1.7388799786567688,
+              1.7414399981498718,
+              1.7465600371360779,
+              1.7529599368572235,
+              1.73567995429039,
+              1.7340800166130066,
+              1.7475199699401855,
+              1.756799966096878
+            ],
+            "manual": [
+              1.3491199910640717,
+              1.3327999413013458,
+              1.3264000415802002,
+              1.3148799538612366,
+              1.32192000746727,
+              1.3340799510478973,
+              1.3411200046539307,
+              1.3251200318336487,
+              1.3177600502967834
+            ],
+            "private": [
+              1.3340799510478973,
+              1.3398399949073792,
+              1.329600065946579,
+              1.3283200562000275,
+              1.327040046453476,
+              1.324480026960373,
+              1.3206399977207184,
+              1.3228799402713776,
+              1.32192000746727
+            ],
+            "reset_only": [
+              0.6623999774456024,
+              0.631679967045784,
+              0.6310400366783142,
+              0.6246399879455566,
+              0.6297600269317627,
+              0.6281600147485733,
+              0.6335999816656113,
+              0.6361600011587143,
+              0.6246399879455566
+            ]
+          },
+          "warmup_ms": 50
+        },
+        "dtype": "bf16",
+        "exact_integer_correctness": {
+          "baseline": true,
+          "manual": true,
+          "private": true
+        },
+        "grid": [
+          4,
+          1,
+          1
+        ],
+        "input_elements": 486,
+        "maximum_contributions": 9,
+        "native_to_manual": 1.0004825127059807,
+        "output_elements": 102,
+        "random_maximum_error": {
+          "baseline": 0.0,
+          "manual": 0.0,
+          "private": 0.0
+        },
+        "random_maximum_error_bound": 4.696894814083488e-06,
+        "reset_only_ms": 0.0006310400366783142,
+        "reset_plus_kernel_ms": {
+          "baseline": 0.0017455999553203582,
+          "manual": 0.0013264000415802002,
+          "private": 0.0013270400464534759
+        },
+        "shape": [
+          [
+            2,
+            3,
+            17
+          ],
+          -1,
+          9,
+          1
+        ],
+        "specialization_id": "99059c3b7bb5d417",
+        "speedup": 1.3154086494868686
+      },
+      {
+        "backing_allocations_verified_disjoint": true,
+        "destinations_with_collisions": 0,
+        "device_timing": {
+          "median_us": {
+            "baseline": 1.5695999562740326,
+            "manual": 1.2307199835777283,
+            "private": 1.2323199957609177,
+            "reset_only": 0.6179200112819672
+          },
+          "order": "randomized interleaving; clocks not locked",
+          "repetitions": 100,
+          "rounds": 9,
+          "samples_us": {
+            "baseline": [
+              1.5919999778270721,
+              1.5638400614261627,
+              1.5702399611473083,
+              1.5695999562740326,
+              1.5811200439929962,
+              1.568319946527481,
+              1.5670399367809296,
+              1.581760048866272,
+              1.5654399991035461
+            ],
+            "manual": [
+              1.2284799665212631,
+              1.223680004477501,
+              1.2303999811410904,
+              1.2217599898576736,
+              1.2451200187206268,
+              1.2399999797344208,
+              1.2332800030708313,
+              1.244480013847351,
+              1.2307199835777283
+            ],
+            "private": [
+              1.279360055923462,
+              1.2323199957609177,
+              1.2460800260305405,
+              1.236800029873848,
+              1.2217599898576736,
+              1.2300799787044525,
+              1.2220799922943115,
+              1.239679977297783,
+              1.2246400117874146
+            ],
+            "reset_only": [
+              0.607680007815361,
+              0.6281600147485733,
+              0.6214400008320808,
+              0.6310400366783142,
+              0.6246399879455566,
+              0.6179200112819672,
+              0.6067200005054474,
+              0.613120011985302,
+              0.6089600175619125
+            ]
+          },
+          "warmup_ms": 50
+        },
+        "dtype": "fp16",
+        "exact_integer_correctness": {
+          "baseline": true,
+          "manual": true,
+          "private": true
+        },
+        "grid": [
+          1,
+          1,
+          1
+        ],
+        "input_elements": 24,
+        "maximum_contributions": 1,
+        "native_to_manual": 1.001300061918665,
+        "output_elements": 34,
+        "random_maximum_error": {
+          "baseline": 0.0,
+          "manual": 0.0,
+          "private": 0.0
+        },
+        "random_maximum_error_bound": 0.0,
+        "reset_only_ms": 0.0006179200112819672,
+        "reset_plus_kernel_ms": {
+          "baseline": 0.0015695999562740327,
+          "manual": 0.0012307199835777283,
+          "private": 0.0012323199957609177
+        },
+        "shape": [
+          [
+            2,
+            17
+          ],
+          1,
+          4,
+          6
+        ],
+        "specialization_id": "77300d36d72f4a93",
+        "speedup": 1.2736951130171799
+      },
+      {
+        "backing_allocations_verified_disjoint": true,
+        "destinations_with_collisions": 0,
+        "device_timing": {
+          "median_us": {
+            "baseline": 1.6147199273109436,
+            "manual": 1.2643200159072876,
+            "private": 1.263040006160736,
+            "reset_only": 0.6307200342416763
+          },
+          "order": "randomized interleaving; clocks not locked",
+          "repetitions": 100,
+          "rounds": 9,
+          "samples_us": {
+            "baseline": [
+              1.6620799899101257,
+              1.6131199896335602,
+              1.6128000617027283,
+              1.610880047082901,
+              1.6115200519561768,
+              1.6147199273109436,
+              1.6310399770736694,
+              1.6150400042533875,
+              1.6179199516773224
+            ],
+            "manual": [
+              1.273919939994812,
+              1.2643200159072876,
+              1.260479986667633,
+              1.2675200402736664,
+              1.2665599584579468,
+              1.2614400684833527,
+              1.2624000012874603,
+              1.2582400441169739,
+              1.2691199779510498
+            ],
+            "private": [
+              1.2591999769210815,
+              1.2732799351215363,
+              1.2662400305271149,
+              1.263040006160736,
+              1.2566399574279785,
+              1.2720000743865967,
+              1.265919953584671,
+              1.263040006160736,
+              1.2624000012874603
+            ],
+            "reset_only": [
+              0.7142399996519089,
+              0.6227200105786324,
+              0.6291200220584869,
+              0.6335999816656113,
+              0.6304000318050385,
+              0.6339199841022491,
+              0.6361600011587143,
+              0.6272000074386597,
+              0.6307200342416763
+            ]
+          },
+          "warmup_ms": 50
+        },
+        "dtype": "fp32",
+        "exact_integer_correctness": {
+          "baseline": true,
+          "manual": true,
+          "private": true
+        },
+        "grid": [
+          1,
+          1,
+          1
+        ],
+        "input_elements": 24,
+        "maximum_contributions": 1,
+        "native_to_manual": 0.9989875903802463,
+        "output_elements": 34,
+        "random_maximum_error": {
+          "baseline": 0.0,
+          "manual": 0.0,
+          "private": 0.0
+        },
+        "random_maximum_error_bound": 0.0,
+        "reset_only_ms": 0.0006307200342416763,
+        "reset_plus_kernel_ms": {
+          "baseline": 0.0016147199273109437,
+          "manual": 0.0012643200159072876,
+          "private": 0.001263040006160736
+        },
+        "shape": [
+          [
+            2,
+            17
+          ],
+          1,
+          4,
+          6
+        ],
+        "specialization_id": "dfcde7b652f1a453",
+        "speedup": 1.2784392572165704
+      },
+      {
+        "backing_allocations_verified_disjoint": true,
+        "destinations_with_collisions": 0,
+        "device_timing": {
+          "median_us": {
+            "baseline": 1.6310399770736694,
+            "manual": 1.2774400413036346,
+            "private": 1.2675200402736664,
+            "reset_only": 0.6438399851322174
+          },
+          "order": "randomized interleaving; clocks not locked",
+          "repetitions": 100,
+          "rounds": 9,
+          "samples_us": {
+            "baseline": [
+              1.6345599293708801,
+              1.629440039396286,
+              1.632319986820221,
+              1.6380800306797028,
+              1.6355200111865997,
+              1.6275200247764587,
+              1.6310399770736694,
+              1.6275200247764587,
+              1.6275200247764587
+            ],
+            "manual": [
+              1.3171200454235077,
+              1.2812800705432892,
+              1.2774400413036346,
+              1.2822400033473969,
+              1.2649600207805634,
+              1.263040006160736,
+              1.2649600207805634,
+              1.2595200538635254,
+              1.3222399353981018
+            ],
+            "private": [
+              1.2675200402736664,
+              1.2835200130939484,
+              1.271360069513321,
+              1.2643200159072876,
+              1.260800063610077,
+              1.279360055923462,
+              1.260479986667633,
+              1.2681600451469421,
+              1.2636800110340118
+            ],
+            "reset_only": [
+              0.6355199962854385,
+              0.6508799642324448,
+              0.6275200098752975,
+              0.6438399851322174,
+              0.6272000074386597,
+              0.6508799642324448,
+              0.6323199719190598,
+              0.6499200314283371,
+              0.6444799900054932
+            ]
+          },
+          "warmup_ms": 50
+        },
+        "dtype": "bf16",
+        "exact_integer_correctness": {
+          "baseline": true,
+          "manual": true,
+          "private": true
+        },
+        "grid": [
+          1,
+          1,
+          1
+        ],
+        "input_elements": 24,
+        "maximum_contributions": 1,
+        "native_to_manual": 0.9922344683826845,
+        "output_elements": 34,
+        "random_maximum_error": {
+          "baseline": 0.0,
+          "manual": 0.0,
+          "private": 0.0
+        },
+        "random_maximum_error_bound": 0.0,
+        "reset_only_ms": 0.0006438399851322174,
+        "reset_plus_kernel_ms": {
+          "baseline": 0.0016310399770736695,
+          "manual": 0.0012774400413036347,
+          "private": 0.0012675200402736664
+        },
+        "shape": [
+          [
+            2,
+            17
+          ],
+          1,
+          4,
+          6
+        ],
+        "specialization_id": "5586851d90deb0d8",
+        "speedup": 1.2867962045961157
+      }
+    ],
+    "geometric_mean_speedup": 1.2996664050671645,
+    "gpu": "NVIDIA B300 SXM6 PC",
+    "helper": {
+      "path": "coverage_experiment.py",
+      "sha256": "db50502fc3f549eb7550f594521835097e0d14d994f477e77da7bbaa812330d2"
+    },
+    "protocol": "Shared physical input/output buffers; CUDA graphs capture100 repetitions;9 randomized-order rounds;50ms warmup; medians across rounds. GPU exclusively assigned to this experiment. Clocks not locked.",
+    "scope": "Output zero reset plus unchanged extracted kernel only. Excludes allocation, final dtype conversion, package dispatch, and full benchmark harness. Seven exact repository benchmark shapes; three dtypes. Small launch-bound cases; not a distribution over the full inventory. Reset-only is separately captured and measured, not subtracted.",
+    "status": "measured_pilot"
+  },
+  "variants": [
+    {
+      "assembly": {
+        "ptx": {
+          "path": "608125c241e45c4a.baseline.ptx.gz",
+          "sha256": "55c729bf651b5b371d6b7d6407a3d259768ce51797fee068fd7fce704183665b"
+        },
+        "ttgir": {
+          "path": "608125c241e45c4a.baseline.ttgir.gz",
+          "sha256": "502913abd2dbaa01227d110911eb1d9427a654fb48cbe53453bb5b70535a3e44"
+        },
+        "ttir": {
+          "path": "608125c241e45c4a.baseline.ttir.gz",
+          "sha256": "6f779a9b011fa84cf60751c7b86a0d440819cc18464a798cb897a363f1b6c56a"
+        }
+      },
+      "dtype": "fp16",
+      "ptx_atomics": [
+        "@%p1 atom.global.gpu.acq_rel.add.f32 %r1, [ %rd2 + 0 ], %r2;"
+      ],
+      "ptx_cta_barriers": 2,
+      "registers": 18,
+      "specialization_id": "608125c241e45c4a",
+      "spills": 0,
+      "transformed": false,
+      "variant": "baseline"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "608125c241e45c4a.private.ptx.gz",
+          "sha256": "4a210b3bdeb4e583c8a47b989b469eb245e04c3f76a3ef00c7f27bc684ea8de7"
+        },
+        "ttgir": {
+          "path": "608125c241e45c4a.private.ttgir.gz",
+          "sha256": "63e947301d282d1424c42f3d88ff29c3d89740d04bf58079c96b3e44c0fb7a1b"
+        },
+        "ttir": {
+          "path": "608125c241e45c4a.private.ttir.gz",
+          "sha256": "c8cc5a5a77576a478fec68349456720806154844ed3a2f633b4309fb0027d0a8"
+        }
+      },
+      "dtype": "fp16",
+      "ptx_atomics": [
+        "@%p1 red.global.gpu.relaxed.add.f32 [ %rd2 + 0 ], %r1;"
+      ],
+      "ptx_cta_barriers": 0,
+      "registers": 18,
+      "specialization_id": "608125c241e45c4a",
+      "spills": 0,
+      "transformed": true,
+      "variant": "private"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "608125c241e45c4a.manual.ptx.gz",
+          "sha256": "3aa63520e224091c6c786f5d1663096573bf58f7465b5be3f956e1dc438b5691"
+        },
+        "ttgir": {
+          "path": "608125c241e45c4a.manual.ttgir.gz",
+          "sha256": "7661640dd36864484c685c1bfb2f24c37dac4f20b159a6ea98db272683aec82e"
+        },
+        "ttir": {
+          "path": "608125c241e45c4a.manual.ttir.gz",
+          "sha256": "2970428705e008a82503628648eeabc55f0598a97cc799181a40a1eb1aec915c"
+        }
+      },
+      "dtype": "fp16",
+      "ptx_atomics": [
+        "@%p1 red.global.gpu.relaxed.add.f32 [ %rd2 + 0 ], %r1;"
+      ],
+      "ptx_cta_barriers": 0,
+      "registers": 18,
+      "specialization_id": "608125c241e45c4a",
+      "spills": 0,
+      "transformed": false,
+      "variant": "manual"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "17b13ff6eb83899d.baseline.ptx.gz",
+          "sha256": "472c590730947a37c7a4bd22e6e15b1119baea2c83a440ce031142e59b68b1d2"
+        },
+        "ttgir": {
+          "path": "17b13ff6eb83899d.baseline.ttgir.gz",
+          "sha256": "807711fbc28377d292b100616ae3e21d13c352306cb58752ffb840c00e39fb55"
+        },
+        "ttir": {
+          "path": "17b13ff6eb83899d.baseline.ttir.gz",
+          "sha256": "ac4b649089d9b99094a7da018be1f1db7be7c15640521b318ca6d0b06d88e042"
+        }
+      },
+      "dtype": "fp32",
+      "ptx_atomics": [
+        "@%p1 atom.global.gpu.acq_rel.add.f32 %r2, [ %rd2 + 0 ], %r3;"
+      ],
+      "ptx_cta_barriers": 2,
+      "registers": 18,
+      "specialization_id": "17b13ff6eb83899d",
+      "spills": 0,
+      "transformed": false,
+      "variant": "baseline"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "17b13ff6eb83899d.private.ptx.gz",
+          "sha256": "d2c94f644fe11f4c7ac9cd18cc7baf5dae15a1212bf2e7550f50e94b21f2d4ec"
+        },
+        "ttgir": {
+          "path": "17b13ff6eb83899d.private.ttgir.gz",
+          "sha256": "cc165a3ba4c2b8493200ae6407070577eeeee3f3648f5b23d8eba0c2b23d2863"
+        },
+        "ttir": {
+          "path": "17b13ff6eb83899d.private.ttir.gz",
+          "sha256": "c10fef7171cc12163514770a904d06e1419d16a8948e0209c1bf1b3039719bb8"
+        }
+      },
+      "dtype": "fp32",
+      "ptx_atomics": [
+        "@%p1 red.global.gpu.relaxed.add.f32 [ %rd2 + 0 ], %r2;"
+      ],
+      "ptx_cta_barriers": 0,
+      "registers": 18,
+      "specialization_id": "17b13ff6eb83899d",
+      "spills": 0,
+      "transformed": true,
+      "variant": "private"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "17b13ff6eb83899d.manual.ptx.gz",
+          "sha256": "e49c8192fe8d27c5d66e1a59f8450e10d9fa0cedf995e098c80de677395b42d8"
+        },
+        "ttgir": {
+          "path": "17b13ff6eb83899d.manual.ttgir.gz",
+          "sha256": "a64a2dede391073384f33c6d4abdcd781208868e8c48d3ebc94cf3200a4b0ee2"
+        },
+        "ttir": {
+          "path": "17b13ff6eb83899d.manual.ttir.gz",
+          "sha256": "a5080380484df6dee5343b9cf3dee8ae24fe534eb3c379614b0bfccec25126e0"
+        }
+      },
+      "dtype": "fp32",
+      "ptx_atomics": [
+        "@%p1 red.global.gpu.relaxed.add.f32 [ %rd2 + 0 ], %r2;"
+      ],
+      "ptx_cta_barriers": 0,
+      "registers": 18,
+      "specialization_id": "17b13ff6eb83899d",
+      "spills": 0,
+      "transformed": false,
+      "variant": "manual"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "8e79f6a3bb7fa13c.baseline.ptx.gz",
+          "sha256": "b00268c2e978173a29fd9675a59e1a4d388f2d26da15dd5195dd9abc9f4827bf"
+        },
+        "ttgir": {
+          "path": "8e79f6a3bb7fa13c.baseline.ttgir.gz",
+          "sha256": "b4182a234bb93843a4054ee41f2f5e8352c445960410f719a813541a828c41a2"
+        },
+        "ttir": {
+          "path": "8e79f6a3bb7fa13c.baseline.ttir.gz",
+          "sha256": "24149612d6456585d4d8d333ad14acc5a8aadd1b6a9eaa2aa418547b176d15b9"
+        }
+      },
+      "dtype": "bf16",
+      "ptx_atomics": [
+        "@%p1 atom.global.gpu.acq_rel.add.f32 %r1, [ %rd2 + 0 ], %r2;"
+      ],
+      "ptx_cta_barriers": 2,
+      "registers": 18,
+      "specialization_id": "8e79f6a3bb7fa13c",
+      "spills": 0,
+      "transformed": false,
+      "variant": "baseline"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "8e79f6a3bb7fa13c.private.ptx.gz",
+          "sha256": "44cf04ea27cc9befd1d25749ddd01d14cf90849a37a9611fa2328bc98eeab8f7"
+        },
+        "ttgir": {
+          "path": "8e79f6a3bb7fa13c.private.ttgir.gz",
+          "sha256": "d82391529882b9bca7af73f0e8102a3b72e4fb11f6eaa4b715e6fd9b1344f2db"
+        },
+        "ttir": {
+          "path": "8e79f6a3bb7fa13c.private.ttir.gz",
+          "sha256": "1e660a58cb6fd1398d2541be6cdfd7c9621c4c2cd76b6bc4060b5b678a62d472"
+        }
+      },
+      "dtype": "bf16",
+      "ptx_atomics": [
+        "@%p1 red.global.gpu.relaxed.add.f32 [ %rd2 + 0 ], %r1;"
+      ],
+      "ptx_cta_barriers": 0,
+      "registers": 18,
+      "specialization_id": "8e79f6a3bb7fa13c",
+      "spills": 0,
+      "transformed": true,
+      "variant": "private"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "8e79f6a3bb7fa13c.manual.ptx.gz",
+          "sha256": "429309799b7d2169d0c52792ba8533984ca0231c634f59027a6d5f295e35f3d8"
+        },
+        "ttgir": {
+          "path": "8e79f6a3bb7fa13c.manual.ttgir.gz",
+          "sha256": "38a3f5e6690fc9714b6e4e71a069f0a781c9d87d38ac909ce63e608db4e8cc8f"
+        },
+        "ttir": {
+          "path": "8e79f6a3bb7fa13c.manual.ttir.gz",
+          "sha256": "721e6e78944e62e2f5136e093c49a68f46f8e5f26a5a3681b7368db3320b9232"
+        }
+      },
+      "dtype": "bf16",
+      "ptx_atomics": [
+        "@%p1 red.global.gpu.relaxed.add.f32 [ %rd2 + 0 ], %r1;"
+      ],
+      "ptx_cta_barriers": 0,
+      "registers": 18,
+      "specialization_id": "8e79f6a3bb7fa13c",
+      "spills": 0,
+      "transformed": false,
+      "variant": "manual"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "f27d61145518df0d.baseline.ptx.gz",
+          "sha256": "a7e4d37fcbdd2c2ba5041e79319d120da8433219df901137de2dc8275c96f29d"
+        },
+        "ttgir": {
+          "path": "f27d61145518df0d.baseline.ttgir.gz",
+          "sha256": "b884a327bcc5edc33e3adda0c468e7ed560d4a7336669e8e9aed6ba1b0285585"
+        },
+        "ttir": {
+          "path": "f27d61145518df0d.baseline.ttir.gz",
+          "sha256": "45cf3425e00b03cb0ffcbb2b14fd71971723e65a98a1c50138930f263093a840"
+        }
+      },
+      "dtype": "fp16",
+      "ptx_atomics": [
+        "@%p1 atom.global.gpu.acq_rel.add.f32 %r1, [ %rd2 + 0 ], %r2;"
+      ],
+      "ptx_cta_barriers": 2,
+      "registers": 26,
+      "specialization_id": "f27d61145518df0d",
+      "spills": 0,
+      "transformed": false,
+      "variant": "baseline"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "f27d61145518df0d.private.ptx.gz",
+          "sha256": "c29ad9c6550b35d55539861a24dfa2eff3ca45271b127aa5ed1e2b0ec01cc9f2"
+        },
+        "ttgir": {
+          "path": "f27d61145518df0d.private.ttgir.gz",
+          "sha256": "b79f932ecda85b3ebabcf18be82de478d9393088a343108063be53edb3266c9a"
+        },
+        "ttir": {
+          "path": "f27d61145518df0d.private.ttir.gz",
+          "sha256": "efe8370655e96834725c160cbf1185a1c613633fb292183d974e989cd0c5d681"
+        }
+      },
+      "dtype": "fp16",
+      "ptx_atomics": [
+        "@%p1 red.global.gpu.relaxed.add.f32 [ %rd2 + 0 ], %r1;"
+      ],
+      "ptx_cta_barriers": 0,
+      "registers": 26,
+      "specialization_id": "f27d61145518df0d",
+      "spills": 0,
+      "transformed": true,
+      "variant": "private"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "f27d61145518df0d.manual.ptx.gz",
+          "sha256": "412f29b8ab3dd366fede4d83bcdce2ed40a035fbf19a5d675c1ed71c6e260c45"
+        },
+        "ttgir": {
+          "path": "f27d61145518df0d.manual.ttgir.gz",
+          "sha256": "cdd2b0891ea8c37a23490f81ceece3bdcd875811207a1844ce277349ae45c1cb"
+        },
+        "ttir": {
+          "path": "f27d61145518df0d.manual.ttir.gz",
+          "sha256": "6ceb4902d2bb9ee8b2d41894c38b80886e1a97d156cc27dd636e81fa3a641609"
+        }
+      },
+      "dtype": "fp16",
+      "ptx_atomics": [
+        "@%p1 red.global.gpu.relaxed.add.f32 [ %rd2 + 0 ], %r1;"
+      ],
+      "ptx_cta_barriers": 0,
+      "registers": 26,
+      "specialization_id": "f27d61145518df0d",
+      "spills": 0,
+      "transformed": false,
+      "variant": "manual"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "9b5674f024b6833a.baseline.ptx.gz",
+          "sha256": "d8b529c382d39840d985e90277d031eca6ea13f4a79546c61e9bc244878b044e"
+        },
+        "ttgir": {
+          "path": "9b5674f024b6833a.baseline.ttgir.gz",
+          "sha256": "888039db83c7e50ae25419a01eea7943c1a22e70d1aa93fab76d71075c505f78"
+        },
+        "ttir": {
+          "path": "9b5674f024b6833a.baseline.ttir.gz",
+          "sha256": "78bb5e8dc25c0d8bdc9e6a87e3f1099e9a17ec6cf4ccad73eae90d2295afb079"
+        }
+      },
+      "dtype": "fp32",
+      "ptx_atomics": [
+        "@%p1 atom.global.gpu.acq_rel.add.f32 %r2, [ %rd2 + 0 ], %r3;"
+      ],
+      "ptx_cta_barriers": 2,
+      "registers": 26,
+      "specialization_id": "9b5674f024b6833a",
+      "spills": 0,
+      "transformed": false,
+      "variant": "baseline"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "9b5674f024b6833a.private.ptx.gz",
+          "sha256": "3e467514430046d0aa8d4493412c383296d3b07d31b12ac9d16242ba2ac3e82a"
+        },
+        "ttgir": {
+          "path": "9b5674f024b6833a.private.ttgir.gz",
+          "sha256": "7ff889404fa19deaaecb407a87dd7d1223e2af44a9d2e5240af85fd5977fd0e7"
+        },
+        "ttir": {
+          "path": "9b5674f024b6833a.private.ttir.gz",
+          "sha256": "ebf473b13e8ffb1b34b51dc9544074fba860899875094f58a3a181ace09e43af"
+        }
+      },
+      "dtype": "fp32",
+      "ptx_atomics": [
+        "@%p1 red.global.gpu.relaxed.add.f32 [ %rd2 + 0 ], %r2;"
+      ],
+      "ptx_cta_barriers": 0,
+      "registers": 26,
+      "specialization_id": "9b5674f024b6833a",
+      "spills": 0,
+      "transformed": true,
+      "variant": "private"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "9b5674f024b6833a.manual.ptx.gz",
+          "sha256": "354f72b019d9fec6d539a8c2fcd5e3154f8c0e36a8f812f28318adc07c06bae2"
+        },
+        "ttgir": {
+          "path": "9b5674f024b6833a.manual.ttgir.gz",
+          "sha256": "579f27c6ad2a393865509649653a48605fe3e3ad11018d5d86f9d313118ff251"
+        },
+        "ttir": {
+          "path": "9b5674f024b6833a.manual.ttir.gz",
+          "sha256": "4e5626c994f085b5c6a8ef3ed6f7ed76b184db1824ac1c31b443f38fd6185887"
+        }
+      },
+      "dtype": "fp32",
+      "ptx_atomics": [
+        "@%p1 red.global.gpu.relaxed.add.f32 [ %rd2 + 0 ], %r2;"
+      ],
+      "ptx_cta_barriers": 0,
+      "registers": 26,
+      "specialization_id": "9b5674f024b6833a",
+      "spills": 0,
+      "transformed": false,
+      "variant": "manual"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "8dab4fec226f518e.baseline.ptx.gz",
+          "sha256": "de074dcb646abb8d752fb9b153ab8d53ba99d0843e07527bb774a82a80f9988d"
+        },
+        "ttgir": {
+          "path": "8dab4fec226f518e.baseline.ttgir.gz",
+          "sha256": "c70cac63edccab09addb89afc9a6e3afb5a15a5bc06f57440aefcef1290422b6"
+        },
+        "ttir": {
+          "path": "8dab4fec226f518e.baseline.ttir.gz",
+          "sha256": "18afc7c35fcfb7d49cfb855502250cda0e859fe93473543e44283f77da30c3a4"
+        }
+      },
+      "dtype": "bf16",
+      "ptx_atomics": [
+        "@%p1 atom.global.gpu.acq_rel.add.f32 %r1, [ %rd2 + 0 ], %r2;"
+      ],
+      "ptx_cta_barriers": 2,
+      "registers": 26,
+      "specialization_id": "8dab4fec226f518e",
+      "spills": 0,
+      "transformed": false,
+      "variant": "baseline"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "8dab4fec226f518e.private.ptx.gz",
+          "sha256": "96e09afa392bc6f8a4892ebcc7b6123205b50ea6a324e7403f9c10e1ad6e9756"
+        },
+        "ttgir": {
+          "path": "8dab4fec226f518e.private.ttgir.gz",
+          "sha256": "064b88081c9521791b6cfa10cc7f51256fa52423cfb7e05dd8c23f8d2ec1920a"
+        },
+        "ttir": {
+          "path": "8dab4fec226f518e.private.ttir.gz",
+          "sha256": "438eb04ddf45ae12572b5a9ea1d95cd6e6c8470135cd3384bdd8643b7b16b4bd"
+        }
+      },
+      "dtype": "bf16",
+      "ptx_atomics": [
+        "@%p1 red.global.gpu.relaxed.add.f32 [ %rd2 + 0 ], %r1;"
+      ],
+      "ptx_cta_barriers": 0,
+      "registers": 26,
+      "specialization_id": "8dab4fec226f518e",
+      "spills": 0,
+      "transformed": true,
+      "variant": "private"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "8dab4fec226f518e.manual.ptx.gz",
+          "sha256": "8a32758f670172155a85bb258e4caed5a5a0fcc91e1ab26b7c1be4fc53865622"
+        },
+        "ttgir": {
+          "path": "8dab4fec226f518e.manual.ttgir.gz",
+          "sha256": "211078f0b388bebd3b2ca9e35d22da4b3cd827c9e340667807b67787805fdd27"
+        },
+        "ttir": {
+          "path": "8dab4fec226f518e.manual.ttir.gz",
+          "sha256": "8b095f080fcfac5fdf92f89e273737a861503f26f12e2998b55d667731de92d6"
+        }
+      },
+      "dtype": "bf16",
+      "ptx_atomics": [
+        "@%p1 red.global.gpu.relaxed.add.f32 [ %rd2 + 0 ], %r1;"
+      ],
+      "ptx_cta_barriers": 0,
+      "registers": 26,
+      "specialization_id": "8dab4fec226f518e",
+      "spills": 0,
+      "transformed": false,
+      "variant": "manual"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "c4b8753aa1364b37.baseline.ptx.gz",
+          "sha256": "55c729bf651b5b371d6b7d6407a3d259768ce51797fee068fd7fce704183665b"
+        },
+        "ttgir": {
+          "path": "c4b8753aa1364b37.baseline.ttgir.gz",
+          "sha256": "3fe43b4d8976723338a282a359a0b1e271d5d5cd283ad30ab3b5ec11ac562951"
+        },
+        "ttir": {
+          "path": "c4b8753aa1364b37.baseline.ttir.gz",
+          "sha256": "c4d45245f57362459326d0c70cdbe9d7369aae0942df8e379e6c1633fa49b97f"
+        }
+      },
+      "dtype": "fp16",
+      "ptx_atomics": [
+        "@%p1 atom.global.gpu.acq_rel.add.f32 %r1, [ %rd2 + 0 ], %r2;"
+      ],
+      "ptx_cta_barriers": 2,
+      "registers": 18,
+      "specialization_id": "c4b8753aa1364b37",
+      "spills": 0,
+      "transformed": false,
+      "variant": "baseline"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "c4b8753aa1364b37.private.ptx.gz",
+          "sha256": "4a210b3bdeb4e583c8a47b989b469eb245e04c3f76a3ef00c7f27bc684ea8de7"
+        },
+        "ttgir": {
+          "path": "c4b8753aa1364b37.private.ttgir.gz",
+          "sha256": "06a065915eedd92a26041b4f932b306622849d2b34e953c01ace2456bff95772"
+        },
+        "ttir": {
+          "path": "c4b8753aa1364b37.private.ttir.gz",
+          "sha256": "c37641ec720e7f2b09033eb4f2db28fbddc5661404d893d791c61e6ed32feb75"
+        }
+      },
+      "dtype": "fp16",
+      "ptx_atomics": [
+        "@%p1 red.global.gpu.relaxed.add.f32 [ %rd2 + 0 ], %r1;"
+      ],
+      "ptx_cta_barriers": 0,
+      "registers": 18,
+      "specialization_id": "c4b8753aa1364b37",
+      "spills": 0,
+      "transformed": true,
+      "variant": "private"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "c4b8753aa1364b37.manual.ptx.gz",
+          "sha256": "3aa63520e224091c6c786f5d1663096573bf58f7465b5be3f956e1dc438b5691"
+        },
+        "ttgir": {
+          "path": "c4b8753aa1364b37.manual.ttgir.gz",
+          "sha256": "bb25d45d9b8f50b2b9dc7f2e96cae5b6e836646d38e8ec56fdf34fa61772a833"
+        },
+        "ttir": {
+          "path": "c4b8753aa1364b37.manual.ttir.gz",
+          "sha256": "eb2112f8a913a229fbddce880eda382f8ebbb2db11bfdb3f3ad2b21898478686"
+        }
+      },
+      "dtype": "fp16",
+      "ptx_atomics": [
+        "@%p1 red.global.gpu.relaxed.add.f32 [ %rd2 + 0 ], %r1;"
+      ],
+      "ptx_cta_barriers": 0,
+      "registers": 18,
+      "specialization_id": "c4b8753aa1364b37",
+      "spills": 0,
+      "transformed": false,
+      "variant": "manual"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "d660ed566faeb88d.baseline.ptx.gz",
+          "sha256": "472c590730947a37c7a4bd22e6e15b1119baea2c83a440ce031142e59b68b1d2"
+        },
+        "ttgir": {
+          "path": "d660ed566faeb88d.baseline.ttgir.gz",
+          "sha256": "10c3ce2fda3df35d2bc943db695c0914d3526c1d71eb55b71fada1234b06097c"
+        },
+        "ttir": {
+          "path": "d660ed566faeb88d.baseline.ttir.gz",
+          "sha256": "9e569c91b20dadc70d416378760172deb01e02c62667579987016bcdce565d88"
+        }
+      },
+      "dtype": "fp32",
+      "ptx_atomics": [
+        "@%p1 atom.global.gpu.acq_rel.add.f32 %r2, [ %rd2 + 0 ], %r3;"
+      ],
+      "ptx_cta_barriers": 2,
+      "registers": 18,
+      "specialization_id": "d660ed566faeb88d",
+      "spills": 0,
+      "transformed": false,
+      "variant": "baseline"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "d660ed566faeb88d.private.ptx.gz",
+          "sha256": "d2c94f644fe11f4c7ac9cd18cc7baf5dae15a1212bf2e7550f50e94b21f2d4ec"
+        },
+        "ttgir": {
+          "path": "d660ed566faeb88d.private.ttgir.gz",
+          "sha256": "647df5e286067563f8a406d33e1af08e0919b6c18204004d51fc204f03b0ca8c"
+        },
+        "ttir": {
+          "path": "d660ed566faeb88d.private.ttir.gz",
+          "sha256": "6ad16fd608fa6a979a4de5b8822bc47695750f0b98445dd88dbf85b43747ecb6"
+        }
+      },
+      "dtype": "fp32",
+      "ptx_atomics": [
+        "@%p1 red.global.gpu.relaxed.add.f32 [ %rd2 + 0 ], %r2;"
+      ],
+      "ptx_cta_barriers": 0,
+      "registers": 18,
+      "specialization_id": "d660ed566faeb88d",
+      "spills": 0,
+      "transformed": true,
+      "variant": "private"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "d660ed566faeb88d.manual.ptx.gz",
+          "sha256": "e49c8192fe8d27c5d66e1a59f8450e10d9fa0cedf995e098c80de677395b42d8"
+        },
+        "ttgir": {
+          "path": "d660ed566faeb88d.manual.ttgir.gz",
+          "sha256": "2131ab123b6f0891ea983e61e0a71fa848bb6356f9155f5903b841d74756c01a"
+        },
+        "ttir": {
+          "path": "d660ed566faeb88d.manual.ttir.gz",
+          "sha256": "401f87756da729396f6d39e163241acd9cc77a7223b42546bff6de8d0bfe9950"
+        }
+      },
+      "dtype": "fp32",
+      "ptx_atomics": [
+        "@%p1 red.global.gpu.relaxed.add.f32 [ %rd2 + 0 ], %r2;"
+      ],
+      "ptx_cta_barriers": 0,
+      "registers": 18,
+      "specialization_id": "d660ed566faeb88d",
+      "spills": 0,
+      "transformed": false,
+      "variant": "manual"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "1d2211aa2f38d486.baseline.ptx.gz",
+          "sha256": "b00268c2e978173a29fd9675a59e1a4d388f2d26da15dd5195dd9abc9f4827bf"
+        },
+        "ttgir": {
+          "path": "1d2211aa2f38d486.baseline.ttgir.gz",
+          "sha256": "2b4ded47999134e9f6b5369cae7fb3b8865a2d9c65e9c4c9db35ad0939122b79"
+        },
+        "ttir": {
+          "path": "1d2211aa2f38d486.baseline.ttir.gz",
+          "sha256": "925d0761ba262324e25cebf5e253c5da0476796fe28de03f5f3bc65114916689"
+        }
+      },
+      "dtype": "bf16",
+      "ptx_atomics": [
+        "@%p1 atom.global.gpu.acq_rel.add.f32 %r1, [ %rd2 + 0 ], %r2;"
+      ],
+      "ptx_cta_barriers": 2,
+      "registers": 18,
+      "specialization_id": "1d2211aa2f38d486",
+      "spills": 0,
+      "transformed": false,
+      "variant": "baseline"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "1d2211aa2f38d486.private.ptx.gz",
+          "sha256": "44cf04ea27cc9befd1d25749ddd01d14cf90849a37a9611fa2328bc98eeab8f7"
+        },
+        "ttgir": {
+          "path": "1d2211aa2f38d486.private.ttgir.gz",
+          "sha256": "9bb70dfa4f8cd630b3cd07cfbe55c6b3a87db73e944be67deddc1e80afbef0db"
+        },
+        "ttir": {
+          "path": "1d2211aa2f38d486.private.ttir.gz",
+          "sha256": "e7d82491e3e5b41b93b46110e2eeb63389d6e4b2175f4d3521e86ebeb5274c19"
+        }
+      },
+      "dtype": "bf16",
+      "ptx_atomics": [
+        "@%p1 red.global.gpu.relaxed.add.f32 [ %rd2 + 0 ], %r1;"
+      ],
+      "ptx_cta_barriers": 0,
+      "registers": 18,
+      "specialization_id": "1d2211aa2f38d486",
+      "spills": 0,
+      "transformed": true,
+      "variant": "private"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "1d2211aa2f38d486.manual.ptx.gz",
+          "sha256": "429309799b7d2169d0c52792ba8533984ca0231c634f59027a6d5f295e35f3d8"
+        },
+        "ttgir": {
+          "path": "1d2211aa2f38d486.manual.ttgir.gz",
+          "sha256": "d808ed8ec8312aacfdbd237a82f891a43e54d37ee9fd744493e322c4f89cac28"
+        },
+        "ttir": {
+          "path": "1d2211aa2f38d486.manual.ttir.gz",
+          "sha256": "b73bb4c6f1012a5bb8da7c0fe80f86860364c6a29c49b2791c2d1fb3f7970716"
+        }
+      },
+      "dtype": "bf16",
+      "ptx_atomics": [
+        "@%p1 red.global.gpu.relaxed.add.f32 [ %rd2 + 0 ], %r1;"
+      ],
+      "ptx_cta_barriers": 0,
+      "registers": 18,
+      "specialization_id": "1d2211aa2f38d486",
+      "spills": 0,
+      "transformed": false,
+      "variant": "manual"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "d1cde69352bebd8e.baseline.ptx.gz",
+          "sha256": "714bf81f8609c129e206db7290be9f2f45e28f2931f13231533c9126be871e18"
+        },
+        "ttgir": {
+          "path": "d1cde69352bebd8e.baseline.ttgir.gz",
+          "sha256": "968ee73b751e0ede27e39afd614430b3d076a65b7f07adf83f689f3471647ca2"
+        },
+        "ttir": {
+          "path": "d1cde69352bebd8e.baseline.ttir.gz",
+          "sha256": "2706312d60ef676caa2fe094d4f114138590f6e087efe3ed4bf5834e5475c9ad"
+        }
+      },
+      "dtype": "fp16",
+      "ptx_atomics": [
+        "@%p1 atom.global.gpu.acq_rel.add.f32 %r1, [ %rd2 + 0 ], %r2;"
+      ],
+      "ptx_cta_barriers": 2,
+      "registers": 18,
+      "specialization_id": "d1cde69352bebd8e",
+      "spills": 0,
+      "transformed": false,
+      "variant": "baseline"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "d1cde69352bebd8e.private.ptx.gz",
+          "sha256": "7f7991d56231f0f5b1a66cb13d1d7224b11cb36e25a3f8a9cc596ab482ade90d"
+        },
+        "ttgir": {
+          "path": "d1cde69352bebd8e.private.ttgir.gz",
+          "sha256": "2868464de66beba3019cb6322d4cf330a9e45c1335f80238efd91817223a05c1"
+        },
+        "ttir": {
+          "path": "d1cde69352bebd8e.private.ttir.gz",
+          "sha256": "1a7c9e2698e5feab51d5cecec6d3656a74c0eef2ea356708cabbfcc6010a199c"
+        }
+      },
+      "dtype": "fp16",
+      "ptx_atomics": [
+        "@%p1 red.global.gpu.relaxed.add.f32 [ %rd2 + 0 ], %r1;"
+      ],
+      "ptx_cta_barriers": 0,
+      "registers": 18,
+      "specialization_id": "d1cde69352bebd8e",
+      "spills": 0,
+      "transformed": true,
+      "variant": "private"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "d1cde69352bebd8e.manual.ptx.gz",
+          "sha256": "78d7f79fa8b89bcb69384f9fec129e52d0e434a3c7344efdcbb7d02364b8aea6"
+        },
+        "ttgir": {
+          "path": "d1cde69352bebd8e.manual.ttgir.gz",
+          "sha256": "651d44b7dbcbfa82c19d2ed38d78aad19170aecc792f56c6f4e124e82dfc60a8"
+        },
+        "ttir": {
+          "path": "d1cde69352bebd8e.manual.ttir.gz",
+          "sha256": "810e3ddb94ffeff818c05b03526ac00428759abee462269c994d05251a17e6f7"
+        }
+      },
+      "dtype": "fp16",
+      "ptx_atomics": [
+        "@%p1 red.global.gpu.relaxed.add.f32 [ %rd2 + 0 ], %r1;"
+      ],
+      "ptx_cta_barriers": 0,
+      "registers": 18,
+      "specialization_id": "d1cde69352bebd8e",
+      "spills": 0,
+      "transformed": false,
+      "variant": "manual"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "f5ee50e5b6ca0eec.baseline.ptx.gz",
+          "sha256": "cd730fa698c20bc9261d8930f0e1249d956fac6fc4a4c894af80ce12d2cf4599"
+        },
+        "ttgir": {
+          "path": "f5ee50e5b6ca0eec.baseline.ttgir.gz",
+          "sha256": "045d81c22733675745bb9e0c47a3bff74099ff8eea81c47961b9d5ea07170a08"
+        },
+        "ttir": {
+          "path": "f5ee50e5b6ca0eec.baseline.ttir.gz",
+          "sha256": "890e475dd8e9ec2ba533c264ba892aa82bda66365faa37d5f0e77b567f7f10ea"
+        }
+      },
+      "dtype": "fp32",
+      "ptx_atomics": [
+        "@%p1 atom.global.gpu.acq_rel.add.f32 %r2, [ %rd2 + 0 ], %r3;"
+      ],
+      "ptx_cta_barriers": 2,
+      "registers": 18,
+      "specialization_id": "f5ee50e5b6ca0eec",
+      "spills": 0,
+      "transformed": false,
+      "variant": "baseline"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "f5ee50e5b6ca0eec.private.ptx.gz",
+          "sha256": "ce02863d3950e6841677ee4188bd5a9a2d6a4d7840ce1b38fdf6a8c44118fd29"
+        },
+        "ttgir": {
+          "path": "f5ee50e5b6ca0eec.private.ttgir.gz",
+          "sha256": "8b60c11ba5f9f42e286cd6bdca2ea1d4e373152405d47baf5b6bf459f21a2303"
+        },
+        "ttir": {
+          "path": "f5ee50e5b6ca0eec.private.ttir.gz",
+          "sha256": "00f2311eba3cadcd3c79a3fcc47ea07552f21a597600a11d26673dc1fb70a7cc"
+        }
+      },
+      "dtype": "fp32",
+      "ptx_atomics": [
+        "@%p1 red.global.gpu.relaxed.add.f32 [ %rd2 + 0 ], %r2;"
+      ],
+      "ptx_cta_barriers": 0,
+      "registers": 18,
+      "specialization_id": "f5ee50e5b6ca0eec",
+      "spills": 0,
+      "transformed": true,
+      "variant": "private"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "f5ee50e5b6ca0eec.manual.ptx.gz",
+          "sha256": "95cf3241bf46185b7f64e719fa1aa3eddb551f54df7b7cc6a53f355aee6d6b16"
+        },
+        "ttgir": {
+          "path": "f5ee50e5b6ca0eec.manual.ttgir.gz",
+          "sha256": "855e5f43cb8bc4250a9e2cdfa8120a355f01198d60d3578189a62a55cdb1e812"
+        },
+        "ttir": {
+          "path": "f5ee50e5b6ca0eec.manual.ttir.gz",
+          "sha256": "00a0db992fb670e936e06a111e776ed22fc629555a7e6011568398d998cd35ac"
+        }
+      },
+      "dtype": "fp32",
+      "ptx_atomics": [
+        "@%p1 red.global.gpu.relaxed.add.f32 [ %rd2 + 0 ], %r2;"
+      ],
+      "ptx_cta_barriers": 0,
+      "registers": 18,
+      "specialization_id": "f5ee50e5b6ca0eec",
+      "spills": 0,
+      "transformed": false,
+      "variant": "manual"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "e7d8e24a70fda869.baseline.ptx.gz",
+          "sha256": "4935f55fbc6aaa157f06ae93900ad8a4ca760dbcdc4f9b35b50aa676d4ee03ef"
+        },
+        "ttgir": {
+          "path": "e7d8e24a70fda869.baseline.ttgir.gz",
+          "sha256": "291cb31cbb4c3349cc0a30e2161351666b3c332ad1214d7e906d850692e23c3c"
+        },
+        "ttir": {
+          "path": "e7d8e24a70fda869.baseline.ttir.gz",
+          "sha256": "9234a82ea35b73f7a89d7f38c94be0733b6352520b2ae3800b665d37465a9bc3"
+        }
+      },
+      "dtype": "bf16",
+      "ptx_atomics": [
+        "@%p1 atom.global.gpu.acq_rel.add.f32 %r1, [ %rd2 + 0 ], %r2;"
+      ],
+      "ptx_cta_barriers": 2,
+      "registers": 18,
+      "specialization_id": "e7d8e24a70fda869",
+      "spills": 0,
+      "transformed": false,
+      "variant": "baseline"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "e7d8e24a70fda869.private.ptx.gz",
+          "sha256": "62355ef2cd5f406c4b5376516ce5c10efd08348bb7608afa70bdbcc924dda582"
+        },
+        "ttgir": {
+          "path": "e7d8e24a70fda869.private.ttgir.gz",
+          "sha256": "b01eab6cdc3e3c06f3ea8cfa94e6afa0c68a608116dc80802c0f29ea00e2c726"
+        },
+        "ttir": {
+          "path": "e7d8e24a70fda869.private.ttir.gz",
+          "sha256": "4fa0564401056d073ce06cedf7b14e59950816b0ff56aff4a2f725a92b487be7"
+        }
+      },
+      "dtype": "bf16",
+      "ptx_atomics": [
+        "@%p1 red.global.gpu.relaxed.add.f32 [ %rd2 + 0 ], %r1;"
+      ],
+      "ptx_cta_barriers": 0,
+      "registers": 18,
+      "specialization_id": "e7d8e24a70fda869",
+      "spills": 0,
+      "transformed": true,
+      "variant": "private"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "e7d8e24a70fda869.manual.ptx.gz",
+          "sha256": "4a4ffc4a9b6dc536465b61a4fd83bda3b98a50e80345bbf5bf7f285fa9cb91e5"
+        },
+        "ttgir": {
+          "path": "e7d8e24a70fda869.manual.ttgir.gz",
+          "sha256": "0681dc2c05029ee75f35a790dc3b7906beea6570189eb855d25c5bdde0bd6355"
+        },
+        "ttir": {
+          "path": "e7d8e24a70fda869.manual.ttir.gz",
+          "sha256": "aa3932cedb76aed3e7842ba2bf1ae10f488b205b6128487e7b78b7578f262c93"
+        }
+      },
+      "dtype": "bf16",
+      "ptx_atomics": [
+        "@%p1 red.global.gpu.relaxed.add.f32 [ %rd2 + 0 ], %r1;"
+      ],
+      "ptx_cta_barriers": 0,
+      "registers": 18,
+      "specialization_id": "e7d8e24a70fda869",
+      "spills": 0,
+      "transformed": false,
+      "variant": "manual"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "77300d36d72f4a93.baseline.ptx.gz",
+          "sha256": "55c729bf651b5b371d6b7d6407a3d259768ce51797fee068fd7fce704183665b"
+        },
+        "ttgir": {
+          "path": "77300d36d72f4a93.baseline.ttgir.gz",
+          "sha256": "65bb9c6d61447f6f02788db362a72b3d66978fc01f0f7a830e74cf43e2220155"
+        },
+        "ttir": {
+          "path": "77300d36d72f4a93.baseline.ttir.gz",
+          "sha256": "874c9ce9f2123562221ef5400f6276623ede450f408a71f2efc340584701c72c"
+        }
+      },
+      "dtype": "fp16",
+      "ptx_atomics": [
+        "@%p1 atom.global.gpu.acq_rel.add.f32 %r1, [ %rd2 + 0 ], %r2;"
+      ],
+      "ptx_cta_barriers": 2,
+      "registers": 18,
+      "specialization_id": "77300d36d72f4a93",
+      "spills": 0,
+      "transformed": false,
+      "variant": "baseline"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "77300d36d72f4a93.private.ptx.gz",
+          "sha256": "4a210b3bdeb4e583c8a47b989b469eb245e04c3f76a3ef00c7f27bc684ea8de7"
+        },
+        "ttgir": {
+          "path": "77300d36d72f4a93.private.ttgir.gz",
+          "sha256": "2a4baf25edd796d23db68d16c743da92582abbec799f1d61db93c330df779763"
+        },
+        "ttir": {
+          "path": "77300d36d72f4a93.private.ttir.gz",
+          "sha256": "efde2b148138515d04fb70a0853661334fda4079d02f22b829ebe5536ff5a7e6"
+        }
+      },
+      "dtype": "fp16",
+      "ptx_atomics": [
+        "@%p1 red.global.gpu.relaxed.add.f32 [ %rd2 + 0 ], %r1;"
+      ],
+      "ptx_cta_barriers": 0,
+      "registers": 18,
+      "specialization_id": "77300d36d72f4a93",
+      "spills": 0,
+      "transformed": true,
+      "variant": "private"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "77300d36d72f4a93.manual.ptx.gz",
+          "sha256": "3aa63520e224091c6c786f5d1663096573bf58f7465b5be3f956e1dc438b5691"
+        },
+        "ttgir": {
+          "path": "77300d36d72f4a93.manual.ttgir.gz",
+          "sha256": "d7c78b676c5e662c3fb43eccc12cbfe09c74042c6732dbd99ef439d993d7407d"
+        },
+        "ttir": {
+          "path": "77300d36d72f4a93.manual.ttir.gz",
+          "sha256": "6f5350fb4121df1d8d219a4eaf2c9662d19e1c8d6dc34fb4c6b636dbfc6b92ec"
+        }
+      },
+      "dtype": "fp16",
+      "ptx_atomics": [
+        "@%p1 red.global.gpu.relaxed.add.f32 [ %rd2 + 0 ], %r1;"
+      ],
+      "ptx_cta_barriers": 0,
+      "registers": 18,
+      "specialization_id": "77300d36d72f4a93",
+      "spills": 0,
+      "transformed": false,
+      "variant": "manual"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "dfcde7b652f1a453.baseline.ptx.gz",
+          "sha256": "472c590730947a37c7a4bd22e6e15b1119baea2c83a440ce031142e59b68b1d2"
+        },
+        "ttgir": {
+          "path": "dfcde7b652f1a453.baseline.ttgir.gz",
+          "sha256": "d1416ad73ca0d99465e29474aa92df7e9d6d7b46ec503b06ce81d2a89ef41bf9"
+        },
+        "ttir": {
+          "path": "dfcde7b652f1a453.baseline.ttir.gz",
+          "sha256": "81a9739a32f96ba892bdb6e0949f41087e023dc8dfac259e48167b08abace417"
+        }
+      },
+      "dtype": "fp32",
+      "ptx_atomics": [
+        "@%p1 atom.global.gpu.acq_rel.add.f32 %r2, [ %rd2 + 0 ], %r3;"
+      ],
+      "ptx_cta_barriers": 2,
+      "registers": 18,
+      "specialization_id": "dfcde7b652f1a453",
+      "spills": 0,
+      "transformed": false,
+      "variant": "baseline"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "dfcde7b652f1a453.private.ptx.gz",
+          "sha256": "d2c94f644fe11f4c7ac9cd18cc7baf5dae15a1212bf2e7550f50e94b21f2d4ec"
+        },
+        "ttgir": {
+          "path": "dfcde7b652f1a453.private.ttgir.gz",
+          "sha256": "aec1f1b14aba086cbcff71ff50aa709460befbba6db3e33905de30020508ece5"
+        },
+        "ttir": {
+          "path": "dfcde7b652f1a453.private.ttir.gz",
+          "sha256": "07cc230ccff8430acfe2a6d9fd293de58de81cf72e1b779f613cb2fb77866ac9"
+        }
+      },
+      "dtype": "fp32",
+      "ptx_atomics": [
+        "@%p1 red.global.gpu.relaxed.add.f32 [ %rd2 + 0 ], %r2;"
+      ],
+      "ptx_cta_barriers": 0,
+      "registers": 18,
+      "specialization_id": "dfcde7b652f1a453",
+      "spills": 0,
+      "transformed": true,
+      "variant": "private"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "dfcde7b652f1a453.manual.ptx.gz",
+          "sha256": "e49c8192fe8d27c5d66e1a59f8450e10d9fa0cedf995e098c80de677395b42d8"
+        },
+        "ttgir": {
+          "path": "dfcde7b652f1a453.manual.ttgir.gz",
+          "sha256": "cff943c01b52715796eec560f3947bec7c85fc0953f39ea97a84e1f49c1567e5"
+        },
+        "ttir": {
+          "path": "dfcde7b652f1a453.manual.ttir.gz",
+          "sha256": "6f6e41a7b2dcdfef039da7ae7b1367a8b808dce64da6738d1fd17febe09726fc"
+        }
+      },
+      "dtype": "fp32",
+      "ptx_atomics": [
+        "@%p1 red.global.gpu.relaxed.add.f32 [ %rd2 + 0 ], %r2;"
+      ],
+      "ptx_cta_barriers": 0,
+      "registers": 18,
+      "specialization_id": "dfcde7b652f1a453",
+      "spills": 0,
+      "transformed": false,
+      "variant": "manual"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "5586851d90deb0d8.baseline.ptx.gz",
+          "sha256": "b00268c2e978173a29fd9675a59e1a4d388f2d26da15dd5195dd9abc9f4827bf"
+        },
+        "ttgir": {
+          "path": "5586851d90deb0d8.baseline.ttgir.gz",
+          "sha256": "0b71cb167f1b55f3b33206c6afbe2085d0a4b5d5470f09b71d19fad62ea97446"
+        },
+        "ttir": {
+          "path": "5586851d90deb0d8.baseline.ttir.gz",
+          "sha256": "1a852627c281d2baf00bd457655aa2e7655b2e4d191fcca7f321962b2429a5da"
+        }
+      },
+      "dtype": "bf16",
+      "ptx_atomics": [
+        "@%p1 atom.global.gpu.acq_rel.add.f32 %r1, [ %rd2 + 0 ], %r2;"
+      ],
+      "ptx_cta_barriers": 2,
+      "registers": 18,
+      "specialization_id": "5586851d90deb0d8",
+      "spills": 0,
+      "transformed": false,
+      "variant": "baseline"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "5586851d90deb0d8.private.ptx.gz",
+          "sha256": "44cf04ea27cc9befd1d25749ddd01d14cf90849a37a9611fa2328bc98eeab8f7"
+        },
+        "ttgir": {
+          "path": "5586851d90deb0d8.private.ttgir.gz",
+          "sha256": "bfa6a7d24baba6f1439d117e1199b201af493d7a86c7cdd9346c60a480973122"
+        },
+        "ttir": {
+          "path": "5586851d90deb0d8.private.ttir.gz",
+          "sha256": "c769052d427ec50e0af38490738b7d368c0de9ed01352b6bd86fef9b2ba11943"
+        }
+      },
+      "dtype": "bf16",
+      "ptx_atomics": [
+        "@%p1 red.global.gpu.relaxed.add.f32 [ %rd2 + 0 ], %r1;"
+      ],
+      "ptx_cta_barriers": 0,
+      "registers": 18,
+      "specialization_id": "5586851d90deb0d8",
+      "spills": 0,
+      "transformed": true,
+      "variant": "private"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "5586851d90deb0d8.manual.ptx.gz",
+          "sha256": "429309799b7d2169d0c52792ba8533984ca0231c634f59027a6d5f295e35f3d8"
+        },
+        "ttgir": {
+          "path": "5586851d90deb0d8.manual.ttgir.gz",
+          "sha256": "36474d28703e7d59c451b98c52aed77aa911df3764ef49080883785ab30a7122"
+        },
+        "ttir": {
+          "path": "5586851d90deb0d8.manual.ttir.gz",
+          "sha256": "02375089d3761bde1d6260b7ea6ffa283c69efee8ad07655421f342578216f8a"
+        }
+      },
+      "dtype": "bf16",
+      "ptx_atomics": [
+        "@%p1 red.global.gpu.relaxed.add.f32 [ %rd2 + 0 ], %r1;"
+      ],
+      "ptx_cta_barriers": 0,
+      "registers": 18,
+      "specialization_id": "5586851d90deb0d8",
+      "spills": 0,
+      "transformed": false,
+      "variant": "manual"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "7fa55f9ac214eb1a.baseline.ptx.gz",
+          "sha256": "386e15a6bde017e5a1f0fbe0ae0cfd81121b1dcea1d4094cbc8ea0811f9b8de2"
+        },
+        "ttgir": {
+          "path": "7fa55f9ac214eb1a.baseline.ttgir.gz",
+          "sha256": "f65e01fa875cd5a2775c9543cdd30097ca2a6a152a2244e26ad364f28ba8c430"
+        },
+        "ttir": {
+          "path": "7fa55f9ac214eb1a.baseline.ttir.gz",
+          "sha256": "3c96c17114bc38614e766769910015e46a1cd38bd635c4e523994013b3041968"
+        }
+      },
+      "dtype": "fp16",
+      "ptx_atomics": [
+        "@%p1 atom.global.gpu.acq_rel.add.f32 %r1, [ %rd2 + 0 ], %r2;"
+      ],
+      "ptx_cta_barriers": 2,
+      "registers": 18,
+      "specialization_id": "7fa55f9ac214eb1a",
+      "spills": 0,
+      "transformed": false,
+      "variant": "baseline"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "7fa55f9ac214eb1a.private.ptx.gz",
+          "sha256": "7b24c7c7213525a49a6ea95c1687c682fc52bb9fb3dab348f9af809f7b78b268"
+        },
+        "ttgir": {
+          "path": "7fa55f9ac214eb1a.private.ttgir.gz",
+          "sha256": "527abb22bdac91c153178700f885951e7042f262ad2a0e24e92aed02ed718cdf"
+        },
+        "ttir": {
+          "path": "7fa55f9ac214eb1a.private.ttir.gz",
+          "sha256": "f964e9aea26b0671a95870f4850bf15b79c092db63e07205cc724363fbed25d1"
+        }
+      },
+      "dtype": "fp16",
+      "ptx_atomics": [
+        "@%p1 red.global.gpu.relaxed.add.f32 [ %rd2 + 0 ], %r1;"
+      ],
+      "ptx_cta_barriers": 0,
+      "registers": 18,
+      "specialization_id": "7fa55f9ac214eb1a",
+      "spills": 0,
+      "transformed": true,
+      "variant": "private"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "7fa55f9ac214eb1a.manual.ptx.gz",
+          "sha256": "d1a29765c9018e5009e944c80b38a90988b4e031ac59ae8bceb26336e01c0437"
+        },
+        "ttgir": {
+          "path": "7fa55f9ac214eb1a.manual.ttgir.gz",
+          "sha256": "f0cfeace8622310b722ef569d4cd7d49e7e68af2c9903d57383137ede557ddfb"
+        },
+        "ttir": {
+          "path": "7fa55f9ac214eb1a.manual.ttir.gz",
+          "sha256": "b3fc1089c37b38824eebd7b0d98972bed8138ceccf0567a1f5c4894d8bf369e7"
+        }
+      },
+      "dtype": "fp16",
+      "ptx_atomics": [
+        "@%p1 red.global.gpu.relaxed.add.f32 [ %rd2 + 0 ], %r1;"
+      ],
+      "ptx_cta_barriers": 0,
+      "registers": 18,
+      "specialization_id": "7fa55f9ac214eb1a",
+      "spills": 0,
+      "transformed": false,
+      "variant": "manual"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "fe46aae8a29f0c75.baseline.ptx.gz",
+          "sha256": "f37ba83e0dcecab9e478fcd3d97edb5b6e47fcf55191f9ff453cffe3d165a547"
+        },
+        "ttgir": {
+          "path": "fe46aae8a29f0c75.baseline.ttgir.gz",
+          "sha256": "b9576232b5f203ea5452a0b3237c2a68df5cb7f71c8a1b86a427df5e78d87cac"
+        },
+        "ttir": {
+          "path": "fe46aae8a29f0c75.baseline.ttir.gz",
+          "sha256": "dfebe11b12765310247fddaa89f6bcfa1c02a8675463438d6deea50805916701"
+        }
+      },
+      "dtype": "fp32",
+      "ptx_atomics": [
+        "@%p1 atom.global.gpu.acq_rel.add.f32 %r2, [ %rd2 + 0 ], %r3;"
+      ],
+      "ptx_cta_barriers": 2,
+      "registers": 18,
+      "specialization_id": "fe46aae8a29f0c75",
+      "spills": 0,
+      "transformed": false,
+      "variant": "baseline"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "fe46aae8a29f0c75.private.ptx.gz",
+          "sha256": "9e21fe63b2cd6014c7a2c750712eedb89cb93f60a683c84e45adfa5d0bf8cb7c"
+        },
+        "ttgir": {
+          "path": "fe46aae8a29f0c75.private.ttgir.gz",
+          "sha256": "65817e64d71990903139525f5eb3be0551feb4ec7286891ebf35d1a0d03f2bdb"
+        },
+        "ttir": {
+          "path": "fe46aae8a29f0c75.private.ttir.gz",
+          "sha256": "22bf9125e3239f37480a4a28329db80cf5091d1b9e74dfdd21589d005e94b2c1"
+        }
+      },
+      "dtype": "fp32",
+      "ptx_atomics": [
+        "@%p1 red.global.gpu.relaxed.add.f32 [ %rd2 + 0 ], %r2;"
+      ],
+      "ptx_cta_barriers": 0,
+      "registers": 18,
+      "specialization_id": "fe46aae8a29f0c75",
+      "spills": 0,
+      "transformed": true,
+      "variant": "private"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "fe46aae8a29f0c75.manual.ptx.gz",
+          "sha256": "18f304aa19fc32f893679952bd3163679bbdeef26ae698539c9716e96e2a8817"
+        },
+        "ttgir": {
+          "path": "fe46aae8a29f0c75.manual.ttgir.gz",
+          "sha256": "b46249e60b1dd62e51328c61dc0f68c9c632cad40f2a278837e9b9b24a4e77bb"
+        },
+        "ttir": {
+          "path": "fe46aae8a29f0c75.manual.ttir.gz",
+          "sha256": "ba64817f9bc609c0415cf89ea2b55bbbf167707451c2e04e7b05edd86313a2c9"
+        }
+      },
+      "dtype": "fp32",
+      "ptx_atomics": [
+        "@%p1 red.global.gpu.relaxed.add.f32 [ %rd2 + 0 ], %r2;"
+      ],
+      "ptx_cta_barriers": 0,
+      "registers": 18,
+      "specialization_id": "fe46aae8a29f0c75",
+      "spills": 0,
+      "transformed": false,
+      "variant": "manual"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "99059c3b7bb5d417.baseline.ptx.gz",
+          "sha256": "da677c0d0c98fbcdf5f9e9a668789dbecccf6e7e9f84cb7790d1406fcb40bc5c"
+        },
+        "ttgir": {
+          "path": "99059c3b7bb5d417.baseline.ttgir.gz",
+          "sha256": "d8fd6f70ed8ab0ede1b7e841190a3b6274e1f7a978ab2cdaa1c3dc617d3ca1b4"
+        },
+        "ttir": {
+          "path": "99059c3b7bb5d417.baseline.ttir.gz",
+          "sha256": "4231e655be01aa2393429e8ec4782b1e19efe93d3c216d1e51448b4c3fb38b18"
+        }
+      },
+      "dtype": "bf16",
+      "ptx_atomics": [
+        "@%p1 atom.global.gpu.acq_rel.add.f32 %r1, [ %rd2 + 0 ], %r2;"
+      ],
+      "ptx_cta_barriers": 2,
+      "registers": 18,
+      "specialization_id": "99059c3b7bb5d417",
+      "spills": 0,
+      "transformed": false,
+      "variant": "baseline"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "99059c3b7bb5d417.private.ptx.gz",
+          "sha256": "d7d023b738dedcdfd50d93952638f0fa948b43c36164ac078368d0ba4c777c2f"
+        },
+        "ttgir": {
+          "path": "99059c3b7bb5d417.private.ttgir.gz",
+          "sha256": "724ea226b282998c11150e8b34cb7a0fa852790662dc870de6d1d85d622f1863"
+        },
+        "ttir": {
+          "path": "99059c3b7bb5d417.private.ttir.gz",
+          "sha256": "f1311d415db55a23bbb7a09f19bfc5c67825060062ccec4a4c4db41ea7390bf3"
+        }
+      },
+      "dtype": "bf16",
+      "ptx_atomics": [
+        "@%p1 red.global.gpu.relaxed.add.f32 [ %rd2 + 0 ], %r1;"
+      ],
+      "ptx_cta_barriers": 0,
+      "registers": 18,
+      "specialization_id": "99059c3b7bb5d417",
+      "spills": 0,
+      "transformed": true,
+      "variant": "private"
+    },
+    {
+      "assembly": {
+        "ptx": {
+          "path": "99059c3b7bb5d417.manual.ptx.gz",
+          "sha256": "e628f1c37093ba8df34d8ac1b45d77e61ebca2206a9610a491e155d76196ae3a"
+        },
+        "ttgir": {
+          "path": "99059c3b7bb5d417.manual.ttgir.gz",
+          "sha256": "d969e360baf5b1041cbf9c7bde1a42aba0487bc76295f910b383715281c10838"
+        },
+        "ttir": {
+          "path": "99059c3b7bb5d417.manual.ttir.gz",
+          "sha256": "6f734139217c0cbe18b64ae2da8f09a7f421b48f744f992033663de99f20aa5b"
+        }
+      },
+      "dtype": "bf16",
+      "ptx_atomics": [
+        "@%p1 red.global.gpu.relaxed.add.f32 [ %rd2 + 0 ], %r1;"
+      ],
+      "ptx_cta_barriers": 0,
+      "registers": 18,
+      "specialization_id": "99059c3b7bb5d417",
+      "spills": 0,
+      "transformed": false,
+      "variant": "manual"
+    }
+  ]
+}

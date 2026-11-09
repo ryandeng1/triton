@@ -1,0 +1,7 @@
+{
+  "notice": "These extracted/manual sources are shared by both pilots. Their function bodies were AST-audited; measured production harness is retained separately. The earlier generic timing harness was extended later, so its exact full script was not archived.",
+  "sha256": {
+    "pilot/generic/unfold_backward_extracted.py": "71b0ca63b808a9b2df3ce527350ab8af8531d3b5b1090d4ba34d3ce69afc2f93",
+    "pilot/generic/unfold_backward_manual.py": "07812f9ef93348920079ec3b613a8a3180274ca6309ded631fbd05e8fdd2537e"
+  }
+}

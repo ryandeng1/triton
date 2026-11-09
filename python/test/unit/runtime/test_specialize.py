@@ -614,12 +614,14 @@ def test_semantic_graph_rms_infers_immutable_regions_and_preserves_empty_ctas(de
     variants = optimized.kernels[node["name"]]
     original_ir = variants["baseline"].asm["ttgir"]
     inferred_ir = variants["inferred"].asm["ttgir"]
-    # The baseline pipelines both X and W. Native no-clobber inference moves
-    # the single ordinary W load before the loop, leaving only X in the async
-    # pipeline. This checks actual compiler consumption of the alias proof.
+    # The uncontracted loop cannot prove its loads independent of its stores,
+    # so it retains ordinary loads in the loop. Alias facts license pipelining
+    # X and independently allow LICM to move the invariant W load before it.
+    assert "async_copy_global_to_local" not in original_ir
+    assert original_ir.index("scf.for") < original_ir.index("tt.load")
     assert inferred_ir.count("tt.load") == 1
     assert inferred_ir.index("tt.load") < inferred_ir.index("scf.for")
-    assert original_ir.count("async_copy_global_to_local") > inferred_ir.count("async_copy_global_to_local")
+    assert "async_copy_global_to_local" in inferred_ir
 
 
 @pytest.mark.parametrize("change", ["shape", "dtype", "stride", "alignment"])

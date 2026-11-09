@@ -1,0 +1,237 @@
+{
+  "case": {
+    "id": "upstream1024",
+    "cohort": "upstream_test_screen",
+    "B": 2,
+    "T": 1024,
+    "H": 4,
+    "HV": 8,
+    "K": 128,
+    "V": 128,
+    "dtype": "bfloat16",
+    "qk_dtype": "float32",
+    "parameter_dtype": "float32",
+    "scale": 1.0
+  },
+  "fixed_configuration": [
+    8,
+    1,
+    3
+  ],
+  "fixed_validation": {
+    "original": {
+      "max_output_error": 1.9065528744643956e-07,
+      "max_state_error": 1.4260892866602148e-07,
+      "same_config_bitwise_equal_to_original": true,
+      "guards_passed": true
+    },
+    "alias": {
+      "max_output_error": 1.9065528744643956e-07,
+      "max_state_error": 1.4260892866602148e-07,
+      "same_config_bitwise_equal_to_original": true,
+      "guards_passed": true
+    },
+    "pipeline": {
+      "max_output_error": 1.9065528744643956e-07,
+      "max_state_error": 1.4260892866602148e-07,
+      "same_config_bitwise_equal_to_original": true,
+      "guards_passed": true
+    },
+    "pipeline_alias": {
+      "max_output_error": 1.9065528744643956e-07,
+      "max_state_error": 1.4260892866602148e-07,
+      "same_config_bitwise_equal_to_original": true,
+      "guards_passed": true
+    }
+  },
+  "fixed_resources": {
+    "original": {
+      "registers": 96,
+      "spills": 0,
+      "shared": 512,
+      "ptx_sha256": "e56e3ebfec98b005a27e72e91b875983b796e652b78ccf91989115cec6bdddf5",
+      "cubin_sha256": "f6463e1df7f391fe28b6a3ffa80e7938dd403a493cfbe46a5fb6ea3be71e0f8d",
+      "ttgir_async_copy_count": 0,
+      "ttgir_async_wait_count": 0,
+      "ptx_cp_async_count": 0,
+      "ptx_local_load_store_count": 0
+    },
+    "alias": {
+      "registers": 108,
+      "spills": 0,
+      "shared": 512,
+      "ptx_sha256": "e9a22f9b6b38ddeb69a48497ed650e43b5a46dedd1d77d45ed70671655e21911",
+      "cubin_sha256": "dfb20518683b3898ddf4fed2f4da7c00413922ec8dfd3ec274a196b23f8f019c",
+      "ttgir_async_copy_count": 0,
+      "ttgir_async_wait_count": 0,
+      "ptx_cp_async_count": 0,
+      "ptx_local_load_store_count": 0
+    },
+    "pipeline": {
+      "registers": 99,
+      "spills": 0,
+      "shared": 1108,
+      "ptx_sha256": "6619ae8bfd157b01d0c5d2111cb02c150fc93730a3d4e19fde6c57b460fc0f0d",
+      "cubin_sha256": "d1d40026d043c7efd2d85c7d12c15497a505a4a82dbc05c309179a6a4f9e5a90",
+      "ttgir_async_copy_count": 12,
+      "ttgir_async_wait_count": 2,
+      "ptx_cp_async_count": 26,
+      "ptx_local_load_store_count": 0
+    },
+    "pipeline_alias": {
+      "registers": 97,
+      "spills": 0,
+      "shared": 1076,
+      "ptx_sha256": "bbe0b344c843b6f12551e3df7f255e8a66109774140b61173ce9c02845753caf",
+      "cubin_sha256": "ca8db488fff354a1a4a8bad901a461e0089472cd6a0d1e86df8cd51a86e22cb8",
+      "ttgir_async_copy_count": 8,
+      "ttgir_async_wait_count": 2,
+      "ptx_cp_async_count": 18,
+      "ptx_local_load_store_count": 0
+    }
+  },
+  "alias_and_immutable_ptx_equal": {
+    "ordinary": true,
+    "pipeline": true
+  },
+  "fixed_timing": {
+    "times_us": {
+      "original": [
+        762.6960277557373,
+        759.6880197525024,
+        758.9439749717712,
+        759.5199942588806,
+        759.4959735870361,
+        759.5080137252808,
+        759.2080235481262,
+        759.4040036201477,
+        759.447991847992,
+        759.1360211372375,
+        759.1680288314819,
+        759.4839930534363,
+        758.9280009269714
+      ],
+      "alias": [
+        674.5799779891968,
+        670.5880165100098,
+        669.4959998130798,
+        669.8359847068787,
+        670.0999736785889,
+        669.7160005569458,
+        669.8240041732788,
+        669.9920296669006,
+        670.1200008392334,
+        669.7559952735901,
+        669.6839928627014,
+        669.1759824752808,
+        669.543981552124
+      ],
+      "pipeline": [
+        789.6999716758728,
+        786.1359715461731,
+        785.5119705200195,
+        785.5960130691528,
+        786.0559821128845,
+        786.3320112228394,
+        785.5240106582642,
+        785.9839797019958,
+        785.8759760856628,
+        785.6400012969971,
+        785.4719758033752,
+        785.5719923973083,
+        785.7279777526855
+      ],
+      "pipeline_alias": [
+        819.6679949760437,
+        816.7840242385864,
+        816.4119720458984,
+        816.8240189552307,
+        818.0000185966492,
+        816.648006439209,
+        817.031979560852,
+        817.6959753036499,
+        816.8759942054749,
+        817.8719878196716,
+        816.3520097732544,
+        816.2840008735657,
+        816.32000207901
+      ]
+    },
+    "median_us": {
+      "original": 759.447991847992,
+      "alias": 669.8240041732788,
+      "pipeline": 785.7279777526855,
+      "pipeline_alias": 816.8240189552307
+    },
+    "paired_speedup_medians": {
+      "pipeline_vs_original": 0.9662644721297228,
+      "pipeline_alias_vs_alias": 0.820049324166105,
+      "alias_vs_original": 1.133452294944016,
+      "pipeline_alias_vs_original": 0.9296980168778989
+    },
+    "paired_speedup_samples": {
+      "pipeline_vs_original": [
+        0.9658048057633475,
+        0.9663570263275795,
+        0.9661774784531165,
+        0.9668073432445273,
+        0.9662110471388358,
+        0.9658871861825337,
+        0.9664988125721513,
+        0.966182547267788,
+        0.9663713040710253,
+        0.9662644721297228,
+        0.9665119217716331,
+        0.9667910775888788,
+        0.9658915329674698
+      ],
+      "pipeline_alias_vs_alias": [
+        0.8229917260694223,
+        0.8210102017300572,
+        0.8200467689558096,
+        0.820049324166105,
+        0.8191931032326921,
+        0.8200791470453425,
+        0.8198259320685387,
+        0.8193656932432624,
+        0.820344832744189,
+        0.8189007635034214,
+        0.8203372869121854,
+        0.8197832883642779,
+        0.8201979368959774
+      ],
+      "alias_vs_original": [
+        1.1306235771023012,
+        1.1328684692371962,
+        1.1336049433957258,
+        1.133889506684607,
+        1.133406959289519,
+        1.1340747616805669,
+        1.1334440372664285,
+        1.133452294944016,
+        1.1333014846548193,
+        1.1334516249117508,
+        1.1336212854457857,
+        1.1349540523616917,
+        1.1334998474150109
+      ],
+      "pipeline_alias_vs_original": [
+        0.9304938492542075,
+        0.9300965704620516,
+        0.9296090711039985,
+        0.9298453236357501,
+        0.9284791642059106,
+        0.9300310632446493,
+        0.9292268142994773,
+        0.9287119254049703,
+        0.9296980168778989,
+        0.9281844010344263,
+        0.9299518096885,
+        0.9304163651874304,
+        0.9296942363216971
+      ]
+    },
+    "repetitions": 8,
+    "state_reset_included_every_invocation": true
+  }
+}

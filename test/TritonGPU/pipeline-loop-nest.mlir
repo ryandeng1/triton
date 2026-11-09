@@ -1,10 +1,37 @@
-// RUN: triton-opt %s -pass-pipeline='builtin.module(convert-triton-to-tritongpu{num-warps=4 target=cuda:100},tritongpu-coalesce,tritongpu-accelerate-matmul,tritongpu-remove-layout-conversions,tritongpu-optimize-dot-operands,cse,tritongpu-fuse-nested-loops,canonicalize,tritongpu-optimize-accumulator-init,tritongpu-hoist-tmem-alloc,tritongpu-assign-latencies,tritongpu-schedule-loops,tritongpu-pipeline,triton-nvidia-gpu-remove-tmem-tokens,canonicalize)' | FileCheck %s --check-prefix=BLACKWELL
-// RUN: triton-opt %s -pass-pipeline='builtin.module(convert-triton-to-tritongpu{num-warps=4 target=cuda:90 },tritongpu-coalesce,tritongpu-accelerate-matmul,tritongpu-remove-layout-conversions,tritongpu-optimize-dot-operands,cse,tritongpu-fuse-nested-loops,canonicalize,tritongpu-optimize-accumulator-init,canonicalize,tritongpu-combine-tensor-select-and-if,tritongpu-assign-latencies,tritongpu-schedule-loops,tritongpu-pipeline,canonicalize)' | FileCheck %s --check-prefix=HOPPER
+// RUN: triton-opt %s -pass-pipeline='builtin.module(convert-triton-to-tritongpu{num-warps=4 target=cuda:100},tritongpu-coalesce,tritongpu-accelerate-matmul,tritongpu-remove-layout-conversions,tritongpu-optimize-dot-operands,cse,tritongpu-fuse-nested-loops,canonicalize,tritongpu-optimize-accumulator-init,tritongpu-hoist-tmem-alloc,tritongpu-assign-latencies,tritongpu-schedule-loops,tritongpu-pipeline,triton-nvidia-gpu-remove-tmem-tokens,canonicalize)' | FileCheck %s --check-prefixes=FALLBACK,BLACKWELL
+// RUN: triton-opt %s -pass-pipeline='builtin.module(convert-triton-to-tritongpu{num-warps=4 target=cuda:90 },tritongpu-coalesce,tritongpu-accelerate-matmul,tritongpu-remove-layout-conversions,tritongpu-optimize-dot-operands,cse,tritongpu-fuse-nested-loops,canonicalize,tritongpu-optimize-accumulator-init,canonicalize,tritongpu-combine-tensor-select-and-if,tritongpu-assign-latencies,tritongpu-schedule-loops,tritongpu-pipeline,canonicalize)' | FileCheck %s --check-prefixes=FALLBACK,HOPPER
+// RUN: triton-opt %s -pass-pipeline='builtin.module(convert-triton-to-tritongpu{num-warps=4 target=cuda:100},tritongpu-coalesce,tritongpu-accelerate-matmul,tritongpu-remove-layout-conversions,tritongpu-optimize-dot-operands,cse,canonicalize,tritongpu-optimize-accumulator-init,tritongpu-hoist-tmem-alloc,tritongpu-assign-latencies,tritongpu-schedule-loops,tritongpu-pipeline,triton-nvidia-gpu-remove-tmem-tokens,canonicalize)' | FileCheck %s --check-prefixes=INNER,INNER-BLACKWELL
+// RUN: triton-opt %s -pass-pipeline='builtin.module(convert-triton-to-tritongpu{num-warps=4 target=cuda:90 },tritongpu-coalesce,tritongpu-accelerate-matmul,tritongpu-remove-layout-conversions,tritongpu-optimize-dot-operands,cse,canonicalize,tritongpu-optimize-accumulator-init,canonicalize,tritongpu-combine-tensor-select-and-if,tritongpu-assign-latencies,tritongpu-schedule-loops,tritongpu-pipeline,canonicalize)' | FileCheck %s --check-prefixes=INNER,INNER-HOPPER
 
 #shared = #ttg.nvmma_shared<{swizzlingByteWidth = 128, transposed = false, elementBitWidth = 16}>
 
-// BLACKWELL-LABEL: @matmul_kernel_tma_persistent
-// HOPPER-LABEL: @matmul_kernel_tma_persistent
+// Flattening puts descriptor reads and writes into one loop. Without backing
+// storage contracts, that mixed loop must keep its original global order.
+// FALLBACK-LABEL: @matmul_kernel_tma_persistent
+// FALLBACK-NOT: async_tma_copy
+// FALLBACK: scf.for
+// FALLBACK: tt.descriptor_load
+// FALLBACK: tt.descriptor_load
+// BLACKWELL: ttng.tc_gen5_mma
+// BLACKWELL-NOT: ttng.tc_gen5_commit
+// HOPPER: ttng.warp_group_dot
+// HOPPER-NOT: isAsync = true
+// FALLBACK: tt.descriptor_store
+// FALLBACK-NOT: async_tma_copy
+// FALLBACK: tt.return
+
+// Without flattening, the outer loop is declined, while its read-only inner
+// loop remains eligible for TMA/MMA pipelining. Declining the outer loop must
+// not erase the inner loop's independently valid schedule.
+// INNER-LABEL: @matmul_kernel_tma_persistent
+// INNER: scf.for
+// INNER: ttng.async_tma_copy_global_to_local
+// INNER: scf.for
+// INNER: ttng.wait_barrier
+// INNER-BLACKWELL: ttng.tc_gen5_mma
+// INNER-HOPPER: ttng.warp_group_dot {{.*}} isAsync = true
+// INNER: tt.descriptor_store
+// INNER: tt.return
 tt.func public @matmul_kernel_tma_persistent(%arg0: !tt.ptr<i8, "descriptor">, %arg1: !tt.ptr<i8, "descriptor">, %arg2: !tt.ptr<i8, "descriptor">, %arg3: i32 {tt.divisibility = 16 : i32}, %arg4: i32 {tt.divisibility = 16 : i32}, %arg5: i32 {tt.divisibility = 16 : i32}) {
   %cst = arith.constant dense<0.000000e+00> : tensor<128x128xf32>
   %c63_i32 = arith.constant 63 : i32
@@ -26,12 +53,7 @@ tt.func public @matmul_kernel_tma_persistent(%arg0: !tt.ptr<i8, "descriptor">, %
   %8 = arith.subi %0, %c132_i32 : i32
   %9 = arith.muli %4, %c8_i32 : i32
 
-  // BLACKWELL: [[ACC_BUFS:%.*]] = ttng.tmem_alloc : () -> !ttg.memdesc<2x128x128xf32, #tmem,
-  // BLACKWELL: ttg.memdesc_trans
-  // BLACKWELL: [[ACC_BUF:%.*]] = ttg.memdesc_index [[ACC_BUFS]]
-  // BLACKWELL: ttng.tc_gen5_mma {{%[0-9]+}}, {{%[0-9]+}}, [[ACC_BUF]], %false
 
-  // BLACKWELL: scf.for
   %10 = scf.for %arg6 = %0 to %7 step %c132_i32 iter_args(%arg7 = %8) -> (i32)  : i32 {
     %11 = arith.divsi %arg6, %9 : i32
     %12 = arith.muli %11, %c8_i32 : i32
@@ -49,21 +71,12 @@ tt.func public @matmul_kernel_tma_persistent(%arg0: !tt.ptr<i8, "descriptor">, %
       %37 = tt.descriptor_load %36[%19, %35] : !tt.tensordesc<128x64xf16, #shared> -> tensor<128x64xf16>
       %38 = ttng.reinterpret_tensor_descriptor %arg1 : !tt.ptr<i8, "descriptor"> to !tt.tensordesc<128x64xf16, #shared>
       %39 = tt.descriptor_load %38[%20, %35] : !tt.tensordesc<128x64xf16, #shared> -> tensor<128x64xf16>
-      // BLACKWELL: ttg.memdesc_trans
-      // BLACKWELL: [[ACC_BUF:%.*]] = ttg.memdesc_index [[ACC_BUFS]]
-      // BLACKWELL: ttng.tc_gen5_mma {{%[0-9]+}}, {{%[0-9]+}}, [[ACC_BUF]]
 
-      // HOPPER: [[RESULT:%.*]] = ttng.warp_group_dot {{.*}} isAsync = true
-      // HOPPER-NEXT: ttng.warp_group_dot_wait [[RESULT]], {{.*}} {pendings = 1 : i32}
       %40 = tt.trans %39 {order = array<i32: 1, 0>} : tensor<128x64xf16> -> tensor<64x128xf16>
       %41 = tt.dot %37, %40, %arg9, inputPrecision = tf32 : tensor<128x64xf16> * tensor<64x128xf16> -> tensor<128x128xf32>
       scf.yield %41 : tensor<128x128xf32>
     }
-    // Blackwell: expect one tmem_load in the loop, and one in the peeled epilogue
-    // BLACKWELL-COUNT-2: ttng.tmem_load
-    // BLACKWELL-NOT: ttng.tmem_load
 
-    // HOPPER: ttng.warp_group_dot_wait {{.*}} {pendings = 0 : i32}
     %22 = arith.addi %arg7, %c132_i32 : i32
     %23 = arith.divsi %22, %9 : i32
     %24 = arith.muli %23, %c8_i32 : i32

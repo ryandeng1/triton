@@ -21,7 +21,10 @@ namespace mlir::triton {
 class LoopInvariantCodeMotionPass
     : public impl::TritonLoopInvariantCodeMotionBase<
           LoopInvariantCodeMotionPass> {
+public:
+  using TritonLoopInvariantCodeMotionBase::TritonLoopInvariantCodeMotionBase;
 
+private:
   DenseMap<LoopLikeOpInterface, bool> isLoopMemoryEffectFreeOrOnlyRead;
   DenseMap<Operation *, GlobalMemoryEffects> globalMemoryEffects;
 
@@ -136,7 +139,8 @@ class LoopInvariantCodeMotionPass
               return false;
             auto *effects = getMemoryEffects(load);
             bool readInvariant =
-                effects && hasInvariantContents(load.getPtr(), *effects) &&
+                enableMemoryContracts && effects &&
+                hasInvariantContents(load.getPtr(), *effects) &&
                 GlobalMemoryEffects::hasOnlyOrdinaryEffects(
                     loopLike,
                     effects->isExplicitlyImmutableGlobal(load.getPtr()));

@@ -1,4 +1,7 @@
 #include "triton/Analysis/AxisInfo.h"
+#include "triton/Analysis/GlobalMemoryEffects.h"
+#include "mlir/IR/Matchers.h"
+#include "mlir/Interfaces/SideEffectInterfaces.h"
 #include "triton/Dialect/TritonGPU/IR/Dialect.h"
 #include "triton/Dialect/TritonGPU/Transforms/MMAv5PipelineUtility.h"
 #include "triton/Dialect/TritonGPU/Transforms/Passes.h"
@@ -333,6 +336,53 @@ void assignLatencies(ModuleOp moduleOp, int defaultNumStages) {
   serializeLatencies(moduleOp, opLatency);
 }
 
+// This opt-in policy adds a scheduling candidate only when the caller supplied
+// memory facts for every ordinary read. Profitability is chosen by the caller's
+// variant selection; the annotation itself is not a performance guarantee.
+void inferContractPipelineStages(ModuleOp module, int stages) {
+  if (stages <= 1)
+    return;
+  module.walk([&](scf::ForOp loop) {
+    if (!preCondition(loop) || loop->hasAttr(kNumStagesAttrName) ||
+        loop->hasAttr(kWarpSpecializeAttrName) ||
+        loop->hasAttr(kScheduledMaxStageAttrName) || hasLatenciesAssigned(loop))
+      return;
+    APInt step;
+    if (!matchPattern(loop.getStep(), m_ConstantInt(&step)) || !step.isOne())
+      return;
+    auto function = loop->getParentOfType<tt::FuncOp>();
+    if (!function)
+      return;
+    tt::GlobalMemoryEffects memory(function);
+    bool hasLoad = false;
+    for (Operation &op : loop.getBody()->without_terminator()) {
+      // Keep source branches, nested regions, explicit schedules and existing
+      // async protocols outside this first automatic policy.
+      if ((op.getNumRegions() && !isa<tt::ReduceOp>(op)) ||
+          op.hasAttr(kLoopStageAttrName) ||
+          op.hasAttr(kLoopClusterAttrName))
+        return;
+      if (auto load = dyn_cast<tt::LoadOp>(op)) {
+        hasLoad = true;
+        auto pointer = dyn_cast<tt::PointerType>(
+            getElementTypeOrSelf(load.getPtr().getType()));
+        if (!pointer || pointer.getAddressSpace() != tt::PtrAddrSpace::Global ||
+            load.getIsVolatile() ||
+            (!memory.isExplicitlyImmutableGlobal(load.getPtr()) &&
+             !memory.getAliasGroup(load.getPtr())))
+          return;
+      } else if (!isa<tt::StoreOp>(op) && !isMemoryEffectFree(&op)) {
+        return;
+      }
+    }
+    if (!hasLoad || !memory.hasIndependentGlobalMemoryAccesses(loop))
+      return;
+    auto attr = IntegerAttr::get(IntegerType::get(module.getContext(), 32), stages);
+    loop->setAttr(kNumStagesAttrName, attr);
+    loop->setAttr("tt.experimental_contract_pipeline", attr);
+  });
+}
+
 } // namespace
 
 // Create a map from load ops to their indirection level and the
@@ -433,6 +483,15 @@ struct AssignLatencies
   using TritonGPUAssignLatenciesBase::TritonGPUAssignLatenciesBase;
 
   void runOnOperation() override {
+    // Establish a proof before compiler-owned protocols are introduced.
+    // Latencies and source hints remain provisional: PartitionScheduling and
+    // the software pipeliner check legality before transforming the loop.
+    getOperation().walk([&](LoopLikeOpInterface loop) {
+      loop->removeAttr(kGlobalPipelineProofAttrName);
+      if (hasSafeGlobalPipelineAccesses(loop.getOperation()))
+        loop->setAttr(kGlobalPipelineProofAttrName, UnitAttr::get(&getContext()));
+    });
+    inferContractPipelineStages(getOperation(), contractPipelineStages);
     if (forceTmemSingleBuffer) {
       getOperation().walk([&](scf::ForOp loop) {
         if (!loop->hasAttr(kWarpSpecializeAttrName))

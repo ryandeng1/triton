@@ -1,0 +1,89 @@
+ninja -C /home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12
+ninja: Entering directory `/home/ryandeng/tpaa/triton/build/cmake.linux-x86_64-cpython-3.12'
+[1/87] Building Passes.h.inc...
+[2/87] Building Passes.h.inc...
+[3/87] Building CXX object lib/Dialect/Triton/Transforms/CMakeFiles/TritonTransforms.dir/LoopUnroll.cpp.o
+[4/87] Building CXX object lib/Dialect/Triton/Transforms/CMakeFiles/TritonTransforms.dir/ReorderBroadcast.cpp.o
+[5/87] Building CXX object lib/Dialect/Triton/Transforms/CMakeFiles/TritonTransforms.dir/LoopAwareCSE.cpp.o
+[6/87] Building CXX object lib/Dialect/Triton/Transforms/CMakeFiles/TritonTransforms.dir/Combine.cpp.o
+[7/87] Building CXX object third_party/nvidia/lib/Dialect/NVWS/Transforms/CMakeFiles/NVWSTransforms.dir/Utilities.cpp.o
+[8/87] Building CXX object third_party/nvidia/lib/Dialect/NVWS/Transforms/CMakeFiles/NVWSTransforms.dir/LowerWarpGroup.cpp.o
+[9/87] Building CXX object lib/Dialect/Triton/Transforms/CMakeFiles/TritonTransforms.dir/RewriteTensorDescriptorToPointer.cpp.o
+[10/87] Building CXX object third_party/nvidia/hopper/lib/Transforms/CMakeFiles/NVHopperTransforms.dir/WarpSpecialization.cpp.o
+[11/87] Building CXX object third_party/nvidia/lib/Dialect/NVWS/Transforms/CMakeFiles/NVWSTransforms.dir/AssignStagePhase.cpp.o
+[12/87] Building CXX object lib/Dialect/Triton/Transforms/CMakeFiles/TritonTransforms.dir/SpecializeIndexedUpdates.cpp.o
+[13/87] Building CXX object third_party/nvidia/lib/Dialect/NVWS/Transforms/CMakeFiles/NVWSTransforms.dir/LowerAref.cpp.o
+[14/87] Building CXX object lib/Analysis/CMakeFiles/TritonAnalysis.dir/GlobalMemoryEffects.cpp.o
+[15/87] Building CXX object third_party/amd/lib/TritonAMDGPUTransforms/CMakeFiles/TritonAMDGPUTransforms.dir/Pipeliner/LDSEncoding.cpp.o
+[16/87] Building CXX object third_party/amd/lib/TritonAMDGPUTransforms/CMakeFiles/TritonAMDGPUTransforms.dir/Pipeliner/StreamOps.cpp.o
+[17/87] Building CXX object lib/Dialect/Triton/Transforms/CMakeFiles/TritonTransforms.dir/LoopInvariantCodeMotion.cpp.o
+[18/87] Building CXX object lib/Dialect/TritonGPU/Transforms/CMakeFiles/TritonGPUTransforms.dir/Coalesce.cpp.o
+[19/87] Building CXX object lib/Dialect/TritonGPU/Transforms/CMakeFiles/TritonGPUTransforms.dir/F32DotTC.cpp.o
+[20/87] Building CXX object third_party/nvidia/lib/Dialect/NVWS/Transforms/CMakeFiles/NVWSTransforms.dir/HoistTmemStore.cpp.o
+[21/87] Building CXX object lib/Dialect/Triton/Transforms/CMakeFiles/TritonTransforms.dir/PrivateReductionOwnership.cpp.o
+[22/87] Building CXX object lib/Dialect/TritonGPU/Transforms/CMakeFiles/TritonGPUTransforms.dir/CombineTensorSelectAndIf.cpp.o
+[23/87] Building CXX object third_party/nvidia/lib/Dialect/NVWS/Transforms/CMakeFiles/NVWSTransforms.dir/InsertTmemAref.cpp.o
+[24/87] Building CXX object third_party/nvidia/lib/Dialect/NVWS/Transforms/CMakeFiles/NVWSTransforms.dir/InsertAref.cpp.o
+[25/87] Building CXX object lib/Dialect/TritonGPU/Transforms/CMakeFiles/TritonGPUTransforms.dir/ReduceDataDuplication.cpp.o
+[26/87] Building CXX object lib/Dialect/TritonGPU/Transforms/CMakeFiles/TritonGPUTransforms.dir/AccelerateMatmul.cpp.o
+[27/87] Building CXX object lib/Dialect/TritonGPU/Transforms/CMakeFiles/TritonGPUTransforms.dir/HoistTMEMAlloc.cpp.o
+[28/87] Building CXX object third_party/nvidia/hopper/lib/Transforms/CMakeFiles/NVHopperTransforms.dir/WarpSpecialization/WSCodePartition.cpp.o
+[29/87] Building CXX object lib/Dialect/TritonGPU/Transforms/CMakeFiles/TritonGPUTransforms.dir/OptimizeDotOperands.cpp.o
+[30/87] Building CXX object third_party/amd/lib/TritonAMDGPUTransforms/CMakeFiles/TritonAMDGPUTransforms.dir/Pipeliner/Pipeline.cpp.o
+[31/87] Building CXX object third_party/amd/lib/TritonAMDGPUTransforms/CMakeFiles/TritonAMDGPUTransforms.dir/WarpPipeliner.cpp.o
+[32/87] Building CXX object third_party/amd/lib/TritonAMDGPUTransforms/CMakeFiles/TritonAMDGPUTransforms.dir/Pipeliner/ScheduleLoops.cpp.o
+[33/87] Building CXX object lib/Dialect/TritonGPU/Transforms/CMakeFiles/TritonGPUTransforms.dir/Pipeliner/MMAv5PipelineUtility.cpp.o
+[34/87] Building CXX object third_party/amd/lib/TritonAMDGPUTransforms/CMakeFiles/TritonAMDGPUTransforms.dir/Pipeliner/LowerLoops.cpp.o
+[35/87] Building CXX object lib/Dialect/TritonGPU/Transforms/CMakeFiles/TritonGPUTransforms.dir/Pipeliner/AssignLatencies.cpp.o
+[36/87] Building CXX object lib/Dialect/TritonGPU/Transforms/CMakeFiles/TritonGPUTransforms.dir/Pipeliner/ScheduleLoops.cpp.o
+[37/87] Building CXX object lib/Dialect/TritonGPU/Transforms/CMakeFiles/TritonGPUTransforms.dir/Pipeliner/TestPipelineLowerLoop.cpp.o
+[38/87] Building CXX object lib/Dialect/TritonGPU/Transforms/CMakeFiles/TritonGPUTransforms.dir/FuseNestedLoops.cpp.o
+[39/87] Building CXX object lib/Dialect/TritonGPU/Transforms/CMakeFiles/TritonGPUTransforms.dir/Pipeliner/PipelineExpander.cpp.o
+[40/87] Building CXX object lib/Dialect/TritonGPU/Transforms/CMakeFiles/TritonGPUTransforms.dir/OptimizeAccumulatorInit.cpp.o
+[41/87] Building CXX object lib/Dialect/TritonGPU/Transforms/CMakeFiles/TritonGPUTransforms.dir/Pipeliner/Schedule.cpp.o
+[42/87] Building CXX object lib/Dialect/TritonGPU/Transforms/CMakeFiles/TritonGPUTransforms.dir/WarpSpecialization/PartitionBuilder.cpp.o
+[43/87] Building CXX object lib/Dialect/TritonGPU/Transforms/CMakeFiles/TritonGPUTransforms.dir/OptimizeThreadLocality.cpp.o
+[44/87] Building CXX object lib/Dialect/TritonGPU/Transforms/CMakeFiles/TritonGPUTransforms.dir/ReorderInstructions.cpp.o
+[45/87] Building CXX object lib/Dialect/TritonGPU/Transforms/CMakeFiles/TritonGPUTransforms.dir/CoalesceAsyncCopy.cpp.o
+[46/87] Building CXX object lib/Dialect/TritonGPU/Transforms/CMakeFiles/TritonGPUTransforms.dir/Prefetch.cpp.o
+[47/87] Building CXX object lib/Dialect/TritonGPU/Transforms/CMakeFiles/TritonGPUTransforms.dir/WarpSpecialization/AutomaticWarpSpecialization.cpp.o
+[48/87] Building CXX object lib/Dialect/TritonGPU/Transforms/CMakeFiles/TritonGPUTransforms.dir/WarpSpecialization/Partition.cpp.o
+[49/87] Building CXX object lib/Dialect/TritonGPU/Transforms/CMakeFiles/TritonGPUTransforms.dir/WarpSpecialization/NormalizeWSWhileLoops.cpp.o
+[50/87] Building CXX object lib/Dialect/TritonGPU/Transforms/CMakeFiles/TritonGPUTransforms.dir/OptimizeThreadRegions.cpp.o
+[51/87] Linking CXX static library test/lib/Dialect/libTritonTestDialect.a
+[52/87] Linking CXX static library test/lib/Proton/libTritonTestProton.a
+[53/87] Building CXX object lib/Dialect/TritonGPU/Transforms/CMakeFiles/TritonGPUTransforms.dir/Pipeliner/TMAStoresPipeline.cpp.o
+[54/87] Building CXX object lib/Dialect/TritonGPU/Transforms/CMakeFiles/TritonGPUTransforms.dir/Pipeliner/WGMMAPipeline.cpp.o
+[55/87] Building CXX object lib/Dialect/TritonGPU/Transforms/CMakeFiles/TritonGPUTransforms.dir/Pipeliner/LowerLoops.cpp.o
+[56/87] Building CXX object lib/Dialect/TritonGPU/Transforms/CMakeFiles/TritonGPUTransforms.dir/Pipeliner/PipeliningUtility.cpp.o
+[57/87] Building CXX object lib/Dialect/TritonGPU/Transforms/CMakeFiles/TritonGPUTransforms.dir/Pipeliner/SoftwarePipeliner.cpp.o
+[58/87] Building CXX object lib/Dialect/TritonNvidiaGPU/Transforms/CMakeFiles/TritonNvidiaGPUTransforms.dir/HoistMBarrierLifecycle.cpp.o
+[59/87] Building CXX object lib/Dialect/TritonGPU/Transforms/CMakeFiles/TritonGPUTransforms.dir/WarpSpecialization/PartitionLoops.cpp.o
+[60/87] Building CXX object lib/Dialect/TritonNvidiaGPU/Transforms/CMakeFiles/TritonNvidiaGPUTransforms.dir/PromoteLHSToTMem.cpp.o
+[61/87] Building CXX object lib/Dialect/TritonGPU/Transforms/CMakeFiles/TritonGPUTransforms.dir/WarpSpecialization/OptimizePartitionWarps.cpp.o
+[62/87] Building CXX object lib/Dialect/TritonGPU/Transforms/CMakeFiles/TritonGPUTransforms.dir/WarpSpecialization/PartitionScheduling.cpp.o
+[63/87] Building CXX object lib/Dialect/TritonGPU/Transforms/CMakeFiles/TritonGPUTransforms.dir/RemoveLayoutConversions.cpp.o
+[64/87] Building CXX object third_party/nvidia/hopper/lib/Transforms/CMakeFiles/NVHopperTransforms.dir/WarpSpecialization/WSBuffer.cpp.o
+[65/87] Linking CXX executable unittest/Dialect/TritonGPU/TestSwizzling
+[66/87] Linking CXX executable unittest/Dialect/TritonGPU/Dialect
+[67/87] Building CXX object third_party/nvidia/hopper/lib/Transforms/CMakeFiles/NVHopperTransforms.dir/WarpSpecialization/WSLowerToken.cpp.o
+[68/87] Building CXX object third_party/nvidia/hopper/lib/Transforms/CMakeFiles/NVHopperTransforms.dir/WarpSpecialization/WSLowerMem.cpp.o
+[69/87] Linking CXX executable unittest/Dialect/TritonNvidiaGPU/NvmmaSmemAttrsTest
+[70/87] Linking CXX executable unittest/Dialect/TritonGPU/TestPaddedSharedLayout
+[71/87] Linking CXX executable unittest/Dialect/TritonGPU/DumpLayoutTest
+[72/87] Linking CXX executable unittest/Dialect/TritonGPU/LinearLayoutConversions
+[73/87] Linking CXX executable unittest/Analysis/TestTritonAnalysis
+[74/87] Linking CXX static library test/lib/Analysis/libTritonTestAnalysis.a
+[75/87] Building CXX object third_party/nvidia/hopper/lib/Transforms/CMakeFiles/NVHopperTransforms.dir/WarpSpecialization/WSSpecialize.cpp.o
+[76/87] Linking CXX executable third_party/nvidia/unittest/Conversion/TritonGPUToLLVM/TestPtxAsmFormat
+[77/87] Linking CXX executable bin/triton-llvm-opt
+[78/87] Building CXX object bin/CMakeFiles/triton-lsp.dir/triton-lsp.cpp.o
+[79/87] Building CXX object bin/CMakeFiles/triton-reduce.dir/triton-reduce.cpp.o
+[80/87] Building CXX object bin/CMakeFiles/triton-opt.dir/triton-opt.cpp.o
+[81/87] Building CXX object bin/CMakeFiles/triton-tensor-layout.dir/triton-tensor-layout.cpp.o
+[82/87] Building CXX object CMakeFiles/triton.dir/python/src/passes.cc.o
+[83/87] Linking CXX executable bin/triton-lsp
+[84/87] Linking CXX executable bin/triton-reduce
+[85/87] Linking CXX executable bin/triton-opt
+[86/87] Linking CXX executable bin/triton-tensor-layout
+[87/87] Linking CXX shared library /home/ryandeng/tpaa/triton/python/triton/_C/libtriton.so

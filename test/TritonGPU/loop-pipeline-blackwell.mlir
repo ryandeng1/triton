@@ -1,4 +1,5 @@
 // RUN: triton-opt %s -split-input-file -tritongpu-hoist-tmem-alloc -tritongpu-assign-latencies -tritongpu-schedule-loops -tritongpu-pipeline -triton-nvidia-gpu-remove-tmem-tokens -canonicalize | FileCheck %s --check-prefixes=CHECK
+// RUN: triton-opt %s -split-input-file -tritongpu-hoist-tmem-alloc -tritongpu-assign-latencies -tritongpu-schedule-loops -tritongpu-test-pipeline-lower-loop -triton-nvidia-gpu-remove-tmem-tokens -canonicalize | FileCheck %s --check-prefix=LOWER
 
 #blocked = #ttg.blocked<{sizePerThread = [1, 128], threadsPerWarp = [32, 1], warpsPerCTA = [4, 1], order = [1, 0]}>
 #blocked1 = #ttg.blocked<{sizePerThread = [1, 8], threadsPerWarp = [2, 16], warpsPerCTA = [4, 1], order = [1, 0]}>
@@ -420,6 +421,26 @@ module attributes {"ttg.num-ctas" = 1 : i32, "ttg.num-warps" = 4 : i32, ttg.targ
 module attributes {"ttg.num-warps" = 4 : i32, ttg.target = "cuda:100"} {
 
 // CHECK-LABEL: @load_into_async_mma
+// The argument barrier belongs to a source protocol. The real pipeline must
+// decline it without a proof from before compiler-owned synchronization.
+// CHECK-NOT: ttg.async_copy_global_to_local
+// CHECK: scf.for
+// CHECK-NOT: ttg.async_copy_global_to_local
+// CHECK: ttng.tc_gen5_mma_scaled
+// CHECK-SAME: is_async
+// CHECK-NOT: ttg.async_copy_global_to_local
+// CHECK: tt.return
+// The lower-loop helper tests mechanical load lowering independently of that
+// legality gate. Preserve its positive coverage for an already scheduled MMA.
+// LOWER-LABEL: @load_into_async_mma
+// LOWER: ttg.local_alloc : () -> !ttg.memdesc<3x128x64xf8E4M3FN,
+// LOWER: ttg.local_alloc : () -> !ttg.memdesc<2x128x8xi8,
+// LOWER: scf.for
+// LOWER-COUNT-2: ttg.async_copy_global_to_local
+// LOWER: ttng.tc_gen5_mma_scaled
+// LOWER-SAME: is_async
+// LOWER: ttng.wait_barrier
+// LOWER: tt.return
 tt.func public @load_into_async_mma(
   %lhs_ptrs: tensor<128x64x!tt.ptr<f8E4M3FN>, #load_blocked>,
   %scale_ptrs: tensor<128x8x!tt.ptr<i8>, #load_blocked>,
@@ -435,7 +456,6 @@ tt.func public @load_into_async_mma(
   %cst = arith.constant dense<0> : tensor<64x8xi8, #scales>
   %rhs_scales = ttng.tmem_alloc %cst : (tensor<64x8xi8, #scales>) -> !ttg.memdesc<64x8xi8, #ttng.tensor_memory_scales_encoding<>, #ttng.tensor_memory>
 
-  // CHECK-COUNT-6: ttg.async_copy_global_to_local
   scf.for %i = %c0_i32 to %n_tiles step %c64_i32 : i32 {
     %lhs_offs = tt.splat %i : i32 -> tensor<128x64xi32, #load_blocked>
     %lhs_ptrs_i = tt.addptr %lhs_ptrs, %lhs_offs {tt.divisibility = dense<16> : tensor<128x64xi32>, tt.contiguity = dense<32> : tensor<128x64xi32>, tt.constancy = dense<1> : tensor<128x64xi32>} : tensor<128x64x!tt.ptr<f8E4M3FN>, #load_blocked>, tensor<128x64xi32, #load_blocked>

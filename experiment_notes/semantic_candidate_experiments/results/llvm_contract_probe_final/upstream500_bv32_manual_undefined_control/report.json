@@ -1,0 +1,145 @@
+{
+  "label": "upstream500_bv32_manual_undefined_control",
+  "case": {
+    "id": "upstream500",
+    "cohort": "upstream_test_holdout",
+    "B": 2,
+    "T": 500,
+    "H": 4,
+    "HV": 4,
+    "K": 60,
+    "V": 60,
+    "dtype": "float32",
+    "qk_dtype": "float32",
+    "parameter_dtype": "float32",
+    "scale": 1.0
+  },
+  "config": [
+    32,
+    2,
+    2
+  ],
+  "source_variant": "manual_undefined",
+  "llvm_attrs_enabled": false,
+  "emitted_mlir_arg_attrs": {
+    "0": [],
+    "1": [],
+    "2": [],
+    "5": [],
+    "6": [],
+    "7": [],
+    "8": [],
+    "9": [],
+    "10": [],
+    "11": [],
+    "12": []
+  },
+  "hashes": {
+    "ttir": "1ec1084ee4eea0d8699fb2234f326de75cc8365d13f82748e27bf3b8f0dba307",
+    "ttgir": "0f3699c6f91b7d9237f900a537bb4536d19514f38ef344da9aed6bcc3d2d4df7",
+    "llir": "7be66d0b43611a8c83e346f316d03ecd2ef66b65d70402a9ef88cb5e93d81108",
+    "ptx": "9b622641ce880b905cc37823d661d6f4349841f9585269616a5ae62ad7e584e0",
+    "cubin": "32e7e418f1700f4d2f3774c4478e62fd5fd9bd1adc932efdff8d31bf72402765",
+    "sass": "ac3442661f014a6e4d09f1cecf8462b53db22c94d4d5570a109f3d7f71763d90",
+    "machine_text": "e7edf111fc4f066e2def648eca21667abc1a14f7ee43d8fae32ea6897eb6dc26",
+    "normalized_ptx": "7a162a5bb6302856cb92211bd6369ea7df59815124f0f58227c80b3f13162d19",
+    "llvm_body": "32ad60661366beb32f3556068e8c5dde90411f5f7bb6f314ff12565a4204b7f6",
+    "lowered.before.mlir": "ef00a1054ac9f7b4fff3fbbdb1d894655d8ce38b0436184ad727cf6c2a0efb01",
+    "lowered.input.mlir": "ef00a1054ac9f7b4fff3fbbdb1d894655d8ce38b0436184ad727cf6c2a0efb01",
+    "before.llir": "72cecf881e29d1800ecf0b575bae5c501a022e87cfe5c8cfeedcb07e5b7689d5",
+    "after.llir": "7be66d0b43611a8c83e346f316d03ecd2ef66b65d70402a9ef88cb5e93d81108"
+  },
+  "before_visibility": {
+    "llvm_loads": 8,
+    "llvm_global_loads": 0,
+    "llvm_shared_loads": 8,
+    "inline_asm_calls": 26,
+    "sideeffect_global_load_calls": 17,
+    "masked_load_intrinsics": 0,
+    "invariant_load_metadata": false
+  },
+  "after_visibility": {
+    "llvm_loads": 8,
+    "llvm_global_loads": 0,
+    "llvm_shared_loads": 8,
+    "inline_asm_calls": 26,
+    "sideeffect_global_load_calls": 17,
+    "masked_load_intrinsics": 0,
+    "invariant_load_metadata": false
+  },
+  "metadata": {
+    "allowed_dot_input_precisions": [
+      "tf32",
+      "tf32x3",
+      "ieee",
+      "bf16x3",
+      "bf16x6"
+    ],
+    "arch": "sm103",
+    "backend_name": "cuda",
+    "clc": false,
+    "debug": false,
+    "default_dot_input_precision": "tf32",
+    "deprecated_fp8_dot_operand_dtypes": [
+      "fp8e4b15"
+    ],
+    "disable_lsr": false,
+    "enable_aref_release_scheduling": false,
+    "enable_contract_load_reuse": true,
+    "enable_fp_fusion": false,
+    "enable_indexed_update_specialization": false,
+    "enable_private_atomic_relaxation": false,
+    "enable_private_reduction_ownership": false,
+    "enable_reflect_ftz": true,
+    "enable_tmem_packing": false,
+    "enable_tmem_release_scheduling": false,
+    "enable_tmem_single_buffer": false,
+    "extern_libs": [
+      [
+        "libdevice",
+        "/home/ryandeng/tpaa/triton/python/triton/backends/nvidia/lib/libdevice.10.bc"
+      ]
+    ],
+    "fpsan_homomorphic_casts": false,
+    "global_scratch_align": 1,
+    "global_scratch_size": 0,
+    "hash": "b720d4ba0edbc206fa4bf796b369fa9d2e09798018d48413e6e93f915d48e9a1",
+    "instrumentation_mode": "",
+    "ir_override": null,
+    "launch_cooperative_grid": false,
+    "launch_pdl": false,
+    "max_num_imprecise_acc_default": 0,
+    "max_occupancy": null,
+    "maxnreg": null,
+    "name": "recurrent_manual_hoist",
+    "num_ctas": 1,
+    "num_stages": 2,
+    "num_warps": 2,
+    "profile_scratch_align": 1,
+    "profile_scratch_size": 0,
+    "ptx_options": null,
+    "ptx_version": null,
+    "sanitize_overflow": true,
+    "sched4reg": false,
+    "shared": 256,
+    "supported_fp8_dtypes": [
+      "fp8e4b15",
+      "fp8e4nv",
+      "fp8e5"
+    ],
+    "target": "GPUTarget(backend='cuda', arch=103, warp_size=32)",
+    "tensordesc_meta": [],
+    "tmem_size": 0,
+    "triton_version": "3.9.0",
+    "warp_size": 32
+  },
+  "cache_hash": "b720d4ba0edbc206fa4bf796b369fa9d2e09798018d48413e6e93f915d48e9a1",
+  "machine_text_sections": {
+    ".text.recurrent_manual_hoist": {
+      "bytes": 11904,
+      "sha256": "e7edf111fc4f066e2def648eca21667abc1a14f7ee43d8fae32ea6897eb6dc26"
+    }
+  },
+  "gpu_initialized": false,
+  "artifacts": "artifacts.tar.xz"
+}
